@@ -43,7 +43,7 @@ type CommandInteractionDataOption = {
     [<JsonField("type", EnumValue = EnumMode.Value)>]
     Type: ApplicationCommandOptionType
     
-    [<JsonField("value")>]
+    [<JsonField("value", Transform = typeof<CommandInteractionDataOptionValueTransform>)>]
     Value: CommandInteractionDataOptionValue option
     
     [<JsonField("options")>]

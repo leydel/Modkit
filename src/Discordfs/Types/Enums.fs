@@ -1,5 +1,7 @@
 ﻿namespace Modkit.Discordfs.Types
 
+open FSharp.Json
+
 type TextInputStyle =
     | SHORT = 1
     | PARAGRAPH = 2
@@ -167,6 +169,27 @@ type CommandInteractionDataOptionValue =
     | Int of int
     | Double of double
     | Bool of bool
+
+type CommandInteractionDataOptionValueTransform () =
+    interface ITypeTransform with
+        member _.targetType () =
+            typeof<obj>
+
+        member _.toTargetType value =
+            System.Console.WriteLine(value)
+            match value :?> CommandInteractionDataOptionValue with
+            | CommandInteractionDataOptionValue.String v -> v
+            | CommandInteractionDataOptionValue.Int v -> v
+            | CommandInteractionDataOptionValue.Double v -> v
+            | CommandInteractionDataOptionValue.Bool v -> v
+
+        member _.fromTargetType value =
+            match value with
+            | :? string as v -> CommandInteractionDataOptionValue.String v
+            | :? int as v -> CommandInteractionDataOptionValue.Int v
+            | :? double as v -> CommandInteractionDataOptionValue.Double v
+            | :? bool as v -> CommandInteractionDataOptionValue.Bool v
+            | _ -> failwith "Unexpected CommandInteractionDataOptionValue type"
 
 type ApplicationCommandType = 
     | CHAT_INPUT = 1

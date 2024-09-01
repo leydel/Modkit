@@ -18,8 +18,6 @@ type OptionsTests () =
             )
         ]
 
-        System.Console.WriteLine(FSharp.Json.Json.serialize options)
-
         match options with
         | Options.Channel name channelId -> Assert.AreEqual(value, channelId)
         | _ -> failwith "Could not find channel"
