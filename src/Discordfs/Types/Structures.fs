@@ -52,6 +52,20 @@ type CommandInteractionDataOption = {
     [<JsonField("focused")>]
     Focused: bool option
 }
+with
+    static member build(
+        Name: string,
+        Type: ApplicationCommandOptionType,
+        ?Value: CommandInteractionDataOptionValue,
+        ?Options: CommandInteractionDataOption list,
+        ?Focused: bool
+    ) = {
+        Name = Name;
+        Type = Type;
+        Value = Value;
+        Options = Options;
+        Focused = Focused;
+    }
 
 type Attachment = {
     [<JsonField("id")>]
@@ -1493,11 +1507,24 @@ type InteractionData = {
     [<JsonField("target_it")>]
     TargetId: string option
 }
-
-type BaseInteraction = {
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: InteractionType
-}
+with
+    static member build(
+        Id: string,
+        Name: string,
+        Type: ApplicationCommandType,
+        ?Resolved: ResolvedData,
+        ?Options: CommandInteractionDataOption list,
+        ?GuildId: string,
+        ?TargetId: string
+    ) = {
+        Id = Id;
+        Name = Name;
+        Type = Type;
+        Resolved = Resolved;
+        Options = Options;
+        GuildId = GuildId;
+        TargetId = TargetId;
+    }
 
 type Interaction = {
     [<JsonField("id")>]
@@ -1558,7 +1585,49 @@ type Interaction = {
     Context: InteractionContextType option
 }
 with
-    static member Deserialize(json: string) =
+    static member build(
+        Id: string,
+        ApplicationId: string,
+        Type: InteractionType,
+        Token: string,
+        Version: int,
+        AppPermissions: string,
+        Entitlements: Entitlement list,
+        AuthorizingIntegrationOwners: Map<ApplicationIntegrationType, ApplicationIntegrationTypeConfiguration>,
+        ?Data: InteractionData,
+        ?Guild: Guild,
+        ?GuildId: string,
+        ?Channel: Channel,
+        ?ChannelId: string,
+        ?Member: GuildMember,
+        ?User: User,
+        ?Message: Message,
+        ?Locale: string,
+        ?GuildLocale: string,
+        ?Context: InteractionContextType
+    ) = {
+        Id = Id;
+        ApplicationId = ApplicationId;
+        Type = Type;
+        Data = Data;
+        Guild = Guild;
+        GuildId = GuildId;
+        Channel = Channel;
+        ChannelId = ChannelId;
+        Member = Member;
+        User = User;
+        Token = Token;
+        Version = Version;
+        Message = Message;
+        AppPermissions = AppPermissions;
+        Locale = Locale;
+        GuildLocale = GuildLocale;
+        Entitlements = Entitlements;
+        AuthorizingIntegrationOwners = AuthorizingIntegrationOwners;
+        Context = Context;
+    }
+
+    static member deserialize(json: string) =
         try Some(Json.deserialize<Interaction> json) with
         | _ -> None
 

@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Commands\OptionsTests.fs" />
     <Compile Include="Services\Ed25519SigningServiceTests.fs" />
     <Compile Include="Services\DiscordHttpServiceTests.fs" />
     <Compile Include="Services\CommandServiceTests.fs" />

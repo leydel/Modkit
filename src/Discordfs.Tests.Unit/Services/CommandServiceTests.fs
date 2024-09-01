@@ -25,38 +25,34 @@ type SampleCommand () =
 [<TestClass>]
 type CommandServiceTests () =
     let createMockInteraction (commandName: string option) =
-        {
-            Id = "";
-            ApplicationId = "";
-            Type = InteractionType.APPLICATION_COMMAND;
-            Guild = None;
-            GuildId = None;
-            Channel = None;
-            ChannelId = None;
-            Member = None;
-            User = None;
-            Data =
-                match commandName with
-                | None -> None
-                | Some name -> Some {
-                    Id = "";
-                    Name = name;
-                    Type = ApplicationCommandType.MESSAGE;
-                    Resolved = None;
-                    Options = None;
-                    GuildId = None;
-                    TargetId = None;
-                };
-            Token = "";
-            Version = 0;
-            Message = None;
-            Locale = None;
-            GuildLocale = None;
-            AuthorizingIntegrationOwners = Map<ApplicationIntegrationType, ApplicationIntegrationTypeConfiguration>([]);
-            AppPermissions = "";
-            Entitlements = [];
-            Context = None;
-        }
+        match commandName with
+        | None ->
+            Interaction.build(
+                Id = "",
+                ApplicationId = "",
+                Type = InteractionType.APPLICATION_COMMAND,
+                Token = "",
+                Version = 0,
+                AuthorizingIntegrationOwners = Map([]),
+                AppPermissions = "",
+                Entitlements = []
+            )
+        | Some name ->
+            Interaction.build(
+                Id = "",
+                ApplicationId = "",
+                Type = InteractionType.APPLICATION_COMMAND,
+                Data = InteractionData.build(
+                    Id = "",
+                    Name = name,
+                    Type = ApplicationCommandType.MESSAGE
+                ),
+                Token = "",
+                Version = 0,
+                AuthorizingIntegrationOwners = Map([]),
+                AppPermissions = "",
+                Entitlements = []
+            )
         
     [<TestMethod>]
     member _.getCommandName_GetsExistingName () =
