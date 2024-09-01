@@ -3,36 +3,67 @@
 open Microsoft.VisualStudio.TestTools.UnitTesting
 open Modkit.Discordfs.Commands
 open Modkit.Discordfs.Types
+open System.Threading.Tasks
 
 type SampleCommand () =
-    inherit Command<unit> ()
+    inherit Command ()
 
     override _.Data = CreateGlobalApplicationCommand.build(
         Name = "sample",
         Description = "Sample command for testing the command service"
     )
 
-    override _.Validate _ =
-        Ok ()
-
-    override _.Execute _ = task {
-        return Ok (InteractionCallback.build(
+    override _.Execute _ =
+        Task.FromResult <| Ok (InteractionCallback.build(
             Type = InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
             Data = InteractionCallbackMessageData.buildBase(
                 Content = "Hello world"
             )
         ))
-    }
 
 
 [<TestClass>]
 type CommandServiceTests () =
+    let createMockInteraction (commandName: string option) =
+        {
+            Id = "";
+            ApplicationId = "";
+            Type = InteractionType.APPLICATION_COMMAND;
+            Guild = None;
+            GuildId = None;
+            Channel = None;
+            ChannelId = None;
+            Member = None;
+            User = None;
+            Data =
+                match commandName with
+                | None -> None
+                | Some name -> Some {
+                    Id = "";
+                    Name = name;
+                    Type = ApplicationCommandType.MESSAGE;
+                    Resolved = None;
+                    Options = None;
+                    GuildId = None;
+                    TargetId = None;
+                };
+            Token = "";
+            Version = 0;
+            Message = None;
+            Locale = None;
+            GuildLocale = None;
+            AuthorizingIntegrationOwners = Map<ApplicationIntegrationType, ApplicationIntegrationTypeConfiguration>([]);
+            AppPermissions = "";
+            Entitlements = [];
+            Context = None;
+        }
+        
     [<TestMethod>]
     member _.getCommandName_GetsExistingName () =
         // Arrange
         let commandService = CommandService []
 
-        let interaction = Interaction.Deserialize """{"type":3,"data":{"name":"sample"}}""" |> Option.get
+        let interaction = createMockInteraction (Some "sample")
 
         // Act
         let name = commandService.getCommandName interaction
@@ -47,7 +78,7 @@ type CommandServiceTests () =
         // Arrange
         let commandService = CommandService []
 
-        let interaction = Interaction.Deserialize """{"type":3}""" |> Option.get
+        let interaction = createMockInteraction None
 
         // Act
         let name = commandService.getCommandName interaction
@@ -58,7 +89,7 @@ type CommandServiceTests () =
     [<TestMethod>]
     member _.getCommand_GetsExistingCommand () =
         // Arrange
-        let commands = [SampleCommand()]
+        let commands: Command list = [SampleCommand()]
         let commandService = CommandService commands
 
         // Act
@@ -80,12 +111,12 @@ type CommandServiceTests () =
         Assert.IsTrue(command.IsNone)
 
     [<TestMethod>]
-    member _.Execute_RunsSuccessfulCommand () = task {
+    member _.Execute_RunsSuccessfulCommand (): Task = task {
         // Arrange
-        let commands = [SampleCommand()]
+        let commands: Command list = [SampleCommand()]
         let commandService: ICommandService = CommandService commands
 
-        let interaction = Interaction.Deserialize """{"type":3,"data":{"name":"sample"}}""" |> Option.get
+        let interaction = createMockInteraction (Some "sample")
 
         // Act
         let! res = commandService.Execute interaction
@@ -97,11 +128,11 @@ type CommandServiceTests () =
     }
 
     [<TestMethod>]
-    member _.Execute_ReturnsErrorOnUnknownCommand () = task {
+    member _.Execute_ReturnsErrorOnUnknownCommand (): Task = task {
         // Arrange
         let commandService: ICommandService = CommandService []
 
-        let interaction = Interaction.Deserialize """{"type":3,"data":{"name":"sample"}}""" |> Option.get
+        let interaction = createMockInteraction (Some "sample")
 
         // Act
         let! res = commandService.Execute interaction
@@ -113,11 +144,11 @@ type CommandServiceTests () =
     }
 
     [<TestMethod>]
-    member _.Execute_ReturnsErrorOnMissingCommandName () = task {
+    member _.Execute_ReturnsErrorOnMissingCommandName (): Task = task {
         // Arrange
         let commandService: ICommandService = CommandService []
 
-        let interaction = Interaction.Deserialize """{"type":3}""" |> Option.get
+        let interaction = createMockInteraction None
 
         // Act
         let! res = commandService.Execute interaction

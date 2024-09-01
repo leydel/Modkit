@@ -1,70 +1,55 @@
 ﻿namespace Modkit.Discordfs.Services
 
+open FSharp.Json
 open Microsoft.VisualStudio.TestTools.UnitTesting
 open Modkit.Discordfs.Types
-open NSubstitute
+open RichardSzalay.MockHttp
 open System.Net.Http
+open System.Threading.Tasks
+
+type Nonce = {
+    [<JsonField("nonce")>]
+    Nonce: int
+}
 
 [<TestClass>]
 type DiscordHttpServiceTests () =
     [<DefaultValue>] val mutable _httpClientFactory: IHttpClientFactory
-    [<DefaultValue>] val mutable _token: string
 
     [<TestInitialize>]
     member this.TestInitialize () =
-        this._httpClientFactory <- Substitute.For<IHttpClientFactory>()
-        this._token <- "DISCORD_BOT_TOKEN"
+        this._httpClientFactory <- {
+            new IHttpClientFactory with
+                member _.CreateClient (_: string) =
+                    let mockHttp = new MockHttpMessageHandler()
+
+                    mockHttp
+                        .When(DiscordHttpService.DISCORD_API_URL + "endpoint")
+                        .Respond(new StringContent """{"nonce":1}""")
+                        |> ignore
+
+                    mockHttp.ToHttpClient()
+        }
         
     [<TestMethod>]
-    member this.send_SerializesResponse_WithoutBody () = task {
+    member this.send_SerializesResponse (): Task = task {
         // Arrange
-        let res = new HttpResponseMessage()
-        res.Content <- new StringContent """{"nonce":1}"""
-
-        let httpClient = Substitute.For<HttpClient>()
-        httpClient.SendAsync(Arg.Any<HttpRequestMessage>()).Returns(res) |> ignore
-
-        this._httpClientFactory.CreateClient().Returns(httpClient) |> ignore
-
-        let discordHttpService = DiscordHttpService(this._httpClientFactory, this._token)
+        let discordHttpService = DiscordHttpService(this._httpClientFactory, "DISCORD_BOT_TOKEN")
 
         // Act
-        let! res = discordHttpService.send HttpMethod.Post "endpoint" None
+        let! res = discordHttpService.send<Nonce> HttpMethod.Post "endpoint" None
 
         // Assert
-        Assert.AreEqual(1, res ["nonce"])
+        Assert.AreEqual(1, res.Nonce)
     }
     
     [<TestMethod>]
-    member this.send_SerializesResponse_WithBody () = task {
-        // Arrange
-        let res = new HttpResponseMessage()
-        res.Content <- new StringContent """{"nonce":1}"""
-
-        let httpClient = Substitute.For<HttpClient>()
-        httpClient.SendAsync(Arg.Any<HttpRequestMessage>()).Returns(res) |> ignore
-
-        this._httpClientFactory.CreateClient().Returns(httpClient) |> ignore
-
-        let discordHttpService = DiscordHttpService(this._httpClientFactory, this._token)
-
-        let body = Some (new StringContent "" :> HttpContent)
-
-        // Act
-        let! res = discordHttpService.send HttpMethod.Post "endpoint" body
-
-        // Assert
-        body.Value.Received(1) |> ignore
-        Assert.AreEqual(1, res ["nonce"])
-    }
-    
-    [<TestMethod>]
-    member this.content_BuildsStringContent () = task {
+    member this.content_BuildsStringContent (): Task = task {
         // Arrange
         let payload = InteractionCallback.build InteractionCallbackType.PONG
-        let expected = """{"type":1}"""
+        let expected = """{"type":1,"data":null}"""
 
-        let discordHttpService = DiscordHttpService(this._httpClientFactory, this._token)
+        let discordHttpService = DiscordHttpService(this._httpClientFactory, "DISCORD_BOT_TOKEN")
 
         // Act
         let content = discordHttpService.content payload

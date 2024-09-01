@@ -22,9 +22,11 @@ type IDiscordHttpService =
         Task<Invite>
 
 type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
+    static member DISCORD_API_URL = "https://discord.com/api/"
+
     member _.send<'T> (method: HttpMethod) (endpoint: string) (body: HttpContent option) = task {
         let client = httpClientFactory.CreateClient()
-        let req = new HttpRequestMessage(method, "https://discord.com/api/" + endpoint)
+        let req = new HttpRequestMessage(method, DiscordHttpService.DISCORD_API_URL + endpoint)
         
         if body.IsSome then
             req.Content <- body.Value
@@ -38,7 +40,7 @@ type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
     }
 
     member _.content<'T> (payload: 'T) =
-        Some (new StringContent (Json.serialize payload) :> HttpContent)
+        Some (new StringContent (Json.serializeU payload) :> HttpContent)
 
     interface IDiscordHttpService with 
         member this.CreateGlobalApplicationCommand applicationId payload =
@@ -58,5 +60,3 @@ type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
                 HttpMethod.Post
                 $"channels/{channelId}/invites"
                 (this.content payload)
-
-// TODO: Convert this into a factory (?)
