@@ -176,7 +176,6 @@ type CommandInteractionDataOptionValueTransform () =
             typeof<obj>
 
         member _.toTargetType value =
-            System.Console.WriteLine(value)
             match value :?> CommandInteractionDataOptionValue with
             | CommandInteractionDataOptionValue.String v -> v
             | CommandInteractionDataOptionValue.Int v -> v
@@ -248,15 +247,81 @@ type MessageNonce =
     | Number of int
     | String of string
 
+type MessageNonceTransform () =
+    interface ITypeTransform with
+        member _.targetType () =
+            typeof<obj>
+
+        member _.toTargetType value =
+            match value :?> MessageNonce with
+            | MessageNonce.Number v -> v
+            | MessageNonce.String v -> v
+
+        member _.fromTargetType value =
+            match value with
+            | :? int as v -> MessageNonce.Number v
+            | :? string as v -> MessageNonce.String v
+            | _ -> failwith "Unexpected MessageNonce type"
+
 type ApplicationCommandOptionChoiceValue =
     | String of string
     | Integer of int
     | Double of double
+
+type ApplicationCommandOptionChoiceValueTransform () =
+    interface ITypeTransform with
+        member _.targetType () =
+            typeof<obj>
+
+        member _.toTargetType value =
+            match value :?> ApplicationCommandOptionChoiceValue with
+            | ApplicationCommandOptionChoiceValue.String v -> v
+            | ApplicationCommandOptionChoiceValue.Integer v -> v
+            | ApplicationCommandOptionChoiceValue.Double v -> v
+
+        member _.fromTargetType value =
+            match value with
+            | :? string as v -> ApplicationCommandOptionChoiceValue.String v
+            | :? int as v -> ApplicationCommandOptionChoiceValue.Integer v
+            | :? double as v -> ApplicationCommandOptionChoiceValue.Double v
+            | _ -> failwith "Unexpected ApplicationCommandOptionChoiceValue type"
     
 type ApplicationCommandMinValue =
     | Integer of int
     | Double of double
+
+type ApplicationCommandMinValueTransform () =
+    interface ITypeTransform with
+        member _.targetType () =
+            typeof<obj>
+
+        member _.toTargetType value =
+            match value :?> ApplicationCommandMinValue with
+            | ApplicationCommandMinValue.Integer v -> v
+            | ApplicationCommandMinValue.Double v -> v
+
+        member _.fromTargetType value =
+            match value with
+            | :? int as v -> ApplicationCommandMinValue.Integer v
+            | :? double as v -> ApplicationCommandMinValue.Double v
+            | _ -> failwith "Unexpected ApplicationCommandMinValue type"
     
 type ApplicationCommandMaxValue =
     | Integer of int
     | Double of double
+
+type ApplicationCommandMaxValueTransform () =
+    interface ITypeTransform with
+        member _.targetType () =
+            typeof<obj>
+
+        member _.toTargetType value =
+            match value :?> ApplicationCommandMaxValue with
+            | ApplicationCommandMaxValue.Integer v -> v
+            | ApplicationCommandMaxValue.Double v -> v
+
+        member _.fromTargetType value =
+            match value with
+            | :? int as v -> ApplicationCommandMaxValue.Integer v
+            | :? double as v -> ApplicationCommandMaxValue.Double v
+            | _ -> failwith "Unexpected ApplicationCommandMaxValue type"

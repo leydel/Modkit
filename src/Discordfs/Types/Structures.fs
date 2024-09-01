@@ -1390,7 +1390,7 @@ and Message = {
     [<JsonField("reactions")>]
     Reactions: Reaction list
 
-    [<JsonField("nonce")>]
+    [<JsonField("nonce", Transform = typeof<MessageNonceTransform>)>]
     Nonce: MessageNonce option
 
     [<JsonField("pinned")>]
@@ -1664,7 +1664,7 @@ type ApplicationCommandOptionChoice = {
     [<JsonField("name_localizations")>]
     NameLocalizations: Dictionary<string, string> option
     
-    [<JsonField("value")>]
+    [<JsonField("value", Transform = typeof<ApplicationCommandOptionChoiceValueTransform>)>]
     Value: ApplicationCommandOptionChoiceValue
 }
 
@@ -1696,10 +1696,10 @@ type ApplicationCommandOption = {
     [<JsonField("channel_types")>]
     ChannelTypes: ChannelType list option
     
-    [<JsonField("min_value")>]
+    [<JsonField("min_value", Transform = typeof<ApplicationCommandMinValueTransform>)>]
     MinValue: ApplicationCommandMinValue option
     
-    [<JsonField("max_value")>]
+    [<JsonField("max_value", Transform = typeof<ApplicationCommandMaxValueTransform>)>]
     MaxValue: ApplicationCommandMaxValue option
     
     [<JsonField("min_length")>]
