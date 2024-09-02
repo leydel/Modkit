@@ -106,3 +106,60 @@ with
         Type = Type;
         Nsfw = Nsfw;
     }
+
+type ExecuteWebhook = {
+    [<JsonField("content")>]
+    Content: string option
+    
+    [<JsonField("username")>]
+    Username: string
+    
+    [<JsonField("avatar_url")>]
+    AvatarUrl: string
+    
+    [<JsonField("tts")>]
+    Tts: bool
+    
+    [<JsonField("embeds")>]
+    Embeds: Embed list option
+    
+    [<JsonField("allowed_mentions")>]
+    AllowedMentions: AllowedMentions
+    
+    [<JsonField("components")>]
+    Components: Component list option
+
+    // TODO: Add `files`, `payload_json`, `attachments` support
+    
+    [<JsonField("flags")>]
+    Flags: int
+    
+    [<JsonField("thread_name")>]
+    ThreadName: string option
+    
+    [<JsonField("applied_tags")>]
+    AppliedTags: string list option
+    
+    [<JsonField("poll")>]
+    Poll: Poll option
+
+    // TODO: Check what types should be `option`
+}
+
+type EditWebhookMessage = {
+    [<JsonField("content")>]
+    Content: string option
+    
+    [<JsonField("embeds")>]
+    Embeds: Embed list option
+    
+    [<JsonField("allowed_mentions")>]
+    AllowedMentions: AllowedMentions
+    
+    [<JsonField("components")>]
+    Components: Component list option
+
+    // TODO: Add `files`, `payload_json`, `attachments` support
+
+    // TODO: Check what types should be `option`
+}

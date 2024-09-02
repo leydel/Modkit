@@ -5,6 +5,7 @@ open Microsoft.VisualStudio.TestTools.UnitTesting
 open RichardSzalay.MockHttp
 open System.Net.Http
 open System.Threading.Tasks
+open System.Web
 
 type Nonce = {
     [<JsonField("nonce")>]
@@ -46,11 +47,29 @@ type DiscordHttpServiceTests () =
         Assert.AreEqual(DiscordHttpService.DISCORD_API_URL + endpoint, req.RequestUri.ToString())
 
     [<TestMethod>]
+    member this.query_AddsQueryParameterToRequest () =
+        // Arrange
+        let discordHttpService = DiscordHttpService(this._httpClientFactory, "DISCORD_BOT_TOKEN")
+
+        let req = discordHttpService.request HttpMethod.Post "endpoint"
+
+        let key = "key"
+        let value = "value"
+
+        // Act
+        let newReq = discordHttpService.query key (Some value) req
+
+        // Assert
+        let query = HttpUtility.ParseQueryString(newReq.RequestUri.Query)
+        Assert.AreEqual(value, query[key])
+
+    [<TestMethod>]
     member this.body_AddsBodyToRequest (): Task = task {
         // Arrange
         let discordHttpService = DiscordHttpService(this._httpClientFactory, "DISCORD_BOT_TOKEN")
 
         let req = discordHttpService.request HttpMethod.Post "endpoint"
+
         let payload = { Nonce = 1 }
 
         // Act
