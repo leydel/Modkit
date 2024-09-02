@@ -325,3 +325,26 @@ type ApplicationCommandMaxValueTransform () =
             | :? int as v -> ApplicationCommandMaxValue.Integer v
             | :? double as v -> ApplicationCommandMaxValue.Double v
             | _ -> failwith "Unexpected ApplicationCommandMaxValue type"
+
+type AllowedMentionsParseType =
+    | Roles
+    | Users
+    | Everyone
+
+type AllowedMentionsParseTypeTransform () =
+    interface ITypeTransform with
+        member _.targetType () =
+            typeof<obj>
+
+        member _.toTargetType value =
+            match value :?> AllowedMentionsParseType with
+            | AllowedMentionsParseType.Roles -> "roles"
+            | AllowedMentionsParseType.Users -> "users"
+            | AllowedMentionsParseType.Everyone -> "everyone"
+
+        member _.fromTargetType value =
+            match value with
+            | v when v = "roles" -> AllowedMentionsParseType.Roles
+            | v when v = "users" -> AllowedMentionsParseType.Users
+            | v when v = "everyone" -> AllowedMentionsParseType.Everyone
+            | _ -> failwith "Unexpected AllowedMentionsParseType type"

@@ -128,7 +128,7 @@ type RoleTags = {
     GuildConnections: unit option
 }
 
-// TODO: Check that `unit option` works as intended above. null = true, undefined = false
+// TODO: Figure out how to transform above `unit option` types to `bool` where null = true & undefined = false
 
 type Role = {
     [<JsonField("id")>]
@@ -1129,7 +1129,7 @@ type ActionRowComponent = {
     [<JsonField("type", EnumValue = EnumMode.Value)>]
     Type: ComponentType
     
-    [<JsonField("components")>]
+    [<JsonField("components", Transform = typeof<ComponentTransform>)>]
     Components: Component list
 }
 
@@ -1215,10 +1215,30 @@ and TextInputComponent = {
 }
 
 and Component =
-    | ActionRowComponent of ActionRowComponent
-    | ButtonComponent of ButtonComponent
-    | SelectMenuComponent of SelectMenuComponent
-    | TextInputComponent of TextInputComponent
+    | ActionRow of ActionRowComponent
+    | Button of ButtonComponent
+    | SelectMenu of SelectMenuComponent
+    | TextInput of TextInputComponent
+
+and ComponentTransform () =
+    interface ITypeTransform with
+        member _.targetType () =
+            typeof<obj>
+
+        member _.toTargetType value =
+            match value :?> Component with
+            | Component.ActionRow v -> v
+            | Component.Button v -> v
+            | Component.SelectMenu v -> v
+            | Component.TextInput v -> v
+
+        member _.fromTargetType value =
+            match value with
+            | :? ActionRowComponent as v -> Component.ActionRow v
+            | :? ButtonComponent as v -> Component.Button v
+            | :? SelectMenuComponent as v -> Component.SelectMenu v
+            | :? TextInputComponent as v -> Component.TextInput v
+            | _ -> failwith "Unexpected Component type"
 
 type Channel = {
     [<JsonField("id")>]
@@ -1426,7 +1446,7 @@ and Message = {
     [<JsonField("thread")>]
     Thread: Channel option
 
-    [<JsonField("components")>]
+    [<JsonField("components", Transform = typeof<ComponentTransform>)>]
     Components: Component list option
 
     [<JsonField("sticker_items")>]
@@ -1482,7 +1502,7 @@ type Invite = {
     [<JsonField("expires_at")>]
     ExpiresAt: DateTime
 
-    // TODO: Add guild_scheduled_event here (not deprecated?)
+    // TODO: Add `guild_scheduled_event` with type from: https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-structure
 }
 
 type InteractionData = {
@@ -1632,8 +1652,8 @@ with
         | _ -> None
 
 type AllowedMentions = {
-    [<JsonField("parse")>]
-    Parse: string list // "roles" "users" "everyone"
+    [<JsonField("parse", Transform = typeof<AllowedMentionsParseTypeTransform>)>]
+    Parse: AllowedMentionsParseType list
     
     [<JsonField("roles")>]
     Roles: string list option
@@ -1646,7 +1666,7 @@ type AllowedMentions = {
 }
 with
     static member build(
-        Parse: string list,
+        Parse: AllowedMentionsParseType list,
         ?Roles: string list,
         ?Users: string list,
         ?RepliedUser: bool
@@ -1807,7 +1827,7 @@ type InteractionCallbackMessageData = {
     [<JsonField("flags")>]
     Flags: int option
     
-    [<JsonField("components")>]
+    [<JsonField("components", Transform = typeof<ComponentTransform>)>]
     Components: Component list option
     
     [<JsonField("attachments")>]
@@ -1846,7 +1866,7 @@ with
         ?Components: Component list,
         ?Attachments: Attachment list,
         ?Poll: Poll
-    ) = InteractionCallbackData.InteractionCallbackMessageData (
+    ) = InteractionCallbackData.Message (
         InteractionCallbackMessageData.build (
             ?Tts = Tts,
             ?Content = Content,
@@ -1873,7 +1893,7 @@ with
 
     static member buildBase(
         Choices: ApplicationCommandOptionChoice list
-    ) = InteractionCallbackData.InteractionCallbackAutocompleteData (
+    ) = InteractionCallbackData.Autocomplete (
         InteractionCallbackAutocompleteData.build Choices
     )
 
@@ -1884,7 +1904,7 @@ and InteractionCallbackModalData = {
     [<JsonField("title")>]
     Title: string
     
-    [<JsonField("components")>]
+    [<JsonField("components", Transform = typeof<ComponentTransform>)>]
     Components: Component list
 }
 with
@@ -1902,20 +1922,38 @@ with
         CustomId: string,
         Title: string,
         Components: Component list
-    ) = InteractionCallbackData.InteractionCallbackModalData (
+    ) = InteractionCallbackData.Modal (
         InteractionCallbackModalData.build (CustomId, Title, Components)
     )
 
 and InteractionCallbackData =
-    | InteractionCallbackMessageData of InteractionCallbackMessageData
-    | InteractionCallbackAutocompleteData of InteractionCallbackAutocompleteData
-    | InteractionCallbackModalData of InteractionCallbackModalData
+    | Message of InteractionCallbackMessageData
+    | Autocomplete of InteractionCallbackAutocompleteData
+    | Modal of InteractionCallbackModalData
+
+type InteractionCallbackDataTransform () =
+    interface ITypeTransform with
+        member _.targetType () =
+            typeof<obj>
+
+        member _.toTargetType value =
+            match value :?> InteractionCallbackData with
+            | InteractionCallbackData.Message v -> v
+            | InteractionCallbackData.Autocomplete v -> v
+            | InteractionCallbackData.Modal v -> v
+
+        member _.fromTargetType value =
+            match value with
+            | :? InteractionCallbackMessageData as v -> InteractionCallbackData.Message v
+            | :? InteractionCallbackAutocompleteData as v -> InteractionCallbackData.Autocomplete v
+            | :? InteractionCallbackModalData as v -> InteractionCallbackData.Modal v
+            | _ -> failwith "Unexpected InteractionCallbackData type"
 
 type InteractionCallback = {
     [<JsonField("type", EnumValue = EnumMode.Value)>]
     Type: InteractionCallbackType
     
-    [<JsonField("data")>]
+    [<JsonField("data", Transform = typeof<InteractionCallbackDataTransform>)>]
     Data: InteractionCallbackData option
 }
 with
