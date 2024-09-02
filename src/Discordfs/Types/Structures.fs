@@ -1809,6 +1809,9 @@ type ApplicationCommand = {
     
     [<JsonField("version")>]
     Version: string
+
+    [<JsonField("handler")>]
+    Handler: ApplicationCommandHandlerType option
 }
 
 type InteractionCallbackMessageData = {

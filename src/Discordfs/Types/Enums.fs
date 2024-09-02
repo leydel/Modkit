@@ -194,6 +194,7 @@ type ApplicationCommandType =
     | CHAT_INPUT = 1
     | USER = 2
     | MESSAGE = 3
+    | PRIMARY_ENTRY_POINT = 4
 
 type ApplicationCommandOptionType =
     | SUB_COMMAND = 1
@@ -232,7 +233,7 @@ type InteractionCallbackType =
     | UPDATE_MESSAGE = 7
     | APPLICATION_COMMAND_AUTOCOMPLETE_RESULT = 8
     | MODAL = 9
-    | PREMIUM_REQUIRED = 10
+    | LAUNCH_ACTIVITY = 12
 
 type InviteType =
     | GUILD
@@ -348,3 +349,7 @@ type AllowedMentionsParseTypeTransform () =
             | v when v = "users" -> AllowedMentionsParseType.Users
             | v when v = "everyone" -> AllowedMentionsParseType.Everyone
             | _ -> failwith "Unexpected AllowedMentionsParseType type"
+
+type ApplicationCommandHandlerType =
+    | APP_HANDER = 1
+    | DISCORD_LAUNCH_ACTIVITY = 2
