@@ -21,42 +21,61 @@ type IDiscordHttpService =
         payload: CreateChannelInvite ->
         Task<Invite>
 
+    abstract member CreateInteractionResponse:
+        id: string ->
+        token: string ->
+        payload: InteractionCallback ->
+        Task<unit>
+
 type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
     static member DISCORD_API_URL = "https://discord.com/api/"
 
-    member _.send<'T> (method: HttpMethod) (endpoint: string) (body: HttpContent option) = task {
-        let client = httpClientFactory.CreateClient()
+    member _.request<'T> (method: HttpMethod) (endpoint: string) =
         let req = new HttpRequestMessage(method, DiscordHttpService.DISCORD_API_URL + endpoint)
-        
-        if body.IsSome then
-            req.Content <- body.Value
-
         req.Headers.Clear()
         req.Headers.Add("Authorization", $"Bearer {token}")
+        req
 
-        let! res = client.SendAsync req
+    member _.body (payload: 'a) (req: HttpRequestMessage) =
+        req.Content <- new StringContent (Json.serializeU payload)
+        req
+
+    member _.result (req: HttpRequestMessage) = task {
+        let! res = httpClientFactory.CreateClient().SendAsync req
         let! body = res.Content.ReadAsStringAsync()
-        return Json.deserialize<'T> body
+        return Json.deserialize<'a> body
     }
 
-    member _.content<'T> (payload: 'T) =
-        Some (new StringContent (Json.serializeU payload) :> HttpContent)
+    member _.unit (req: HttpRequestMessage) = task {
+        let! _ = httpClientFactory.CreateClient().SendAsync req
+        return ()
+    }
 
     interface IDiscordHttpService with 
         member this.CreateGlobalApplicationCommand applicationId payload =
-            this.send
+            this.request
                 HttpMethod.Post
                 $"applications/{applicationId}/commands"
-                (this.content payload)
+            |> this.body payload
+            |> this.result
 
         member this.BulkOverwriteGlobalApplicationCommands applicationId payload =
-            this.send
+            this.request
                 HttpMethod.Patch
                 $"applications/{applicationId}/commands"
-                (this.content payload)
+            |> this.body payload
+            |> this.result
 
         member this.CreateChannelInvite channelId payload =
-            this.send
+            this.request
                 HttpMethod.Post
                 $"channels/{channelId}/invites"
-                (this.content payload)
+            |> this.body payload
+            |> this.result
+
+        member this.CreateInteractionResponse id token payload =
+            this.request
+                HttpMethod.Post
+                $"interactions/{id}/{token}/callback"
+            |> this.body payload
+            |> this.unit

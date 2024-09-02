@@ -2,7 +2,6 @@
 
 open FSharp.Json
 open Microsoft.VisualStudio.TestTools.UnitTesting
-open Modkit.Discordfs.Types
 open RichardSzalay.MockHttp
 open System.Net.Http
 open System.Threading.Tasks
@@ -30,33 +29,62 @@ type DiscordHttpServiceTests () =
 
                     mockHttp.ToHttpClient()
         }
-        
+
     [<TestMethod>]
-    member this.send_SerializesResponse (): Task = task {
+    member this.request_BuildsRequest () =
         // Arrange
         let discordHttpService = DiscordHttpService(this._httpClientFactory, "DISCORD_BOT_TOKEN")
 
+        let method = HttpMethod.Post
+        let endpoint = "endpoint"
+
         // Act
-        let! res = discordHttpService.send<Nonce> HttpMethod.Post "endpoint" None
+        let req = discordHttpService.request method endpoint
+
+        // Assert
+        Assert.AreEqual(method, req.Method)
+        Assert.AreEqual(DiscordHttpService.DISCORD_API_URL + endpoint, req.RequestUri.ToString())
+
+    [<TestMethod>]
+    member this.body_AddsBodyToRequest (): Task = task {
+        // Arrange
+        let discordHttpService = DiscordHttpService(this._httpClientFactory, "DISCORD_BOT_TOKEN")
+
+        let req = discordHttpService.request HttpMethod.Post "endpoint"
+        let payload = { Nonce = 1 }
+
+        // Act
+        let newReq = discordHttpService.body payload req
+
+        // Assert
+        let! reqBody = newReq.Content.ReadAsStringAsync()
+        Assert.AreEqual(Json.serializeU payload, reqBody)
+    }
+
+    [<TestMethod>]
+    member this.result_SendsRequestAndReturnsDeserializedResult (): Task = task {
+        // Arrange
+        let discordHttpService = DiscordHttpService(this._httpClientFactory, "DISCORD_BOT_TOKEN")
+
+        let req = discordHttpService.request HttpMethod.Post "endpoint"
+
+        // Act
+        let! res = discordHttpService.result<Nonce> req
 
         // Assert
         Assert.AreEqual(1, res.Nonce)
     }
-    
-    [<TestMethod>]
-    member this.content_BuildsStringContent (): Task = task {
-        // Arrange
-        let payload = InteractionCallback.build InteractionCallbackType.PONG
-        let expected = """{"type":1,"data":null}"""
 
+    [<TestMethod>]
+    member this.unit_SendsRequestAndReturnsUnit (): Task = task {
+        // Arrange
         let discordHttpService = DiscordHttpService(this._httpClientFactory, "DISCORD_BOT_TOKEN")
 
-        // Act
-        let content = discordHttpService.content payload
-        
-        // Assert
-        Assert.IsTrue(content.IsSome)
+        let req = discordHttpService.request HttpMethod.Post "endpoint"
 
-        let! actual = content.Value.ReadAsStringAsync()
-        Assert.AreEqual(expected, actual)
+        // Act
+        let! res = discordHttpService.unit req
+
+        // Assert
+        Assert.IsNull(res)
     }
