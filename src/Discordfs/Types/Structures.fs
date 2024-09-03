@@ -1967,3 +1967,17 @@ with
         Type = Type;
         Data = Data;
     }
+
+type SessionStartLimit = {
+    [<JsonField("total")>]
+    Total: int
+
+    [<JsonField("remaining")>]
+    Remaining: int
+    
+    [<JsonField("reset_after")>]
+    ResetAfter: int
+
+    [<JsonField("max_concurrency")>]
+    MaxConcurrency: int
+}

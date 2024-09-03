@@ -73,6 +73,18 @@ type IDiscordHttpService =
         token: string ->
         Task<unit>
 
+    abstract member GetGateway:
+        version: string ->
+        encoding: GatewayEncoding ->
+        compression: GatewayCompression option ->
+        Task<GetGateway>
+
+    abstract member GetGatewayBot:
+        version: string ->
+        encoding: GatewayEncoding ->
+        compression: GatewayCompression option ->
+        Task<GetGatewayBot>
+
 type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
     static member DISCORD_API_URL = "https://discord.com/api/"
 
@@ -184,3 +196,21 @@ type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
                 HttpMethod.Delete
                 $"webhooks/{id}/{token}/messages/{messageId}"
             |> this.unit
+
+        member this.GetGateway version encoding compression =
+            this.request
+                HttpMethod.Get
+                $"gateway"
+            |> this.query "v" (Some version)
+            |> this.query "encoding" (Some (encoding.ToString()))
+            |> this.query "compress" (match compression with | Some c -> Some (c.ToString()) | None -> None)
+            |> this.result
+
+        member this.GetGatewayBot version encoding compression =
+            this.request
+                HttpMethod.Get
+                $"gateway/bot"
+            |> this.query "v" (Some version)
+            |> this.query "encoding" (Some (encoding.ToString()))
+            |> this.query "compress" (match compression with | Some c -> Some (c.ToString()) | None -> None)
+            |> this.result

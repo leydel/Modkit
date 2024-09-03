@@ -163,3 +163,19 @@ type EditWebhookMessage = {
 
     // TODO: Check what types should be `option`
 }
+
+type GetGateway = {
+    [<JsonField("url")>]
+    Url: string
+}
+
+type GetGatewayBot = {
+    [<JsonField("url")>]
+    Url: string
+
+    [<JsonField("shards")>]
+    Shards: int
+
+    [<JsonField("session_start_limit")>]
+    SessionStartLimit: SessionStartLimit
+}

@@ -353,3 +353,21 @@ type AllowedMentionsParseTypeTransform () =
 type ApplicationCommandHandlerType =
     | APP_HANDER = 1
     | DISCORD_LAUNCH_ACTIVITY = 2
+
+type GatewayEncoding =
+    | JSON
+    | ETF
+with
+    override this.ToString () =
+        match this with
+        | GatewayEncoding.JSON -> "json"
+        | GatewayEncoding.ETF -> "etf"
+
+type GatewayCompression =
+    | ZLIBSTREAM
+    | ZSTDSTREAM
+with
+    override this.ToString () =
+        match this with
+        | GatewayCompression.ZLIBSTREAM -> "zlib-stream"
+        | GatewayCompression.ZSTDSTREAM -> "zstd-stream"
