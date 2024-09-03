@@ -12,25 +12,14 @@ type IDiscordGatewayService =
         unit ->
         Task<unit>
 
+    abstract member Disconnect:
+        unit ->
+        Task<unit>
+
     // TODO: Define possible events here, like how done in DiscordHttpService
 
 type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
-    static member GatewayVersion: string = "10"
-
-    static member GatewayEncoding: GatewayEncoding = GatewayEncoding.JSON
-
-    static member GatewayCompression: GatewayCompression option = None
-
     member val private _ws: ClientWebSocket option = None with get, set
-    
-    member _.GetGatewayUrl () = task {
-        let! gateway = (discordHttpService.GetGateway
-            DiscordGatewayService.GatewayVersion
-            DiscordGatewayService.GatewayEncoding
-            DiscordGatewayService.GatewayCompression)
-
-        return gateway.Url
-    }
 
     member this.Send (message: string) = task {
         // TODO: Correctly handle sending events (https://discord.com/developers/docs/topics/gateway#sending-events)
@@ -39,7 +28,8 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
         cts.CancelAfter(TimeSpan.FromSeconds 5)
 
         match this._ws with
-        | None -> ()
+        | None ->
+            return Error "Unable to send data as no websocket is connected"
         | Some ws ->
             let buffer = Encoding.UTF8.GetBytes message
 
@@ -52,17 +42,18 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
             }
 
             do! loop buffer 0
+            return Ok ()
     }
 
     interface IDiscordGatewayService with 
         member this.Connect () = task {
-            let! url = this.GetGatewayUrl()
+            let! gateway = discordHttpService.GetGateway "10" GatewayEncoding.JSON None
 
-            let cts = new CancellationTokenSource ()
+            let cts = new CancellationTokenSource()
             cts.CancelAfter(TimeSpan.FromSeconds 5)
 
             let ws = new ClientWebSocket()
-            do! ws.ConnectAsync(Uri url, cts.Token)
+            do! ws.ConnectAsync(Uri gateway.Url, cts.Token)
             this._ws <- Some ws
 
             let rec loop buffer = task {
@@ -79,6 +70,13 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
             }
 
             return! loop (Array.zeroCreate<byte> 4096)
+        }
+
+        member this.Disconnect () = task {
+            match this._ws with
+            | None -> ()
+            | Some ws ->
+                do! ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None)
         }
 
         // TODO: Handle lifecycle (https://discord.com/developers/docs/topics/gateway#connection-lifecycle)
