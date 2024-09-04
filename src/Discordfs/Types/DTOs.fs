@@ -1,6 +1,7 @@
 ﻿namespace Modkit.Discordfs.Types
 
 open FSharp.Json
+open System
 open System.Collections.Generic
 
 #nowarn "49"
@@ -178,4 +179,213 @@ type GetGatewayBot = {
 
     [<JsonField("session_start_limit")>]
     SessionStartLimit: SessionStartLimit
+}
+
+type Identify = {
+    [<JsonField("token")>]
+    Token: string
+    
+    [<JsonField("properties")>]
+    Properties: ConnectionProperties
+    
+    [<JsonField("compress")>]
+    Compress: bool option
+    
+    [<JsonField("large_threshold")>]
+    LargeThreshold: int option
+    
+    [<JsonField("shard")>]
+    Shard: (int * int) option
+    
+    [<JsonField("presence")>]
+    Presence: UpdatePresence option
+    
+    [<JsonField("intents")>]
+    Intents: int
+}
+with
+    static member build(
+        Token: string,
+        Intents: int,
+        Properties: ConnectionProperties,
+        ?Compress: bool,
+        ?LargeThreshold: int,
+        ?Shard: int * int,
+        ?Presence: UpdatePresence
+    ) = {
+        Token = Token;
+        Intents = Intents;
+        Properties = Properties;
+        Compress = Compress;
+        LargeThreshold = LargeThreshold;
+        Shard = Shard;
+        Presence = Presence;
+    }
+
+and Resume = {
+    [<JsonField("token")>]
+    Token: string
+    
+    [<JsonField("session_id")>]
+    SessionId: string
+    
+    [<JsonField("seq")>]
+    Sequence: int
+}
+with
+    static member build(
+        Token: string,
+        SessionId: string,
+        Sequence: int
+    ) = {
+        Token = Token;
+        SessionId = SessionId;
+        Sequence = Sequence;
+    }
+
+and Heartbeat = int option
+
+and RequestGuildMembers = {
+    [<JsonField("guild_id")>]
+    GuildId: string
+    
+    [<JsonField("query")>]
+    Query: string option
+    
+    [<JsonField("limit")>]
+    Limit: int
+    
+    [<JsonField("presences")>]
+    Presences: bool option
+    
+    [<JsonField("user_ids")>]
+    UserIds: string list option
+    
+    [<JsonField("nonce")>]
+    Nonce: string option
+}
+with
+    static member build(
+        GuildId: string,
+        Limit: int,
+        ?Presences: bool,
+        ?Query: string,
+        ?UserIds: string list,
+        ?Nonce: string
+    ) = {
+        GuildId = GuildId;
+        Query = Query;
+        Limit = Limit;
+        Presences = Presences;
+        UserIds = UserIds;
+        Nonce = Nonce;
+    }
+
+and UpdateVoiceState = {
+    [<JsonField("guild_id")>]
+    GuildId: string
+    
+    [<JsonField("channel_id")>]
+    ChannelId: string option
+    
+    [<JsonField("self_mute")>]
+    SelfMute: bool
+    
+    [<JsonField("self_deaf")>]
+    SelfDeaf: bool
+}
+with
+    static member build(
+        GuildId: string,
+        ChannelId: string option,
+        SelfMute: bool,
+        SelfDeaf: bool
+    ) = {
+        GuildId = GuildId;
+        ChannelId = ChannelId;
+        SelfMute = SelfMute;
+        SelfDeaf = SelfDeaf;
+    }
+
+and UpdatePresence = {
+    [<JsonField("since")>]
+    Since: int option
+    
+    [<JsonField("activities")>]
+    Activities: Activity list
+    
+    [<JsonField("status", Transform = typeof<StatusTypeTransform>)>]
+    Status: StatusType
+    
+    [<JsonField("afk")>]
+    Afk: bool
+}
+with
+    static member build(
+        Since: int option,
+        Activities: Activity list,
+        Status: StatusType,
+        Afk: bool
+    ) = {
+        Since = Since;
+        Activities = Activities;
+        Status = Status;
+        Afk = Afk;
+    }
+
+type TypingStart = {
+    [<JsonField("channel_id")>]
+    ChannelId: string
+    
+    [<JsonField("guild_id")>]
+    GuildId: string option
+    
+    [<JsonField("user_id")>]
+    UserId: string
+    
+    [<JsonField("timestamp")>]
+    Timestamp: DateTime
+    
+    [<JsonField("member")>]
+    Member: GuildMember
+}
+with
+    static member build(
+        ChannelId: string,
+        UserId: string,
+        Timestamp: DateTime,
+        Member: GuildMember,
+        ?GuildId: string
+    ) = {
+        ChannelId = ChannelId;
+        GuildId = GuildId;
+        UserId = UserId;
+        Timestamp = Timestamp;
+        Member = Member;
+    }
+
+type VoiceChannelEffect = {
+    [<JsonField("channel_id")>]
+    ChannelId: string
+    
+    [<JsonField("guild_id")>]
+    GuildId: string
+    
+    [<JsonField("user_id")>]
+    UserId: string
+    
+    [<JsonField("emoji")>]
+    Emoji: Emoji option
+    
+    [<JsonField("animation_type")>]
+    AnimationType: AnimationType option
+    
+    [<JsonField("animation_id")>]
+    AnimationId: int option
+
+    [<JsonField("sound_id", Transform = typeof<SoundboardSoundIdTransform>)>]
+    SoundId: SoundboardSoundId option
+
+    [<JsonField("sound_volume")>]
+    SoundVolume: double option
 }

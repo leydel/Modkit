@@ -1981,3 +1981,155 @@ type SessionStartLimit = {
     [<JsonField("max_concurrency")>]
     MaxConcurrency: int
 }
+
+type GatewayEvent = {
+    [<JsonField("op")>]
+    Opcode: GatewayOpcode
+    
+    [<JsonField("d")>]
+    Data: obj option
+    
+    [<JsonField("s")>]
+    Sequence: int option
+    
+    [<JsonField("t")>]
+    EventName: string option
+}
+
+type ConnectionProperties = {
+    [<JsonField("os")>]
+    OperatingSystem: string
+    
+    [<JsonField("browser")>]
+    Browser: string
+    
+    [<JsonField("device")>]
+    Device: string
+}
+with
+    static member build(
+        OperatingSystem: string
+    ) = {
+        OperatingSystem = OperatingSystem;
+        Browser = "Discordfs";
+        Device = "Discordfs";
+    }
+
+    static member build(
+        OperatingSystem: string,
+        Browser: string,
+        Device: string
+    ) = {
+        OperatingSystem = OperatingSystem;
+        Browser = Browser;
+        Device = Device;
+    }
+
+type ActivityTimestamps = {
+    [<JsonField("start")>]
+    Start: DateTime option
+    
+    [<JsonField("end")>]
+    End: DateTime option
+}
+
+type ActivityEmoji = {
+    [<JsonField("name")>]
+    Name: string
+    
+    [<JsonField("id")>]
+    Id: string option
+    
+    [<JsonField("animated")>]
+    Animated: bool option
+}
+
+type ActivityParty = {
+    [<JsonField("id")>]
+    Id: string option
+    
+    [<JsonField("size")>]
+    Size: (int * int) option
+}
+
+type ActivityAssets = {
+    [<JsonField("large_image")>]
+    LargeImage: string option
+    
+    [<JsonField("large_text")>]
+    LargeText: string option
+    
+    [<JsonField("small_image")>]
+    SmallImage: string option
+    
+    [<JsonField("small_text")>]
+    SmallText: string option
+}
+
+type ActivitySecrets = {
+    [<JsonField("join")>]
+    Join: string option
+    
+    [<JsonField("spectate")>]
+    Spectate: string option
+    
+    [<JsonField("match")>]
+    Match: string option
+}
+
+type ActivityButton = {
+    [<JsonField("label")>]
+    Label: string
+    
+    [<JsonField("url")>]
+    Url: string
+}
+
+type Activity = {
+    [<JsonField("name")>]
+    Name: string
+    
+    [<JsonField("type")>]
+    Type: ActivityType
+    
+    [<JsonField("url")>]
+    Url: string option
+    
+    [<JsonField("created_at")>]
+    CreatedAt: DateTime option
+    
+    [<JsonField("timestamps")>]
+    Timestamps: ActivityTimestamps option
+    
+    [<JsonField("application_id")>]
+    ApplicationId: string option
+    
+    [<JsonField("details")>]
+    Details: string option
+    
+    [<JsonField("state")>]
+    State: string option
+    
+    [<JsonField("emoji")>]
+    Emoji: ActivityEmoji option
+    
+    [<JsonField("party")>]
+    Party: ActivityParty option
+    
+    [<JsonField("assets")>]
+    Assets: ActivityAssets option
+    
+    [<JsonField("secrets")>]
+    Secrets: ActivitySecrets option
+    
+    [<JsonField("instance")>]
+    Instance: bool option
+    
+    [<JsonField("flags")>]
+    Flags: int option
+    
+    [<JsonField("buttons")>]
+    Buttons: ActivityButton list option
+}
+
+// TODO: Fix anywhere a unix timestamp is being used, as a transform needs to be applied to make DateTime not be an ISO8601 string

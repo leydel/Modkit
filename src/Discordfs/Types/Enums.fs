@@ -371,3 +371,129 @@ with
         match this with
         | GatewayCompression.ZLIBSTREAM -> "zlib-stream"
         | GatewayCompression.ZSTDSTREAM -> "zstd-stream"
+
+type GatewayOpcode =
+    | DISPATCH = 0
+    | HEARTBEAT = 1
+    | IDENTIFY = 2
+    | PRESENCE_UPDATE = 3
+    | VOICE_STATE_UPDATE = 4
+    | RESUME = 6
+    | RECONNECT = 7
+    | REQUEST_GUILD_MEMBERS = 8
+    | INVALID_SESSION = 9
+    | HELLO = 10
+    | HEARTBEAT_ACK = 11
+
+type GatewayCloseEventCode =
+    | UNKNOWN_ERROR = 4000
+    | UNKNOWN_OPCODE = 4001
+    | DECODE_ERROR = 4002
+    | NOT_AUTHORIZED = 4003
+    | AUTHENTICATION_FAILED = 4004
+    | ALREADY_AUTHENTICATED = 4005
+    | INVALID_SEQ = 4007
+    | RATE_LIMITED = 4008
+    | SESSION_TIMED_OUT = 4009
+    | INVALID_SHARD = 4010
+    | SHARDING_REQUIRED = 4011
+    | INVALID_API_VERSION = 4012
+    | INVALID_INTENTS = 4013
+    | DISALLOWED_INTENTS = 4014
+
+type GatewayIntent =
+    | GUILDS =                          0b00000000_00000000_00000000_00000001
+    | GUILD_MEMBERS =                   0b00000000_00000000_00000000_00000010
+    | GUILD_MODERATION =                0b00000000_00000000_00000000_00000100
+    | GUILD_EMOJIS_AND_STICKERS =       0b00000000_00000000_00000000_00001000
+    | GUILD_INTEGRATIONS =              0b00000000_00000000_00000000_00010000
+    | GUILD_WEBHOOKS =                  0b00000000_00000000_00000000_00100000
+    | GUILD_INVITES =                   0b00000000_00000000_00000000_01000000
+    | GUILD_VOICE_STATES =              0b00000000_00000000_00000000_10000000
+    | GUILD_PRESENCES =                 0b00000000_00000000_00000001_00000000
+    | GUILD_MESSAGES =                  0b00000000_00000000_00000010_00000000
+    | GUILD_MESSAGE_REACTIONS =         0b00000000_00000000_00000100_00000000
+    | GUILD_MESSAGE_TYPING =            0b00000000_00000000_00001000_00000000
+    | DIRECT_MESSAGES =                 0b00000000_00000000_00010000_00000000
+    | DIRECT_MESSAGE_REACTIONS =        0b00000000_00000000_00100000_00000000
+    | DIRECT_MESSAGE_TYPING =           0b00000000_00000000_01000000_00000000
+    | MESSAGE_CONTENT =                 0b00000000_00000000_10000000_00000000
+    | GUILD_SCHEDULED_EVENTS =          0b00000000_00000001_00000000_00000000
+    | AUTO_MODERATION_CONFIGURATION =   0b00000000_00010000_00000000_00000000
+    | AUTO_MODERATION_EXECUTION =       0b00000000_00100000_00000000_00000000
+    | GUILD_MESSAGE_POLLS =             0b00000001_00000000_00000000_00000000
+    | DIRECT_MESSAGE_POLLS =            0b00000010_00000000_00000000_00000000
+
+type StatusType =
+    | ONLINE
+    | DND
+    | IDLE
+    | INVISIBLE
+    | OFFLINE
+    
+type StatusTypeTransform () =
+    interface ITypeTransform with
+        member _.targetType () =
+            typeof<obj>
+
+        member _.toTargetType value =
+            match value :?> StatusType with
+            | StatusType.ONLINE -> "online"
+            | StatusType.DND -> "dnd"
+            | StatusType.IDLE -> "idle"
+            | StatusType.INVISIBLE -> "invisible"
+            | StatusType.OFFLINE -> "offline"
+
+        member _.fromTargetType value =
+            match value with
+            | v when v = "online" -> StatusType.ONLINE
+            | v when v = "dnd" -> StatusType.DND
+            | v when v = "idle" -> StatusType.IDLE
+            | v when v = "invisible" -> StatusType.INVISIBLE
+            | v when v = "offline" -> StatusType.OFFLINE
+            | _ -> failwith "Unexpected StatusType type"
+
+type ActivityType =
+    | PLAYING = 0
+    | STREAMING = 1
+    | LISTENING = 2
+    | WATCHING = 3
+    | CUSTOM = 4
+    | COMPETING = 5
+
+type ActivityFlag =
+    | INSTANCE =                    0b00000000_00000001
+    | JOIN =                        0b00000000_00000010
+    | SPECTATE =                    0b00000000_00000100
+    | JOIN_REQUEST =                0b00000000_00001000
+    | SYNC =                        0b00000000_00010000
+    | PLAY =                        0b00000000_00100000
+    | PARTY_PRIVACY_FRIENDS =       0b00000000_01000000
+    | PARTY_PRIVACY_VOICE_CHANNEL = 0b00000000_10000000
+    | EMBEDDED =                    0b00000001_00000000
+
+type AnimationType =
+    | PREMIUM = 0
+    | BAISC = 1
+
+type SoundboardSoundId =
+    | String of string
+    | Int of int
+
+type SoundboardSoundIdTransform () =
+    interface ITypeTransform with
+        member _.targetType () =
+            typeof<obj>
+
+        member _.toTargetType value =
+            match value :?> SoundboardSoundId with
+            | SoundboardSoundId.String v -> v
+            | SoundboardSoundId.Int v -> v
+
+        member _.fromTargetType value =
+            match value with
+            | :? string as v -> SoundboardSoundId.String v
+            | :? int as v -> SoundboardSoundId.Int v
+            | _ -> failwith "Unexpected SoundboardSoundId type"
+
+// TODO: Fix enums that aren't using proper transforms

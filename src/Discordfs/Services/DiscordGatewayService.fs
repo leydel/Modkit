@@ -16,13 +16,45 @@ type IDiscordGatewayService =
         unit ->
         Task<Result<unit, string>>
 
-    // TODO: Define possible events here, like how done in DiscordHttpService
+    abstract member Identify:
+        Identify ->
+        Task<unit>
+
+    abstract member Resume:
+        Resume ->
+        Task<unit>
+
+    abstract member Heartbeat:
+        Heartbeat ->
+        Task<unit>
+
+    abstract member RequestGuildMembers:
+        RequestGuildMembers ->
+        Task<unit>
+
+    abstract member UpdateVoiceState:
+        UpdateVoiceState ->
+        Task<unit>
+
+    abstract member UpdatePresence:
+        UpdatePresence ->
+        Task<unit>
 
 type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
     member val private _ws: ClientWebSocket option = None with get, set
 
+    member _.lifecycle (message: string) = task {
+        // TODO: Check if message is lifecycle event, if so handle here and return true, otherwise return false
+
+        // hello, heartbeat, ready
+
+        // TODO: Handle gateway disconnect and resuming
+
+        return false
+    }
+
     member this.Send (message: string) = task {
-        // TODO: Correctly handle sending events (https://discord.com/developers/docs/topics/gateway#sending-events)
+        // TODO: Change payload from message to gateway payload object
 
         let cts = new CancellationTokenSource ()
         cts.CancelAfter(TimeSpan.FromSeconds 5)
@@ -70,7 +102,12 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
 
                     match res.MessageType with
                     | WebSocketMessageType.Text ->
-                        do! handler (Encoding.UTF8.GetString(buffer, 0, res.Count))
+                        let message = Encoding.UTF8.GetString(buffer, 0, res.Count)
+                        let! handledByLifecycle = this.lifecycle message
+
+                        if not handledByLifecycle then
+                            do! handler message
+
                         return! loop buffer
                     | WebSocketMessageType.Close ->
                         return Ok ()
@@ -93,4 +130,20 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
                 return Ok ()
         }
 
-        // TODO: Handle lifecycle (https://discord.com/developers/docs/topics/gateway#connection-lifecycle)
+        member this.Identify payload =
+            Task.FromResult () // TODO
+            
+        member this.Resume payload =
+            Task.FromResult () // TODO
+
+        member this.Heartbeat payload =
+            Task.FromResult () // TODO
+
+        member this.RequestGuildMembers payload =
+            Task.FromResult () // TODO
+
+        member this.UpdateVoiceState payload =
+            Task.FromResult () // TODO
+
+        member this.UpdatePresence payload =
+            Task.FromResult () // TODO
