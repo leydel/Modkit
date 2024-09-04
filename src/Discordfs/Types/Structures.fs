@@ -2026,10 +2026,10 @@ with
     }
 
 type ActivityTimestamps = {
-    [<JsonField("start")>]
+    [<JsonField("start", Transform = typeof<Transforms.DateTimeEpoch>)>]
     Start: DateTime option
     
-    [<JsonField("end")>]
+    [<JsonField("end", Transform = typeof<Transforms.DateTimeEpoch>)>]
     End: DateTime option
 }
 
@@ -2095,7 +2095,7 @@ type Activity = {
     [<JsonField("url")>]
     Url: string option
     
-    [<JsonField("created_at")>]
+    [<JsonField("created_at", Transform = typeof<Transforms.DateTimeEpoch>)>]
     CreatedAt: DateTime option
     
     [<JsonField("timestamps")>]
@@ -2131,5 +2131,3 @@ type Activity = {
     [<JsonField("buttons")>]
     Buttons: ActivityButton list option
 }
-
-// TODO: Fix anywhere a unix timestamp is being used, as a transform needs to be applied to make DateTime not be an ISO8601 string

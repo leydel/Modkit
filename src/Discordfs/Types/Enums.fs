@@ -236,13 +236,13 @@ type InteractionCallbackType =
     | LAUNCH_ACTIVITY = 12
 
 type InviteType =
-    | GUILD
-    | GROUP_DM
-    | FRIEND
+    | GUILD = 0
+    | GROUP_DM = 1
+    | FRIEND = 2
 
 type InviteTargetType =
-    | STREAM
-    | EMBEDDED_APPLICATION
+    | STREAM = 1
+    | EMBEDDED_APPLICATION = 2
 
 type MessageNonce =
     | Number of int
@@ -363,6 +363,22 @@ with
         | GatewayEncoding.JSON -> "json"
         | GatewayEncoding.ETF -> "etf"
 
+type GatewayEncodingTransform () =
+    interface ITypeTransform with
+        member _.targetType () =
+            typeof<obj>
+
+        member _.toTargetType value =
+            match value :?> GatewayEncoding with
+            | GatewayEncoding.JSON -> "json"
+            | GatewayEncoding.ETF -> "etf"
+
+        member _.fromTargetType value =
+            match value with
+            | v when v = "json" -> GatewayEncoding.JSON
+            | v when v = "etf" -> GatewayEncoding.ETF
+            | _ -> failwith "Unexpected GatewayEncoding type"
+
 type GatewayCompression =
     | ZLIBSTREAM
     | ZSTDSTREAM
@@ -371,6 +387,22 @@ with
         match this with
         | GatewayCompression.ZLIBSTREAM -> "zlib-stream"
         | GatewayCompression.ZSTDSTREAM -> "zstd-stream"
+
+type GatewayCompressionTransform () =
+    interface ITypeTransform with
+        member _.targetType () =
+            typeof<obj>
+
+        member _.toTargetType value =
+            match value :?> GatewayCompression with
+            | GatewayCompression.ZLIBSTREAM -> "zlib-stream"
+            | GatewayCompression.ZSTDSTREAM -> "zstd-stream"
+
+        member _.fromTargetType value =
+            match value with
+            | v when v = "zlib-stream" -> GatewayCompression.ZLIBSTREAM
+            | v when v = "zstd-stream" -> GatewayCompression.ZSTDSTREAM
+            | _ -> failwith "Unexpected GatewayCompression type"
 
 type GatewayOpcode =
     | DISPATCH = 0
@@ -495,5 +527,3 @@ type SoundboardSoundIdTransform () =
             | :? string as v -> SoundboardSoundId.String v
             | :? int as v -> SoundboardSoundId.Int v
             | _ -> failwith "Unexpected SoundboardSoundId type"
-
-// TODO: Fix enums that aren't using proper transforms
