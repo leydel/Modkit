@@ -1,11 +1,9 @@
 ﻿namespace Modkit.Discordfs.Services
 
-open FSharp.Json
+open Modkit.Discordfs.Common
 open Modkit.Discordfs.Types
-open System
 open System.Net.Http
 open System.Threading.Tasks
-open System.Web
 
 type IDiscordHttpService =
     abstract member CreateGlobalApplicationCommand:
@@ -46,31 +44,31 @@ type IDiscordHttpService =
         Task<unit>
 
     abstract member CreateFollowUpMessage:
-        threadId: string option ->
         id: string ->
         token: string ->
+        threadId: string option ->
         payload: ExecuteWebhook ->
         Task<Message>
 
     abstract member GetFollowUpMessage:
-        messageId: string ->
-        threadId: string option ->
         id: string ->
         token: string ->
+        messageId: string ->
+        threadId: string option ->
         Task<Message>
 
     abstract member EditFollowUpMessage:
-        messageId: string ->
-        threadId: string option ->
         id: string ->
         token: string ->
+        messageId: string ->
+        threadId: string option ->
         payload: EditWebhookMessage ->
         Task<Message>
 
     abstract member DeleteFollowUpMessage:
-        messageId: string ->
         id: string ->
         token: string ->
+        messageId: string ->
         Task<unit>
 
     abstract member GetGateway:
@@ -86,23 +84,23 @@ type IDiscordHttpService =
         Task<GetGatewayBot>
 
     abstract member GetApplicationRoleConnectionMetadataRecords:
-        id: string ->
+        applicationId: string ->
         Task<ApplicationRoleConnectionMetadata list>
         
     // TODO: Double check the payload type for this
     abstract member UpdateApplicationRoleConnectionMetadataRecords:
-        id: string ->
+        applicationId: string ->
         payload: ApplicationRoleConnectionMetadata list ->
         Task<ApplicationRoleConnectionMetadata list>
         
     abstract member GetCurrentUserApplicationRoleConnection:
-        id: string ->
+        applicationId: string ->
         oauth2AccessToken: string ->
         Task<ApplicationRoleConnection>
 
     // TODO: Double check the payload type for this
     abstract member UpdateCurrentUserApplicationRoleConnection:
-        id: string ->
+        applicationId: string ->
         oauth2AccessToken: string ->
         payload: ApplicationRoleConnection ->
         Task<ApplicationRoleConnection>
@@ -111,174 +109,173 @@ type IDiscordHttpService =
 type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
     static member DISCORD_API_URL = "https://discord.com/api/"
 
-    member _.request<'T> (method: HttpMethod) (endpoint: string) =
-        new HttpRequestMessage(method, DiscordHttpService.DISCORD_API_URL + endpoint)
-
-    member _.query (key: string) (value: string) (req: HttpRequestMessage) =
-        let uriBuilder = UriBuilder(req.RequestUri)
-        let query = HttpUtility.ParseQueryString(uriBuilder.Query)
-        query.Add(key, value)
-        uriBuilder.Query <- query.ToString()
-        req.RequestUri <- uriBuilder.Uri
-        req
-
-    member _.body (payload: 'a) (req: HttpRequestMessage) =
-        req.Content <- new StringContent (Json.serializeU payload)
-        req
-
-    member _.header (key: string) (value: string) (req: HttpRequestMessage) =
-        req.Headers.Add(key, value)
-        req
-
-    member this.botAuthorization (req: HttpRequestMessage) =
-        this.header "Authorization" $"Bearer {token}" req
-
-    member this.oauthAuthorization (token: string) (req: HttpRequestMessage) =
-        this.header "Authorization" $"Bearer {token}" req
-
-    member _.result (req: HttpRequestMessage) = task {
-        let! res = httpClientFactory.CreateClient().SendAsync req
-        let! body = res.Content.ReadAsStringAsync()
-        return Json.deserialize<'a> body
-    }
-
-    member _.unit (req: HttpRequestMessage) = task {
-        do! httpClientFactory.CreateClient().SendAsync req :> Task
-    }
-
-    interface IDiscordHttpService with 
-        member this.CreateGlobalApplicationCommand applicationId payload =
-            this.request
+    interface IDiscordHttpService with
+        member _.CreateGlobalApplicationCommand applicationId payload =
+            Req.create
                 HttpMethod.Post
+                DiscordHttpService.DISCORD_API_URL
                 $"applications/{applicationId}/commands"
-            |> this.botAuthorization
-            |> this.body payload
-            |> this.result
+            |> Req.bot token
+            |> Req.body payload
+            |> Req.send httpClientFactory
+            |> Res.body
 
-        member this.BulkOverwriteGlobalApplicationCommands applicationId payload =
-            this.request
+        member _.BulkOverwriteGlobalApplicationCommands applicationId payload =
+            Req.create
                 HttpMethod.Patch
+                DiscordHttpService.DISCORD_API_URL
                 $"applications/{applicationId}/commands"
-            |> this.botAuthorization
-            |> this.body payload
-            |> this.result
+            |> Req.bot token
+            |> Req.body payload
+            |> Req.send httpClientFactory
+            |> Res.body
 
-        member this.CreateChannelInvite channelId payload =
-            this.request
+        member _.CreateChannelInvite channelId payload =
+            Req.create
                 HttpMethod.Post
+                DiscordHttpService.DISCORD_API_URL
                 $"channels/{channelId}/invites"
-            |> this.botAuthorization
-            |> this.body payload
-            |> this.result
+            |> Req.bot token
+            |> Req.body payload
+            |> Req.send httpClientFactory
+            |> Res.body
 
-        member this.CreateInteractionResponse id token payload =
-            this.request
+        member _.CreateInteractionResponse id token payload =
+            Req.create
                 HttpMethod.Post
+                DiscordHttpService.DISCORD_API_URL
                 $"interactions/{id}/{token}/callback"
-            |> this.botAuthorization
-            |> this.body payload
-            |> this.unit
+            |> Req.bot token
+            |> Req.body payload
+            |> Req.send httpClientFactory
+            |> Res.ignore
 
-        member this.GetOriginalInteractionResponse id token =
-            this.request
+        member _.GetOriginalInteractionResponse id token =
+            Req.create
                 HttpMethod.Get
+                DiscordHttpService.DISCORD_API_URL
                 $"webhooks/{id}/{token}/messages/@original"
-            |> this.botAuthorization
-            |> this.result
+            |> Req.bot token
+            |> Req.send httpClientFactory
+            |> Res.body
 
-        member this.EditOriginalInteractionResponse id token payload =
-            this.request
+        member _.EditOriginalInteractionResponse id token payload =
+            Req.create
                 HttpMethod.Patch
+                DiscordHttpService.DISCORD_API_URL
                 $"webhooks/{id}/{token}/messages/@original"
-            |> this.botAuthorization
-            |> this.body payload
-            |> this.result
+            |> Req.bot token
+            |> Req.body payload
+            |> Req.send httpClientFactory
+            |> Res.body
 
-        member this.DeleteOriginalInteractionResponse id token =
-            this.request
+        member _.DeleteOriginalInteractionResponse id token =
+            Req.create
                 HttpMethod.Delete
+                DiscordHttpService.DISCORD_API_URL
                 $"webhooks/{id}/{token}/messages/@original"
-            |> this.botAuthorization
-            |> this.unit
+            |> Req.bot token
+            |> Req.send httpClientFactory
+            |> Res.ignore
 
-        member this.CreateFollowUpMessage threadId id token payload =
-            this.request
+        member _.CreateFollowUpMessage id token threadId payload =
+            Req.create
                 HttpMethod.Post
+                DiscordHttpService.DISCORD_API_URL
                 $"webhooks/{id}/{token}"
-            |> this.botAuthorization
-            |> Option.foldBack (this.query "thread_id") threadId
-            |> this.body payload
-            |> this.result
+            |> Req.bot token
+            |> Req.queryOpt "thread_id" threadId
+            |> Req.body payload
+            |> Req.send httpClientFactory
+            |> Res.body
 
-        member this.GetFollowUpMessage messageId threadId id token =
-            this.request
+        member _.GetFollowUpMessage id token messageId threadId =
+            Req.create
                 HttpMethod.Get
+                DiscordHttpService.DISCORD_API_URL
                 $"webhooks/{id}/{token}/messages/{messageId}"
-            |> this.botAuthorization
-            |> Option.foldBack (this.query "thread_id") threadId
-            |> this.result
+            |> Req.bot token
+            |> Req.queryOpt "thread_id" threadId
+            |> Req.send httpClientFactory
+            |> Res.body
 
-        member this.EditFollowUpMessage messageId threadId id token payload =
-            this.request
+        member _.EditFollowUpMessage id token messageId threadId payload =
+            Req.create
                 HttpMethod.Patch
+                DiscordHttpService.DISCORD_API_URL
                 $"webhooks/{id}/{token}/messages/{messageId}"
-            |> this.botAuthorization
-            |> Option.foldBack (this.query "thread_id") threadId
-            |> this.body payload
-            |> this.result
+            |> Req.bot token
+            |> Req.queryOpt "thread_id" threadId
+            |> Req.body payload
+            |> Req.send httpClientFactory
+            |> Res.body
 
-        member this.DeleteFollowUpMessage messageId id token =
-            this.request
+        member _.DeleteFollowUpMessage id token messageId =
+            Req.create
                 HttpMethod.Delete
+                DiscordHttpService.DISCORD_API_URL
                 $"webhooks/{id}/{token}/messages/{messageId}"
-            |> this.botAuthorization
-            |> this.unit
+            |> Req.bot token
+            |> Req.send httpClientFactory
+            |> Res.ignore
 
-        member this.GetGateway version encoding compression =
-            this.request
+        member _.GetGateway version encoding compression =
+            Req.create
                 HttpMethod.Get
+                DiscordHttpService.DISCORD_API_URL
                 $"gateway"
-            |> this.query "v" version
-            |> this.query "encoding" (encoding.ToString())
-            |> Option.foldBack (this.query "compress") (Option.map _.ToString() compression)
-            |> this.result
+            |> Req.query "v" version
+            |> Req.query "encoding" (encoding.ToString())
+            |> Req.queryOpt "compress" (Option.map _.ToString() compression)
+            |> Req.send httpClientFactory
+            |> Res.body
 
-        member this.GetGatewayBot version encoding compression =
-            this.request
+        member _.GetGatewayBot version encoding compression =
+            Req.create
                 HttpMethod.Get
+                DiscordHttpService.DISCORD_API_URL
                 $"gateway/bot"
-            |> this.botAuthorization
-            |> this.query "v" version
-            |> this.query "encoding" (encoding.ToString())
-            |> Option.foldBack (this.query "compress") (Option.map _.ToString() compression)
-            |> this.result
+            |> Req.bot token
+            |> Req.query "v" version
+            |> Req.query "encoding" (encoding.ToString())
+            |> Req.queryOpt "compress" (Option.map _.ToString() compression)
+            |> Req.send httpClientFactory
+            |> Res.body
 
-        member this.GetApplicationRoleConnectionMetadataRecords id =
-            this.request
+        member _.GetApplicationRoleConnectionMetadataRecords applicationId =
+            Req.create
                 HttpMethod.Get
-                $"/applications/{id}/role-connections/metadata"
-            |> this.botAuthorization
-            |> this.result
+                DiscordHttpService.DISCORD_API_URL
+                $"/applications/{applicationId}/role-connections/metadata"
+            |> Req.bot token
+            |> Req.send httpClientFactory
+            |> Res.body
 
-        member this.UpdateApplicationRoleConnectionMetadataRecords id payload =
-            this.request
+        member _.UpdateApplicationRoleConnectionMetadataRecords applicationId payload =
+            Req.create
                 HttpMethod.Put
-                $"/applications/{id}/role-connections/metadata"
-            |> this.botAuthorization
-            |> this.body payload
-            |> this.result
+                DiscordHttpService.DISCORD_API_URL
+                $"/applications/{applicationId}/role-connections/metadata"
+            |> Req.bot token
+            |> Req.body payload
+            |> Req.send httpClientFactory
+            |> Res.body
 
-        member this.GetCurrentUserApplicationRoleConnection id token =
-            this.request
+        member _.GetCurrentUserApplicationRoleConnection applicationId token =
+            Req.create
                 HttpMethod.Get
-                $"/users/@me/applications/{id}/role-connection"
-            |> this.oauthAuthorization token
-            |> this.result
+                DiscordHttpService.DISCORD_API_URL
+                $"/users/@me/applications/{applicationId}/role-connection"
+            |> Req.oauth token
+            |> Req.send httpClientFactory
+            |> Res.body
 
-        member this.UpdateCurrentUserApplicationRoleConnection id token payload =
-            this.request
-                HttpMethod.Get
-                $"/users/@me/applications/{id}/role-connection"
-            |> this.oauthAuthorization token
-            |> this.body payload
-            |> this.result
+        member _.UpdateCurrentUserApplicationRoleConnection applicationId token payload =
+            Req.create
+                HttpMethod.Put
+                DiscordHttpService.DISCORD_API_URL
+                $"/users/@me/applications/{applicationId}/role-connection"
+            |> Req.oauth token
+            |> Req.body payload
+            |> Req.send httpClientFactory
+            |> Res.body

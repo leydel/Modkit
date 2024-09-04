@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Common\Req.fs" />
+    <Compile Include="Common\Res.fs" />
     <Compile Include="Types\Enums.fs" />
     <Compile Include="Types\Structures.fs" />
     <Compile Include="Types\DTOs.fs" />
