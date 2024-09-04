@@ -130,6 +130,9 @@ type RoleTags = {
 
 // TODO: Figure out how to transform above `unit option` types to `bool` where null = true & undefined = false
 
+// You'd need to do some testing but you can probably rely on default bool being false and fromTargetType never being called. If it is called you just return true and ignore the value
+// https://discord.com/channels/196693847965696000/1279795576569069714/1279974826458484816
+
 type Role = {
     [<JsonField("id")>]
     Id: string

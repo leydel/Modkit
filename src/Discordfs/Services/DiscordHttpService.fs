@@ -116,8 +116,7 @@ type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
     }
 
     member _.unit (req: HttpRequestMessage) = task {
-        let! _ = httpClientFactory.CreateClient().SendAsync req
-        return ()
+        do! httpClientFactory.CreateClient().SendAsync req :> Task
     }
 
     interface IDiscordHttpService with 

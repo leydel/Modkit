@@ -145,9 +145,8 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
                 Opcode = GatewayOpcode.IDENTIFY,
                 Data = payload
             ))
-
-            let! _ = this.Send message
-            return ()
+            
+            do! this.Send message :> Task
         }
             
         member this.Resume payload = task {
@@ -155,9 +154,8 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
                 Opcode = GatewayOpcode.RESUME,
                 Data = payload
             ))
-
-            let! _ = this.Send message
-            return ()
+            
+            do! this.Send message :> Task
         }
 
         member this.Heartbeat payload = task {
@@ -165,9 +163,8 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
                 Opcode = GatewayOpcode.HEARTBEAT,
                 Data = payload
             ))
-
-            let! _ = this.Send message
-            return ()
+            
+            do! this.Send message :> Task
         }
 
         member this.RequestGuildMembers payload = task {
@@ -175,9 +172,8 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
                 Opcode = GatewayOpcode.REQUEST_GUILD_MEMBERS,
                 Data = payload
             ))
-
-            let! _ = this.Send message
-            return ()
+            
+            do! this.Send message :> Task
         }
 
         member this.UpdateVoiceState payload = task {
@@ -185,9 +181,8 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
                 Opcode = GatewayOpcode.VOICE_STATE_UPDATE,
                 Data = payload
             ))
-
-            let! _ = this.Send message
-            return ()
+            
+            do! this.Send message :> Task
         }
 
         member this.UpdatePresence payload = task {
@@ -196,6 +191,5 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
                 Data = payload
             ))
 
-            let! _ = this.Send message
-            return ()
+            do! this.Send message :> Task
         }
