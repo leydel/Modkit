@@ -89,25 +89,26 @@ type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
     static member DISCORD_API_URL = "https://discord.com/api/"
 
     member _.request<'T> (method: HttpMethod) (endpoint: string) =
-        let req = new HttpRequestMessage(method, DiscordHttpService.DISCORD_API_URL + endpoint)
-        req.Headers.Clear()
-        req.Headers.Add("Authorization", $"Bearer {token}")
-        req
+        new HttpRequestMessage(method, DiscordHttpService.DISCORD_API_URL + endpoint)
 
-    member _.query (key: string) (value: string option) (req: HttpRequestMessage) =
-        if (value.IsNone) then
-            req
-        else
-            let uriBuilder = UriBuilder(req.RequestUri)
-            let query = HttpUtility.ParseQueryString(uriBuilder.Query)
-            query.Add(key, value.Value)
-            uriBuilder.Query <- query.ToString()
-            req.RequestUri <- uriBuilder.Uri
-            req
+    member _.query (key: string) (value: string) (req: HttpRequestMessage) =
+        let uriBuilder = UriBuilder(req.RequestUri)
+        let query = HttpUtility.ParseQueryString(uriBuilder.Query)
+        query.Add(key, value)
+        uriBuilder.Query <- query.ToString()
+        req.RequestUri <- uriBuilder.Uri
+        req
 
     member _.body (payload: 'a) (req: HttpRequestMessage) =
         req.Content <- new StringContent (Json.serializeU payload)
         req
+
+    member _.header (key: string) (value: string) (req: HttpRequestMessage) =
+        req.Headers.Add(key, value)
+        req
+
+    member this.botAuthorization (req: HttpRequestMessage) =
+        this.header "Authorization" $"Bearer {token}" req
 
     member _.result (req: HttpRequestMessage) = task {
         let! res = httpClientFactory.CreateClient().SendAsync req
@@ -124,6 +125,7 @@ type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
             this.request
                 HttpMethod.Post
                 $"applications/{applicationId}/commands"
+            |> this.botAuthorization
             |> this.body payload
             |> this.result
 
@@ -131,6 +133,7 @@ type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
             this.request
                 HttpMethod.Patch
                 $"applications/{applicationId}/commands"
+            |> this.botAuthorization
             |> this.body payload
             |> this.result
 
@@ -138,6 +141,7 @@ type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
             this.request
                 HttpMethod.Post
                 $"channels/{channelId}/invites"
+            |> this.botAuthorization
             |> this.body payload
             |> this.result
 
@@ -145,6 +149,7 @@ type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
             this.request
                 HttpMethod.Post
                 $"interactions/{id}/{token}/callback"
+            |> this.botAuthorization
             |> this.body payload
             |> this.unit
 
@@ -152,12 +157,14 @@ type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
             this.request
                 HttpMethod.Get
                 $"webhooks/{id}/{token}/messages/@original"
+            |> this.botAuthorization
             |> this.result
 
         member this.EditOriginalInteractionResponse id token payload =
             this.request
                 HttpMethod.Patch
                 $"webhooks/{id}/{token}/messages/@original"
+            |> this.botAuthorization
             |> this.body payload
             |> this.result
 
@@ -165,13 +172,15 @@ type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
             this.request
                 HttpMethod.Delete
                 $"webhooks/{id}/{token}/messages/@original"
+            |> this.botAuthorization
             |> this.unit
 
         member this.CreateFollowUpMessage threadId id token payload =
             this.request
                 HttpMethod.Post
                 $"webhooks/{id}/{token}"
-            |> this.query "thread_id" threadId
+            |> this.botAuthorization
+            |> Option.foldBack (this.query "thread_id") threadId
             |> this.body payload
             |> this.result
 
@@ -179,14 +188,16 @@ type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
             this.request
                 HttpMethod.Get
                 $"webhooks/{id}/{token}/messages/{messageId}"
-            |> this.query "thread_id" threadId
+            |> this.botAuthorization
+            |> Option.foldBack (this.query "thread_id") threadId
             |> this.result
 
         member this.EditFollowUpMessage messageId threadId id token payload =
             this.request
                 HttpMethod.Patch
                 $"webhooks/{id}/{token}/messages/{messageId}"
-            |> this.query "thread_id" threadId
+            |> this.botAuthorization
+            |> Option.foldBack (this.query "thread_id") threadId
             |> this.body payload
             |> this.result
 
@@ -194,22 +205,24 @@ type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
             this.request
                 HttpMethod.Delete
                 $"webhooks/{id}/{token}/messages/{messageId}"
+            |> this.botAuthorization
             |> this.unit
 
         member this.GetGateway version encoding compression =
             this.request
                 HttpMethod.Get
                 $"gateway"
-            |> this.query "v" (Some version)
-            |> this.query "encoding" (Some (encoding.ToString()))
-            |> this.query "compress" (match compression with | Some c -> Some (c.ToString()) | None -> None)
+            |> this.query "v" version
+            |> this.query "encoding" (encoding.ToString())
+            |> Option.foldBack (this.query "compress") (Option.map _.ToString() compression)
             |> this.result
 
         member this.GetGatewayBot version encoding compression =
             this.request
                 HttpMethod.Get
                 $"gateway/bot"
-            |> this.query "v" (Some version)
-            |> this.query "encoding" (Some (encoding.ToString()))
-            |> this.query "compress" (match compression with | Some c -> Some (c.ToString()) | None -> None)
+            |> this.botAuthorization
+            |> this.query "v" version
+            |> this.query "encoding" (encoding.ToString())
+            |> Option.foldBack (this.query "compress") (Option.map _.ToString() compression)
             |> this.result
