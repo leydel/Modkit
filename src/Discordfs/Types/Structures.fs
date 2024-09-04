@@ -1995,6 +1995,18 @@ type GatewayEvent = {
     [<JsonField("t")>]
     EventName: string option
 }
+with
+    static member build(
+        Opcode: GatewayOpcode,
+        Data: obj option,
+        Sequence: int option,
+        EventName: string option
+    ) = {
+        Opcode = Opcode;
+        Data = Data;
+        Sequence = Sequence;
+        EventName = EventName;
+    }
 
 type ConnectionProperties = {
     [<JsonField("os")>]
