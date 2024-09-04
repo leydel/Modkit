@@ -1998,9 +1998,9 @@ type GatewayEvent = {
 with
     static member build(
         Opcode: GatewayOpcode,
-        Data: obj option,
-        Sequence: int option,
-        EventName: string option
+        ?Data: obj,
+        ?Sequence: int,
+        ?EventName: string
     ) = {
         Opcode = Opcode;
         Data = Data;

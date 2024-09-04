@@ -140,20 +140,62 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
                 return Ok ()
         }
 
-        member this.Identify payload =
-            Task.FromResult () // TODO
+        member this.Identify payload = task {
+            let message = (GatewayEvent.build(
+                Opcode = GatewayOpcode.IDENTIFY,
+                Data = payload
+            ))
+
+            let! _ = this.Send message
+            return ()
+        }
             
-        member this.Resume payload =
-            Task.FromResult () // TODO
+        member this.Resume payload = task {
+            let message = (GatewayEvent.build(
+                Opcode = GatewayOpcode.RESUME,
+                Data = payload
+            ))
 
-        member this.Heartbeat payload =
-            Task.FromResult () // TODO
+            let! _ = this.Send message
+            return ()
+        }
 
-        member this.RequestGuildMembers payload =
-            Task.FromResult () // TODO
+        member this.Heartbeat payload = task {
+            let message = (GatewayEvent.build(
+                Opcode = GatewayOpcode.HEARTBEAT,
+                Data = payload
+            ))
 
-        member this.UpdateVoiceState payload =
-            Task.FromResult () // TODO
+            let! _ = this.Send message
+            return ()
+        }
 
-        member this.UpdatePresence payload =
-            Task.FromResult () // TODO
+        member this.RequestGuildMembers payload = task {
+            let message = (GatewayEvent.build(
+                Opcode = GatewayOpcode.REQUEST_GUILD_MEMBERS,
+                Data = payload
+            ))
+
+            let! _ = this.Send message
+            return ()
+        }
+
+        member this.UpdateVoiceState payload = task {
+            let message = (GatewayEvent.build(
+                Opcode = GatewayOpcode.VOICE_STATE_UPDATE,
+                Data = payload
+            ))
+
+            let! _ = this.Send message
+            return ()
+        }
+
+        member this.UpdatePresence payload = task {
+            let message = (GatewayEvent.build(
+                Opcode = GatewayOpcode.PRESENCE_UPDATE,
+                Data = payload
+            ))
+
+            let! _ = this.Send message
+            return ()
+        }
