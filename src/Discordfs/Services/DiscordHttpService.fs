@@ -85,6 +85,29 @@ type IDiscordHttpService =
         compression: GatewayCompression option ->
         Task<GetGatewayBot>
 
+    abstract member GetApplicationRoleConnectionMetadataRecords:
+        id: string ->
+        Task<ApplicationRoleConnectionMetadata list>
+        
+    // TODO: Double check the payload type for this
+    abstract member UpdateApplicationRoleConnectionMetadataRecords:
+        id: string ->
+        payload: ApplicationRoleConnectionMetadata list ->
+        Task<ApplicationRoleConnectionMetadata list>
+        
+    abstract member GetCurrentUserApplicationRoleConnection:
+        id: string ->
+        oauth2AccessToken: string ->
+        Task<ApplicationRoleConnection>
+
+    // TODO: Double check the payload type for this
+    abstract member UpdateCurrentUserApplicationRoleConnection:
+        id: string ->
+        oauth2AccessToken: string ->
+        payload: ApplicationRoleConnection ->
+        Task<ApplicationRoleConnection>
+
+
 type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
     static member DISCORD_API_URL = "https://discord.com/api/"
 
@@ -108,6 +131,9 @@ type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
         req
 
     member this.botAuthorization (req: HttpRequestMessage) =
+        this.header "Authorization" $"Bearer {token}" req
+
+    member this.oauthAuthorization (token: string) (req: HttpRequestMessage) =
         this.header "Authorization" $"Bearer {token}" req
 
     member _.result (req: HttpRequestMessage) = task {
@@ -225,4 +251,34 @@ type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
             |> this.query "v" version
             |> this.query "encoding" (encoding.ToString())
             |> Option.foldBack (this.query "compress") (Option.map _.ToString() compression)
+            |> this.result
+
+        member this.GetApplicationRoleConnectionMetadataRecords id =
+            this.request
+                HttpMethod.Get
+                $"/applications/{id}/role-connections/metadata"
+            |> this.botAuthorization
+            |> this.result
+
+        member this.UpdateApplicationRoleConnectionMetadataRecords id payload =
+            this.request
+                HttpMethod.Put
+                $"/applications/{id}/role-connections/metadata"
+            |> this.botAuthorization
+            |> this.body payload
+            |> this.result
+
+        member this.GetCurrentUserApplicationRoleConnection id token =
+            this.request
+                HttpMethod.Get
+                $"/users/@me/applications/{id}/role-connection"
+            |> this.oauthAuthorization token
+            |> this.result
+
+        member this.UpdateCurrentUserApplicationRoleConnection id token payload =
+            this.request
+                HttpMethod.Get
+                $"/users/@me/applications/{id}/role-connection"
+            |> this.oauthAuthorization token
+            |> this.body payload
             |> this.result

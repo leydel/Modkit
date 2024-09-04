@@ -2146,3 +2146,34 @@ type Activity = {
     [<JsonField("buttons")>]
     Buttons: ActivityButton list option
 }
+
+type ApplicationRoleConnectionMetadata = {
+    [<JsonField("type")>]
+    Type: ApplicationRoleConnectionMetadataType
+    
+    [<JsonField("key")>]
+    Key: string
+    
+    [<JsonField("name")>]
+    Name: string
+    
+    [<JsonField("name_localizations")>]
+    NameLocalizations: Dictionary<string, string> option
+    
+    [<JsonField("description")>]
+    Description: string
+    
+    [<JsonField("description_localizations")>]
+    DescriptionLocalizations: Dictionary<string, string> option
+}
+
+type ApplicationRoleConnection = {
+    [<JsonField("platform_name")>]
+    PlatformName: string option
+    
+    [<JsonField("platform_username")>]
+    PlatformUsername: string option
+    
+    [<JsonField("metadata")>]
+    Metadata: ApplicationRoleConnectionMetadata
+}
