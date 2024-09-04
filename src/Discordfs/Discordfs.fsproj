@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Common\Constants.fs" />
     <Compile Include="Common\Req.fs" />
     <Compile Include="Common\Res.fs" />
     <Compile Include="Types\Enums.fs" />
@@ -14,8 +15,13 @@
     <Compile Include="Types\DTOs.fs" />
     <Compile Include="Commands\Command.fs" />
     <Compile Include="Commands\Options.fs" />
+    <Compile Include="Services\DiscordHttpService\DiscordHttpApplicationCommandActions.fs" />
+    <Compile Include="Services\DiscordHttpService\DiscordHttpChannelActions.fs" />
+    <Compile Include="Services\DiscordHttpService\DiscordHttpInteractionActions.fs" />
+    <Compile Include="Services\DiscordHttpService\DiscordHttpGatewayActions.fs" />
+    <Compile Include="Services\DiscordHttpService\DiscordHttpRoleConnectionActions.fs" />
+    <Compile Include="Services\DiscordHttpService\DiscordHttpService.fs" />
     <Compile Include="Services\Ed25519SigningService.fs" />
-    <Compile Include="Services\DiscordHttpService.fs" />
     <Compile Include="Services\DiscordGatewayService.fs" />
     <Compile Include="Services\CommandService.fs" />
   </ItemGroup>
