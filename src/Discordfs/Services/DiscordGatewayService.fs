@@ -9,12 +9,12 @@ open System.Threading.Tasks
 
 type IDiscordGatewayService =
     abstract member Connect:
-        unit ->
-        Task<unit>
+        (string -> Task<unit>) ->
+        Task<Result<unit, string>>
 
     abstract member Disconnect:
         unit ->
-        Task<unit>
+        Task<Result<unit, string>>
 
     // TODO: Define possible events here, like how done in DiscordHttpService
 
@@ -38,15 +38,23 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
                 let segment = ArraySegment(buffer, offset, count)
                 let isEndOfMessage = offset + count >= buffer.Length
 
-                do! ws.SendAsync(segment, WebSocketMessageType.Text, isEndOfMessage, cts.Token)
+                try
+                    do! ws.SendAsync(segment, WebSocketMessageType.Text, isEndOfMessage, cts.Token)
+
+                    if isEndOfMessage then
+                        return Ok ()
+                    else
+                        return! loop buffer (offset + count)
+                with
+                    | _ ->
+                        return Error "Unexpected error occurred when attempting to send message"
             }
 
-            do! loop buffer 0
-            return Ok ()
+            return! loop buffer 0
     }
 
     interface IDiscordGatewayService with 
-        member this.Connect () = task {
+        member this.Connect handler = task {
             let! gateway = discordHttpService.GetGateway "10" GatewayEncoding.JSON None
 
             let cts = new CancellationTokenSource()
@@ -57,16 +65,20 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
             this._ws <- Some ws
 
             let rec loop buffer = task {
-                let! res = ws.ReceiveAsync(ArraySegment buffer, CancellationToken.None)
+                try
+                    let! res = ws.ReceiveAsync(ArraySegment buffer, CancellationToken.None)
 
-                match res.MessageType with
-                | WebSocketMessageType.Close -> ()
-                | _ ->
-                    let message = Encoding.UTF8.GetString(buffer, 0, res.Count)
-
-                    // TODO: Handle received message here
-
-                    return! loop buffer
+                    match res.MessageType with
+                    | WebSocketMessageType.Text ->
+                        do! handler (Encoding.UTF8.GetString(buffer, 0, res.Count))
+                        return! loop buffer
+                    | WebSocketMessageType.Close ->
+                        return Ok ()
+                    | _ ->
+                        return Error $"Unexpected message type received: {res.MessageType}"
+                with
+                    | _ ->
+                        return Error $"Unexpected error occurred when attempting to receive message"
             }
 
             return! loop (Array.zeroCreate<byte> 4096)
@@ -74,9 +86,11 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
 
         member this.Disconnect () = task {
             match this._ws with
-            | None -> ()
+            | None ->
+                return Error "Cannot disconnect because no websocket is connected"
             | Some ws ->
                 do! ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None)
+                return Ok ()
         }
 
         // TODO: Handle lifecycle (https://discord.com/developers/docs/topics/gateway#connection-lifecycle)
