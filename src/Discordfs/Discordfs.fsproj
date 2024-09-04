@@ -21,8 +21,9 @@
     <Compile Include="Services\DiscordHttpService\DiscordHttpGatewayActions.fs" />
     <Compile Include="Services\DiscordHttpService\DiscordHttpRoleConnectionActions.fs" />
     <Compile Include="Services\DiscordHttpService\DiscordHttpService.fs" />
+    <Compile Include="Services\DiscordGatewayService\DiscordGatewayActions.fs" />
+    <Compile Include="Services\DiscordGatewayService\DiscordGatewayService.fs" />
     <Compile Include="Services\Ed25519SigningService.fs" />
-    <Compile Include="Services\DiscordGatewayService.fs" />
     <Compile Include="Services\CommandService.fs" />
   </ItemGroup>
 
