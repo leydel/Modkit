@@ -36,48 +36,52 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
         member this.Actions = DiscordGatewayActions(this._ws) // TODO: Check if this correctly updates ws client when created
 
         member this.Connect handler = task {
-            let! gateway = discordHttpService.Gateway.GetGateway "10" GatewayEncoding.JSON None
+            match this._ws with
+            | Some _ ->
+                return Error "Cannot disconnect because no websocket is connected"
+            | None ->
+                let! gateway = discordHttpService.Gateway.GetGateway "10" GatewayEncoding.JSON None
 
-            let cts = new CancellationTokenSource()
-            cts.CancelAfter(TimeSpan.FromSeconds 5)
+                let cts = new CancellationTokenSource()
+                cts.CancelAfter(TimeSpan.FromSeconds 5)
 
-            let ws = new ClientWebSocket()
-            this._ws <- Some ws
+                let ws = new ClientWebSocket()
+                this._ws <- Some ws
 
-            try
-                do! ws.ConnectAsync(Uri gateway.Url, cts.Token)
+                try
+                    do! ws.ConnectAsync(Uri gateway.Url, cts.Token)
 
-                let rec loop buffer = task {
-                    try
-                        let! res = ws.ReceiveAsync(ArraySegment buffer, CancellationToken.None)
+                    let rec loop buffer = task {
+                        try
+                            let! res = ws.ReceiveAsync(ArraySegment buffer, CancellationToken.None)
 
-                        match res.MessageType with
-                        | WebSocketMessageType.Text ->
-                            let message = Encoding.UTF8.GetString(buffer, 0, res.Count) |> Json.deserialize<GatewayEvent>
+                            match res.MessageType with
+                            | WebSocketMessageType.Text ->
+                                let message = Encoding.UTF8.GetString(buffer, 0, res.Count) |> Json.deserialize<GatewayEvent>
 
-                            // TODO: Figure out how to correctly serialize gateway data
-                            //       Might need a custom transform that maps all events to their data
+                                // TODO: Figure out how to correctly serialize gateway data
+                                //       Might need a custom transform that maps all events to their data
 
-                            let! handledByLifecycle = this.lifecycle message
+                                let! handledByLifecycle = this.lifecycle message
 
-                            if not handledByLifecycle then
-                                do! handler message
+                                if not handledByLifecycle then
+                                    do! handler message
 
-                            return! loop buffer
-                        | WebSocketMessageType.Close ->
-                            return Ok ()
-                        | _ ->
-                            return Error $"Unexpected message type received: {res.MessageType}"
-                    with
-                        | _ ->
-                            return Error $"Unexpected error occurred when attempting to receive message"
-                }
+                                return! loop buffer
+                            | WebSocketMessageType.Close ->
+                                return Ok ()
+                            | _ ->
+                                return Error $"Unexpected message type received: {res.MessageType}"
+                        with
+                            | _ ->
+                                return Error $"Unexpected error occurred when attempting to receive message"
+                    }
 
-                return! loop (Array.zeroCreate<byte> 4096)
-            with
-                | _ -> 
-                    return Error "Unexpected error occurred attempting to connect to the gateway"
-
+                    return! loop (Array.zeroCreate<byte> 4096)
+                with
+                    | _ -> 
+                        return Error "Unexpected error occurred attempting to connect to the gateway"
+                
             // TODO: Clean up this code
         }
 
