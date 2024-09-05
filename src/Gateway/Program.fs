@@ -1,4 +1,7 @@
-﻿open Modkit.Discordfs.Services
+﻿open Azure.Messaging.ServiceBus
+open Azure.Identity
+open FSharp.Json
+open Modkit.Discordfs.Services
 open Modkit.Discordfs.Types
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
@@ -7,14 +10,24 @@ open System
 open System.Net.Http
 open System.Threading.Tasks
 
-type Program (discordGatewayService: IDiscordGatewayService) =
-    member _.Handle (event: GatewayEvent) = task {
-        // TODO: Send event to service bus
-        ()
+type Program (configuration: IConfiguration, discordGatewayService: IDiscordGatewayService) =
+    let serviceBusConnectionString = configuration.GetValue "SERVICE_BUS_CONNECTION_STRING"
+    let serviceBusQueueName = configuration.GetValue "SERVICE_BUS_QUEUE_NAME"
+
+    member _.Handle (sender: ServiceBusSender) (event: GatewayEvent) = task {
+        do! Json.serialize event |> ServiceBusMessage |> sender.SendMessageAsync
     }
 
     member this.Run () =
-        discordGatewayService.Connect this.Handle
+        let serviceBusClient = ServiceBusClient(
+            serviceBusConnectionString,
+            DefaultAzureCredential(),
+            ServiceBusClientOptions(TransportType = ServiceBusTransportType.AmqpWebSockets)
+        )
+
+        let sender = serviceBusClient.CreateSender serviceBusQueueName
+
+        discordGatewayService.Connect (this.Handle sender)
         :> Task
         |> Async.AwaitTask
         |> Async.RunSynchronously
@@ -25,10 +38,9 @@ Host
         services
             .AddHttpClient()
             .AddTransient<IDiscordHttpService, DiscordHttpService>(fun provider ->
-                DiscordHttpService(
-                    provider.GetRequiredService<IHttpClientFactory>(),
-                    ctx.Configuration.GetValue "DISCORD_BOT_TOKEN"
-                )
+                let httpClientFactory = provider.GetRequiredService<IHttpClientFactory>()
+                let token = ctx.Configuration.GetValue "DISCORD_BOT_TOKEN"
+                DiscordHttpService(httpClientFactory, token)
             )
             .AddSingleton<IDiscordGatewayService, DiscordGatewayService>()
             .AddTransient<Program>()
