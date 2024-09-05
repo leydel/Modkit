@@ -33,7 +33,7 @@ module Req =
     let queryOpt (key: string) (value: string option) (req: HttpRequestMessage) =
         Option.foldBack (query key) value req
 
-    let body (payload: 'a) (req: HttpRequestMessage) =
+    let body<'a> (payload: 'a) (req: HttpRequestMessage) =
         req.Content <- new StringContent (Json.serializeU payload)
         req
 
