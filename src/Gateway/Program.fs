@@ -14,11 +14,11 @@ type Program (configuration: IConfiguration, discordGatewayService: IDiscordGate
     let serviceBusConnectionString = configuration.GetValue "SERVICE_BUS_CONNECTION_STRING"
     let serviceBusQueueName = configuration.GetValue "SERVICE_BUS_QUEUE_NAME"
 
-    member _.Handle (sender: ServiceBusSender) (event: GatewayEvent) = task {
+    let handle (sender: ServiceBusSender) (event: GatewayEvent) = task {
         do! Json.serialize event |> ServiceBusMessage |> sender.SendMessageAsync
     }
 
-    member this.Run () =
+    member _.Start () =
         let serviceBusClient = ServiceBusClient(
             serviceBusConnectionString,
             DefaultAzureCredential(),
@@ -27,7 +27,7 @@ type Program (configuration: IConfiguration, discordGatewayService: IDiscordGate
 
         let sender = serviceBusClient.CreateSender serviceBusQueueName
 
-        discordGatewayService.Connect (this.Handle sender)
+        discordGatewayService.Connect <| handle sender
         :> Task
         |> Async.AwaitTask
         |> Async.RunSynchronously
@@ -48,4 +48,4 @@ Host
     )
     .Build()
     .Services.GetRequiredService<Program>()
-    .Run()
+    .Start()
