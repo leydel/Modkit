@@ -69,13 +69,13 @@ type CreateGlobalApplicationCommand = {
     [<JsonField("dm_permissions")>]
     DmPermissions: bool option
     
-    [<JsonField("name")>]
+    [<JsonField("name", EnumValue = EnumMode.Value)>]
     IntegrationTypes: ApplicationIntegrationType list option
     
-    [<JsonField("contexts")>]
+    [<JsonField("contexts", EnumValue = EnumMode.Value)>]
     Contexts: InteractionContextType list option
     
-    [<JsonField("type")>]
+    [<JsonField("type", EnumValue = EnumMode.Value)>]
     Type: ApplicationCommandType option
     
     [<JsonField("nsfw")>]
@@ -377,7 +377,7 @@ type VoiceChannelEffect = {
     [<JsonField("emoji")>]
     Emoji: Emoji option
     
-    [<JsonField("animation_type")>]
+    [<JsonField("animation_type", EnumValue = EnumMode.Value)>]
     AnimationType: AnimationType option
     
     [<JsonField("animation_id")>]

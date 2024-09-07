@@ -1709,7 +1709,7 @@ type ApplicationCommandOptionChoice = {
 }
 
 type ApplicationCommandOption = {
-    [<JsonField("type")>]
+    [<JsonField("type", EnumValue = EnumMode.Value)>]
     Type: ApplicationCommandOptionType
     
     [<JsonField("name")>]
@@ -1733,7 +1733,7 @@ type ApplicationCommandOption = {
     [<JsonField("options")>]
     Options: ApplicationCommandOption list option
     
-    [<JsonField("channel_types")>]
+    [<JsonField("channel_types", EnumValue = EnumMode.Value)>]
     ChannelTypes: ChannelType list option
     
     [<JsonField("min_value", Transform = typeof<ApplicationCommandMinValueTransform>)>]
@@ -1788,7 +1788,7 @@ type ApplicationCommand = {
     [<JsonField("id")>]
     Id: string
     
-    [<JsonField("type")>]
+    [<JsonField("type", EnumValue = EnumMode.Value)>]
     Type: ApplicationCommandType option
     
     [<JsonField("application_id")>]
@@ -1821,16 +1821,16 @@ type ApplicationCommand = {
     [<JsonField("nsfw")>]
     Nsfw: bool option
     
-    [<JsonField("integration_types")>]
+    [<JsonField("integration_types", EnumValue = EnumMode.Value)>]
     IntegrationTypes: ApplicationIntegrationType list option
     
-    [<JsonField("contexts")>]
+    [<JsonField("contexts", EnumValue = EnumMode.Value)>]
     Contexts: InteractionContextType list option
     
     [<JsonField("version")>]
     Version: string
 
-    [<JsonField("handler")>]
+    [<JsonField("handler", EnumValue = EnumMode.Value)>]
     Handler: ApplicationCommandHandlerType option
 }
 
@@ -2003,7 +2003,7 @@ type SessionStartLimit = {
 }
 
 type GatewayEvent = {
-    [<JsonField("op")>]
+    [<JsonField("op", EnumValue = EnumMode.Value)>]
     Opcode: GatewayOpcode
     
     [<JsonField("d")>]
@@ -2121,7 +2121,7 @@ type Activity = {
     [<JsonField("name")>]
     Name: string
     
-    [<JsonField("type")>]
+    [<JsonField("type", EnumValue = EnumMode.Value)>]
     Type: ActivityType
     
     [<JsonField("url")>]
@@ -2165,7 +2165,7 @@ type Activity = {
 }
 
 type ApplicationRoleConnectionMetadata = {
-    [<JsonField("type")>]
+    [<JsonField("type", EnumValue = EnumMode.Value)>]
     Type: ApplicationRoleConnectionMetadataType
     
     [<JsonField("key")>]
