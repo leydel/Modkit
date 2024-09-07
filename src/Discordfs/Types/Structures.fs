@@ -2202,3 +2202,81 @@ type FollowedChannel = {
     [<JsonField("webhook_id")>]
     WebhookId: string
 }
+
+// https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-rule-object-trigger-metadata
+type AutoModerationTriggerMetadata = {
+    [<JsonField("keyword_filter")>]
+    KeywordFilter: string list option
+    
+    [<JsonField("regex_patterns")>]
+    RegexPatterns: string list option
+    
+    [<JsonField("presets", EnumValue = EnumMode.Value)>]
+    Presets: AutoModerationKeywordPresetType option
+    
+    [<JsonField("allow_list")>]
+    AllowList: string list option
+    
+    [<JsonField("mention_total_limit")>]
+    MentionTotalLimit: int option
+    
+    [<JsonField("mention_raid_protection_enabled")>]
+    MentionRaidProtectionEnabled: bool option
+}
+
+// https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-action-object-action-metadata
+type AutoModerationActionMetadata = {
+    [<JsonField("channel_id")>]
+    ChannelId: string option
+
+    [<JsonField("duration_seconds")>]
+    DurationSeconds: int option
+
+    [<JsonField("custom_message")>]
+    CustomMessage: string option
+}
+
+// https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-action-object
+type AutoModerationAction = {
+    [<JsonField("type", EnumValue = EnumMode.Value)>]
+    Type: AutoModerationActionType
+
+    [<JsonField("metadata")>]
+    Metadata: AutoModerationActionMetadata option
+}
+
+// https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-rule-object-auto-moderation-rule-structure
+type AutoModerationRule = {
+    [<JsonField("id")>]
+    Id: string
+    
+    [<JsonField("guild_id")>]
+    GuildId: string
+    
+    [<JsonField("name")>]
+    Name: string
+    
+    [<JsonField("creator_id")>]
+    CreatorId: string
+    
+    [<JsonField("event_type", EnumValue = EnumMode.Value)>]
+    EventType: AutoModerationEventType
+    
+    [<JsonField("trigger_type", EnumValue = EnumMode.Value)>]
+    TriggerType: AutoModerationTriggerType
+    
+    [<JsonField("trigger_metadata")>]
+    TriggerMetadata: AutoModerationTriggerMetadata
+    
+    [<JsonField("actions")>]
+    Actions: AutoModerationAction list
+    
+    [<JsonField("enabled")>]
+    Enabled: bool
+    
+    [<JsonField("exempt_roles")>]
+    ExemptRoles: string list
+    
+    [<JsonField("exempt_channels")>]
+    ExemptChannels: string list
+}

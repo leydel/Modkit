@@ -474,3 +474,57 @@ type ListJoinedPrivateArchivedThreadsResponse = {
     [<JsonField("has_more")>]
     HasMore: bool
 }
+
+// https://discord.com/developers/docs/resources/auto-moderation#create-auto-moderation-rule-json-params
+type CreateAutoModerationRule = {
+    [<JsonField("name")>]
+    Name: string
+    
+    [<JsonField("event_type")>]
+    EventType: AutoModerationEventType
+    
+    [<JsonField("trigger_type")>]
+    TriggerType: AutoModerationTriggerType
+    
+    [<JsonField("trigger_metadata")>]
+    TriggerMetadata: AutoModerationTriggerMetadata option
+    
+    [<JsonField("actions")>]
+    Actions: AutoModerationAction list
+    
+    [<JsonField("enabled")>]
+    Enabled: bool option
+    
+    [<JsonField("exempt_roles")>]
+    ExemptRoles: string list option
+    
+    [<JsonField("exempt_channels")>]
+    ExemptChannels: string list option
+}
+
+// https://discord.com/developers/docs/resources/auto-moderation#modify-auto-moderation-rule-json-params
+type ModifyAutoModerationRule = {
+    [<JsonField("name")>]
+    Name: string option
+    
+    [<JsonField("event_type")>]
+    EventType: AutoModerationEventType option
+    
+    [<JsonField("trigger_type")>]
+    TriggerType: AutoModerationTriggerType option
+    
+    [<JsonField("trigger_metadata")>]
+    TriggerMetadata: AutoModerationTriggerMetadata option
+    
+    [<JsonField("actions")>]
+    Actions: AutoModerationAction list option
+    
+    [<JsonField("enabled")>]
+    Enabled: bool option
+    
+    [<JsonField("exempt_roles")>]
+    ExemptRoles: string list option
+    
+    [<JsonField("exempt_channels")>]
+    ExemptChannels: string list option
+}

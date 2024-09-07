@@ -552,3 +552,29 @@ type AutoArchiveDurationType =
     | DAY = 1440
     | THREE_DAYS = 4320
     | WEEK = 10080
+
+// https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-rule-object-event-types
+type AutoModerationEventType =
+    | MESSAGE_SEND = 1
+    | MEMBER_UDPATE = 2
+
+// https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-rule-object-trigger-types
+type AutoModerationTriggerType =
+    | KEYWORD = 1
+    | SPAM = 3
+    | KEYWORD_PRESET = 4
+    | MENTION_SPAM = 5
+    | MEMBER_PROFILE = 6
+
+// https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-rule-object-keyword-preset-types
+type AutoModerationKeywordPresetType =
+    | PROFANITY = 1
+    | SEXUAL_CONTENT = 2
+    | SLURS = 3
+
+// https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-action-object-action-types
+type AutoModerationActionType =
+    | BLOCK_MESSAGE = 1
+    | SEND_ALERT_MESSAGE = 2
+    | TIMEOUT = 3
+    | BLOCK_MEMBER_INTERACTION = 4
