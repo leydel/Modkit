@@ -106,6 +106,11 @@ type ChannelType =
     | GUILD_FORUM = 15
     | GUILD_MEDIA = 16
 
+type ThreadType =
+    | ANNOUNCEMENT_THREAD = 10
+    | PUBLIC_THREAD = 11
+    | PRIVATE_THREAD = 12
+
 type EntitlementType =
     | PURCHASE = 1
     | PREMIUM_SUBSCRIPTION = 2
@@ -537,3 +542,13 @@ type ApplicationRoleConnectionMetadataType =
     | DATETIME_GREATER_THAN_OR_EQUAL = 6
     | BOOLEAN_EQUAL = 7
     | BOOLEAN_NOT_EQUAL = 8
+
+type EditChannelPermissionsType =
+    | ROLE = 0
+    | MEMBER = 1
+
+type AutoArchiveDurationType =
+    | HOUR = 60
+    | DAY = 1440
+    | THREE_DAYS = 4320
+    | WEEK = 10080

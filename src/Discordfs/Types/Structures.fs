@@ -1508,6 +1508,23 @@ type Invite = {
     // TODO: Add `guild_scheduled_event` with type from: https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-structure
 }
 
+type InviteMetadata = {
+    [<JsonField("uses")>]
+    Uses: int
+    
+    [<JsonField("max_uses")>]
+    MaxUses: int
+    
+    [<JsonField("max_age")>]
+    MaxAge: int
+    
+    [<JsonField("temporary")>]
+    Temporary: bool
+    
+    [<JsonField("created_at")>]
+    CreatedAt: DateTime
+}
+
 type InteractionData = {
     [<JsonField("id")>]
     Id: string
@@ -2176,4 +2193,12 @@ type ApplicationRoleConnection = {
     
     [<JsonField("metadata")>]
     Metadata: ApplicationRoleConnectionMetadata
+}
+
+type FollowedChannel = {
+    [<JsonField("channel_id")>]
+    ChannelId: string
+
+    [<JsonField("webhook_id")>]
+    WebhookId: string
 }

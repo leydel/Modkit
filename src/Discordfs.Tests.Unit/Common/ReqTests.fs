@@ -101,6 +101,28 @@ type ReqTests () =
         Assert.AreEqual($"Bearer {token}", req.Headers.GetValues "Authorization" |> Seq.exactlyOne)
 
     [<TestMethod>]
+    member this.audit_AddsAuditLogReasonHeader () =
+        // Arrange
+        let reason = Some "Audit log reason"
+
+        // Act
+        let req = Req.audit reason this._req
+
+        // Assert
+        Assert.AreEqual(reason.Value, req.Headers.GetValues "X-Audit-Log-Reason" |> Seq.exactlyOne)
+
+    [<TestMethod>]
+    member this.audit_DoesNotAddAuditLogReasonIfValueIsNone () =
+        // Arrange
+        let reason = None
+
+        // Act
+        let req = Req.audit reason this._req
+
+        // Assert
+        Assert.IsFalse(req.Headers.Contains "X-Audit-Log-Reason")
+
+    [<TestMethod>]
     member this.query_AddsNewQueryParameterToHttpRequestMessage () =
         // Arrange
         let key = "key"

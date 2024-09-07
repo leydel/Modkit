@@ -22,6 +22,9 @@ module Req =
     let oauth (token: string) (req: HttpRequestMessage) =
         header "Authorization" $"Bearer {token}" req
 
+    let audit (reason: string option) (req: HttpRequestMessage) =
+        headerOpt "X-Audit-Log-Reason" reason req
+
     let query (key: string) (value: string) (req: HttpRequestMessage) =
         let uriBuilder = UriBuilder(req.RequestUri)
         let query = HttpUtility.ParseQueryString(uriBuilder.Query)

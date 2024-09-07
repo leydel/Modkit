@@ -389,3 +389,88 @@ type VoiceChannelEffect = {
     [<JsonField("sound_volume")>]
     SoundVolume: double option
 }
+
+type EditChannelPermissions = {
+    [<JsonField("allow")>]
+    Allow: string option
+
+    [<JsonField("deny")>]
+    Deny: string option
+
+    [<JsonField("type", EnumValue = EnumMode.Value)>]
+    Type: EditChannelPermissionsType
+}
+
+type FollowAnnouncementChannel = {
+    [<JsonField("webhook_channel_id")>]
+    WebhookChannelId: string
+}
+
+type GroupDmAddRecipient = {
+    [<JsonField("access_token")>]
+    AccessToken: string
+
+    [<JsonField("nick")>]
+    Nick: string // TODO: Check if this is optional (documented as not, but I expect it is)
+}
+
+type StartThreadFromMessage = {
+    [<JsonField("name")>]
+    Name: string
+
+    [<JsonField("auto_archive_duration", EnumValue = EnumMode.Value)>]
+    AutoArchiveDuration: AutoArchiveDurationType option
+
+    [<JsonField("rate_limit_per_user")>]
+    RateLimitPerUser: int option
+}
+
+type StartThreadWithoutMessage = {
+    [<JsonField("name")>]
+    Name: string
+
+    [<JsonField("auto_archive_duration", EnumValue = EnumMode.Value)>]
+    AutoArchiveDuration: AutoArchiveDurationType option
+
+    [<JsonField("type", EnumValue = EnumMode.Value)>]
+    Type: ThreadType
+
+    [<JsonField("invitable")>]
+    Invitable: bool option
+
+    [<JsonField("rate_limit_per_user")>]
+    RateLimitPerUser: int option
+}
+
+type ListPublicArchivedThreadsResponse = {
+    [<JsonField("threads")>]
+    Threads: Channel list
+    
+    [<JsonField("members")>]
+    Members: ThreadMember list
+    
+    [<JsonField("has_more")>]
+    HasMore: bool
+}
+
+type ListPrivateArchivedThreadsResponse = {
+    [<JsonField("threads")>]
+    Threads: Channel list
+    
+    [<JsonField("members")>]
+    Members: ThreadMember list
+    
+    [<JsonField("has_more")>]
+    HasMore: bool
+}
+
+type ListJoinedPrivateArchivedThreadsResponse = {
+    [<JsonField("threads")>]
+    Threads: Channel list
+    
+    [<JsonField("members")>]
+    Members: ThreadMember list
+    
+    [<JsonField("has_more")>]
+    HasMore: bool
+}
