@@ -5,7 +5,7 @@ open Modkit.Discordfs.Types
 open System.Net.Http
 open System.Threading.Tasks
 
-type IDiscordHttpInteractionActions =
+type IDiscordHttpApplicationActions =
     // https://discord.com/developers/docs/resources/application#get-current-application
     abstract member GetCurrentApplication:
         unit ->
@@ -22,8 +22,8 @@ type IDiscordHttpInteractionActions =
         instanceId: string ->
         Task<ActivityInstance>
 
-type DiscordHttpInteractionActions (httpClientFactory: IHttpClientFactory, token: string) =
-    interface IDiscordHttpInteractionActions with
+type DiscordHttpApplicationActions (httpClientFactory: IHttpClientFactory, token: string) =
+    interface IDiscordHttpApplicationActions with
         member _.GetCurrentApplication () =
             Req.create
                 HttpMethod.Get

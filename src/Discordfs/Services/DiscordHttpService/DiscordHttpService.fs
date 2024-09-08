@@ -3,7 +3,7 @@
 open System.Net.Http
 
 type IDiscordHttpService =
-    abstract member Applications: IDiscordHttpApplicationCommandActions
+    abstract member Applications: IDiscordHttpApplicationActions
 
     abstract member Interactions: IDiscordHttpInteractionActions
 
@@ -19,7 +19,7 @@ type IDiscordHttpService =
 
 type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
     interface IDiscordHttpService with
-        member _.Applications = DiscordHttpApplicationCommandActions(httpClientFactory, token)
+        member _.Applications = DiscordHttpApplicationActions(httpClientFactory, token)
 
         member _.Interactions = DiscordHttpInteractionActions(httpClientFactory, token)
 
