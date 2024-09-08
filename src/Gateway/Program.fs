@@ -1,8 +1,8 @@
 ﻿open Azure.Messaging.ServiceBus
-open Azure.Identity
 open FSharp.Json
 open Modkit.Discordfs.Services
 open Modkit.Discordfs.Types
+open Modkit.Gateway.Factories
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
@@ -10,7 +10,11 @@ open System
 open System.Net.Http
 open System.Threading.Tasks
 
-type Program (configuration: IConfiguration, discordGatewayService: IDiscordGatewayService) =
+type Program (
+    configuration: IConfiguration,
+    discordGatewayService: IDiscordGatewayService,
+    serviceBusClientFactory: IServiceBusClientFactory
+) =
     let serviceBusConnectionString = configuration.GetValue "SERVICE_BUS_CONNECTION_STRING"
     let serviceBusQueueName = configuration.GetValue "SERVICE_BUS_QUEUE_NAME"
 
@@ -19,13 +23,8 @@ type Program (configuration: IConfiguration, discordGatewayService: IDiscordGate
     }
 
     member _.Start () =
-        let serviceBusClient = ServiceBusClient(
-            serviceBusConnectionString,
-            DefaultAzureCredential(),
-            ServiceBusClientOptions(TransportType = ServiceBusTransportType.AmqpWebSockets)
-        )
-
-        let sender = serviceBusClient.CreateSender serviceBusQueueName
+        let client = serviceBusClientFactory.CreateClient serviceBusConnectionString
+        let sender = client.CreateSender serviceBusQueueName
 
         discordGatewayService.Connect <| handle sender
         :> Task
@@ -43,6 +42,7 @@ Host
                 DiscordHttpService(httpClientFactory, token)
             )
             .AddSingleton<IDiscordGatewayService, DiscordGatewayService>()
+            .AddSingleton<IServiceBusClientFactory, ServiceBusClientFactory>()
             .AddTransient<Program>()
         |> ignore
     )

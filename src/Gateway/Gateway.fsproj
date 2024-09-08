@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Factories\ServiceBusClientFactory.fs" />
     <Compile Include="Program.fs" />
     <Content Include="appsettings.json" />
     <None Include=".gitignore" />
