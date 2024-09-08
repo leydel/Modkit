@@ -170,7 +170,7 @@ type OptionsTests () =
             | _ -> failwith "Could not find string"
 
         // Assert
-        Assert.AreEqual(value, string)
+        Assert.AreEqual<string>(value, string)
 
     [<TestMethod>]
     member _.String_ReturnsNoneIfOptionIncorrectType () =
@@ -231,7 +231,7 @@ type OptionsTests () =
             | _ -> failwith "Could not find integer"
 
         // Assert
-        Assert.AreEqual(value, integer)
+        Assert.AreEqual<int>(value, integer)
 
     [<TestMethod>]
     member _.Integer_ReturnsNoneIfOptionIncorrectType () =
@@ -292,7 +292,7 @@ type OptionsTests () =
             | _ -> failwith "Could not find boolean"
 
         // Assert
-        Assert.AreEqual(value, boolean)
+        Assert.AreEqual<bool>(value, boolean)
 
     [<TestMethod>]
     member _.Boolean_ReturnsNoneIfOptionIncorrectType () =
@@ -353,7 +353,7 @@ type OptionsTests () =
             | _ -> failwith "Could not find user"
 
         // Assert
-        Assert.AreEqual(value, userId)
+        Assert.AreEqual<string>(value, userId)
 
     [<TestMethod>]
     member _.User_ReturnsNoneIfOptionIncorrectType () =
@@ -414,7 +414,7 @@ type OptionsTests () =
             | _ -> failwith "Could not find channel"
 
         // Assert
-        Assert.AreEqual(value, channelId)
+        Assert.AreEqual<string>(value, channelId)
 
     [<TestMethod>]
     member _.Channel_ReturnsNoneIfOptionIncorrectType () =
@@ -475,7 +475,7 @@ type OptionsTests () =
             | _ -> failwith "Could not find role"
 
         // Assert
-        Assert.AreEqual(value, roleId)
+        Assert.AreEqual<string>(value, roleId)
 
     [<TestMethod>]
     member _.Role_ReturnsNoneIfOptionIncorrectType () =
@@ -536,7 +536,7 @@ type OptionsTests () =
             | _ -> failwith "Could not find mentionable"
 
         // Assert
-        Assert.AreEqual(value, mentionableId)
+        Assert.AreEqual<string>(value, mentionableId)
 
     [<TestMethod>]
     member _.Mentionable_ReturnsNoneIfOptionIncorrectType () =
@@ -597,7 +597,7 @@ type OptionsTests () =
             | _ -> failwith "Could not find number"
 
         // Assert
-        Assert.AreEqual(value, double)
+        Assert.AreEqual<double>(value, double)
 
     [<TestMethod>]
     member _.Number_ReturnsNoneIfOptionIncorrectType () =
@@ -658,7 +658,7 @@ type OptionsTests () =
             | _ -> failwith "Could not find attachment"
 
         // Assert
-        Assert.AreEqual(value, attachmentId)
+        Assert.AreEqual<string>(value, attachmentId)
 
     [<TestMethod>]
     member _.Attachment_ReturnsNoneIfOptionIncorrectType () =
@@ -731,9 +731,9 @@ type OptionsTests () =
             | _ -> failwith "Could not find all options"
 
         // Assert
-        Assert.AreEqual("roleId1", res.roleId1)
-        Assert.AreEqual("roleId2", res.roleId2)
-        Assert.AreEqual("channelId", res.channelId)
+        Assert.AreEqual<string>("roleId1", res.roleId1)
+        Assert.AreEqual<string>("roleId2", res.roleId2)
+        Assert.AreEqual<string>("channelId", res.channelId)
 
     [<TestMethod>]
     member _.Options_FailsWhenAtLeastOneOptionNotAvailable () =

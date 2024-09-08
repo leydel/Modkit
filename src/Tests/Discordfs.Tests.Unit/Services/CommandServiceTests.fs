@@ -66,7 +66,7 @@ type CommandServiceTests () =
 
         // Assert
         Assert.IsTrue(name.IsSome)
-        Assert.AreEqual("sample", name.Value)
+        Assert.AreEqual<string>("sample", name.Value)
 
 
     [<TestMethod>]
@@ -93,7 +93,7 @@ type CommandServiceTests () =
 
         // Assert
         Assert.IsTrue(command.IsSome)
-        Assert.AreEqual("sample", command.Value.Data.Name)
+        Assert.AreEqual<string>("sample", command.Value.Data.Name)
 
     [<TestMethod>]
     member _.getCommand_DoesNotGetNonExistentCommand () =
@@ -136,7 +136,7 @@ type CommandServiceTests () =
         // Assert
         match res with
         | Ok _ -> failwith "Supposed to fail"
-        | Error err -> Assert.AreEqual("Unknown command", err)
+        | Error err -> Assert.AreEqual<string>("Unknown command", err)
     }
 
     [<TestMethod>]
@@ -152,5 +152,5 @@ type CommandServiceTests () =
         // Assert
         match res with
         | Ok _ -> failwith "Supposed to fail"
-        | Error err -> Assert.AreEqual("Missing command name in interaction data", err)
+        | Error err -> Assert.AreEqual<string>("Missing command name in interaction data", err)
     }

@@ -39,8 +39,8 @@ type ReqTests () =
         let req = Req.create method host endpoint
 
         // Assert
-        Assert.AreEqual(method, req.Method)
-        Assert.AreEqual(host + "/" + endpoint, req.RequestUri.ToString())
+        Assert.AreEqual<HttpMethod>(method, req.Method)
+        Assert.AreEqual<string>(host + "/" + endpoint, req.RequestUri.ToString())
 
     [<TestMethod>]
     member this.header_AddsNewHeaderToHttpRequestMessage () =
@@ -52,7 +52,7 @@ type ReqTests () =
         let req = Req.header key value this._req
 
         // Assert
-        Assert.AreEqual(value, req.Headers.GetValues key |> Seq.exactlyOne)
+        Assert.AreEqual<string>(value, req.Headers.GetValues key |> Seq.exactlyOne)
 
     [<TestMethod>]
     member this.headerOpt_AddsNewHeaderToHttpRequestMessage () =
@@ -64,7 +64,7 @@ type ReqTests () =
         let req = Req.headerOpt key value this._req
 
         // Assert
-        Assert.AreEqual(value.Value, req.Headers.GetValues key |> Seq.exactlyOne)
+        Assert.AreEqual<string>(value.Value, req.Headers.GetValues key |> Seq.exactlyOne)
 
     [<TestMethod>]
     member this.headerOpt_DoesNotAddHeaderIfValueIsNone () =
@@ -87,7 +87,7 @@ type ReqTests () =
         let req = Req.bot token this._req
 
         // Assert
-        Assert.AreEqual($"Bot {token}", req.Headers.GetValues "Authorization" |> Seq.exactlyOne)
+        Assert.AreEqual<string>($"Bot {token}", req.Headers.GetValues "Authorization" |> Seq.exactlyOne)
 
     [<TestMethod>]
     member this.oauth_AddsOauthAuthorizationHeader () =
@@ -98,7 +98,7 @@ type ReqTests () =
         let req = Req.oauth token this._req
 
         // Assert
-        Assert.AreEqual($"Bearer {token}", req.Headers.GetValues "Authorization" |> Seq.exactlyOne)
+        Assert.AreEqual<string>($"Bearer {token}", req.Headers.GetValues "Authorization" |> Seq.exactlyOne)
 
     [<TestMethod>]
     member this.audit_AddsAuditLogReasonHeader () =
@@ -109,7 +109,7 @@ type ReqTests () =
         let req = Req.audit reason this._req
 
         // Assert
-        Assert.AreEqual(reason.Value, req.Headers.GetValues "X-Audit-Log-Reason" |> Seq.exactlyOne)
+        Assert.AreEqual<string>(reason.Value, req.Headers.GetValues "X-Audit-Log-Reason" |> Seq.exactlyOne)
 
     [<TestMethod>]
     member this.audit_DoesNotAddAuditLogReasonIfValueIsNone () =
@@ -133,7 +133,7 @@ type ReqTests () =
 
         // Assert
         let query = HttpUtility.ParseQueryString(req.RequestUri.Query)
-        Assert.AreEqual(value, query.Get key)
+        Assert.AreEqual<string>(value, query.Get key)
 
     [<TestMethod>]
     member this.queryOpt_AddsNewQueryParameterToHttpRequestMessage () =
@@ -146,7 +146,7 @@ type ReqTests () =
 
         // Assert
         let query = HttpUtility.ParseQueryString(req.RequestUri.Query)
-        Assert.AreEqual(value.Value, query.GetValues key |> Seq.exactlyOne)
+        Assert.AreEqual<string>(value.Value, query.GetValues key |> Seq.exactlyOne)
         
     [<TestMethod>]
     member this.queryOpt_DoesNotAddQueryParameterIfValueIsNone () =
@@ -171,7 +171,7 @@ type ReqTests () =
 
         // Assert
         let! body = req.Content.ReadAsStringAsync()
-        Assert.AreEqual(Json.serializeU payload, body)
+        Assert.AreEqual<string>(Json.serializeU payload, body)
     }
 
     [<TestMethod>]

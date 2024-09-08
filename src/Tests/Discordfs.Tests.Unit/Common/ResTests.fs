@@ -26,7 +26,7 @@ type ResTests () =
         let! res = Res.body<Nonce> task
 
         // Assert
-        Assert.AreEqual(body.Nonce, res.Nonce)
+        Assert.AreEqual<int>(body.Nonce, res.Nonce)
     }
     
     [<TestMethod>]
