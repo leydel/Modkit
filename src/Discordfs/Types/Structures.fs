@@ -2286,7 +2286,7 @@ type ActivityLocation = {
     [<JsonField("id")>]
     Id: string
     
-    [<JsonField("kind", Transform = ActivityLocationKindTransform)>]
+    [<JsonField("kind", Transform = typeof<ActivityLocationKindTransform>)>]
     Kind: ActivityLocationKind
     
     [<JsonField("channel_id")>]
@@ -2312,4 +2312,226 @@ type ActivityInstance = {
     
     [<JsonField("users")>]
     Users: string list
+}
+
+// https://discord.com/developers/docs/resources/guild#integration-account-object-integration-account-structure
+type GuildIntegrationAccount = {
+    [<JsonField("id")>]
+    Id: string
+    
+    [<JsonField("name")>]
+    Name: string
+}
+
+// https://discord.com/developers/docs/resources/guild#integration-application-object-integration-application-structure
+type GuildIntegrationApplication = {
+    [<JsonField("id")>]
+    Id: string
+    
+    [<JsonField("name")>]
+    Name: string
+    
+    [<JsonField("icon")>]
+    Icon: string option
+    
+    [<JsonField("description")>]
+    Description: string
+    
+    [<JsonField("bot")>]
+    Bot: User option
+}
+
+// https://discord.com/developers/docs/resources/guild#integration-object-integration-structure
+type GuildIntegration = {
+    [<JsonField("id")>]
+    Id: string
+    
+    [<JsonField("name")>]
+    Name: string
+    
+    [<JsonField("type")>]
+    Type: GuildIntegrationType
+    
+    [<JsonField("enabled")>]
+    Enabled: bool
+    
+    [<JsonField("syncing")>]
+    Syncing: bool option
+    
+    [<JsonField("role_id")>]
+    RoleId: string option
+    
+    [<JsonField("enable_emoticons")>]
+    EnableEmoticons: bool option
+    
+    [<JsonField("expire_behavior", EnumValue = EnumMode.Value)>]
+    ExpireBehavior: IntegrationExpireBehaviorType option
+    
+    [<JsonField("expire_grace_period")>]
+    ExpireGracePeriod: int option
+    
+    [<JsonField("user")>]
+    User: User option
+    
+    [<JsonField("account")>]
+    Account: GuildIntegrationAccount
+    
+    [<JsonField("synced_at")>]
+    SyncedAt: DateTime option
+    
+    [<JsonField("subscriber_count")>]
+    SubscriberCount: int option
+    
+    [<JsonField("revoked")>]
+    Revoked: bool option
+    
+    [<JsonField("application")>]
+    Application: GuildIntegrationApplication option
+    
+    [<JsonField("scopes", Transform = typeof<OAuth2ScopeTransform>)>]
+    Scopes: OAuth2Scope list option
+}
+
+// https://discord.com/developers/docs/resources/webhook#webhook-object-webhook-structure
+type Webhook = {
+    [<JsonField("id")>]
+    Id: string
+    
+    [<JsonField("webhook_type", EnumValue = EnumMode.Value)>]
+    Type: WebhookType
+    
+    [<JsonField("guild_id")>]
+    GuildId: string option
+    
+    [<JsonField("channel_id")>]
+    ChannelId: string option
+    
+    [<JsonField("user")>]
+    User: User option
+    
+    [<JsonField("name")>]
+    Name: string option
+    
+    [<JsonField("avatar")>]
+    Avatar: string option
+    
+    [<JsonField("token")>]
+    Token: string option
+    
+    [<JsonField("application_id")>]
+    ApplicationId: string option
+    
+    [<JsonField("source_guild")>]
+    SourceGuild: Guild option
+    
+    [<JsonField("source_channel")>]
+    SourceChannel: Channel option
+    
+    [<JsonField("url")>]
+    Url: string option
+}
+
+// https://discord.com/developers/docs/resources/audit-log#audit-log-change-object
+type AuditLogChange = {
+    [<JsonField("new_value")>]
+    NewValue: obj option
+    
+    [<JsonField("old_value")>]
+    OldValue: obj option
+    
+    [<JsonField("key")>]
+    Key: string
+
+    // TODO: Determine what possible types the values can be and create discriminated union for them
+}
+
+// https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object-optional-audit-entry-info
+type AuditLogEntryOptionalInfo = {
+    [<JsonField("application_id")>]
+    ApplicationId: string option
+    
+    [<JsonField("auto_moderation_rule_name")>]
+    AutoModerationRuleName: string option
+    
+    [<JsonField("auto_moderation_rule_trigger_type")>]
+    AutoModerationRuleTriggerType: string option
+    
+    [<JsonField("channel_id")>]
+    ChannelId: string option
+    
+    [<JsonField("count")>]
+    Count: string option
+    
+    [<JsonField("delete_member_days")>]
+    DeleteMemberDays: string option
+    
+    [<JsonField("id")>]
+    Id: string option
+    
+    [<JsonField("members_removed")>]
+    MembersRemoved: string option
+    
+    [<JsonField("message_id")>]
+    MessageId: string option
+    
+    [<JsonField("role_name")>]
+    RoleName: string option
+    
+    [<JsonField("type")>]
+    Type: string option
+    
+    [<JsonField("integration_type")>]
+    IntegrationType: string option
+
+    // TODO: Determine if the documentation is incorrect about everything being strings
+}
+
+// https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object-audit-log-entry-structure
+type AuditLogEntry = {
+    [<JsonField("target_id")>]
+    TargetId: string option
+    
+    [<JsonField("changes")>]
+    Changes: AuditLogChange list option
+    
+    [<JsonField("user_id")>]
+    UserId: string option
+    
+    [<JsonField("id")>]
+    Id: string
+    
+    [<JsonField("action_type", EnumValue = EnumMode.Value)>]
+    ActionType: AuditLogEventType
+    
+    [<JsonField("options")>]
+    Options: AuditLogEntryOptionalInfo option
+    
+    [<JsonField("reason")>]
+    Reason: string option
+}
+
+// https://discord.com/developers/docs/resources/audit-log#audit-log-object-audit-log-structure
+type AuditLog = {
+    [<JsonField("application_commands")>]
+    ApplicationCommands: ApplicationCommand list
+    
+    [<JsonField("audit_log_entries")>]
+    AuditLogEntries: AuditLogEntry list
+    
+    [<JsonField("auto_moderation_rules")>]
+    AutoModerationRules: AutoModerationRule list
+    
+    // TODO: Add `guild_scheduled_events` with list type from: https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-structure
+    
+    [<JsonField("integrations")>]
+    Integrations: GuildIntegration list
+    
+    [<JsonField("threads")>]
+    Threads: Channel list
+    
+    [<JsonField("users")>]
+    Users: User list
+    
+    [<JsonField("webhooks")>]
+    Webhooks: Webhook list
 }

@@ -340,7 +340,7 @@ type AllowedMentionsParseType =
 type AllowedMentionsParseTypeTransform () =
     interface ITypeTransform with
         member _.targetType () =
-            typeof<obj>
+            typeof<string>
 
         member _.toTargetType value =
             match value :?> AllowedMentionsParseType with
@@ -396,7 +396,7 @@ with
 type GatewayCompressionTransform () =
     interface ITypeTransform with
         member _.targetType () =
-            typeof<obj>
+            typeof<string>
 
         member _.toTargetType value =
             match value :?> GatewayCompression with
@@ -471,7 +471,7 @@ type StatusType =
 type StatusTypeTransform () =
     interface ITypeTransform with
         member _.targetType () =
-            typeof<obj>
+            typeof<string>
 
         member _.toTargetType value =
             match value :?> StatusType with
@@ -520,7 +520,7 @@ type SoundboardSoundId =
 type SoundboardSoundIdTransform () =
     interface ITypeTransform with
         member _.targetType () =
-            typeof<obj>
+            typeof<string>
 
         member _.toTargetType value =
             match value :?> SoundboardSoundId with
@@ -600,7 +600,7 @@ type ActivityLocationKind =
 type ActivityLocationKindTransform () =
     interface ITypeTransform with
         member _.targetType () =
-            typeof<obj>
+            typeof<string>
 
         member _.toTargetType value =
             match value :?> ActivityLocationKind with
@@ -612,3 +612,204 @@ type ActivityLocationKindTransform () =
             | v when v = "gc" -> ActivityLocationKind.GUILD_CHANNEL
             | v when v = "pc" -> ActivityLocationKind.PRIVATE_CHANNEL
             | _ -> failwith "Unexpected ActivityLocationKind type"
+
+// https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object-audit-log-events
+type AuditLogEventType =
+    | GUILD_UPDATE = 1
+    | CHANNEL_CREATE = 10
+    | CHANNEL_UDPATE = 11
+    | CHANNEL_DELETE = 12
+    | CHANNEL_OVERWRITE_CREATE = 13
+    | CHANNEL_OVERWRITE_UPDATE = 14
+    | CHANNEL_OVERWRITE_DELETE = 15
+    | MEMBER_KICK = 20
+    | MEMBER_PRUNE = 21
+    | MEMBER_BAN_ADD = 22
+    | MEMBER_BAN_REMOVE = 23
+    | MEMBER_UPDATE = 24
+    | MEMBER_ROLE_UPDATE = 25
+    | MEMBER_MOVE = 26
+    | MEMBER_DISCONNECT = 27
+    | BOT_ADD = 28
+    | ROLE_CREATE = 30
+    | ROLE_UPDATE = 31
+    | ROLE_DELETE = 32
+    | INVITE_CREATE = 40
+    | INVITE_UPDATE = 41
+    | INVITE_DELETE = 42
+    | WEBHOOK_CREATE = 50
+    | WEBHOOK_UPDATE = 51
+    | WEBHOOK_DELETE = 52
+    | EMOJI_CREATE = 60
+    | EMOJI_UPDATE = 61
+    | EMOJI_DELETE = 62
+    | MESSAGE_DELETE = 72
+    | MESSAGE_BULK_DELETE = 73
+    | MESSAGE_PIN = 74
+    | MESSAGE_UNPIN = 75
+    | INTEGRATION_CREATE = 80
+    | INTEGRATION_UPDATE = 81
+    | INTEGRATION_DELETE = 82
+    | STAGE_INSTANCE_CREATE = 83
+    | STAGE_INSTANCE_UPDATE = 84
+    | STAGE_INSTANCE_DELETE = 85
+    | STICKER_CREATE = 90
+    | STICKER_UPDATE = 91
+    | STICKER_DELETE = 92
+    | GUILD_SCHEDULED_EVENT_CREATE = 100
+    | GUILD_SCHEDULED_EVENT_UPDATE = 101
+    | GUILD_SCHEDULED_EVENT_DELETE = 102
+    | THREAD_CREATE = 110
+    | THREAD_UPDATE = 111
+    | THREAD_DELETE = 112
+    | APPLICATION_COMMAND_PERMISSION_UPDATE = 121
+    | AUTO_MODERATION_RULE_CREATE = 140
+    | AUTO_MODERATION_RULE_UPDATE = 141
+    | AUTO_MODERATION_RULE_DELETE = 142
+    | AUTO_MODERATION_BLOCK_MESSAGE = 143
+    | AUTO_MODERATION_FLAG_TO_CHANNEL = 144
+    | AUTO_MODERATION_USER_COMMUNICATION_DISABLED = 145
+    | CREATOR_MONETIZATION_REQUEST_CREATED = 150
+    | CREATOR_MONETIZATION_TERMS_ACCEPTED = 151
+    | ONBOARDING_PROMPT_CREATE = 163
+    | ONBOARDING_PROMPT_UPDATE = 164
+    | ONBOARDING_PROMPT_DELETE = 165
+    | ONBOARDING_CREATE = 166
+    | ONBOARDING_UPDATE = 167
+    | HOME_SETTINGS_CREATE = 190
+    | HOME_SETTINGS_UPDATE = 191
+
+// https://discord.com/developers/docs/resources/guild#integration-object-integration-structure
+type GuildIntegrationType =
+    | TWITCH
+    | YOUTUBE
+    | DISCORD
+    | GUILD_SUBSCRIPTION
+
+type GuildIntegrationTypeTransform () =
+    interface ITypeTransform with
+        member _.targetType () =
+            typeof<string>
+
+        member _.toTargetType value =
+            match value :?> GuildIntegrationType with
+            | GuildIntegrationType.TWITCH -> "twitch"
+            | GuildIntegrationType.YOUTUBE -> "youtube"
+            | GuildIntegrationType.DISCORD -> "discord"
+            | GuildIntegrationType.GUILD_SUBSCRIPTION -> "guild_subscription"
+
+        member _.fromTargetType value =
+            match value with
+            | v when v = "twitch" -> GuildIntegrationType.TWITCH
+            | v when v = "youtube" -> GuildIntegrationType.YOUTUBE
+            | v when v = "discord" -> GuildIntegrationType.DISCORD
+            | v when v = "guild_subscription" -> GuildIntegrationType.GUILD_SUBSCRIPTION
+            | _ -> failwith "Unexpected GuildIntegrationType type"
+
+type IntegrationExpireBehaviorType =
+    | REMOVE_ROLE = 0
+    | KICK = 1
+
+type OAuth2Scope =
+    | ACTIVITIES_READ
+    | ACTIVITIES_WRITE
+    | APPLICATIONS_BUILDS_READ
+    | APPLICATIONS_BUILDS_UPLOAD
+    | APPLICATIONS_COMMANDS
+    | APPLICATIONS_COMMANDS_UPDATE
+    | APPLICATIONS_COMMANDS_PERMISSIONS_UPDATE
+    | APPLICATIONS_ENTITLEMENTS
+    | APPLICATIONS_STORE_UPDATE
+    | BOT
+    | CONNECTIONS
+    | DM_CHANNELS_READ
+    | EMAIL
+    | GDM_JOIN
+    | GUILDS
+    | GUILDS_JOIN
+    | GUILDS_MEMBERS_READ
+    | IDENTIFY
+    | MESSAGES_READ
+    | RELATIONSHIPS_READ
+    | ROLE_CONNECTIONS_WRITE
+    | RPC
+    | RPC_ACTIVITIES_WRITE
+    | RPC_NOTIFICATIONS_READ
+    | RPC_VOICE_READ
+    | RPC_VOICE_WRITE
+    | VOICE
+    | WEBHOOK_INCOMING
+
+type OAuth2ScopeTransform () =
+    interface ITypeTransform with
+        member _.targetType () =
+            typeof<string>
+
+        member _.toTargetType value =
+            match value :?> OAuth2Scope with
+            | OAuth2Scope.ACTIVITIES_READ -> "activities.read"
+            | OAuth2Scope.ACTIVITIES_WRITE -> "activities.write"
+            | OAuth2Scope.APPLICATIONS_BUILDS_READ -> "applications.builds.read"
+            | OAuth2Scope.APPLICATIONS_BUILDS_UPLOAD -> "applications.builds.upload"
+            | OAuth2Scope.APPLICATIONS_COMMANDS -> "applications.commands"
+            | OAuth2Scope.APPLICATIONS_COMMANDS_UPDATE -> "applications.commands.update"
+            | OAuth2Scope.APPLICATIONS_COMMANDS_PERMISSIONS_UPDATE -> "applications.commands.permissions.update"
+            | OAuth2Scope.APPLICATIONS_ENTITLEMENTS -> "applications.entitlements"
+            | OAuth2Scope.APPLICATIONS_STORE_UPDATE -> "applications.store.update"
+            | OAuth2Scope.BOT -> "bot"
+            | OAuth2Scope.CONNECTIONS -> "connections"
+            | OAuth2Scope.DM_CHANNELS_READ -> "dm_channels.read"
+            | OAuth2Scope.EMAIL -> "email"
+            | OAuth2Scope.GDM_JOIN -> "gdm.join"
+            | OAuth2Scope.GUILDS -> "guilds"
+            | OAuth2Scope.GUILDS_JOIN -> "guilds.join"
+            | OAuth2Scope.GUILDS_MEMBERS_READ -> "guilds.members.read"
+            | OAuth2Scope.IDENTIFY -> "identify"
+            | OAuth2Scope.MESSAGES_READ -> "messages.read"
+            | OAuth2Scope.RELATIONSHIPS_READ -> "relationships.read"
+            | OAuth2Scope.ROLE_CONNECTIONS_WRITE -> "role_connections.write"
+            | OAuth2Scope.RPC -> "rpc"
+            | OAuth2Scope.RPC_ACTIVITIES_WRITE -> "rpc.activities.write"
+            | OAuth2Scope.RPC_NOTIFICATIONS_READ -> "rpc.notifications.read"
+            | OAuth2Scope.RPC_VOICE_READ -> "rpc.voice.read"
+            | OAuth2Scope.RPC_VOICE_WRITE -> "rpc.voice.write"
+            | OAuth2Scope.VOICE -> "voice"
+            | OAuth2Scope.WEBHOOK_INCOMING -> "webhook.incoming"
+
+        member _.fromTargetType value =
+            match value with
+            | v when v = "activities.read" -> OAuth2Scope.ACTIVITIES_READ
+            | v when v = "activities.write" -> OAuth2Scope.ACTIVITIES_WRITE
+            | v when v = "applications.builds.read" -> OAuth2Scope.APPLICATIONS_BUILDS_READ
+            | v when v = "applications.builds.upload" -> OAuth2Scope.APPLICATIONS_BUILDS_UPLOAD
+            | v when v = "applications.commands" -> OAuth2Scope.APPLICATIONS_COMMANDS
+            | v when v = "applications.commands.update" -> OAuth2Scope.APPLICATIONS_COMMANDS_UPDATE
+            | v when v = "applications.commands.permissions.update" -> OAuth2Scope.APPLICATIONS_COMMANDS_PERMISSIONS_UPDATE
+            | v when v = "applications.entitlements" -> OAuth2Scope.APPLICATIONS_ENTITLEMENTS
+            | v when v = "applications.store.update" -> OAuth2Scope.APPLICATIONS_STORE_UPDATE
+            | v when v = "bot" -> OAuth2Scope.BOT
+            | v when v = "connections" -> OAuth2Scope.CONNECTIONS
+            | v when v = "dm_channels.read" -> OAuth2Scope.DM_CHANNELS_READ
+            | v when v = "email" -> OAuth2Scope.EMAIL
+            | v when v = "gdm.join" -> OAuth2Scope.GDM_JOIN
+            | v when v = "guilds" -> OAuth2Scope.GUILDS
+            | v when v = "guilds.join" -> OAuth2Scope.GUILDS_JOIN
+            | v when v = "guilds.members.read" -> OAuth2Scope.GUILDS_MEMBERS_READ
+            | v when v = "identify" -> OAuth2Scope.IDENTIFY
+            | v when v = "messages.read" -> OAuth2Scope.MESSAGES_READ
+            | v when v = "relationships.read" -> OAuth2Scope.RELATIONSHIPS_READ
+            | v when v = "role_connections.write" -> OAuth2Scope.ROLE_CONNECTIONS_WRITE
+            | v when v = "rpc" -> OAuth2Scope.RPC
+            | v when v = "rpc.activities.write" -> OAuth2Scope.RPC_ACTIVITIES_WRITE
+            | v when v = "rpc.notifications.read" -> OAuth2Scope.RPC_NOTIFICATIONS_READ
+            | v when v = "rpc.voice.read" -> OAuth2Scope.RPC_VOICE_READ
+            | v when v = "rpc.voice.write" -> OAuth2Scope.RPC_VOICE_WRITE
+            | v when v = "voice" -> OAuth2Scope.VOICE
+            | v when v = "webhook.incoming" -> OAuth2Scope.WEBHOOK_INCOMING
+            | _ -> failwith "Unexpected OAuth2Scope type"
+
+// https://discord.com/developers/docs/resources/webhook#webhook-object-webhook-types
+type WebhookType =
+    | INCOMING = 1
+    | CHANNEL_FOLLOWER = 2
+    | APPLICATION = 3

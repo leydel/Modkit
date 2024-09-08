@@ -9,6 +9,8 @@ type IDiscordHttpService =
 
     abstract member ApplicationCommands: IDiscordHttpApplicationCommandActions
 
+    abstract member AuditLogs: IDiscordHttpAuditLogActions
+
     abstract member AutoModeration: IDiscordHttpAutoModerationActions
 
     abstract member RoleConnections: IDiscordHttpRoleConnectionActions
@@ -24,6 +26,8 @@ type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
         member _.Interactions = DiscordHttpInteractionActions(httpClientFactory, token)
 
         member _.ApplicationCommands = DiscordHttpApplicationCommandActions(httpClientFactory, token)
+
+        member _.AuditLogs = DiscordHttpAuditLogActions(httpClientFactory, token)
 
         member _.AutoModeration = DiscordHttpAutoModerationActions(httpClientFactory, token)
         

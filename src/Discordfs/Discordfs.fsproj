@@ -19,6 +19,7 @@
     <Compile Include="Services\DiscordHttpService\DiscordHttpApplicationCommandActions.fs" />
     <Compile Include="Services\DiscordHttpService\DiscordHttpApplicationActions.fs" />
     <Compile Include="Services\DiscordHttpService\DiscordHttpRoleConnectionActions.fs" />
+    <Compile Include="Services\DiscordHttpService\DiscordHttpAuditLogActions.fs" />
     <Compile Include="Services\DiscordHttpService\DiscordHttpAutoModerationActions.fs" />
     <Compile Include="Services\DiscordHttpService\DiscordHttpChannelActions.fs" />
     <Compile Include="Services\DiscordHttpService\DiscordHttpGatewayActions.fs" />
