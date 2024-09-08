@@ -25,9 +25,9 @@ type DiscordHttpAuditLogActions (httpClientFactory: IHttpClientFactory, token: s
                 $"guilds/{guildId}/audit-logs"
             |> Req.bot token
             |> Req.queryOpt "user_id" userId
-            |> Req.queryOpt "action_type" (match actionType with | Some a -> Some ((int a).ToString()) | None -> None)
+            |> Req.queryOpt "action_type" (Option.map (fun a -> (int a).ToString()) actionType)
             |> Req.queryOpt "before" before
             |> Req.queryOpt "after" after
-            |> Req.queryOpt "limit" (match limit with | Some l -> Some (l.ToString()) | None -> None)
+            |> Req.queryOpt "limit" (Option.map _.ToString() limit)
             |> Req.send httpClientFactory
             |> Res.body

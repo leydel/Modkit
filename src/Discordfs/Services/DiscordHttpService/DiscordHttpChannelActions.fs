@@ -383,8 +383,8 @@ type DiscordHttpChannelActions (httpClientFactory: IHttpClientFactory, token: st
                 Constants.DISCORD_API_URL
                 $"channels/{channelId}/threads/archived/public"
             |> Req.bot token
-            |> Req.queryOpt "before" (match before with Some b -> Some (b.ToString()) | None -> None)
-            |> Req.queryOpt "limit" (match limit with Some l -> Some (l.ToString()) | None -> None)
+            |> Req.queryOpt "before" (Option.map _.ToString() before)
+            |> Req.queryOpt "limit" (Option.map _.ToString() limit)
             |> Req.send httpClientFactory
             |> Res.body
 
@@ -394,8 +394,8 @@ type DiscordHttpChannelActions (httpClientFactory: IHttpClientFactory, token: st
                 Constants.DISCORD_API_URL
                 $"channels/{channelId}/threads/archived/private"
             |> Req.bot token
-            |> Req.queryOpt "before" (match before with Some b -> Some (b.ToString()) | None -> None)
-            |> Req.queryOpt "limit" (match limit with Some l -> Some (l.ToString()) | None -> None)
+            |> Req.queryOpt "before" (Option.map _.ToString() before)
+            |> Req.queryOpt "limit" (Option.map _.ToString() limit)
             |> Req.send httpClientFactory
             |> Res.body
 
@@ -405,7 +405,7 @@ type DiscordHttpChannelActions (httpClientFactory: IHttpClientFactory, token: st
                 Constants.DISCORD_API_URL
                 $"channels/{channelId}/users/@me/threads/archived/private"
             |> Req.bot token
-            |> Req.queryOpt "before" (match before with Some b -> Some (b.ToString()) | None -> None)
-            |> Req.queryOpt "limit" (match limit with Some l -> Some (l.ToString()) | None -> None)
+            |> Req.queryOpt "before" (Option.map _.ToString() before)
+            |> Req.queryOpt "limit" (Option.map _.ToString() limit)
             |> Req.send httpClientFactory
             |> Res.body
