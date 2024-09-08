@@ -578,3 +578,37 @@ type AutoModerationActionType =
     | SEND_ALERT_MESSAGE = 2
     | TIMEOUT = 3
     | BLOCK_MEMBER_INTERACTION = 4
+
+// https://discord.com/developers/docs/resources/application#application-object-application-flags
+type ApplicationFlag =
+    | APPLICATION_AUTO_MODERATION_RULE_CREATE_BADGE = 0b00000000_00000000_01000000
+    | GATEWAY_PRESENCE                              = 0b00000000_00010000_00000000
+    | GATEWAY_PRESENCE_LIMITED                      = 0b00000000_00100000_00000000
+    | GATEWAY_GUILD_MEMBERS                         = 0b00000000_01000000_00000000
+    | GATEWAY_GUILD_MEMBERS_LIMITED                 = 0b00000000_10000000_00000000
+    | VERIFICATION_PENDING_GUILD_LIMIT              = 0b00000001_00000000_00000000
+    | EMBEDDED                                      = 0b00000010_00000000_00000000
+    | GATEWAY_MESSAGE_CONTENT                       = 0b00000100_00000000_00000000
+    | GATEWAY_MESSAGE_CONTENT_LIMITED               = 0b00001000_00000000_00000000
+    | APPLICATION_COMMAND_BADGE                     = 0b10000000_00000000_00000000
+
+// https://discord.com/developers/docs/resources/application#get-application-activity-instance-activity-location-kind-enum
+type ActivityLocationKind =
+    | GUILD_CHANNEL
+    | PRIVATE_CHANNEL
+
+type ActivityLocationKindTransform () =
+    interface ITypeTransform with
+        member _.targetType () =
+            typeof<obj>
+
+        member _.toTargetType value =
+            match value :?> ActivityLocationKind with
+            | ActivityLocationKind.GUILD_CHANNEL -> "gc"
+            | ActivityLocationKind.PRIVATE_CHANNEL -> "pc"
+
+        member _.fromTargetType value =
+            match value with
+            | v when v = "gc" -> ActivityLocationKind.GUILD_CHANNEL
+            | v when v = "pc" -> ActivityLocationKind.PRIVATE_CHANNEL
+            | _ -> failwith "Unexpected ActivityLocationKind type"

@@ -2280,3 +2280,36 @@ type AutoModerationRule = {
     [<JsonField("exempt_channels")>]
     ExemptChannels: string list
 }
+
+// https://discord.com/developers/docs/resources/application#get-application-activity-instance-activity-location-object
+type ActivityLocation = {
+    [<JsonField("id")>]
+    Id: string
+    
+    [<JsonField("kind", Transform = ActivityLocationKindTransform)>]
+    Kind: ActivityLocationKind
+    
+    [<JsonField("channel_id")>]
+    ChannelId: string
+    
+    [<JsonField("guild_id")>]
+    GuildId: string option
+}
+
+// https://discord.com/developers/docs/resources/application#get-application-activity-instance-activity-instance-object
+type ActivityInstance = {
+    [<JsonField("application_id")>]
+    ApplicationId: string
+    
+    [<JsonField("instance_id")>]
+    InstanceId: string
+    
+    [<JsonField("launch_id")>]
+    LaunchId: string
+    
+    [<JsonField("location")>]
+    Location: ActivityLocation
+    
+    [<JsonField("users")>]
+    Users: string list
+}

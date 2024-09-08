@@ -15,6 +15,7 @@
     <Compile Include="Types\DTOs.fs" />
     <Compile Include="Commands\Command.fs" />
     <Compile Include="Commands\Options.fs" />
+    <Compile Include="Services\DiscordHttpService\DiscordHttpApplicationActions.fs" />
     <Compile Include="Services\DiscordHttpService\DiscordHttpInteractionActions.fs" />
     <Compile Include="Services\DiscordHttpService\DiscordHttpApplicationCommandActions.fs" />
     <Compile Include="Services\DiscordHttpService\DiscordHttpAutoModerationActions.fs" />
