@@ -32,7 +32,7 @@ module azServiceBusQueue 'resources/azServiceBusQueue.bicep' = {
     session: true
     deadLettering: true
     partitioning: false
-    express: true
+    express: false
   }
 }
 
