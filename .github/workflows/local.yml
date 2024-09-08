@@ -1,0 +1,37 @@
+name: Setup Local
+
+on:
+  workflow_dispatch:
+    inputs:
+      USER_ID:
+        description: "The ID of the user to deploy resources for"
+        required: true
+        default: "fin"
+
+      REGION:
+        description: "The Azure region to deploy to"
+        required: true
+        default: "australiaeast"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log into Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ env.AZURE_CREDENTIALS }}
+
+      - name: Build infrastructure
+        id: bicep
+        uses: azure/arm-deploy@v1
+        with:
+          scope: "subscription"
+          template: .bicep/local.bicep
+          parameters: "region=${{ inputs.REGION }} userId=${{ inputs.USER_ID }}"
+          failOnStdErr: false
+          region: ${{ inputs.REGION }}
+
+      - name: Show outputs of deployment
+        run: |
+          echo "Resources have been successfully deployed to **${{ steps.bicep.outputs.resourceGroupName }}**."
