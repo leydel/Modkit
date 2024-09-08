@@ -9,7 +9,7 @@
   <ItemGroup>
     <Compile Include="Factories\ServiceBusClientFactory.fs" />
     <Compile Include="Program.fs" />
-    <Content Include="appsettings.json" />
+    <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include=".gitignore" />
     <None Include="Dockerfile" />
   </ItemGroup>

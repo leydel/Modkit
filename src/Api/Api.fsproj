@@ -10,9 +10,10 @@
   </PropertyGroup>
 	
   <ItemGroup>
+    <Compile Include="Functions\ServiceBus\GatewayServiceBusFunction.fs" />
     <Compile Include="Program.fs" />
-    <Content Include="local.settings.json" />
-    <Content Include="host.json" />
+    <Content Include="local.settings.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="host.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include=".gitignore" />
   </ItemGroup>
 	
