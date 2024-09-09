@@ -11,59 +11,51 @@ open System.Threading.Tasks
 type IDiscordGatewayActions =
     abstract member Identify:
         Identify ->
-        Task<unit>
+        Task<Result<unit, string>>
 
     abstract member Resume:
         Resume ->
-        Task<unit>
+        Task<Result<unit, string>>
 
     abstract member Heartbeat:
         Heartbeat ->
-        Task<unit>
+        Task<Result<unit, string>>
 
     abstract member RequestGuildMembers:
         RequestGuildMembers ->
-        Task<unit>
+        Task<Result<unit, string>>
 
     abstract member UpdateVoiceState:
         UpdateVoiceState ->
-        Task<unit>
+        Task<Result<unit, string>>
 
     abstract member UpdatePresence:
         UpdatePresence ->
-        Task<unit>
+        Task<Result<unit, string>>
 
-type DiscordGatewayActions (private _ws: ClientWebSocket option) =
-    member this.Send (message: GatewayEvent) = task {
+type DiscordGatewayActions (private _ws: ClientWebSocket) =
+    let rec send (buffer: byte array) (offset: int) = async {
         let cts = new CancellationTokenSource ()
         cts.CancelAfter(TimeSpan.FromSeconds 5)
 
-        match _ws with
-        | None ->
-            return Error "Unable to send data as no websocket is connected"
-        | Some ws ->
+        let count = 1024
+        let segment = ArraySegment(buffer, offset, count)
+        let isEndOfMessage = offset + count >= buffer.Length
+
+        do! _ws.SendAsync(segment, WebSocketMessageType.Text, isEndOfMessage, cts.Token) |> Async.AwaitTask
+
+        match isEndOfMessage with
+        | false -> return! send buffer (offset + count)
+        | true -> return Ok ()
+    }
+
+    member _.Send (message: GatewayEvent) = task {
+        try
             let buffer = message |> Json.serialize |> Encoding.UTF8.GetBytes
-
-            let rec loop buffer offset = task {
-                let count = 1024
-                let segment = ArraySegment(buffer, offset, count)
-                let isEndOfMessage = offset + count >= buffer.Length
-
-                try
-                    do! ws.SendAsync(segment, WebSocketMessageType.Text, isEndOfMessage, cts.Token)
-
-                    if isEndOfMessage then
-                        return Ok ()
-                    else
-                        return! loop buffer (offset + count)
-                with
-                    | _ ->
-                        return Error "Unexpected error occurred when attempting to send message"
-            }
-
-            return! loop buffer 0
-
-        // TODO: Clean up this code
+            return! send buffer 0
+        with
+        | _ ->
+            return Error "Unexpected error occurred when attempting to send message"
     }
 
     interface IDiscordGatewayActions with
@@ -73,7 +65,7 @@ type DiscordGatewayActions (private _ws: ClientWebSocket option) =
                 Data = payload
             ))
             
-            do! this.Send message :> Task
+            return! this.Send message
         }
             
         member this.Resume payload = task {
@@ -82,7 +74,7 @@ type DiscordGatewayActions (private _ws: ClientWebSocket option) =
                 Data = payload
             ))
             
-            do! this.Send message :> Task
+            return! this.Send message
         }
 
         member this.Heartbeat payload = task {
@@ -91,7 +83,7 @@ type DiscordGatewayActions (private _ws: ClientWebSocket option) =
                 Data = payload
             ))
             
-            do! this.Send message :> Task
+            return! this.Send message
         }
 
         member this.RequestGuildMembers payload = task {
@@ -100,7 +92,7 @@ type DiscordGatewayActions (private _ws: ClientWebSocket option) =
                 Data = payload
             ))
             
-            do! this.Send message :> Task
+            return! this.Send message
         }
 
         member this.UpdateVoiceState payload = task {
@@ -109,7 +101,7 @@ type DiscordGatewayActions (private _ws: ClientWebSocket option) =
                 Data = payload
             ))
             
-            do! this.Send message :> Task
+            return! this.Send message
         }
 
         member this.UpdatePresence payload = task {
@@ -117,6 +109,6 @@ type DiscordGatewayActions (private _ws: ClientWebSocket option) =
                 Opcode = GatewayOpcode.PRESENCE_UPDATE,
                 Data = payload
             ))
-
-            do! this.Send message :> Task
+            
+            return! this.Send message
         }
