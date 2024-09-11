@@ -561,3 +561,45 @@ type EditCurrentApplication = {
     [<JsonField("tags")>]
     Tags: string list option
 }
+
+// https://discord.com/developers/docs/resources/emoji#create-guild-emoji-json-params
+type CreateGuildEmoji = {
+    [<JsonField("name")>]
+    Name: string
+    
+    [<JsonField("image")>]
+    Image: string
+    
+    [<JsonField("roles")>]
+    Roles: string list
+}
+
+// https://discord.com/developers/docs/resources/emoji#modify-guild-emoji-json-params
+type ModifyGuildEmoji = {
+    [<JsonField("name")>]
+    Name: string option
+    
+    [<JsonField("roles")>]
+    Roles: string list option
+}
+
+// https://discord.com/developers/docs/resources/emoji#list-application-emojis
+type ListApplicationEmojisResponse = {
+    [<JsonField("items")>]
+    Items: Emoji list
+}
+
+// https://discord.com/developers/docs/resources/emoji#create-application-emoji-json-params
+type CreateApplicationEmoji = {
+    [<JsonField("name")>]
+    Name: string
+    
+    [<JsonField("image")>]
+    Image: string
+}
+
+// https://discord.com/developers/docs/resources/emoji#modify-application-emoji-json-params
+type ModifyApplicationEmoji = {
+    [<JsonField("name")>]
+    Name: string
+}

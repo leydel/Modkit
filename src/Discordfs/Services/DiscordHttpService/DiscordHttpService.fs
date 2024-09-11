@@ -17,6 +17,8 @@ type IDiscordHttpService =
 
     abstract member Channels: IDiscordHttpChannelActions
 
+    abstract member Emojis: IDiscordHttpEmojiActions
+
     abstract member Gateway: IDiscordHttpGatewayActions
 
 type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
@@ -34,5 +36,7 @@ type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
         member _.RoleConnections = DiscordHttpRoleConnectionActions(httpClientFactory, token)
 
         member _.Channels = DiscordHttpChannelActions(httpClientFactory, token)
+
+        member _.Emojis = DiscordHttpEmojiActions(httpClientFactory, token)
 
         member _.Gateway = DiscordHttpGatewayActions(httpClientFactory, token)

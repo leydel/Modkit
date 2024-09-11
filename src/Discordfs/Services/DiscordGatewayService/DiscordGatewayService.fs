@@ -23,9 +23,24 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
     member val private _ws: ClientWebSocket = new ClientWebSocket()
 
     member this.mapLifecycle (handler: GatewayEvent -> Task<unit>) (message: GatewayEvent) = task {
-        // TODO: Handle hello, heartbeat, ready
+        System.Console.WriteLine $"Opcode: {message.Opcode}, Event Name: {message.EventName}"
 
-        return! handler message
+        match message.Opcode with
+        | GatewayOpcode.HELLO ->
+            // initiate heartbeat (gives interval)
+            // on interval: if doesnt receive heartbeat ack, close connection and reconnect
+
+            return () // TODO: Handle
+        | GatewayOpcode.HEARTBEAT_ACK ->
+            // on first ack, send identify
+
+            return () // TODO: Handle
+        | GatewayOpcode.DISPATCH when message.EventName = Some "Ready" -> // TODO: Check correct event name
+            // send heartbeat back (or reverse)
+
+            return () // TODO: Handle
+        | _ -> 
+            return! handler message
     }
 
     member this.handle (handler: GatewayEvent -> Task<unit>) = task {
