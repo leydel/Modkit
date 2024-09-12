@@ -10,6 +10,17 @@
   </PropertyGroup>
 	
   <ItemGroup>
+    <Compile Include="Models\Note.fs" />
+    <Compile Include="DTOs\NoteDto.fs" />
+    <Compile Include="Repositories\NoteRepository.fs" />
+    <Compile Include="Actions\Notes\NoteListAction.fs" />
+    <Compile Include="Actions\Notes\NoteGetAction.fs" />
+    <Compile Include="Actions\Notes\NoteAddAction.fs" />
+    <Compile Include="Actions\Notes\NoteRemoveAction.fs" />
+    <Compile Include="Functions\Http\Notes\NoteListFunction.fs" />
+    <Compile Include="Functions\Http\Notes\NoteGetFunction.fs" />
+    <Compile Include="Functions\Http\Notes\NoteAddFunction.fs" />
+    <Compile Include="Functions\Http\Notes\NoteRemoveFunction.fs" />
     <Compile Include="Functions\ServiceBus\GatewayServiceBusFunction.fs" />
     <Compile Include="Program.fs" />
     <Content Include="local.settings.json" CopyToOutputDirectory="PreserveNewest" />
@@ -19,6 +30,7 @@
 	
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.23.0" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.CosmosDB" Version="4.11.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.2.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.ServiceBus" Version="5.22.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.17.4" />
