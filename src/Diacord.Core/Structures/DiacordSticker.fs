@@ -9,6 +9,10 @@ open System.Text.Json.Serialization
 [<CustomEquality>]
 [<NoComparison>]
 type DiacordSticker = {
+    [<JsonPropertyName("diacord_id")>]
+    [<JsonRequired>]
+    DiacordId: string
+
     [<JsonPropertyName("name")>]
     [<JsonRequired>]
     Name: string
@@ -21,19 +25,13 @@ type DiacordSticker = {
     Tags: string
 }
 with
-    static member from (sticker: Sticker) = {
-        Name = sticker.Name;
-        Description = sticker.Description;
-        Tags = sticker.Tags;
-    }
-
-    static member diff (s1: DiacordSticker) (s2: DiacordSticker) =
+    static member diff (s1: DiacordSticker) (s2: Sticker) =
         List.collect Option.toList <| [
             Diff.from "name" (Some s1.Name) (Some s2.Name);
             Diff.from "description" s1.Description s2.Description;
             Diff.from "tags" (Some s1.Tags) (Some s2.Tags);
         ]
 
-    interface IEquatable<DiacordSticker> with
+    interface IEquatable<Sticker> with
         override this.Equals other =
             List.isEmpty <| DiacordSticker.diff this other

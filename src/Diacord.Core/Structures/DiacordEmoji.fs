@@ -9,6 +9,10 @@ open System.Text.Json.Serialization
 [<CustomEquality>]
 [<NoComparison>]
 type DiacordEmoji = {
+    [<JsonPropertyName("diacord_id")>]
+    [<JsonRequired>]
+    DiacordId: string
+
     [<JsonPropertyName("name")>]
     [<JsonRequired>]
     Name: string
@@ -17,17 +21,12 @@ type DiacordEmoji = {
     Roles: string list option
 }
 with
-    static member from (emoji: Emoji) = {
-        Name = Option.get emoji.Name;
-        Roles = emoji.Roles;
-    }
-
-    static member diff (e1: DiacordEmoji) (e2: DiacordEmoji) =
+    static member diff (e1: DiacordEmoji) (e2: Emoji) =
         List.collect Option.toList <| [
-            Diff.from "name" (Some r1.Name) (Some r2.Name);
+            Diff.from "name" (Some e1.Name) e2.Name;
             Diff.from "roles" e1.Roles e2.Roles;
         ]
 
-    interface IEquatable<DiacordEmoji> with
+    interface IEquatable<Emoji> with
         override this.Equals other =
             List.isEmpty <| DiacordEmoji.diff this other

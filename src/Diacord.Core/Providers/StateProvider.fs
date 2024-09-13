@@ -17,8 +17,8 @@ type StateProvider (discordHttpService: IDiscordHttpService) =
             let! stickers = discordHttpService.Stickers.ListGuildStickers guildId
 
             return {
-                Roles = List.map DiacordRole.from roles;
-                Emojis = List.map DiacordEmoji.from emojis;
-                Stickers = List.map DiacordSticker.from stickers;
+                Roles = roles;
+                Emojis = emojis;
+                Stickers = stickers;
             }
         }

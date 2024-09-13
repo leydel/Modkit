@@ -1,9 +1,11 @@
 ﻿namespace Modkit.Diacord.Core.Structures
 
+open Modkit.Discordfs.Types
+
 type DiacordState = {
-    Roles: DiacordRole list
+    Roles: Role list
 
-    Emojis: DiacordEmoji list
+    Emojis: Emoji list
 
-    Stickers: DiacordSticker list
+    Stickers: Sticker list
 }
