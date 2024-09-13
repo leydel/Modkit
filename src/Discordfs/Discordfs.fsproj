@@ -24,6 +24,7 @@
     <Compile Include="Services\DiscordHttpService\DiscordHttpChannelActions.fs" />
     <Compile Include="Services\DiscordHttpService\DiscordHttpEmojiActions.fs" />
     <Compile Include="Services\DiscordHttpService\DiscordHttpGatewayActions.fs" />
+    <Compile Include="Services\DiscordHttpService\DiscordHttpGuildActions.fs" />
     <Compile Include="Services\DiscordHttpService\DiscordHttpService.fs" />
     <Compile Include="Services\DiscordGatewayService\DiscordGatewayActions.fs" />
     <Compile Include="Services\DiscordGatewayService\DiscordGatewayService.fs" />

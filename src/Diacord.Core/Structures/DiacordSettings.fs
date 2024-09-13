@@ -3,7 +3,7 @@
 type DefaultValueAttribute = System.ComponentModel.DefaultValueAttribute
 open System.Text.Json.Serialization
 
-type Settings = {
+type DiacordSettings = {
     [<JsonPropertyName("strict_roles")>]
     [<JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)>] // TODO: Test this
     [<DefaultValue(false)>]

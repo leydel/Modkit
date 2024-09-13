@@ -21,6 +21,8 @@ type IDiscordHttpService =
 
     abstract member Gateway: IDiscordHttpGatewayActions
 
+    abstract member Guilds: IDiscordHttpGuildActions
+
 type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
     interface IDiscordHttpService with
         member _.Applications = DiscordHttpApplicationActions(httpClientFactory, token)
@@ -40,3 +42,5 @@ type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
         member _.Emojis = DiscordHttpEmojiActions(httpClientFactory, token)
 
         member _.Gateway = DiscordHttpGatewayActions(httpClientFactory, token)
+
+        member _.Guilds = DiscordHttpGuildActions(httpClientFactory, token)

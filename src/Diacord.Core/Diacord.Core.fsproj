@@ -8,12 +8,14 @@
 
   <ItemGroup>
     <Compile Include="Types\Diff.fs" />
-    <Compile Include="Structures\Settings.fs" />
-    <Compile Include="Structures\Role.fs" />
-    <Compile Include="Structures\Template.fs" />
+    <Compile Include="Structures\DiacordSettings.fs" />
+    <Compile Include="Structures\DiacordRole.fs" />
+    <Compile Include="Structures\DiacordTemplate.fs" />
+    <Compile Include="Structures\DiacordState.fs" />
     <Compile Include="Interfaces\IParserStrategy.fs" />
     <Compile Include="Strategies\Parser\JsonParserStrategy.fs" />
     <Compile Include="Providers\ParserStrategyProvider.fs" />
+    <Compile Include="Providers\StateProvider.fs" />
   </ItemGroup>
 
   <ItemGroup>

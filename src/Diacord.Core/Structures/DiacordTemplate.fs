@@ -2,10 +2,10 @@
 
 open System.Text.Json.Serialization
 
-type Template = {
+type DiacordTemplate = {
     [<JsonPropertyName("settings")>]
-    Settings: Settings option
+    Settings: DiacordSettings option
 
     [<JsonPropertyName("roles")>]
-    Roles: Role list option
+    Roles: DiacordRole list option
 }
