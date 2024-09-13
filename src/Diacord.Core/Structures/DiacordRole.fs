@@ -3,7 +3,6 @@
 open Modkit.Diacord.Core.Types
 open Modkit.Discordfs.Types
 open System
-type DefaultValueAttribute = System.ComponentModel.DefaultValueAttribute
 open System.Text.Json.Serialization
 
 [<CustomEquality>]
@@ -22,7 +21,7 @@ type DiacordRole = {
 
     [<JsonPropertyName("hoist")>]
     [<JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)>] // TODO: Test this
-    [<DefaultValue(false)>]
+    [<System.ComponentModel.DefaultValue(false)>]
     Hoist: bool
 
     [<JsonPropertyName("icon")>]
@@ -36,7 +35,7 @@ type DiacordRole = {
 
     [<JsonPropertyName("mentionable")>]
     [<JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)>] // TODO: Test this
-    [<DefaultValue(false)>]
+    [<System.ComponentModel.DefaultValue(false)>]
     Mentionable: bool
 }
 with

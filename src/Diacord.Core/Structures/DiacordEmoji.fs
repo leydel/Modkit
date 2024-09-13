@@ -3,7 +3,6 @@
 open Modkit.Diacord.Core.Types
 open Modkit.Discordfs.Types
 open System
-type DefaultValueAttribute = System.ComponentModel.DefaultValueAttribute
 open System.Text.Json.Serialization
 
 [<CustomEquality>]
