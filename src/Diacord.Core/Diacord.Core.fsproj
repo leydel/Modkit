@@ -18,6 +18,7 @@
     <Compile Include="Strategies\Parser\JsonParserStrategy.fs" />
     <Compile Include="Providers\ParserStrategyProvider.fs" />
     <Compile Include="Providers\StateProvider.fs" />
+    <Compile Include="Services\StateService.fs" />
   </ItemGroup>
 
   <ItemGroup>
