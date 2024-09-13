@@ -13,8 +13,12 @@ type StateProvider (discordHttpService: IDiscordHttpService) =
     interface IStateProvider with
         member _.GetState guildId = task {
             let! roles = discordHttpService.Guilds.GetGuildRoles guildId
+            let! emojis = discordHttpService.Emojis.ListGuildEmojis guildId
+            let! stickers = discordHttpService.Stickers.ListGuildStickers guildId
 
             return {
                 Roles = List.map DiacordRole.from roles;
+                Emojis = List.map DiacordEmoji.from emojis;
+                Stickers = List.map DiacordSticker.from stickers;
             }
         }

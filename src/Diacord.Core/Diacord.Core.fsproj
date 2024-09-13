@@ -8,8 +8,10 @@
 
   <ItemGroup>
     <Compile Include="Types\Diff.fs" />
-    <Compile Include="Structures\DiacordSettings.fs" />
+    <Compile Include="Structures\DiacordSticker.fs" />
+    <Compile Include="Structures\DiacordEmoji.fs" />
     <Compile Include="Structures\DiacordRole.fs" />
+    <Compile Include="Structures\DiacordSettings.fs" />
     <Compile Include="Structures\DiacordTemplate.fs" />
     <Compile Include="Structures\DiacordState.fs" />
     <Compile Include="Interfaces\IParserStrategy.fs" />

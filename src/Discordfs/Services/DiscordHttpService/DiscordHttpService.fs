@@ -23,6 +23,8 @@ type IDiscordHttpService =
 
     abstract member Guilds: IDiscordHttpGuildActions
 
+    abstract member Stickers: IDiscordHttpStickerActions
+
 type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
     interface IDiscordHttpService with
         member _.Applications = DiscordHttpApplicationActions(httpClientFactory, token)
@@ -44,3 +46,5 @@ type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
         member _.Gateway = DiscordHttpGatewayActions(httpClientFactory, token)
 
         member _.Guilds = DiscordHttpGuildActions(httpClientFactory, token)
+
+        member _.Stickers = DiscordHttpStickerActions(httpClientFactory, token)
