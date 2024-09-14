@@ -1527,6 +1527,65 @@ type InviteMetadata = {
     CreatedAt: DateTime
 }
 
+// GetChannelInvite returns a list Invite objects with InviteMetadata added. To make this easy to implement here, I've
+// just created this type to combine the two. If changes are made to either Invite or InviteMetadata, they should be
+// duplicated here. A proper fix for this is probably possible, but implementing this way means the return type is more
+// accurate for now making it a lower priority fix.
+
+type InviteWithMetadata = {
+    [<JsonField("type", EnumValue = EnumMode.Value)>]
+    Type: InviteType
+
+    [<JsonField("code")>]
+    Code: string
+    
+    [<JsonField("guild")>]
+    Guild: Guild option
+    
+    [<JsonField("channel")>]
+    Channel: Channel option
+    
+    [<JsonField("inviter")>]
+    Inviter: User option
+    
+    [<JsonField("target_type", EnumValue = EnumMode.Value)>]
+    TargetType: InviteTargetType option
+    
+    [<JsonField("target_user")>]
+    TargetUser: User option
+    
+    [<JsonField("target_application")>]
+    TargetApplication: Application option
+    
+    [<JsonField("approximate_presence_count")>]
+    ApproximatePresenceCount: int option
+    
+    [<JsonField("approximate_member_count")>]
+    ApproximateMemberCount: int option
+    
+    [<JsonField("expires_at")>]
+    ExpiresAt: DateTime
+
+    // TODO: Add `guild_scheduled_event` with type from: https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-structure
+    
+    [<JsonField("uses")>]
+    Uses: int
+    
+    [<JsonField("max_uses")>]
+    MaxUses: int
+    
+    [<JsonField("max_age")>]
+    MaxAge: int
+    
+    [<JsonField("temporary")>]
+    Temporary: bool
+    
+    [<JsonField("created_at")>]
+    CreatedAt: DateTime
+
+    // TODO: Make this type by combining `Invite` and `InviteMetadata` somehow without code duplication
+}
+
 type InteractionData = {
     [<JsonField("id")>]
     Id: string

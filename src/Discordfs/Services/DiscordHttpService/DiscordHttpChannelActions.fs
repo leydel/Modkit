@@ -34,7 +34,7 @@ type IDiscordHttpChannelActions =
     // https://discord.com/developers/docs/resources/channel#get-channel-invites
     abstract member GetChannelInvites:
         channelId: string ->
-        Task<Invite list> // TODO: Figure out how to combine the records `Invite` and `InviteMetadata` for this return type
+        Task<InviteWithMetadata list>
 
     // https://discord.com/developers/docs/resources/channel#create-channel-invite
     abstract member CreateChannelInvite:
