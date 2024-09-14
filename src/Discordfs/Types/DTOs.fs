@@ -615,3 +615,27 @@ type CreateTestEntitlement = {
     [<JsonField("owner_type", EnumValue = EnumMode.Value)>]
     OwnerType: EntitlementOwnerType
 }
+
+// TODO: Define all below
+type CreateGuild = obj
+type ModifyGuild = obj
+type CreateGuildChannel = obj
+type ModifyGuildChannelPositions = obj
+type ListActiveGuildThreadsResponse = obj
+type AddGuildMember = obj
+type ModifyGuildMember = obj
+type ModifyCurrentMember = obj
+type CreateGuildBan = obj
+type BulkGuildBan = obj
+type BulkGuildBanResponse = obj
+type CreateGuildRole = obj
+type ModifyGuildRolePositions = obj
+type ModifyGuildRole = obj
+type ModifyGuildMfaLevel = obj
+type GetGuildPruneCountResponse = obj
+type BeginGuildPrune = obj
+type BeginGuildPruneResponse = obj
+type ModifyGuildWidgetSettings = obj
+type GetGuildVanityUrlResponse = obj
+type ModifyGuildWelcomeScreen = obj
+type ModifyGuildOnboarding = obj

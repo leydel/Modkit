@@ -368,6 +368,7 @@ type Sticker = {
     SortValue: int option
 }
 
+// https://discord.com/developers/docs/resources/guild#guild-object-guild-structure
 type Guild = {
     [<JsonField("id")>]
     Id: string
@@ -423,8 +424,8 @@ type Guild = {
     [<JsonField("emojis")>]
     Emojis: Emoji list
 
-    [<JsonField("features")>]
-    Featuers: string list
+    [<JsonField("features", Transform = typeof<GuildFeatureTransform>)>] // TODO: Test if this transform works on list
+    Features: GuildFeature list
 
     [<JsonField("mfa_level", EnumValue = EnumMode.Value)>]
     MfaLevel: GuildMfaLevel
@@ -494,6 +495,127 @@ type Guild = {
 
     [<JsonField("safety_alerts_channel_id")>]
     SafetyAlertsChannelId: string option
+
+    // Only included in unavailable guilds: https://discord.com/developers/docs/resources/guild#unavailable-guild-object
+    [<JsonField("unavailable")>]
+    Unavailable: bool option
+}
+
+// https://discord.com/developers/docs/resources/guild#guild-preview-object-guild-preview-structure
+type GuildPreview = {
+    [<JsonField("id")>]
+    Id: string
+    
+    [<JsonField("name")>]
+    Name: string
+    
+    [<JsonField("icon")>]
+    Icon: string option
+    
+    [<JsonField("splash")>]
+    Splash: string option
+    
+    [<JsonField("discovery_splash")>]
+    DiscoverySplash: string option
+    
+    [<JsonField("emojis")>]
+    Emojis: Emoji list
+    
+    [<JsonField("features", Transform = typeof<GuildFeatureTransform>)>] // TODO: Test if this transform works on list
+    Features: GuildFeature list
+    
+    [<JsonField("approximate_member_count")>]
+    ApproximateMemberCount: int
+    
+    [<JsonField("approximate_presence_count")>]
+    ApproximatePresenceCount: int
+    
+    [<JsonField("description")>]
+    Description: string option
+    
+    [<JsonField("stickers")>]
+    Stickers: Sticker list
+}
+
+// https://discord.com/developers/docs/resources/guild#guild-widget-settings-object-guild-widget-settings-structure
+type GuildWidgetSettings = {
+    [<JsonField("enabled")>]
+    Enabled: bool
+    
+    [<JsonField("channel_id")>]
+    ChannelId: string option
+}
+
+// https://discord.com/developers/docs/resources/guild#guild-onboarding-object-prompt-option-structure
+type GuildOnboardingPromptOption = {
+    [<JsonField("id")>]
+    Id: string
+    
+    [<JsonField("channel_ids")>]
+    ChannelIds: string list
+    
+    [<JsonField("role_ids")>]
+    RoleIds: string list
+    
+    [<JsonField("emoji")>]
+    Emoji: Emoji option
+    
+    [<JsonField("emoji_id")>]
+    EmojiId: string option
+    
+    [<JsonField("emoji_name")>]
+    EmojiName: string option
+    
+    [<JsonField("emoji_animated")>]
+    EmojiAnimated: bool option
+    
+    [<JsonField("title")>]
+    Title: string
+    
+    [<JsonField("description")>]
+    Description: string
+}
+
+// https://discord.com/developers/docs/resources/guild#guild-onboarding-object-onboarding-prompt-structure
+type GuildOnboardingPrompt = {
+    [<JsonField("id")>]
+    Id: string
+    
+    [<JsonField("type", EnumValue = EnumMode.Value)>]
+    Type: OnboardingPromptType
+    
+    [<JsonField("options")>]
+    Options: GuildOnboardingPromptOption list
+    
+    [<JsonField("title")>]
+    Title: string
+    
+    [<JsonField("single_select")>]
+    SingleSelect: bool
+    
+    [<JsonField("required")>]
+    Required: bool
+    
+    [<JsonField("in_onboarding")>]
+    InOnboarding: bool
+}
+
+// https://discord.com/developers/docs/resources/guild#guild-onboarding-object-guild-onboarding-structure
+type GuildOnboarding = {
+    [<JsonField("guild_id")>]
+    GuildId: string
+    
+    [<JsonField("prompts")>]
+    Prompts: GuildOnboardingPrompt list
+    
+    [<JsonField("default_channel_ids")>]
+    DefaultChannelIds: string list
+    
+    [<JsonField("enabled")>]
+    Enabled: bool
+    
+    [<JsonField("mode")>]
+    Mode: OnboardingMode
 }
 
 type ChannelMention = {
@@ -1350,6 +1472,27 @@ type Channel = {
     
     [<JsonField("default_forum_layout", EnumValue = EnumMode.Value)>]
     DefaultForumLayout: ChannelForumLayout option
+}
+
+// https://discord.com/developers/docs/resources/guild#guild-widget-object-guild-widget-structure
+type GuildWidget = {
+    [<JsonField("id")>]
+    Id: string
+    
+    [<JsonField("name")>]
+    Name: string
+    
+    [<JsonField("instant_invite")>]
+    InstantInvite: string option
+    
+    [<JsonField("channels")>]
+    Channels: Channel list
+    
+    [<JsonField("members")>]
+    Members: User list
+    
+    [<JsonField("presence_count")>]
+    PresenceCount: int
 }
 
 type ResolvedData = {
@@ -2453,6 +2596,15 @@ type GuildIntegration = {
     Scopes: OAuth2Scope list option
 }
 
+// https://discord.com/developers/docs/resources/guild#ban-object-ban-structure
+type GuildBan = {
+    [<JsonField("reason")>]
+    Reason: string option
+    
+    [<JsonField("user")>]
+    User: User
+}
+
 // https://discord.com/developers/docs/resources/webhook#webhook-object-webhook-structure
 type Webhook = {
     [<JsonField("id")>]
@@ -2595,4 +2747,22 @@ type AuditLog = {
     
     [<JsonField("webhooks")>]
     Webhooks: Webhook list
+}
+
+// https://discord.com/developers/docs/resources/voice#voice-region-object-voice-region-structure
+type VoiceRegion = {
+    [<JsonField("id")>]
+    Id: string
+    
+    [<JsonField("name")>]
+    Name: string
+    
+    [<JsonField("optimal")>]
+    Optimal: bool
+    
+    [<JsonField("deprecated")>]
+    Deprecated: bool
+    
+    [<JsonField("custom")>]
+    Custom: bool
 }

@@ -137,37 +137,158 @@ type StickerType =
     | STANDARD = 1
     | GUILD = 2
 
+// https://discord.com/developers/docs/resources/guild#guild-object-guild-nsfw-level
 type GuildNsfwLevel =
     | DEFAULT = 0
     | EXPLICIT = 1
     | SAFE = 2
     | AGE_RESTRICTED = 3
 
+// https://discord.com/developers/docs/resources/guild#guild-object-premium-tier
 type GuildPremiumTier =
     | NONE = 0
     | LEVEL_1 = 1
     | LEVEL_2 = 2
     | LEVEL_3 = 3
 
+// https://discord.com/developers/docs/resources/guild#guild-object-mfa-level
 type GuildMfaLevel =
     | NONE = 0
     | ELEVATED = 1
 
+// https://discord.com/developers/docs/resources/guild#guild-object-explicit-content-filter-level
 type GuildExplicitContentFilterLevel =
     | DISABLED = 0
     | MEMBERS_WITHOUT_ROLES = 1
     | ALL_MEMBERS = 2
 
+// https://discord.com/developers/docs/resources/guild#guild-object-default-message-notification-level
 type GuildMessageNotificationLevel =
     | ALL_MESSAGES = 0
     | ONLY_MENTIONS = 1
 
+// https://discord.com/developers/docs/resources/guild#guild-object-verification-level
 type GuildVerificationLevel =
     | NONE = 0
     | LOW = 1
     | MEDIUM = 2
     | HIGH = 3
     | VERY_HIGH = 4
+
+// https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags
+type SystemChannelFlag =
+    | SUPPRESS_JOIN_NOTIFICATIONS                               = 0b00000001
+    | SUPPRESS_PREMIUM_SUBSCRIPTIONS                            = 0b00000010
+    | SUPPRESS_GUILD_REMINDER_NOTIFICATIONS                     = 0b00000100
+    | SUPPRESS_JOIN_NOTIFICATION_REPLIES                        = 0b00001000
+    | SUPPRESS_ROLE_SUBSCRIPTION_PURCHASE_NOTIFICATIONS         = 0b00010000
+    | SUPPRESS_ROLE_SUBSCRIPTION_PURCHASE_NOTIFICATION_REPLIES  = 0b00100000
+
+// https://discord.com/developers/docs/resources/guild#guild-object-guild-features
+type GuildFeature =
+    | ANIMATED_BANNER
+    | ANIMATED_ICON
+    | APPLICATION_COMMAND_PERMISSIONS_V2
+    | AUTO_MODERATION
+    | BANNER
+    | COMMUNITY // mutable
+    | CREATOR_MONETIZABLE_PROVISIONAL
+    | CREATOR_STORE_PAGE
+    | DEVELOPER_SUPPORT_SERVER
+    | DISCOVERABLE // mutable
+    | FEATURABLE
+    | INVITES_DISABLED // mutable
+    | INVITE_SPLASH
+    | MEMBER_VERIFICATION_GATE_ENABLED
+    | MORE_STICKERS
+    | NEWS
+    | PARTNERED
+    | PREVIEW_ENABLED
+    | RAID_ALERTS_DISABLED // mutable
+    | ROLE_ICONS
+    | ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE
+    | ROLE_SUBSCRIPTIONS_ENABLED
+    | TICKETED_EVENTS_ENABLED
+    | VANITY_URL
+    | VERIFIED
+    | VIP_REGIONS
+    | WELCOME_SCREEN_ENABLED
+
+type GuildFeatureTransform () =
+    interface ITypeTransform with
+        member _.targetType () =
+            typeof<string>
+
+        member _.toTargetType value =
+            match value :?> GuildFeature with
+            | GuildFeature.ANIMATED_BANNER -> "ANIMATED_BANNER"
+            | GuildFeature.ANIMATED_ICON -> "ANIMATED_ICON"
+            | GuildFeature.APPLICATION_COMMAND_PERMISSIONS_V2 -> "APPLICATION_COMMAND_PERMISSIONS_V2"
+            | GuildFeature.AUTO_MODERATION -> "AUTO_MODERATION"
+            | GuildFeature.BANNER -> "BANNER"
+            | GuildFeature.COMMUNITY -> "COMMUNITY"
+            | GuildFeature.CREATOR_MONETIZABLE_PROVISIONAL -> "CREATOR_MONETIZABLE_PROVISIONAL"
+            | GuildFeature.CREATOR_STORE_PAGE -> "CREATOR_STORE_PAGE"
+            | GuildFeature.DEVELOPER_SUPPORT_SERVER -> "DEVELOPER_SUPPORT_SERVER"
+            | GuildFeature.DISCOVERABLE -> "DISCOVERABLE"
+            | GuildFeature.FEATURABLE -> "FEATURABLE"
+            | GuildFeature.INVITES_DISABLED -> "INVITES_DISABLED"
+            | GuildFeature.INVITE_SPLASH -> "INVITE_SPLASH"
+            | GuildFeature.MEMBER_VERIFICATION_GATE_ENABLED -> "MEMBER_VERIFICATION_GATE_ENABLED"
+            | GuildFeature.MORE_STICKERS -> "MORE_STICKERS"
+            | GuildFeature.NEWS -> "NEWS"
+            | GuildFeature.PARTNERED -> "PARTNERED"
+            | GuildFeature.PREVIEW_ENABLED -> "PREVIEW_ENABLED"
+            | GuildFeature.RAID_ALERTS_DISABLED -> "RAID_ALERTS_DISABLED"
+            | GuildFeature.ROLE_ICONS -> "ROLE_ICONS"
+            | GuildFeature.ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE -> "ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE"
+            | GuildFeature.ROLE_SUBSCRIPTIONS_ENABLED -> "ROLE_SUBSCRIPTIONS_ENABLED"
+            | GuildFeature.TICKETED_EVENTS_ENABLED -> "TICKETED_EVENTS_ENABLED"
+            | GuildFeature.VANITY_URL -> "VANITY_URL"
+            | GuildFeature.VERIFIED -> "VERIFIED"
+            | GuildFeature.VIP_REGIONS -> "VIP_REGIONS"
+            | GuildFeature.WELCOME_SCREEN_ENABLED -> "WELCOME_SCREEN_ENABLED"
+
+        member _.fromTargetType value =
+            match value with
+            | v when v = "ANIMATED_BANNER" -> GuildFeature.ANIMATED_BANNER
+            | v when v = "ANIMATED_ICON" -> GuildFeature.ANIMATED_ICON
+            | v when v = "APPLICATION_COMMAND_PERMISSIONS_V2" -> GuildFeature.APPLICATION_COMMAND_PERMISSIONS_V2
+            | v when v = "AUTO_MODERATION" -> GuildFeature.AUTO_MODERATION
+            | v when v = "BANNER" -> GuildFeature.BANNER
+            | v when v = "COMMUNITY" -> GuildFeature.COMMUNITY
+            | v when v = "CREATOR_MONETIZABLE_PROVISIONAL" -> GuildFeature.CREATOR_MONETIZABLE_PROVISIONAL
+            | v when v = "CREATOR_STORE_PAGE" -> GuildFeature.CREATOR_STORE_PAGE
+            | v when v = "DEVELOPER_SUPPORT_SERVER" -> GuildFeature.DEVELOPER_SUPPORT_SERVER
+            | v when v = "DISCOVERABLE" -> GuildFeature.DISCOVERABLE
+            | v when v = "FEATURABLE" -> GuildFeature.FEATURABLE
+            | v when v = "INVITES_DISABLED" -> GuildFeature.INVITES_DISABLED
+            | v when v = "INVITE_SPLASH" -> GuildFeature.INVITE_SPLASH
+            | v when v = "MEMBER_VERIFICATION_GATE_ENABLED" -> GuildFeature.MEMBER_VERIFICATION_GATE_ENABLED
+            | v when v = "MORE_STICKERS" -> GuildFeature.MORE_STICKERS
+            | v when v = "NEWS" -> GuildFeature.NEWS
+            | v when v = "PARTNERED" -> GuildFeature.PARTNERED
+            | v when v = "PREVIEW_ENABLED" -> GuildFeature.PREVIEW_ENABLED
+            | v when v = "RAID_ALERTS_DISABLED" -> GuildFeature.RAID_ALERTS_DISABLED
+            | v when v = "ROLE_ICONS" -> GuildFeature.ROLE_ICONS
+            | v when v = "ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE" -> GuildFeature.ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE
+            | v when v = "ROLE_SUBSCRIPTIONS_ENABLED" -> GuildFeature.ROLE_SUBSCRIPTIONS_ENABLED
+            | v when v = "TICKETED_EVENTS_ENABLED" -> GuildFeature.TICKETED_EVENTS_ENABLED
+            | v when v = "VANITY_URL" -> GuildFeature.VANITY_URL
+            | v when v = "VERIFIED" -> GuildFeature.VERIFIED
+            | v when v = "VIP_REGIONS" -> GuildFeature.VIP_REGIONS
+            | v when v = "WELCOME_SCREEN_ENABLED" -> GuildFeature.WELCOME_SCREEN_ENABLED
+            | _ -> failwith "Unexpected GuildFeature type"
+
+// https://discord.com/developers/docs/resources/guild#guild-onboarding-object-onboarding-mode
+type OnboardingMode =
+    | ONBOARDING_DEFAULT = 0
+    | ONBOARDING_ADVANCED = 1
+
+// https://discord.com/developers/docs/resources/guild#guild-onboarding-object-prompt-types
+type OnboardingPromptType =
+    | MULTIPLE_CHOICE = 0
+    | DROPDOWN = 1
 
 type CommandInteractionDataOptionValue =
     | String of string
@@ -818,3 +939,19 @@ type WebhookType =
 type EntitlementOwnerType =
     | GUILD_SUBSCRIPTION = 1
     | USER_SUBSCRIPTION = 2
+
+// https://discord.com/developers/docs/resources/guild#get-guild-widget-image-widget-style-options
+type GuildWidgetStyle =
+    | SHIELD
+    | BANNER_1
+    | BANNER_2
+    | BANNER_3
+    | BANNER_4
+with
+    override this.ToString () =
+        match this with
+        | GuildWidgetStyle.SHIELD -> "shield"
+        | GuildWidgetStyle.BANNER_1 -> "banner_1"
+        | GuildWidgetStyle.BANNER_2 -> "banner_2"
+        | GuildWidgetStyle.BANNER_3 -> "banner_3"
+        | GuildWidgetStyle.BANNER_4 -> "banner_4"
