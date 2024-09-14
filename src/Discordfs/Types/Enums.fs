@@ -813,3 +813,8 @@ type WebhookType =
     | INCOMING = 1
     | CHANNEL_FOLLOWER = 2
     | APPLICATION = 3
+
+// https://discord.com/developers/docs/resources/entitlement#create-test-entitlement-json-params
+type EntitlementOwnerType =
+    | GUILD_SUBSCRIPTION = 1
+    | USER_SUBSCRIPTION = 2

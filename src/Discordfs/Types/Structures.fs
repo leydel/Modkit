@@ -201,6 +201,8 @@ type Entitlement = {
 
     [<JsonField("consumed")>]
     Consumed: bool option
+
+    // TODO: Add subscription_id to type (currently only partially documented, wait for docs to be fixed)
 }
 
 type AvatarDecorationData = {

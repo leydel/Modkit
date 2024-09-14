@@ -603,3 +603,15 @@ type ModifyApplicationEmoji = {
     [<JsonField("name")>]
     Name: string
 }
+
+// https://discord.com/developers/docs/resources/entitlement#create-test-entitlement-json-params
+type CreateTestEntitlement = {
+    [<JsonField("sku_id")>]
+    SkuId: string
+    
+    [<JsonField("owner_id")>]
+    OwnerId: string
+    
+    [<JsonField("owner_type", EnumValue = EnumMode.Value)>]
+    OwnerType: EntitlementOwnerType
+}
