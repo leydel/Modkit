@@ -8,20 +8,10 @@ open System.Text.Json.Serialization
 [<CustomEquality>]
 [<NoComparison>]
 type DiacordSticker = {
-    [<JsonPropertyName("diacord_id")>]
-    [<JsonRequired>]
-    DiacordId: string
-
-    [<JsonPropertyName("name")>]
-    [<JsonRequired>]
-    Name: string
-
-    [<JsonPropertyName("description")>]
-    Description: string option
-
-    [<JsonPropertyName("tags")>]
-    [<JsonRequired>]
-    Tags: string
+    [<JsonName "diacord_id">] [<JsonRequired>] DiacordId: string
+    [<JsonName "name">] [<JsonRequired>] Name: string
+    [<JsonName "description">] Description: string option
+    [<JsonName "tags">] [<JsonRequired>] Tags: string
 }
 with
     static member diff (s1: DiacordSticker) (s2: Sticker) =
@@ -34,4 +24,4 @@ with
     interface IEquatable<Sticker> with
         override this.Equals other =
             List.exists Diff.isUnchanged (DiacordSticker.diff this other)
-
+            

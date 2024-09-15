@@ -8,34 +8,22 @@ open System.Text.Json.Serialization
 [<CustomEquality>]
 [<NoComparison>]
 type DiacordRole = {
-    [<JsonPropertyName("diacord_id")>]
-    [<JsonRequired>]
-    DiacordId: string
+    [<JsonName "diacord_id">] [<JsonRequired>] DiacordId: string
+    [<JsonName "name">] [<JsonRequired>] Name: string
+    [<JsonName "color">] Color: int option
 
-    [<JsonPropertyName("name")>]
-    [<JsonRequired>]
-    Name: string
-
-    [<JsonPropertyName("color")>]
-    Color: int option
-
-    [<JsonPropertyName("hoist")>]
+    [<JsonName "hoist">]
     [<JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)>] // TODO: Test this
-    [<System.ComponentModel.DefaultValue(false)>]
+    [<System.ComponentModel.DefaultValue false>]
     Hoist: bool
 
-    [<JsonPropertyName("icon")>]
-    Icon: string option
+    [<JsonName "icon">] Icon: string option
+    [<JsonName "unicode_emoji">] UnicodeEmoji: string option
+    [<JsonName "permissions">] Permissions: string list option // TODO: Figure out how to set a default value of an empty array
 
-    [<JsonPropertyName("unicode_emoji")>]
-    UnicodeEmoji: string option
-
-    [<JsonPropertyName("permissions")>]
-    Permissions: string list option // TODO: Figure out how to set a default value of an empty array
-
-    [<JsonPropertyName("mentionable")>]
+    [<JsonName "mentionable">]
     [<JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)>] // TODO: Test this
-    [<System.ComponentModel.DefaultValue(false)>]
+    [<System.ComponentModel.DefaultValue false>]
     Mentionable: bool
 }
 with

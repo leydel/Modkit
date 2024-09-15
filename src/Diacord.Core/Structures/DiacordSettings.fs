@@ -1,26 +1,25 @@
 ﻿namespace Modkit.Diacord.Core.Structures
 
-type DefaultValueAttribute = System.ComponentModel.DefaultValueAttribute
 open System.Text.Json.Serialization
 
 type DiacordSettings = {
-    [<JsonPropertyName("strict_roles")>]
+    [<JsonName "strict_roles">]
     [<JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)>] // TODO: Test this
-    [<DefaultValue(false)>]
+    [<System.ComponentModel.DefaultValue false>]
     StrictRoles: bool
 
-    [<JsonPropertyName("strict_emojis")>]
+    [<JsonName "strict_emojis">]
     [<JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)>] // TODO: Test this
-    [<DefaultValue(false)>]
+    [<System.ComponentModel.DefaultValue false>]
     StrictEmojis: bool
 
-    [<JsonPropertyName("strict_stickers")>]
+    [<JsonName "strict_stickers">]
     [<JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)>] // TODO: Test this
-    [<DefaultValue(false)>]
+    [<System.ComponentModel.DefaultValue false>]
     StrictStickers: bool
 
-    [<JsonPropertyName("strict_channels")>]
+    [<JsonName "strict_channels">]
     [<JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)>] // TODO: Test this
-    [<DefaultValue(false)>]
+    [<System.ComponentModel.DefaultValue false>]
     StrictChannels: bool
 }

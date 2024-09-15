@@ -8,16 +8,9 @@ open System.Text.Json.Serialization
 [<CustomEquality>]
 [<NoComparison>]
 type DiacordEmoji = {
-    [<JsonPropertyName("diacord_id")>]
-    [<JsonRequired>]
-    DiacordId: string
-
-    [<JsonPropertyName("name")>]
-    [<JsonRequired>]
-    Name: string
-
-    [<JsonPropertyName("color")>]
-    Roles: string list option
+    [<JsonName "diacord_id">] [<JsonRequired>] DiacordId: string
+    [<JsonName "name">] [<JsonRequired>] Name: string
+    [<JsonName "roles">] Roles: string list option
 }
 with
     static member diff (e1: DiacordEmoji) (e2: Emoji) =
