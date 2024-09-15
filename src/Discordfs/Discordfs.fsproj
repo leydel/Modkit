@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Compile Include="Common\Constants.fs" />
+    <Compile Include="Common\Dto.fs" />
     <Compile Include="Common\Req.fs" />
     <Compile Include="Common\Res.fs" />
     <Compile Include="Types\Enums.fs" />
@@ -36,6 +37,7 @@
 
   <ItemGroup>
     <PackageReference Include="FSharp.Json" Version="0.4.1" />
+    <PackageReference Include="FSharp.SystemTextJson" Version="1.3.13" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     <PackageReference Include="TweetNaclSharp" Version="1.1.0" />
   </ItemGroup>

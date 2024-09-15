@@ -3,6 +3,7 @@
 open FSharp.Json
 open System
 open System.Collections.Generic
+open System.Text.Json.Serialization
 
 #nowarn "49"
 
@@ -616,26 +617,44 @@ type CreateTestEntitlement = {
     OwnerType: EntitlementOwnerType
 }
 
-// TODO: Define all below
-type CreateGuild = obj
-type ModifyGuild = obj
-type CreateGuildChannel = obj
-type ModifyGuildChannelPositions = obj
-type ListActiveGuildThreadsResponse = obj
-type AddGuildMember = obj
-type ModifyGuildMember = obj
-type ModifyCurrentMember = obj
-type CreateGuildBan = obj
-type BulkGuildBan = obj
-type BulkGuildBanResponse = obj
-type CreateGuildRole = obj
-type ModifyGuildRolePositions = obj
-type ModifyGuildRole = obj
-type ModifyGuildMfaLevel = obj
-type GetGuildPruneCountResponse = obj
-type BeginGuildPrune = obj
-type BeginGuildPruneResponse = obj
-type ModifyGuildWidgetSettings = obj
-type GetGuildVanityUrlResponse = obj
-type ModifyGuildWelcomeScreen = obj
-type ModifyGuildOnboarding = obj
+// https://discord.com/developers/docs/resources/guild#modify-guild-channel-positions-json-params
+type ModifyGuildChannelPosition = {
+    [<JsonName "id">] Id: string
+    [<JsonName "position">] Position: int option
+    [<JsonName "lock_permissions">] LockPermissions: bool option
+    [<JsonName "parent_id">] ParentId: string option
+}
+
+// https://discord.com/developers/docs/resources/guild#list-active-guild-threads-response-body
+type ListActiveGuildThreadsResponse = {
+    [<JsonName "threads">] Threads: Channel list
+    [<JsonName "members">] Members: GuildMember list
+}
+
+// https://discord.com/developers/docs/resources/guild#bulk-guild-ban-bulk-ban-response
+type BulkGuildBanResponse = {
+    [<JsonName "banned_users">] BannedUsers: string list
+    [<JsonName "failed_users">] FailedUsers: string list
+}
+
+// https://discord.com/developers/docs/resources/guild#modify-guild-role-positions-json-params
+type ModifyGuildRolePosition = {
+    [<JsonName "id">] Id: string
+    [<JsonName "position">] Position: int option
+}
+
+// https://discord.com/developers/docs/resources/guild#get-guild-prune-count
+type GetGuildPruneCountResponse = {
+    [<JsonName "pruned">] Pruned: int
+}
+
+// https://discord.com/developers/docs/resources/guild#begin-guild-prune
+type BeginGuildPruneResponse = {
+    [<JsonName "pruned">] Pruned: int option
+}
+
+// https://discord.com/developers/docs/resources/guild#get-guild-vanity-url
+type GetGuildVanityUrlResponse = {
+    [<JsonName "code">] Code: string option
+    [<JsonName "uses">] Uses: int
+}

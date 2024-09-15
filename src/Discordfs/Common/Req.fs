@@ -36,9 +36,16 @@ module Req =
     let queryOpt (key: string) (value: string option) (req: HttpRequestMessage) =
         Option.foldBack (query key) value req
 
+    [<Obsolete>]
     let body<'a> (payload: 'a) (req: HttpRequestMessage) =
         req.Content <- new StringContent (Json.serializeU payload)
         req
+
+    let json (json: string) (req: HttpRequestMessage) =
+        req.Content <- new StringContent(json)
+        header "Content-Type" "application/json" req
+
+    // TODO: Create method for form content
 
     let send (httpClientFactory: IHttpClientFactory) (req: HttpRequestMessage) =
         httpClientFactory.CreateClient().SendAsync req
