@@ -47,7 +47,7 @@ with
 
         let permissions = None // TODO: Convert permissions bitfield into permission string list
 
-        List.collect Option.toList <| [
+        [
             Diff.from "name" (Some r1.Name) (Some r2.Name);
             Diff.from "color" r1.Color color;
             Diff.from "hoist" (Some r1.Hoist) (Some r2.Hoist);
@@ -59,4 +59,4 @@ with
 
     interface IEquatable<Role> with
         override this.Equals other =
-            List.isEmpty <| DiacordRole.diff this other
+            List.exists Diff.isUnchanged (DiacordRole.diff this other)

@@ -21,11 +21,11 @@ type DiacordEmoji = {
 }
 with
     static member diff (e1: DiacordEmoji) (e2: Emoji) =
-        List.collect Option.toList <| [
+        [
             Diff.from "name" (Some e1.Name) e2.Name;
             Diff.from "roles" e1.Roles e2.Roles;
         ]
 
     interface IEquatable<Emoji> with
         override this.Equals other =
-            List.isEmpty <| DiacordEmoji.diff this other
+            List.exists Diff.isUnchanged (DiacordEmoji.diff this other)

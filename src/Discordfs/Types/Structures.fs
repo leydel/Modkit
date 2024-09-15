@@ -1443,8 +1443,8 @@ type Channel = {
     [<JsonField("member")>]
     Member: ThreadMember option
     
-    [<JsonField("default_auto_archive_duration")>]
-    DefaultAutoArchiveDuration: int option
+    [<JsonField("default_auto_archive_duration", EnumValue = EnumMode.Value)>]
+    DefaultAutoArchiveDuration: AutoArchiveDurationType option
     
     [<JsonField("permissions")>]
     Permissions: string option

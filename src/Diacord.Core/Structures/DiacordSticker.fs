@@ -25,7 +25,7 @@ type DiacordSticker = {
 }
 with
     static member diff (s1: DiacordSticker) (s2: Sticker) =
-        List.collect Option.toList <| [
+        [
             Diff.from "name" (Some s1.Name) (Some s2.Name);
             Diff.from "description" s1.Description s2.Description;
             Diff.from "tags" (Some s1.Tags) (Some s2.Tags);
@@ -33,4 +33,5 @@ with
 
     interface IEquatable<Sticker> with
         override this.Equals other =
-            List.isEmpty <| DiacordSticker.diff this other
+            List.exists Diff.isUnchanged (DiacordSticker.diff this other)
+

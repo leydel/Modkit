@@ -30,7 +30,9 @@ type DiacordChannel = {
 }
 with
     static member diff (s1: DiacordChannel) (s2: Channel) =
-        List.collect Option.toList <| [
+        // TODO: Compare permission overwrites
+
+        [
             Diff.from "type" (Some s1.Type) (Some s2.Type);
             Diff.from "name" (Some s1.Name) (Some s2.Name);
             Diff.from "topic" s1.Topic s2.Topic;
@@ -52,4 +54,4 @@ with
 
     interface IEquatable<Channel> with
         override this.Equals other =
-            List.isEmpty <| DiacordChannel.diff this other
+            List.exists Diff.isUnchanged (DiacordChannel.diff this other)
