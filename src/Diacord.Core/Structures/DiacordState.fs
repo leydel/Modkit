@@ -8,4 +8,6 @@ type DiacordState = {
     Emojis: Emoji list
 
     Stickers: Sticker list
+
+    Channels: Channel list
 }

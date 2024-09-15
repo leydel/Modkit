@@ -3,15 +3,20 @@
 open System.Text.Json.Serialization
 
 type DiacordTemplate = {
-    [<JsonPropertyName("settings")>]
+    [<JsonName "settings">]
     Settings: DiacordSettings option
-
-    [<JsonPropertyName("roles")>]
+    
+    [<JsonName "roles">]
     Roles: DiacordRole list option
-
-    [<JsonPropertyName("emojis")>]
+    
+    [<JsonName "emojis">]
     Emojis: DiacordEmoji list option
 
-    [<JsonPropertyName("stickers")>]
+    [<JsonName "stickers">]
     Stickers: DiacordSticker list option
+
+    [<JsonName "channels">]
+    Channels: DiacordChannel list option
+
+    // TODO: Figure out way to allow channels to be defined within categories (discriminated union probably)
 }

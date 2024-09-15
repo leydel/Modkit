@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Compile Include="Types\Diff.fs" />
+    <Compile Include="Structures\DiacordChannel.fs" />
     <Compile Include="Structures\DiacordSticker.fs" />
     <Compile Include="Structures\DiacordEmoji.fs" />
     <Compile Include="Structures\DiacordRole.fs" />

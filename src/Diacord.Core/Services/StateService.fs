@@ -37,10 +37,12 @@ type StateService () =
             let templateRoles = Option.defaultValue [] template.Roles
             let templateEmojis = Option.defaultValue [] template.Emojis
             let templateStickers = Option.defaultValue [] template.Stickers
+            let templateChannels = Option.defaultValue [] template.Channels
 
             let roles = this.map<DiacordRole, Role> _.DiacordId _.Id templateRoles state.Roles mappings
             let emojis = this.map<DiacordEmoji, Emoji> _.DiacordId _.Id.Value templateEmojis state.Emojis mappings
             let stickers = this.map<DiacordSticker, Sticker> _.DiacordId _.Id templateStickers state.Stickers mappings
+            let channels = this.map<DiacordChannel, Channel> _.DiacordId _.Id templateChannels state.Channels mappings
 
             // TODO: Using tuples, check what diffs have taken place, and then return result of that
 

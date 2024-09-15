@@ -18,4 +18,9 @@ type DiacordSettings = {
     [<JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)>] // TODO: Test this
     [<DefaultValue(false)>]
     StrictStickers: bool
+
+    [<JsonPropertyName("strict_channels")>]
+    [<JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)>] // TODO: Test this
+    [<DefaultValue(false)>]
+    StrictChannels: bool
 }

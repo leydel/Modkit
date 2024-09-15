@@ -15,10 +15,12 @@ type StateProvider (discordHttpService: IDiscordHttpService) =
             let! roles = discordHttpService.Guilds.GetGuildRoles guildId
             let! emojis = discordHttpService.Emojis.ListGuildEmojis guildId
             let! stickers = discordHttpService.Stickers.ListGuildStickers guildId
+            let! channels = discordHttpService.Guilds.GetGuildChannels guildId
 
             return {
                 Roles = roles;
                 Emojis = emojis;
                 Stickers = stickers;
+                Channels = channels;
             }
         }
