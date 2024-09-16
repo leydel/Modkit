@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Types\DiffNodeTests.fs" />
     <Compile Include="Types\DiffTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
