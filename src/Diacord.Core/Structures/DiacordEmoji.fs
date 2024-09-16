@@ -2,23 +2,20 @@
 
 open Modkit.Diacord.Core.Types
 open Modkit.Discordfs.Types
-open System
+open System.Collections.Generic
 open System.Text.Json.Serialization
 
-[<CustomEquality>]
-[<NoComparison>]
 type DiacordEmoji = {
     [<JsonName "diacord_id">] [<JsonRequired>] DiacordId: string
     [<JsonName "name">] [<JsonRequired>] Name: string
     [<JsonName "roles">] Roles: string list option
 }
 with
-    static member diff (e1: DiacordEmoji) (e2: Emoji) =
-        [
-            Diff.from "name" (Some e1.Name) e2.Name;
-            Diff.from "roles" e1.Roles e2.Roles;
-        ]
+    static member diff (mappings: IDictionary<string, string>) ((a: DiacordEmoji option), (b: Emoji option)) =
+        let (>>=) ma f = Option.bind f ma
+        let (>>.) ma f = Option.map f ma
 
-    interface IEquatable<Emoji> with
-        override this.Equals other =
-            List.exists Diff.isUnchanged (DiacordEmoji.diff this other)
+        DiffNode.leaf a b [
+            Diff.from "name" (a >>. _.Name) (b >>= _.Name);
+            Diff.from "roles" (a >>= _.Roles) (b >>= _.Roles);
+        ]

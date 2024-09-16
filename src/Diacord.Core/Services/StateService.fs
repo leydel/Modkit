@@ -1,6 +1,7 @@
 ﻿namespace Modkit.Diacord.Core.Services
 
 open Modkit.Diacord.Core.Structures
+open Modkit.Diacord.Core.Types
 open Modkit.Discordfs.Types
 open System.Collections.Generic
 
@@ -9,7 +10,7 @@ type IStateService =
         state: DiacordState ->
         template: DiacordTemplate ->
         mappings: IDictionary<string, string> ->
-        unit
+        DiffNode
 
 type StateService () =
     member _.map<'a, 'b> (getDiacordId: 'a -> string) (getStateId: 'b -> string) (template: 'a list) (state: 'b list) (mappings: IDictionary<string, string>) =
@@ -44,6 +45,9 @@ type StateService () =
             let stickers = this.map<DiacordSticker, Sticker> _.DiacordId _.Id templateStickers state.Stickers mappings
             let channels = this.map<DiacordChannel, Channel> _.DiacordId _.Id templateChannels state.Channels mappings
 
-            // TODO: Using tuples, check what diffs have taken place, and then return result of that
-
-            ()
+            DiffNode.Root [
+                DiffNode.Branch("roles", roles |> List.map (DiacordRole.diff mappings));
+                DiffNode.Branch("emojis", emojis |> List.map (DiacordEmoji.diff mappings));
+                DiffNode.Branch("stickers", stickers |> List.map (DiacordSticker.diff mappings));
+                DiffNode.Branch("channels", channels |> List.map (DiacordChannel.diff mappings));
+            ]

@@ -13,8 +13,3 @@ with
         | Some p, None -> Diff.Removed(name, p)
         | None, Some c -> Diff.Added(name, c)
         | Some p, Some c -> Diff.Modified(name, c, p)
-
-    static member isUnchanged (diff: Diff) =
-        match diff with
-        | Diff.Unchanged _ -> false
-        | _ -> true

@@ -2,11 +2,9 @@
 
 open Modkit.Diacord.Core.Types
 open Modkit.Discordfs.Types
-open System
+open System.Collections.Generic
 open System.Text.Json.Serialization
 
-[<CustomEquality>]
-[<NoComparison>]
 type DiacordSticker = {
     [<JsonName "diacord_id">] [<JsonRequired>] DiacordId: string
     [<JsonName "name">] [<JsonRequired>] Name: string
@@ -14,14 +12,12 @@ type DiacordSticker = {
     [<JsonName "tags">] [<JsonRequired>] Tags: string
 }
 with
-    static member diff (s1: DiacordSticker) (s2: Sticker) =
-        [
-            Diff.from "name" (Some s1.Name) (Some s2.Name);
-            Diff.from "description" s1.Description s2.Description;
-            Diff.from "tags" (Some s1.Tags) (Some s2.Tags);
-        ]
+    static member diff (mappings: IDictionary<string, string>) ((a: DiacordSticker option), (b: Sticker option)) =
+        let (>>=) ma f = Option.bind f ma
+        let (>>.) ma f = Option.map f ma
 
-    interface IEquatable<Sticker> with
-        override this.Equals other =
-            List.exists Diff.isUnchanged (DiacordSticker.diff this other)
-            
+        DiffNode.leaf a b [
+            Diff.from "name" (a >>. _.Name) (b >>. _.Name);
+            Diff.from "description" (a >>= _.Description) (b >>= _.Description);
+            Diff.from "tags" (a >>. _.Tags) (b >>. _.Tags);
+        ]
