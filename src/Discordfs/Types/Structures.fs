@@ -2196,111 +2196,91 @@ with
     }
 
 type ActivityTimestamps = {
-    [<JsonField("start", Transform = typeof<Transforms.DateTimeEpoch>)>]
-    Start: DateTime option
-    
-    [<JsonField("end", Transform = typeof<Transforms.DateTimeEpoch>)>]
-    End: DateTime option
+    [<JsonName "start">] [<JsonConverter(typeof<UnixEpochConverter>)>] Start: DateTime option
+    [<JsonName "end">] [<JsonConverter(typeof<UnixEpochConverter>)>] End: DateTime option
 }
 
 type ActivityEmoji = {
-    [<JsonField("name")>]
-    Name: string
-    
-    [<JsonField("id")>]
-    Id: string option
-    
-    [<JsonField("animated")>]
-    Animated: bool option
+    [<JsonName "name">] Name: string
+    [<JsonName "id">] Id: string option
+    [<JsonName "animated">] Animated: bool option
 }
 
 type ActivityParty = {
-    [<JsonField("id")>]
-    Id: string option
-    
-    [<JsonField("size")>]
-    Size: (int * int) option
+    [<JsonName "id">] Id: string option
+    [<JsonName "size">] Size: (int * int) option
 }
 
 type ActivityAssets = {
-    [<JsonField("large_image")>]
-    LargeImage: string option
-    
-    [<JsonField("large_text")>]
-    LargeText: string option
-    
-    [<JsonField("small_image")>]
-    SmallImage: string option
-    
-    [<JsonField("small_text")>]
-    SmallText: string option
+    [<JsonName "large_image">] LargeImage: string option
+    [<JsonName "large_text">] LargeText: string option
+    [<JsonName "small_image">] SmallImage: string option
+    [<JsonName "small_text">] SmallText: string option
 }
 
 type ActivitySecrets = {
-    [<JsonField("join")>]
-    Join: string option
-    
-    [<JsonField("spectate")>]
-    Spectate: string option
-    
-    [<JsonField("match")>]
-    Match: string option
+    [<JsonName "join">] Join: string option
+    [<JsonName "spectate">] Spectate: string option
+    [<JsonName "matcch">] Match: string option
 }
 
 type ActivityButton = {
-    [<JsonField("label")>]
-    Label: string
-    
-    [<JsonField("url")>]
-    Url: string
+    [<JsonName "label">] Label: string
+    [<JsonName "url">] Url: string
 }
 
+// https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-structure
 type Activity = {
-    [<JsonField("name")>]
-    Name: string
-    
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: ActivityType
-    
-    [<JsonField("url")>]
-    Url: string option
-    
-    [<JsonField("created_at", Transform = typeof<Transforms.DateTimeEpoch>)>]
-    CreatedAt: DateTime option
-    
-    [<JsonField("timestamps")>]
-    Timestamps: ActivityTimestamps option
-    
-    [<JsonField("application_id")>]
-    ApplicationId: string option
-    
-    [<JsonField("details")>]
-    Details: string option
-    
-    [<JsonField("state")>]
-    State: string option
-    
-    [<JsonField("emoji")>]
-    Emoji: ActivityEmoji option
-    
-    [<JsonField("party")>]
-    Party: ActivityParty option
-    
-    [<JsonField("assets")>]
-    Assets: ActivityAssets option
-    
-    [<JsonField("secrets")>]
-    Secrets: ActivitySecrets option
-    
-    [<JsonField("instance")>]
-    Instance: bool option
-    
-    [<JsonField("flags")>]
-    Flags: int option
-    
-    [<JsonField("buttons")>]
-    Buttons: ActivityButton list option
+    [<JsonName "name">] Name: string
+    [<JsonName "type">] Type: ActivityType
+    [<JsonName "url">] Url: string option
+    [<JsonName "created_at">] [<JsonConverter(typeof<UnixEpochConverter>)>] CreatedAt: DateTime option
+    [<JsonName "timestamps">] Timestamps: ActivityTimestamps option
+    [<JsonName "application_id">] ApplicationId: string option
+    [<JsonName "details">] Details: string option
+    [<JsonName "state">] State: string option
+    [<JsonName "emoji">] Emoji: ActivityEmoji option
+    [<JsonName "party">] Party: ActivityParty option
+    [<JsonName "assets">] Assets: ActivityAssets option
+    [<JsonName "secrets">] Secrets: ActivitySecrets option
+    [<JsonName "instance">] Instance: bool option
+    [<JsonName "flags">] Flags: int option
+    [<JsonName "buttons">] Buttons: ActivityButton list option
 }
+with
+    static member build (
+        Type: ActivityType,
+        Name: string,
+        ?Url: string,
+        ?CreatedAt: DateTime,
+        ?Timestamps: ActivityTimestamps,
+        ?ApplicationId: string,
+        ?Details: string,
+        ?State: string,
+        ?Emoji: ActivityEmoji,
+        ?Party: ActivityParty,
+        ?Assets: ActivityAssets,
+        ?Secrets: ActivitySecrets,
+        ?Instance: bool,
+        ?Flags: int,
+        ?Buttons: ActivityButton list
+    ) = {
+        Name = Name;
+        Type = Type;
+        Url = Url;
+        CreatedAt = CreatedAt;
+        Timestamps = Timestamps;
+        ApplicationId = ApplicationId;
+        Details = Details;
+        State = State;
+        Emoji = Emoji;
+        Party = Party;
+        Assets = Assets;
+        Secrets = Secrets;
+        Instance = Instance;
+        Flags = Flags;
+        Buttons = Buttons;
+    }
 
 type ApplicationRoleConnectionMetadata = {
     [<JsonField("type", EnumValue = EnumMode.Value)>]

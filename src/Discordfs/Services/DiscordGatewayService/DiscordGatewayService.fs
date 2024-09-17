@@ -29,7 +29,7 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
     let mutable heartbeatCount = 0
     let mutable sequenceId: int option = None
 
-    member this.heartbeat (jitter: bool) (interval: int) = task {
+    let rec heartbeat (jitter: bool) (interval: int) = task {
         if jitter then
             do! int ((float interval) * Random().NextDouble()) |> Task.Delay
         else
@@ -44,7 +44,7 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
 
             do! _actions.Heartbeat sequenceId :> Task
             do! Task.Delay interval
-            return! this.heartbeat false interval
+            return! heartbeat false interval
 
         // TODO: Handle graceful disconnect
     }
@@ -102,7 +102,7 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
                                 let event = GatewayEvent<Hello>.deserializeF message
 
                                 _actions.Identify identify |> ignore
-                                this.heartbeat true event.Data.HeartbeatInterval |> ignore
+                                heartbeat true event.Data.HeartbeatInterval |> ignore
 
                                 return! loop sequenceId
                             | GatewayOpcode.HEARTBEAT ->
@@ -113,13 +113,9 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
                                 lastHeartbeatAcked <- true
                             
                                 return! loop sequenceId
-                            | GatewayOpcode.DISPATCH when identifier.EventName = Some "ready" -> // TODO: Check correct event name
-                                let event = GatewayEvent<Ready>.deserializeF message
-
-                                // TODO: Handle ready event however needed
-                            
-                                return! loop sequenceId
                             | _ ->
+                                do! handler message
+
                                 match GatewaySequencer.getSequenceNumber message with
                                 | None -> return! loop sequenceId
                                 | Some s -> return! loop (Some s)

@@ -1,6 +1,9 @@
 ﻿namespace Modkit.Discordfs.Types
 
 open FSharp.Json
+open System
+open System.Text.Json
+open System.Text.Json.Serialization
 
 type TextInputStyle =
     | SHORT = 1
@@ -582,36 +585,34 @@ type GatewayIntent =
     | GUILD_MESSAGE_POLLS =             0b00000001_00000000_00000000_00000000
     | DIRECT_MESSAGE_POLLS =            0b00000010_00000000_00000000_00000000
 
-//type StatusType =
-//    | ONLINE
-//    | DND
-//    | IDLE
-//    | INVISIBLE
-//    | OFFLINE
+type StatusType =
+    | ONLINE
+    | DND
+    | IDLE
+    | INVISIBLE
+    | OFFLINE
     
-//type StatusTypeTransform () =
-//    interface ITypeTransform with
-//        member _.targetType () =
-//            typeof<string>
+type StatusTypeConverter () =
+    inherit JsonConverter<StatusType> () with
+        override __.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
+            match reader.GetString() with
+            | "online" -> StatusType.ONLINE
+            | "dnd" -> StatusType.DND
+            | "idle" -> StatusType.IDLE
+            | "invisible" -> StatusType.INVISIBLE
+            | "offline" -> StatusType.OFFLINE
+            | _ -> failwith "Unexpected StatusType value"
 
-//        member _.toTargetType value =
-//            match value :?> StatusType with
-//            | StatusType.ONLINE -> "online"
-//            | StatusType.DND -> "dnd"
-//            | StatusType.IDLE -> "idle"
-//            | StatusType.INVISIBLE -> "invisible"
-//            | StatusType.OFFLINE -> "offline"
+        override __.Write (writer: Utf8JsonWriter, value: StatusType, options: JsonSerializerOptions) =
+            let string =
+                match value with
+                | StatusType.ONLINE -> "online"
+                | StatusType.DND -> "dnd"
+                | StatusType.IDLE -> "idle"
+                | StatusType.INVISIBLE -> "invisible"
+                | StatusType.OFFLINE -> "offline"
 
-//        member _.fromTargetType value =
-//            match value with
-//            | v when v = "online" -> StatusType.ONLINE
-//            | v when v = "dnd" -> StatusType.DND
-//            | v when v = "idle" -> StatusType.IDLE
-//            | v when v = "invisible" -> StatusType.INVISIBLE
-//            | v when v = "offline" -> StatusType.OFFLINE
-//            | _ -> failwith "Unexpected StatusType type"
-
-type StatusType = string // TODO: Implement STJ converter for StatusType (see above)
+            writer.WriteStringValue string
 
 type ActivityType =
     | PLAYING = 0
@@ -957,3 +958,11 @@ with
         | GuildWidgetStyle.BANNER_2 -> "banner_2"
         | GuildWidgetStyle.BANNER_3 -> "banner_3"
         | GuildWidgetStyle.BANNER_4 -> "banner_4"
+            
+type UnixEpochConverter () =
+    inherit JsonConverter<DateTime> () with
+        override __.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
+            DateTimeOffset.FromUnixTimeMilliseconds(reader.GetInt64()).DateTime
+
+        override __.Write (writer: Utf8JsonWriter, value: DateTime, options: JsonSerializerOptions) =
+            DateTimeOffset(value).ToUnixTimeMilliseconds() |> writer.WriteNumberValue

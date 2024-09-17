@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Compile Include="Factories\ServiceBusClientFactory.fs" />
+    <Compile Include="Services\Client.fs" />
     <Compile Include="Program.fs" />
     <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include=".gitignore" />

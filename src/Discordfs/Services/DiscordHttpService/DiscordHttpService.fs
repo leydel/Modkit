@@ -1,5 +1,6 @@
 ﻿namespace Modkit.Discordfs.Services
 
+open Microsoft.Extensions.Configuration
 open System.Net.Http
 
 type IDiscordHttpService =
@@ -16,17 +17,19 @@ type IDiscordHttpService =
     abstract member Guilds: IDiscordHttpGuildActions
     abstract member Stickers: IDiscordHttpStickerActions
 
-type DiscordHttpService (httpClientFactory: IHttpClientFactory, token: string) =
+type DiscordHttpService (configuration: IConfiguration, httpClientFactory: IHttpClientFactory) =
+    let discordBotToken = configuration.GetValue "DiscordBotToken"
+
     interface IDiscordHttpService with
-        member _.Applications = DiscordHttpApplicationActions(httpClientFactory, token)
-        member _.Interactions = DiscordHttpInteractionActions(httpClientFactory, token)
-        member _.ApplicationCommands = DiscordHttpApplicationCommandActions(httpClientFactory, token)
-        member _.AuditLogs = DiscordHttpAuditLogActions(httpClientFactory, token)
-        member _.AutoModeration = DiscordHttpAutoModerationActions(httpClientFactory, token)
-        member _.RoleConnections = DiscordHttpRoleConnectionActions(httpClientFactory, token)
-        member _.Channels = DiscordHttpChannelActions(httpClientFactory, token)
-        member _.Emojis = DiscordHttpEmojiActions(httpClientFactory, token)
-        member _.Entitlements = DiscordHttpEntitlementActions(httpClientFactory, token)
-        member _.Gateway = DiscordHttpGatewayActions(httpClientFactory, token)
-        member _.Guilds = DiscordHttpGuildActions(httpClientFactory, token)
-        member _.Stickers = DiscordHttpStickerActions(httpClientFactory, token)
+        member _.Applications = DiscordHttpApplicationActions(httpClientFactory, discordBotToken)
+        member _.Interactions = DiscordHttpInteractionActions(httpClientFactory, discordBotToken)
+        member _.ApplicationCommands = DiscordHttpApplicationCommandActions(httpClientFactory, discordBotToken)
+        member _.AuditLogs = DiscordHttpAuditLogActions(httpClientFactory, discordBotToken)
+        member _.AutoModeration = DiscordHttpAutoModerationActions(httpClientFactory, discordBotToken)
+        member _.RoleConnections = DiscordHttpRoleConnectionActions(httpClientFactory, discordBotToken)
+        member _.Channels = DiscordHttpChannelActions(httpClientFactory, discordBotToken)
+        member _.Emojis = DiscordHttpEmojiActions(httpClientFactory, discordBotToken)
+        member _.Entitlements = DiscordHttpEntitlementActions(httpClientFactory, discordBotToken)
+        member _.Gateway = DiscordHttpGatewayActions(httpClientFactory, discordBotToken)
+        member _.Guilds = DiscordHttpGuildActions(httpClientFactory, discordBotToken)
+        member _.Stickers = DiscordHttpStickerActions(httpClientFactory, discordBotToken)

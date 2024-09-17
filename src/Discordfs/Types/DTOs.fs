@@ -575,20 +575,20 @@ with
 and UpdatePresence = {
     [<JsonName "since">] Since: int option
     [<JsonName "activities">] Activities: Activity list
-    [<JsonName "status">] Status: StatusType
+    [<JsonName "status">] [<JsonConverter(typeof<StatusTypeConverter>)>] Status: StatusType
     [<JsonName "afk">] Afk: bool
 }
 with
     static member build(
-        Since: int option,
-        Activities: Activity list,
         Status: StatusType,
-        Afk: bool
+        ?Activities: Activity list,
+        ?Afk: bool,
+        ?Since: int
     ) = {
         Since = Since;
-        Activities = Activities;
+        Activities = Option.defaultValue [] Activities;
         Status = Status;
-        Afk = Afk;
+        Afk = Option.defaultValue false Afk;
     }
 
 // https://discord.com/developers/docs/topics/gateway#hello-event-example-hello-event
