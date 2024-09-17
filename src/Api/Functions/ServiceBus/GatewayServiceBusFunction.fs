@@ -1,9 +1,7 @@
 ﻿namespace Modkit.Api.Functions
 
 open Azure.Messaging.ServiceBus
-open FSharp.Json
 open Microsoft.Azure.Functions.Worker
-open Modkit.Discordfs.Types
 open Microsoft.Extensions.Logging
 
 type GatewayServiceBusFunction () =
@@ -12,8 +10,6 @@ type GatewayServiceBusFunction () =
         [<ServiceBusTrigger("%GatewayQueueName%", IsSessionsEnabled = true )>] message: ServiceBusReceivedMessage,
         log: ILogger
     ) = task {
-        let event = message.Body.ToString() |> Json.deserialize<GatewayEvent>
-
-        log.LogDebug <| Json.serialize event
+        log.LogDebug <| message.Body.ToString()
         log.LogInformation $"Gateway event (id: {message.MessageId}) received"
     }

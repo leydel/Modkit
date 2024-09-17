@@ -1,6 +1,5 @@
 ﻿namespace Modkit.Discordfs.Services
 
-open FSharp.Json
 open Modkit.Discordfs.Types
 open System
 open System.Net.WebSockets
@@ -12,7 +11,8 @@ type IDiscordGatewayService =
     abstract member Actions: IDiscordGatewayActions
 
     abstract member Connect:
-        (GatewayEvent -> Task<unit>) ->
+        identify: Identify ->
+        handler: (string -> Task<unit>) ->
         Task<Result<unit, string>>
 
     abstract member Disconnect:
@@ -20,38 +20,69 @@ type IDiscordGatewayService =
         Task<Result<unit, string>>
 
 type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
-    member val private _ws: ClientWebSocket = new ClientWebSocket()
+    let _ws: ClientWebSocket = new ClientWebSocket()
 
-    member this.mapLifecycle (handler: GatewayEvent -> Task<unit>) (message: GatewayEvent) = task {
-        System.Console.WriteLine $"Opcode: {message.Opcode}, Event Name: {message.EventName}"
+    let _actions: IDiscordGatewayActions = DiscordGatewayActions(_ws)
 
-        match message.Opcode with
-        | GatewayOpcode.HELLO ->
-            // initiate heartbeat (gives interval)
-            // on interval: if doesnt receive heartbeat ack, close connection and reconnect
+    let mutable lastHeartbeatAcked = true
+    let mutable heartbeatCount = 0
+    let mutable sequenceId: int option = None
 
-            return () // TODO: Handle
-        | GatewayOpcode.HEARTBEAT_ACK ->
-            // on first ack, send identify
+    member this.heartbeat (interval: int) = task {
+        match lastHeartbeatAcked with
+        | false ->
+            return Error "Last gateway heartbeat was not acked"
+        | true ->
+            lastHeartbeatAcked <- false
+            heartbeatCount <- heartbeatCount + 1
 
-            return () // TODO: Handle
-        | GatewayOpcode.DISPATCH when message.EventName = Some "Ready" -> // TODO: Check correct event name
-            // send heartbeat back (or reverse)
+            do! _actions.Heartbeat sequenceId :> Task
+            return! this.heartbeat interval
 
-            return () // TODO: Handle
-        | _ -> 
-            return! handler message
+        // TODO: Handle graceful disconnect
     }
 
-    member this.handle (handler: GatewayEvent -> Task<unit>) = task {
+    member this.mapLifecycle (identify: Identify) (handler: string -> Task<unit>) (message: string) = task {
+        match GatewayEventIdentifier.getType message with
+        | None -> failwith "Unexpected payload received from gateway"
+        | Some identifier ->
+            System.Console.WriteLine $"Opcode: {identifier.Opcode}, Event Name: {identifier.EventName}"
+
+            match identifier.Opcode with
+            | GatewayOpcode.HELLO ->
+                let event = GatewayEvent<Hello>.deserializeF message
+
+                this.heartbeat event.Data.HeartbeatInterval |> ignore
+                do! _actions.Identify identify :> Task
+                return ()
+            | GatewayOpcode.HEARTBEAT ->
+                do! _actions.Heartbeat sequenceId :> Task
+                return ()
+            | GatewayOpcode.HEARTBEAT_ACK ->
+                lastHeartbeatAcked <- true
+                return ()
+            | GatewayOpcode.DISPATCH when identifier.EventName = Some "Ready" -> // TODO: Check correct event name
+                let event = GatewayEvent<Ready>.deserializeF message
+
+                // TODO: Handle ready event however needed
+                return ()
+            | _ ->
+                sequenceId <-
+                    match GatewaySequencer.getSequenceNumber message with
+                    | None -> sequenceId
+                    | Some seq -> Some seq
+
+                return! handler message
+    }
+
+    member this.handle (identify: Identify) (handler: string -> Task<unit>) = task {
         let buffer = Array.zeroCreate<byte> 4096
-        let! res = this._ws.ReceiveAsync(ArraySegment buffer, CancellationToken.None)
+        let! res = _ws.ReceiveAsync(ArraySegment buffer, CancellationToken.None)
 
         match res.MessageType with
         | WebSocketMessageType.Text
         | WebSocketMessageType.Binary ->
-            let message = Encoding.UTF8.GetString(buffer, 0, res.Count) |> Json.deserialize<GatewayEvent>
-            do! this.mapLifecycle handler message
+            do! this.mapLifecycle identify handler (Encoding.UTF8.GetString(buffer, 0, res.Count))
 
             return true
         | _ ->
@@ -59,14 +90,14 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
     }
 
     interface IDiscordGatewayService with
-        member this.Actions = DiscordGatewayActions(this._ws)
+        member val Actions = _actions
 
-        member this.Connect handler = task {
+        member this.Connect identify handler = task {
             try
                 let! gateway = discordHttpService.Gateway.GetGateway "10" GatewayEncoding.JSON None
 
-                do! this._ws.ConnectAsync(Uri gateway.Url, CancellationToken.None)
-                while! this.handle handler do ()
+                do! _ws.ConnectAsync(Uri gateway.Url, CancellationToken.None)
+                while! this.handle identify handler do ()
 
                 // TODO: Handle gateway disconnect and resuming
 
@@ -78,7 +109,7 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
 
         member this.Disconnect () = task {
             try
-                do! this._ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None)
+                do! _ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None)
                 return Ok ()
             with
             | _ -> 

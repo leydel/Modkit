@@ -1,10 +1,10 @@
 ﻿namespace Modkit.Discordfs.Services
 
-open FSharp.Json
 open Modkit.Discordfs.Types
 open System
 open System.Net.WebSockets
 open System.Text
+open System.Text.Json
 open System.Threading
 open System.Threading.Tasks
 
@@ -49,9 +49,9 @@ type DiscordGatewayActions (private _ws: ClientWebSocket) =
         | true -> return Ok ()
     }
 
-    member _.Send (message: GatewayEvent) = task {
+    member _.Send<'a> (message: GatewayEvent<'a>) = task {
         try
-            let buffer = message |> Json.serialize |> Encoding.UTF8.GetBytes
+            let buffer = message |> JsonSerializer.Serialize |> Encoding.UTF8.GetBytes
             return! send buffer 0
         with
         | _ ->
@@ -60,55 +60,61 @@ type DiscordGatewayActions (private _ws: ClientWebSocket) =
 
     interface IDiscordGatewayActions with
         member this.Identify payload = task {
-            let message = (GatewayEvent.build(
-                Opcode = GatewayOpcode.IDENTIFY,
-                Data = payload
-            ))
+            let message =
+                GatewayEvent.build(
+                    Opcode = GatewayOpcode.IDENTIFY,
+                    Data = payload
+                )
             
             return! this.Send message
         }
             
         member this.Resume payload = task {
-            let message = (GatewayEvent.build(
-                Opcode = GatewayOpcode.RESUME,
-                Data = payload
-            ))
+            let message =
+                GatewayEvent.build(
+                    Opcode = GatewayOpcode.RESUME,
+                    Data = payload
+                )
             
             return! this.Send message
         }
 
         member this.Heartbeat payload = task {
-            let message = (GatewayEvent.build(
-                Opcode = GatewayOpcode.HEARTBEAT,
-                Data = payload
-            ))
+            let message =
+                GatewayEvent.build(
+                    Opcode = GatewayOpcode.HEARTBEAT,
+                    Data = payload
+                )
             
             return! this.Send message
         }
 
         member this.RequestGuildMembers payload = task {
-            let message = (GatewayEvent.build(
-                Opcode = GatewayOpcode.REQUEST_GUILD_MEMBERS,
-                Data = payload
-            ))
+            let message =
+                GatewayEvent.build(
+                    Opcode = GatewayOpcode.REQUEST_GUILD_MEMBERS,
+                    Data = payload
+                )
             
             return! this.Send message
         }
 
         member this.UpdateVoiceState payload = task {
-            let message = (GatewayEvent.build(
-                Opcode = GatewayOpcode.VOICE_STATE_UPDATE,
-                Data = payload
-            ))
+            let message =
+                GatewayEvent.build(
+                    Opcode = GatewayOpcode.VOICE_STATE_UPDATE,
+                    Data = payload
+                )
             
             return! this.Send message
         }
 
         member this.UpdatePresence payload = task {
-            let message = (GatewayEvent.build(
-                Opcode = GatewayOpcode.PRESENCE_UPDATE,
-                Data = payload
-            ))
+            let message =
+                GatewayEvent.build(
+                    Opcode = GatewayOpcode.PRESENCE_UPDATE,
+                    Data = payload
+                )
             
             return! this.Send message
         }

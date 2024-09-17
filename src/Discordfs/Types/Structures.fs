@@ -3,6 +3,8 @@
 open FSharp.Json
 open System
 open System.Collections.Generic
+open System.Text.Json
+open System.Text.Json.Serialization
 
 #nowarn "49"
 
@@ -2192,75 +2194,6 @@ with
         Data = Data;
     }
 
-type SessionStartLimit = {
-    [<JsonField("total")>]
-    Total: int
-
-    [<JsonField("remaining")>]
-    Remaining: int
-    
-    [<JsonField("reset_after")>]
-    ResetAfter: int
-
-    [<JsonField("max_concurrency")>]
-    MaxConcurrency: int
-}
-
-type GatewayEvent = {
-    [<JsonField("op", EnumValue = EnumMode.Value)>]
-    Opcode: GatewayOpcode
-    
-    [<JsonField("d")>]
-    Data: obj option
-    
-    [<JsonField("s")>]
-    Sequence: int option
-    
-    [<JsonField("t")>]
-    EventName: string option
-}
-with
-    static member build(
-        Opcode: GatewayOpcode,
-        ?Data: obj,
-        ?Sequence: int,
-        ?EventName: string
-    ) = {
-        Opcode = Opcode;
-        Data = Data;
-        Sequence = Sequence;
-        EventName = EventName;
-    }
-
-type ConnectionProperties = {
-    [<JsonField("os")>]
-    OperatingSystem: string
-    
-    [<JsonField("browser")>]
-    Browser: string
-    
-    [<JsonField("device")>]
-    Device: string
-}
-with
-    static member build(
-        OperatingSystem: string
-    ) = {
-        OperatingSystem = OperatingSystem;
-        Browser = "Discordfs";
-        Device = "Discordfs";
-    }
-
-    static member build(
-        OperatingSystem: string,
-        Browser: string,
-        Device: string
-    ) = {
-        OperatingSystem = OperatingSystem;
-        Browser = Browser;
-        Device = Device;
-    }
-
 type ActivityTimestamps = {
     [<JsonField("start", Transform = typeof<Transforms.DateTimeEpoch>)>]
     Start: DateTime option
@@ -2766,3 +2699,105 @@ type VoiceRegion = {
     [<JsonField("custom")>]
     Custom: bool
 }
+
+// https://discord.com/developers/docs/topics/gateway#session-start-limit-object-session-start-limit-structure
+type SessionStartLimit = {
+    [<JsonField("total")>]
+    Total: int
+
+    [<JsonField("remaining")>]
+    Remaining: int
+    
+    [<JsonField("reset_after")>]
+    ResetAfter: int
+
+    [<JsonField("max_concurrency")>]
+    MaxConcurrency: int
+}
+
+// https://discord.com/developers/docs/topics/gateway-events#identify-identify-connection-properties
+type ConnectionProperties = {
+    [<JsonField("os")>]
+    OperatingSystem: string
+    
+    [<JsonField("browser")>]
+    Browser: string
+    
+    [<JsonField("device")>]
+    Device: string
+}
+with
+    static member build(
+        OperatingSystem: string
+    ) = {
+        OperatingSystem = OperatingSystem;
+        Browser = "Discordfs";
+        Device = "Discordfs";
+    }
+
+    static member build(
+        OperatingSystem: string,
+        Browser: string,
+        Device: string
+    ) = {
+        OperatingSystem = OperatingSystem;
+        Browser = Browser;
+        Device = Device;
+    }
+
+// https://discord.com/developers/docs/topics/gateway-events#payload-structure
+type GatewayEventIdentifier = {
+    [<JsonName "op">] Opcode: GatewayOpcode
+    [<JsonName "t">] EventName: string option
+}
+with
+    static member getType (json: string) =
+        try
+            Some <| JsonSerializer.Deserialize<GatewayEventIdentifier> json
+        with
+        | _ ->
+            None
+
+// https://discord.com/developers/docs/topics/gateway-events#payload-structure
+type GatewaySequencer = {
+    [<JsonName "s">] Sequence: int option
+}
+with
+    static member getSequenceNumber (json: string) =
+        try
+            let seq = JsonSerializer.Deserialize<GatewaySequencer> json
+            seq.Sequence
+        with
+        | _ ->
+            None
+
+// https://discord.com/developers/docs/topics/gateway-events#payload-structure
+type GatewayEvent<'a> = {
+    [<JsonName "op">] Opcode: GatewayOpcode
+    [<JsonName "d">] Data: 'a
+    [<JsonName "s">] Sequence: int option
+    [<JsonName "t">] EventName: string option
+}
+with
+    static member build(
+        Opcode: GatewayOpcode,
+        Data: 'a,
+        ?Sequence: int,
+        ?EventName: string
+    ) = {
+        Opcode = Opcode;
+        Data = Data;
+        Sequence = Sequence;
+        EventName = EventName;
+    }
+
+    static member deserializeF (json: string) =
+        JsonSerializer.Deserialize<GatewayEvent<'a>> json
+
+    static member deserialize (json: string) =
+        try
+            Some <| GatewayEvent<'a>.deserializeF json
+        with
+        | _ ->
+            None
+        

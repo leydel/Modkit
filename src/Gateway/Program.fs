@@ -1,5 +1,4 @@
 ﻿open Azure.Messaging.ServiceBus
-open FSharp.Json
 open Modkit.Discordfs.Services
 open Modkit.Discordfs.Types
 open Modkit.Gateway.Factories
@@ -18,16 +17,54 @@ type Program (
 ) =
     let serviceBusConnectionString = configuration.GetValue "AzureWebJobsServiceBus"
     let serviceBusQueueName = configuration.GetValue "GatewayQueueName"
+    let discordBotToken = configuration.GetValue "DiscordBotToken"
 
-    let handle (sender: ServiceBusSender) (event: GatewayEvent) = task {
-        do! Json.serialize event |> ServiceBusMessage |> sender.SendMessageAsync
+    let handle (sender: ServiceBusSender) (event: string) = task {
+        do! sender.SendMessageAsync <| ServiceBusMessage event
     }
 
     member _.Start () =
         let client = serviceBusClientFactory.CreateClient serviceBusConnectionString
         let sender = client.CreateSender serviceBusQueueName
+
+        let intents = 
+            int <| (
+                    GatewayIntent.GUILDS
+                ||| GatewayIntent.GUILD_MEMBERS
+                ||| GatewayIntent.GUILD_MODERATION
+                ||| GatewayIntent.GUILD_EMOJIS_AND_STICKERS
+                ||| GatewayIntent.GUILD_INTEGRATIONS
+                ||| GatewayIntent.GUILD_WEBHOOKS
+                ||| GatewayIntent.GUILD_INVITES
+                ||| GatewayIntent.GUILD_VOICE_STATES
+                ||| GatewayIntent.GUILD_PRESENCES
+                ||| GatewayIntent.GUILD_MESSAGES
+                ||| GatewayIntent.GUILD_MESSAGE_REACTIONS
+                ||| GatewayIntent.GUILD_MESSAGE_TYPING
+                ||| GatewayIntent.DIRECT_MESSAGES
+                ||| GatewayIntent.DIRECT_MESSAGE_REACTIONS
+                ||| GatewayIntent.DIRECT_MESSAGE_TYPING
+                ||| GatewayIntent.MESSAGE_CONTENT
+                ||| GatewayIntent.GUILD_SCHEDULED_EVENTS
+                ||| GatewayIntent.AUTO_MODERATION_CONFIGURATION
+                ||| GatewayIntent.AUTO_MODERATION_EXECUTION
+                ||| GatewayIntent.GUILD_MESSAGE_POLLS
+                ||| GatewayIntent.DIRECT_MESSAGE_POLLS
+            )
+
+        let operatingSystem =
+            match Environment.OSVersion.Platform with
+            | PlatformID.Win32NT -> "Windows"
+            | PlatformID.Unix -> "Linux"
+            | _ -> "Unknown OS"
+
+        let identify = Identify.build(
+            Token = discordBotToken,
+            Intents = intents,
+            Properties = ConnectionProperties.build(operatingSystem)
+        )
         
-        discordGatewayService.Connect <| handle sender
+        discordGatewayService.Connect identify (handle sender)
         :> Task
         |> Async.AwaitTask
         |> Async.RunSynchronously

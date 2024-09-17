@@ -582,34 +582,36 @@ type GatewayIntent =
     | GUILD_MESSAGE_POLLS =             0b00000001_00000000_00000000_00000000
     | DIRECT_MESSAGE_POLLS =            0b00000010_00000000_00000000_00000000
 
-type StatusType =
-    | ONLINE
-    | DND
-    | IDLE
-    | INVISIBLE
-    | OFFLINE
+//type StatusType =
+//    | ONLINE
+//    | DND
+//    | IDLE
+//    | INVISIBLE
+//    | OFFLINE
     
-type StatusTypeTransform () =
-    interface ITypeTransform with
-        member _.targetType () =
-            typeof<string>
+//type StatusTypeTransform () =
+//    interface ITypeTransform with
+//        member _.targetType () =
+//            typeof<string>
 
-        member _.toTargetType value =
-            match value :?> StatusType with
-            | StatusType.ONLINE -> "online"
-            | StatusType.DND -> "dnd"
-            | StatusType.IDLE -> "idle"
-            | StatusType.INVISIBLE -> "invisible"
-            | StatusType.OFFLINE -> "offline"
+//        member _.toTargetType value =
+//            match value :?> StatusType with
+//            | StatusType.ONLINE -> "online"
+//            | StatusType.DND -> "dnd"
+//            | StatusType.IDLE -> "idle"
+//            | StatusType.INVISIBLE -> "invisible"
+//            | StatusType.OFFLINE -> "offline"
 
-        member _.fromTargetType value =
-            match value with
-            | v when v = "online" -> StatusType.ONLINE
-            | v when v = "dnd" -> StatusType.DND
-            | v when v = "idle" -> StatusType.IDLE
-            | v when v = "invisible" -> StatusType.INVISIBLE
-            | v when v = "offline" -> StatusType.OFFLINE
-            | _ -> failwith "Unexpected StatusType type"
+//        member _.fromTargetType value =
+//            match value with
+//            | v when v = "online" -> StatusType.ONLINE
+//            | v when v = "dnd" -> StatusType.DND
+//            | v when v = "idle" -> StatusType.IDLE
+//            | v when v = "invisible" -> StatusType.INVISIBLE
+//            | v when v = "offline" -> StatusType.OFFLINE
+//            | _ -> failwith "Unexpected StatusType type"
+
+type StatusType = string // TODO: Implement STJ converter for StatusType (see above)
 
 type ActivityType =
     | PLAYING = 0
