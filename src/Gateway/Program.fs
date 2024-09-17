@@ -62,7 +62,8 @@ type Program (
             let identify = Identify.build(
                 Token = discordBotToken,
                 Intents = intents,
-                Properties = ConnectionProperties.build(operatingSystem)
+                Properties = ConnectionProperties.build(operatingSystem),
+                Shard = (0, 1)
             )
 
             discordGatewayService.Connect identify (handle sender)

@@ -34,30 +34,33 @@ type IDiscordGatewayActions =
         Task<Result<unit, string>>
 
 type DiscordGatewayActions (private _ws: ClientWebSocket) =
-    let rec send (buffer: byte array) (offset: int) = async {
+    member _.write (event: GatewayEvent<'a>) = task {
+        Console.WriteLine $"SENDING | Opcode: {event.Opcode}, Event Name: {event.EventName}"
+        Console.WriteLine $"SENDING | {FsJson.serialize event}"
+
         let cts = new CancellationTokenSource ()
         cts.CancelAfter(TimeSpan.FromSeconds 5)
 
-        let count = Math.Min(1024, buffer.Length - offset)
-        let segment = ArraySegment(buffer, offset, count)
-        let isEndOfMessage = offset + count >= buffer.Length
+        let bytes = event |> FsJson.serialize |> Encoding.UTF8.GetBytes
 
-        do! _ws.SendAsync(segment, WebSocketMessageType.Text, isEndOfMessage, cts.Token) |> Async.AwaitTask
+        let size = 4096
 
-        match isEndOfMessage with
-        | false -> return! send buffer (offset + count)
-        | true -> return Ok ()
-    }
+        let mutable isEndOfMessage = false
+        let mutable offset = 0
 
-    member _.Send<'a> (message: GatewayEvent<'a>) = task {
         try
-            Console.WriteLine $"SENDING | Opcode: {message.Opcode}, Event Name: {message.EventName}"
-            Console.WriteLine $"SENDING | {FsJson.serialize message}"
-            let buffer = message |> FsJson.serialize |> Encoding.UTF8.GetBytes
-            return! send buffer 0
-        with
-        | _ ->
-            return Error "Unexpected error occurred when attempting to send message"
+            while not isEndOfMessage do
+                isEndOfMessage <- offset + size >= bytes.Length
+                let count = Math.Min(size, bytes.Length - offset)
+                let buffer = ArraySegment(bytes, offset, count)
+
+                do! _ws.SendAsync(buffer, WebSocketMessageType.Text, isEndOfMessage, cts.Token)
+
+                offset <- offset + size
+
+            return Ok ()
+        with _ ->
+            return Error "Unexpected error occurred when attempting to write message"
     }
 
     interface IDiscordGatewayActions with
@@ -68,7 +71,7 @@ type DiscordGatewayActions (private _ws: ClientWebSocket) =
                     Data = payload
                 )
             
-            return! this.Send message
+            return! this.write message
         }
             
         member this.Resume payload = task {
@@ -78,7 +81,7 @@ type DiscordGatewayActions (private _ws: ClientWebSocket) =
                     Data = payload
                 )
             
-            return! this.Send message
+            return! this.write message
         }
 
         member this.Heartbeat payload = task {
@@ -88,7 +91,7 @@ type DiscordGatewayActions (private _ws: ClientWebSocket) =
                     Data = payload
                 )
             
-            return! this.Send message
+            return! this.write message
         }
 
         member this.RequestGuildMembers payload = task {
@@ -98,7 +101,7 @@ type DiscordGatewayActions (private _ws: ClientWebSocket) =
                     Data = payload
                 )
             
-            return! this.Send message
+            return! this.write message
         }
 
         member this.UpdateVoiceState payload = task {
@@ -108,7 +111,7 @@ type DiscordGatewayActions (private _ws: ClientWebSocket) =
                     Data = payload
                 )
             
-            return! this.Send message
+            return! this.write message
         }
 
         member this.UpdatePresence payload = task {
@@ -118,5 +121,5 @@ type DiscordGatewayActions (private _ws: ClientWebSocket) =
                     Data = payload
                 )
             
-            return! this.Send message
+            return! this.write message
         }
