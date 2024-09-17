@@ -1,6 +1,7 @@
 ﻿namespace Modkit.Discordfs.Types
 
 open FSharp.Json
+open Modkit.Discordfs.Utils
 open System
 open System.Collections.Generic
 open System.Text.Json
@@ -2753,7 +2754,7 @@ type GatewayEventIdentifier = {
 with
     static member getType (json: string) =
         try
-            Some <| JsonSerializer.Deserialize<GatewayEventIdentifier> json
+            Some <| FsJson.deserialize<GatewayEventIdentifier> json
         with
         | _ ->
             None
@@ -2765,7 +2766,7 @@ type GatewaySequencer = {
 with
     static member getSequenceNumber (json: string) =
         try
-            let seq = JsonSerializer.Deserialize<GatewaySequencer> json
+            let seq = FsJson.deserialize<GatewaySequencer> json
             seq.Sequence
         with
         | _ ->
@@ -2792,7 +2793,7 @@ with
     }
 
     static member deserializeF (json: string) =
-        JsonSerializer.Deserialize<GatewayEvent<'a>> json
+        FsJson.deserialize<GatewayEvent<'a>> json
 
     static member deserialize (json: string) =
         try

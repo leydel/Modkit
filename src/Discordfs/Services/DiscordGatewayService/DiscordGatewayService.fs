@@ -37,6 +37,7 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
             heartbeatCount <- heartbeatCount + 1
 
             do! _actions.Heartbeat sequenceId :> Task
+            do! Task.Delay interval
             return! this.heartbeat interval
 
         // TODO: Handle graceful disconnect
@@ -46,14 +47,22 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
         match GatewayEventIdentifier.getType message with
         | None -> failwith "Unexpected payload received from gateway"
         | Some identifier ->
-            System.Console.WriteLine $"Opcode: {identifier.Opcode}, Event Name: {identifier.EventName}"
+            Console.WriteLine $"RECEIVED | Opcode: {identifier.Opcode}, Event Name: {identifier.EventName}"
+            Console.WriteLine $"RECEIVED | ${message}"
 
             match identifier.Opcode with
             | GatewayOpcode.HELLO ->
                 let event = GatewayEvent<Hello>.deserializeF message
 
-                this.heartbeat event.Data.HeartbeatInterval |> ignore
                 do! _actions.Identify identify :> Task
+
+                let random = Random()
+                let jitter = int ((float event.Data.HeartbeatInterval) * random.NextDouble())
+                do! Task.Delay jitter
+
+                Console.WriteLine $"JITTER ${jitter}"
+
+                this.heartbeat event.Data.HeartbeatInterval |> ignore
                 return ()
             | GatewayOpcode.HEARTBEAT ->
                 do! _actions.Heartbeat sequenceId :> Task
@@ -61,7 +70,7 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
             | GatewayOpcode.HEARTBEAT_ACK ->
                 lastHeartbeatAcked <- true
                 return ()
-            | GatewayOpcode.DISPATCH when identifier.EventName = Some "Ready" -> // TODO: Check correct event name
+            | GatewayOpcode.DISPATCH when identifier.EventName = Some "ready" -> // TODO: Check correct event name
                 let event = GatewayEvent<Ready>.deserializeF message
 
                 // TODO: Handle ready event however needed
@@ -76,14 +85,19 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
     }
 
     member this.handle (identify: Identify) (handler: string -> Task<unit>) = task {
+        Console.WriteLine("Awaiting new message")
+
         let buffer = Array.zeroCreate<byte> 4096
         let! res = _ws.ReceiveAsync(ArraySegment buffer, CancellationToken.None)
+
+        Console.WriteLine("RECEIVED | Message type: {0}", res.MessageType)
+        Console.WriteLine("RECEIVED | Content: {0}", Encoding.UTF8.GetString(buffer, 0, res.Count))
 
         match res.MessageType with
         | WebSocketMessageType.Text
         | WebSocketMessageType.Binary ->
             do! this.mapLifecycle identify handler (Encoding.UTF8.GetString(buffer, 0, res.Count))
-
+            Console.WriteLine("Finished lifecycle")
             return true
         | _ ->
             return false
@@ -96,8 +110,14 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
             try
                 let! gateway = discordHttpService.Gateway.GetGateway "10" GatewayEncoding.JSON None
 
+                Console.WriteLine gateway.Url
+                Console.WriteLine (Uri gateway.Url)
+
                 do! _ws.ConnectAsync(Uri gateway.Url, CancellationToken.None)
-                while! this.handle identify handler do ()
+                while! this.handle identify handler do
+                    Console.WriteLine("Do while loop entered")
+
+                Console.WriteLine("Do while loop exited")
 
                 // TODO: Handle gateway disconnect and resuming
 

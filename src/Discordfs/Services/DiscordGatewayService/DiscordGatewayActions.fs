@@ -1,10 +1,10 @@
 ﻿namespace Modkit.Discordfs.Services
 
 open Modkit.Discordfs.Types
+open Modkit.Discordfs.Utils
 open System
 open System.Net.WebSockets
 open System.Text
-open System.Text.Json
 open System.Threading
 open System.Threading.Tasks
 
@@ -38,7 +38,7 @@ type DiscordGatewayActions (private _ws: ClientWebSocket) =
         let cts = new CancellationTokenSource ()
         cts.CancelAfter(TimeSpan.FromSeconds 5)
 
-        let count = 1024
+        let count = Math.Min(1024, buffer.Length - offset)
         let segment = ArraySegment(buffer, offset, count)
         let isEndOfMessage = offset + count >= buffer.Length
 
@@ -51,7 +51,9 @@ type DiscordGatewayActions (private _ws: ClientWebSocket) =
 
     member _.Send<'a> (message: GatewayEvent<'a>) = task {
         try
-            let buffer = message |> JsonSerializer.Serialize |> Encoding.UTF8.GetBytes
+            Console.WriteLine $"SENDING | Opcode: {message.Opcode}, Event Name: {message.EventName}"
+            Console.WriteLine $"SENDING | {FsJson.serialize message}"
+            let buffer = message |> FsJson.serialize |> Encoding.UTF8.GetBytes
             return! send buffer 0
         with
         | _ ->

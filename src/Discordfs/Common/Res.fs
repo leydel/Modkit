@@ -1,8 +1,8 @@
 ﻿namespace Modkit.Discordfs.Common
 
 open FSharp.Json
+open Modkit.Discordfs.Utils
 open System.Net.Http
-open System.Text.Json
 open System.Threading.Tasks
 
 module Res =
@@ -16,7 +16,7 @@ module Res =
     let json (resTask: Task<HttpResponseMessage>) = task {
         let! res = resTask
         let! body = res.Content.ReadAsStringAsync()
-        return JsonSerializer.Deserialize<'a> body
+        return FsJson.deserialize<'a> body
     }
 
     let raw (resTask: Task<HttpResponseMessage>) = task {

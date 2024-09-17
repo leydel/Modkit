@@ -24,50 +24,58 @@ type Program (
     }
 
     member _.Start () =
-        let client = serviceBusClientFactory.CreateClient serviceBusConnectionString
-        let sender = client.CreateSender serviceBusQueueName
+        try
+            let client = serviceBusClientFactory.CreateClient serviceBusConnectionString
+            let sender = client.CreateSender serviceBusQueueName
 
-        let intents = 
-            int <| (
-                    GatewayIntent.GUILDS
-                ||| GatewayIntent.GUILD_MEMBERS
-                ||| GatewayIntent.GUILD_MODERATION
-                ||| GatewayIntent.GUILD_EMOJIS_AND_STICKERS
-                ||| GatewayIntent.GUILD_INTEGRATIONS
-                ||| GatewayIntent.GUILD_WEBHOOKS
-                ||| GatewayIntent.GUILD_INVITES
-                ||| GatewayIntent.GUILD_VOICE_STATES
-                ||| GatewayIntent.GUILD_PRESENCES
-                ||| GatewayIntent.GUILD_MESSAGES
-                ||| GatewayIntent.GUILD_MESSAGE_REACTIONS
-                ||| GatewayIntent.GUILD_MESSAGE_TYPING
-                ||| GatewayIntent.DIRECT_MESSAGES
-                ||| GatewayIntent.DIRECT_MESSAGE_REACTIONS
-                ||| GatewayIntent.DIRECT_MESSAGE_TYPING
-                ||| GatewayIntent.MESSAGE_CONTENT
-                ||| GatewayIntent.GUILD_SCHEDULED_EVENTS
-                ||| GatewayIntent.AUTO_MODERATION_CONFIGURATION
-                ||| GatewayIntent.AUTO_MODERATION_EXECUTION
-                ||| GatewayIntent.GUILD_MESSAGE_POLLS
-                ||| GatewayIntent.DIRECT_MESSAGE_POLLS
+            let intents = 
+                int <| (
+                        GatewayIntent.GUILDS
+                    ||| GatewayIntent.GUILD_MEMBERS
+                    ||| GatewayIntent.GUILD_MODERATION
+                    ||| GatewayIntent.GUILD_EMOJIS_AND_STICKERS
+                    ||| GatewayIntent.GUILD_INTEGRATIONS
+                    ||| GatewayIntent.GUILD_WEBHOOKS
+                    ||| GatewayIntent.GUILD_INVITES
+                    ||| GatewayIntent.GUILD_VOICE_STATES
+                    ||| GatewayIntent.GUILD_PRESENCES
+                    ||| GatewayIntent.GUILD_MESSAGES
+                    ||| GatewayIntent.GUILD_MESSAGE_REACTIONS
+                    ||| GatewayIntent.GUILD_MESSAGE_TYPING
+                    ||| GatewayIntent.DIRECT_MESSAGES
+                    ||| GatewayIntent.DIRECT_MESSAGE_REACTIONS
+                    ||| GatewayIntent.DIRECT_MESSAGE_TYPING
+                    ||| GatewayIntent.MESSAGE_CONTENT
+                    ||| GatewayIntent.GUILD_SCHEDULED_EVENTS
+                    ||| GatewayIntent.AUTO_MODERATION_CONFIGURATION
+                    ||| GatewayIntent.AUTO_MODERATION_EXECUTION
+                    ||| GatewayIntent.GUILD_MESSAGE_POLLS
+                    ||| GatewayIntent.DIRECT_MESSAGE_POLLS
+                )
+
+            let operatingSystem =
+                match Environment.OSVersion.Platform with
+                | PlatformID.Win32NT -> "Windows"
+                | PlatformID.Unix -> "Linux"
+                | _ -> "Unknown OS"
+
+            let identify = Identify.build(
+                Token = discordBotToken,
+                Intents = intents,
+                Properties = ConnectionProperties.build(operatingSystem)
             )
 
-        let operatingSystem =
-            match Environment.OSVersion.Platform with
-            | PlatformID.Win32NT -> "Windows"
-            | PlatformID.Unix -> "Linux"
-            | _ -> "Unknown OS"
+            discordGatewayService.Connect identify (handle sender)
+            :> Task
+            |> Async.AwaitTask
+            |> Async.RunSynchronously
 
-        let identify = Identify.build(
-            Token = discordBotToken,
-            Intents = intents,
-            Properties = ConnectionProperties.build(operatingSystem)
-        )
-        
-        discordGatewayService.Connect identify (handle sender)
-        :> Task
-        |> Async.AwaitTask
-        |> Async.RunSynchronously
+            Console.WriteLine("The program has finished")
+            Console.ReadKey() |> ignore
+        with
+        | _ ->
+            Console.WriteLine("The program has crashed")
+            Console.ReadKey() |> ignore
 
 Host
     .CreateDefaultBuilder(Environment.GetCommandLineArgs())
