@@ -40,20 +40,11 @@ type WelcomeScreen = {
 }
 
 type CommandInteractionDataOption = {
-    [<JsonField("name")>]
-    Name: string
-    
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: ApplicationCommandOptionType
-    
-    [<JsonField("value", Transform = typeof<CommandInteractionDataOptionValueTransform>)>]
-    Value: CommandInteractionDataOptionValue option
-    
-    [<JsonField("options")>]
-    Options: CommandInteractionDataOption list option
-
-    [<JsonField("focused")>]
-    Focused: bool option
+    [<JsonName "name">] Name: string
+    [<JsonName "type">] Type: ApplicationCommandOptionType
+    [<JsonName "value">] [<JsonConverter(typeof<CommandInteractionDataOptionValueConverter>)>] Value: CommandInteractionDataOptionValue option
+    [<JsonName "options">] Options: CommandInteractionDataOption list option
+    [<JsonName "focused">] Focused: bool option
 }
 with
     static member build(
@@ -373,171 +364,68 @@ type Sticker = {
 
 // https://discord.com/developers/docs/resources/guild#guild-object-guild-structure
 type Guild = {
-    [<JsonField("id")>]
-    Id: string
+    [<JsonName "id">] Id: string
+    [<JsonName "name">] Name: string
+    [<JsonName "icon">] Icon: string option
+    [<JsonName "icon_hash">] IconHash: string option
+    [<JsonName "splash">] Splash: string option
+    [<JsonName "discovery_splash">] DiscoverySplash: string option
+    [<JsonName "owner">] Owner: bool option
+    [<JsonName "owner_id">] OwnerId: string
+    [<JsonName "permissions">] Permissions: string option
+    [<JsonName "afk_channel_id">] AfkChannelId: string option
+    [<JsonName "afk_timeout">] AfkTimeout: int
+    [<JsonName "widget_enabled">] WidgetEnabled: bool option
+    [<JsonName "widget_channel_id">] WidgetChannelId: string option
+    [<JsonName "verification_level">] VerificationLevel: GuildVerificationLevel
+    [<JsonName "default_message_notifications">] DefaultMessageNotifications: GuildMessageNotificationLevel
+    [<JsonName "explicit_content_filter">] ExplicitContentFilter: GuildExplicitContentFilterLevel
+    [<JsonName "roles">] Roles: Role list
+    [<JsonName "emojis">] Emojis: Emoji list
+    [<JsonName "features">] [<JsonConverter(typeof<GuildFeatureConverter>)>] Features: GuildFeature list // TODO: Test if this transform works on list
+    [<JsonName "mfa_level">] MfaLevel: GuildMfaLevel
+    [<JsonName "application_id">] ApplicationId: string option
+    [<JsonName "system_channel_id">] SystemChannelId: string option
+    [<JsonName "system_channel_flags">] SystemChannelFlags: int
+    [<JsonName "rules_channel_id">] RulesChannelId: string option
+    [<JsonName "max_presences">] MaxPresences: int option
+    [<JsonName "max_members">] MaxMembers: int option
+    [<JsonName "vanity_url_code">] VanityUrlCode: string option
+    [<JsonName "description">] Description: string option
+    [<JsonName "banner">] Banner: string option
+    [<JsonName "premium_tier">] PremiumTier: GuildPremiumTier
+    [<JsonName "premium_subscription_count">] PremiumSubscriptionCount: int option
+    [<JsonName "preferred_locale">] PreferredLocale: string
+    [<JsonName "public_updates_channel_id">] PublicUpdatesChannelId: string option
+    [<JsonName "max_video_channel_users">] MaxVideoChannelUsers: int option
+    [<JsonName "max_stage_video_channel_users">] MaxStageVideoChannelUsers: int option
+    [<JsonName "approximate_member_count">] ApproximateMemberCount: int option
+    [<JsonName "approximate_presence_count">] ApproximatePresenceCount: int option
+    [<JsonName "welcome_screen">] WelcomeScreen: WelcomeScreen option
+    [<JsonName "nsfw_level">] NsfwLevel: GuildNsfwLevel
+    [<JsonName "stickers">] Stickers: Sticker list option
+    [<JsonName "premium_progress_bar_enabled">] PremiumProgressBarEnabled: bool
+    [<JsonName "safety_alerts_channel_id">] SafetyAlertsChannelId: string option
+}
 
-    [<JsonField("name")>]
-    Name: string
-
-    [<JsonField("icon")>]
-    Icon: string option
-
-    [<JsonField("icon_hash")>]
-    IconHash: string option
-
-    [<JsonField("splash")>]
-    Splash: string option
-
-    [<JsonField("discovery_splash")>]
-    DiscoverySplash: string option
-
-    [<JsonField("owner")>]
-    Owner: bool option
-
-    [<JsonField("owner_id")>]
-    OwnerId: string
-
-    [<JsonField("permissions")>]
-    Permissions: string option
-
-    [<JsonField("afk_channel_id")>]
-    AfkChannelId: string option
-
-    [<JsonField("afk_timeout")>]
-    AfkTimeout: int
-
-    [<JsonField("widget_enabled")>]
-    WidgetEnabled: bool option
-
-    [<JsonField("widget_channel_id")>]
-    WidgetChannelId: string option
-
-    [<JsonField("verification_level", EnumValue = EnumMode.Value)>]
-    VerificationLevel: GuildVerificationLevel
-
-    [<JsonField("default_message_notifications", EnumValue = EnumMode.Value)>]
-    DefaultMessageNotifications: GuildMessageNotificationLevel
-
-    [<JsonField("explicit_content_filter", EnumValue = EnumMode.Value)>]
-    ExplicitContentFilter: GuildExplicitContentFilterLevel
-
-    [<JsonField("roles")>]
-    Roles: Role list
-
-    [<JsonField("emojis")>]
-    Emojis: Emoji list
-
-    [<JsonField("features", Transform = typeof<GuildFeatureTransform>)>] // TODO: Test if this transform works on list
-    Features: GuildFeature list
-
-    [<JsonField("mfa_level", EnumValue = EnumMode.Value)>]
-    MfaLevel: GuildMfaLevel
-
-    [<JsonField("application_id")>]
-    ApplicationId: string option
-
-    [<JsonField("system_channel_id")>]
-    SystemChannelId: string option
-
-    [<JsonField("system_channel_flags")>]
-    SystemChannelFlags: int
-
-    [<JsonField("rules_channel_id")>]
-    RulesChannelId: string option
-
-    [<JsonField("max_presences")>]
-    MaxPresences: int option
-
-    [<JsonField("max_members")>]
-    MaxMembers: int option
-
-    [<JsonField("vanity_url_code")>]
-    VanityUrlCode: string option
-
-    [<JsonField("description")>]
-    Description: string option
-
-    [<JsonField("banner")>]
-    Banner: string option
-
-    [<JsonField("premium_tier", EnumValue = EnumMode.Value)>]
-    PremiumTier: GuildPremiumTier
-
-    [<JsonField("premium_subscription_count")>]
-    PremiumSubscriptionCount: int option
-
-    [<JsonField("preferred_locale")>]
-    PreferredLocale: string
-
-    [<JsonField("public_updates_channel_id")>]
-    PublicUpdatesChannelId: string option
-
-    [<JsonField("max_video_channel_users")>]
-    MaxVideoChannelUsers: int option
-
-    [<JsonField("max_stage_video_channel_users")>]
-    MaxStageVideoChannelUsers: int option
-
-    [<JsonField("approximate_member_count")>]
-    ApproximateMemberCount: int option
-
-    [<JsonField("approximate_presence_count")>]
-    ApproximatePresenceCount: int option
-
-    [<JsonField("welcome_screen")>]
-    WelcomeScreen: WelcomeScreen option
-
-    [<JsonField("nsfw_level", EnumValue = EnumMode.Value)>]
-    NsfwLevel: GuildNsfwLevel
-
-    [<JsonField("stickers")>]
-    Stickers: Sticker list option
-
-    [<JsonField("premium_progress_bar_enabled")>]
-    PremiumProgressBarEnabled: bool
-
-    [<JsonField("safety_alerts_channel_id")>]
-    SafetyAlertsChannelId: string option
-
-    // Only included in unavailable guilds: https://discord.com/developers/docs/resources/guild#unavailable-guild-object
-    [<JsonField("unavailable")>]
-    Unavailable: bool option
+type UnavailableGuild = {
+    [<JsonField("id")>] Id: string
+    [<JsonField("unavailable")>] Unavailable: bool
 }
 
 // https://discord.com/developers/docs/resources/guild#guild-preview-object-guild-preview-structure
 type GuildPreview = {
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("name")>]
-    Name: string
-    
-    [<JsonField("icon")>]
-    Icon: string option
-    
-    [<JsonField("splash")>]
-    Splash: string option
-    
-    [<JsonField("discovery_splash")>]
-    DiscoverySplash: string option
-    
-    [<JsonField("emojis")>]
-    Emojis: Emoji list
-    
-    [<JsonField("features", Transform = typeof<GuildFeatureTransform>)>] // TODO: Test if this transform works on list
-    Features: GuildFeature list
-    
-    [<JsonField("approximate_member_count")>]
-    ApproximateMemberCount: int
-    
-    [<JsonField("approximate_presence_count")>]
-    ApproximatePresenceCount: int
-    
-    [<JsonField("description")>]
-    Description: string option
-    
-    [<JsonField("stickers")>]
-    Stickers: Sticker list
+    [<JsonName "id">] Id: string
+    [<JsonName "name">] Name: string
+    [<JsonName "icon">] Icon: string option
+    [<JsonName "splash">] Splash: string option
+    [<JsonName "discovery_splash">] DiscoverySplash: string option
+    [<JsonName "emojis">] Emojis: Emoji list
+    [<JsonName "features">] [<JsonConverter(typeof<GuildFeatureConverter>)>] Features: GuildFeature list // TODO: Test if this transform works on list
+    [<JsonName "approximate_member_count">] ApproximateMemberCount: int
+    [<JsonName "approximate_presence_count">] ApproximatePresenceCount: int
+    [<JsonName "description">] Description: string option
+    [<JsonName "stickers">] Stickers: Sticker list
 }
 
 // https://discord.com/developers/docs/resources/guild#guild-widget-settings-object-guild-widget-settings-structure
@@ -1519,104 +1407,39 @@ type ResolvedData = {
 }
 
 and Message = {
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("channel_id")>]
-    ChannelId: string
-
-    [<JsonField("author")>]
-    Author: User
-
-    [<JsonField("content")>]
-    Content: string
-    
-    [<JsonField("timestamp")>]
-    Timestamp: DateTime
-    
-    [<JsonField("edited_timestamp")>]
-    EditedTimestamp: DateTime option
-    
-    [<JsonField("tts")>]
-    Tts: bool
-    
-    [<JsonField("mention_everyone")>]
-    MentionEveryone: bool
-
-    [<JsonField("mentions")>]
-    Mentions: User list
-
-    [<JsonField("mention_roles")>]
-    MentionRoles: string list
-
-    [<JsonField("mention_channels")>]
-    MentionChannels: ChannelMention list
-
-    [<JsonField("attachments")>]
-    Attachments: Attachment list
-
-    [<JsonField("embeds")>]
-    Embeds: Embed list
-
-    [<JsonField("reactions")>]
-    Reactions: Reaction list
-
-    [<JsonField("nonce", Transform = typeof<MessageNonceTransform>)>]
-    Nonce: MessageNonce option
-
-    [<JsonField("pinned")>]
-    Pinned: bool
-
-    [<JsonField("webhook_id")>]
-    WebhookId: string option
-
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: MessageType
-
-    [<JsonField("activity")>]
-    Activity: MessageActivity option
-
-    [<JsonField("application")>]
-    Application: Application option
-
-    [<JsonField("message_reference")>]
-    MessageReference: MessageReference option
-
-    [<JsonField("flags")>]
-    Flags: int
-
-    [<JsonField("referenced_message")>]
-    ReferencedMessage: Message option
-
-    [<JsonField("interaction_metadata")>]
-    InteractionMetadata: MessageInteractionMetadata option
-
-    [<JsonField("interaction")>]
-    Interaction: MessageInteraction option
-
-    [<JsonField("thread")>]
-    Thread: Channel option
-
-    [<JsonField("components", Transform = typeof<ComponentTransform>)>]
-    Components: Component list option
-
-    [<JsonField("sticker_items")>]
-    StickerItems: Sticker list option
-
-    [<JsonField("position")>]
-    Position: int option
-
-    [<JsonField("role_subscription_data")>]
-    RoleSubscriptionData: RoleSubscriptionData option
-
-    [<JsonField("resolved")>]
-    Resolved: ResolvedData option
-
-    [<JsonField("poll")>]
-    Poll: Poll option
-
-    [<JsonField("call")>]
-    Call: MessageCall option
+    [<JsonName "id">] Id: string
+    [<JsonName "channel_id">] ChannelId: string
+    [<JsonName "author">] Author: User
+    [<JsonName "content">] Content: string
+    [<JsonName "timestamp">] Timestamp: DateTime
+    [<JsonName "edited_timestamp">] EditedTimestamp: DateTime option
+    [<JsonName "tts">] Tts: bool
+    [<JsonName "mention_everyone">] MentionEveryone: bool
+    [<JsonName "mentions">] Mentions: User list
+    [<JsonName "mention_roles">] MentionRoles: string list
+    [<JsonName "mention_channels">] MentionChannels: ChannelMention list
+    [<JsonName "attachments">] Attachments: Attachment list
+    [<JsonName "embeds">] Embeds: Embed list
+    [<JsonName "reactions">] Reactions: Reaction list
+    [<JsonName "nonce">] [<JsonConverter(typeof<MessageNonceConverter>)>] Nonce: MessageNonce option
+    [<JsonName "pinned">] Pinned: bool
+    [<JsonName "webhook_id">] WebhookId: string option
+    [<JsonName "type">] Type: MessageType
+    [<JsonName "activity">] Activity: MessageActivity option
+    [<JsonName "application">] Application: Application option
+    [<JsonName "message_reference">] MessageReference: MessageReference option
+    [<JsonName "flags">] Flags: int
+    [<JsonName "referenced_message">] ReferencedMessage: Message option
+    [<JsonName "interaction_metadata">] InteractionMetadata: MessageInteractionMetadata option
+    [<JsonName "interaction">] Interaction: MessageInteraction option
+    [<JsonName "thread">] Thread: Channel option
+    [<JsonName "components">] Components: Component list option
+    [<JsonName "sticker_items">] StickerItems: Sticker list option
+    [<JsonName "position">] Position: int option
+    [<JsonName "role_subscription_data">] RoleSubscriptionData: RoleSubscriptionData option
+    [<JsonName "resolved">] Resolved: ResolvedData option
+    [<JsonName "poll">] Poll: Poll option
+    [<JsonName "call">] Call: MessageCall option
 }
 
 type Invite = {
@@ -1879,17 +1702,10 @@ with
         | _ -> None
 
 type AllowedMentions = {
-    [<JsonField("parse", Transform = typeof<AllowedMentionsParseTypeTransform>)>]
-    Parse: AllowedMentionsParseType list
-    
-    [<JsonField("roles")>]
-    Roles: string list option
-    
-    [<JsonField("users")>]
-    Users: string list option
-    
-    [<JsonField("replied_user")>]
-    RepliedUser: bool option
+    [<JsonName "parse">] [<JsonConverter(typeof<AllowedMentionsParseTypeConverter>)>] Parse: AllowedMentionsParseType list
+    [<JsonName "roles">] Roles: string list option
+    [<JsonName "users">] Users: string list option
+    [<JsonName "replied_user">] RepliedUser: bool option
 }
 with
     static member build(
@@ -1905,58 +1721,26 @@ with
     }
 
 type ApplicationCommandOptionChoice = {
-    [<JsonField("name")>]
-    Name: string
-    
-    [<JsonField("name_localizations")>]
-    NameLocalizations: Dictionary<string, string> option
-    
-    [<JsonField("value", Transform = typeof<ApplicationCommandOptionChoiceValueTransform>)>]
-    Value: ApplicationCommandOptionChoiceValue
+    [<JsonName "name">] Name: string
+    [<JsonName "name_localizations">] NameLocalizations: Dictionary<string, string> option
+    [<JsonName "value">] [<JsonConverter(typeof<ApplicationCommandOptionChoiceValueConverter>)>] Value: ApplicationCommandOptionChoiceValue
 }
 
 type ApplicationCommandOption = {
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: ApplicationCommandOptionType
-    
-    [<JsonField("name")>]
-    Name: string
-    
-    [<JsonField("name_localizations")>]
-    NameLocalizations: Dictionary<string, string> option
-    
-    [<JsonField("description")>]
-    Description: string
-    
-    [<JsonField("description_localizations")>]
-    DescriptionOptions: Dictionary<string, string> option
-    
-    [<JsonField("required")>]
-    Required: bool option
-    
-    [<JsonField("choices")>]
-    Choices: ApplicationCommandOptionChoice list option
-    
-    [<JsonField("options")>]
-    Options: ApplicationCommandOption list option
-    
-    [<JsonField("channel_types", EnumValue = EnumMode.Value)>]
-    ChannelTypes: ChannelType list option
-    
-    [<JsonField("min_value", Transform = typeof<ApplicationCommandMinValueTransform>)>]
-    MinValue: ApplicationCommandMinValue option
-    
-    [<JsonField("max_value", Transform = typeof<ApplicationCommandMaxValueTransform>)>]
-    MaxValue: ApplicationCommandMaxValue option
-    
-    [<JsonField("min_length")>]
-    MinLength: int option
-    
-    [<JsonField("max_length")>]
-    MaxLength: int option
-    
-    [<JsonField("autocomplete")>]
-    Autocomplete: bool option
+    [<JsonName "type">] Type: ApplicationCommandOptionType
+    [<JsonName "name">] Name: string
+    [<JsonName "name_localizations">] NameLocalizations: Dictionary<string, string> option
+    [<JsonName "description">] Description: string
+    [<JsonName "description_localizations">] DescriptionLocalizations: Dictionary<string, string> option
+    [<JsonName "required">] Required: bool option
+    [<JsonName "choices">] Choices: ApplicationCommandOptionChoice list option
+    [<JsonName "options">] Options: ApplicationCommandOption list option
+    [<JsonName "channel_types">] ChannelTypes: ChannelType list option
+    [<JsonName "min_value">] [<JsonConverter(typeof<ApplicationCommandMinValueConverter>)>] MinValue: ApplicationCommandMinValue option
+    [<JsonName "max_value">] [<JsonConverter(typeof<ApplicationCommandMaxValueConverter>)>] MaxValue: ApplicationCommandMaxValue option
+    [<JsonName "min_length">] MinLength: int option
+    [<JsonName "max_length">] MaxLength: int option
+    [<JsonName "autocomplete">] Autocomplete: bool option
 }
 with
     static member build(
@@ -1964,7 +1748,7 @@ with
         Name: string,
         Description: string,
         ?NameLocalizations: Dictionary<string, string>,
-        ?DescriptionOptions: Dictionary<string, string>,
+        ?DescriptionLocalizations: Dictionary<string, string>,
         ?Required: bool,
         ?Choices: ApplicationCommandOptionChoice list,
         ?Options: ApplicationCommandOption list,
@@ -1979,7 +1763,7 @@ with
         Name = Name;
         NameLocalizations = NameLocalizations;
         Description = Description;
-        DescriptionOptions = DescriptionOptions;
+        DescriptionLocalizations = DescriptionLocalizations;
         Required = Required;
         Choices = Choices;
         Options = Options;
@@ -1992,53 +1776,22 @@ with
     }
 
 type ApplicationCommand = {
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: ApplicationCommandType option
-    
-    [<JsonField("application_id")>]
-    ApplicationId: string
-    
-    [<JsonField("guild_id")>]
-    GuildId: string option
-    
-    [<JsonField("name")>]
-    Name: string
-    
-    [<JsonField("name_localizations")>]
-    NameLocalizations: Dictionary<string, string> option
-    
-    [<JsonField("description")>]
-    Description: string
-    
-    [<JsonField("description_localizations")>]
-    DescriptionLocalizations: Dictionary<string, string> option
-    
-    [<JsonField("options")>]
-    Options: ApplicationCommandOption list option
-    
-    [<JsonField("default_member_permissions")>]
-    DefaultMemberPermissions: string option
-    
-    [<JsonField("dm_permissions")>]
-    DmPermissions: bool option
-    
-    [<JsonField("nsfw")>]
-    Nsfw: bool option
-    
-    [<JsonField("integration_types", EnumValue = EnumMode.Value)>]
-    IntegrationTypes: ApplicationIntegrationType list option
-    
-    [<JsonField("contexts", EnumValue = EnumMode.Value)>]
-    Contexts: InteractionContextType list option
-    
-    [<JsonField("version")>]
-    Version: string
-
-    [<JsonField("handler", EnumValue = EnumMode.Value)>]
-    Handler: ApplicationCommandHandlerType option
+    [<JsonName "id">] Id: string
+    [<JsonName "type">] Type: ApplicationCommandType option
+    [<JsonName "application_id">] ApplicationId: string
+    [<JsonName "guild_id">] GuildId: string option
+    [<JsonName "name">] Name: string
+    [<JsonName "name_localizations">] NameLocalizations: Dictionary<string, string> option
+    [<JsonName "description">] Description: string
+    [<JsonName "description_localizations">] DescriptionLocalizations: Dictionary<string, string> option
+    [<JsonName "options">] Options: ApplicationCommandOption list option
+    [<JsonName "default_member_permissions">] DefaultMemberPermissions: string option
+    [<JsonName "dm_permissions">] DmPermissions: bool option
+    [<JsonName "nsfw">] Nsfw: bool option
+    [<JsonName "integration_types">] IntegrationTypes: ApplicationIntegrationType list option
+    [<JsonName "contexts">] Contexts: InteractionContextType list option
+    [<JsonName "version">] Version: string
+    [<JsonName "handler">] Handler: ApplicationCommandHandlerType option
 }
 
 type InteractionCallbackMessageData = {
@@ -2161,30 +1914,9 @@ and InteractionCallbackData =
     | Autocomplete of InteractionCallbackAutocompleteData
     | Modal of InteractionCallbackModalData
 
-type InteractionCallbackDataTransform () =
-    interface ITypeTransform with
-        member _.targetType () =
-            typeof<obj>
-
-        member _.toTargetType value =
-            match value :?> InteractionCallbackData with
-            | InteractionCallbackData.Message v -> v
-            | InteractionCallbackData.Autocomplete v -> v
-            | InteractionCallbackData.Modal v -> v
-
-        member _.fromTargetType value =
-            match value with
-            | :? InteractionCallbackMessageData as v -> InteractionCallbackData.Message v
-            | :? InteractionCallbackAutocompleteData as v -> InteractionCallbackData.Autocomplete v
-            | :? InteractionCallbackModalData as v -> InteractionCallbackData.Modal v
-            | _ -> failwith "Unexpected InteractionCallbackData type"
-
 type InteractionCallback = {
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: InteractionCallbackType
-    
-    [<JsonField("data", Transform = typeof<InteractionCallbackDataTransform>)>]
-    Data: InteractionCallbackData option
+    [<JsonName "type">] Type: InteractionCallbackType
+    [<JsonName "data">] Data: InteractionCallbackData option
 }
 with
     static member build(
@@ -2196,8 +1928,8 @@ with
     }
 
 type ActivityTimestamps = {
-    [<JsonName "start">] [<JsonConverter(typeof<UnixEpochConverter>)>] Start: DateTime option
-    [<JsonName "end">] [<JsonConverter(typeof<UnixEpochConverter>)>] End: DateTime option
+    [<JsonName "start">] [<JsonConverter(typeof<Converters.UnixEpoch>)>] Start: DateTime option
+    [<JsonName "end">] [<JsonConverter(typeof<Converters.UnixEpoch>)>] End: DateTime option
 }
 
 type ActivityEmoji = {
@@ -2234,7 +1966,7 @@ type Activity = {
     [<JsonName "name">] Name: string
     [<JsonName "type">] Type: ActivityType
     [<JsonName "url">] Url: string option
-    [<JsonName "created_at">] [<JsonConverter(typeof<UnixEpochConverter>)>] CreatedAt: DateTime option
+    [<JsonName "created_at">] [<JsonConverter(typeof<Converters.UnixEpoch>)>] CreatedAt: DateTime option
     [<JsonName "timestamps">] Timestamps: ActivityTimestamps option
     [<JsonName "application_id">] ApplicationId: string option
     [<JsonName "details">] Details: string option
@@ -2401,113 +2133,54 @@ type AutoModerationRule = {
 
 // https://discord.com/developers/docs/resources/application#get-application-activity-instance-activity-location-object
 type ActivityLocation = {
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("kind", Transform = typeof<ActivityLocationKindTransform>)>]
-    Kind: ActivityLocationKind
-    
-    [<JsonField("channel_id")>]
-    ChannelId: string
-    
-    [<JsonField("guild_id")>]
-    GuildId: string option
+    [<JsonName "id">] Id: string
+    [<JsonName "kind">] [<JsonConverter(typeof<ActivityLocationKindConverter>)>] Kind: ActivityLocationKind
+    [<JsonName "channel_id">] ChannelId: string
+    [<JsonName "guild_id">] GuildId: string option
 }
 
 // https://discord.com/developers/docs/resources/application#get-application-activity-instance-activity-instance-object
 type ActivityInstance = {
-    [<JsonField("application_id")>]
-    ApplicationId: string
-    
-    [<JsonField("instance_id")>]
-    InstanceId: string
-    
-    [<JsonField("launch_id")>]
-    LaunchId: string
-    
-    [<JsonField("location")>]
-    Location: ActivityLocation
-    
-    [<JsonField("users")>]
-    Users: string list
+    [<JsonName "application_id">] ApplicationId: string
+    [<JsonName "instance_id">] InstanceId: string
+    [<JsonName "launch_id">] LaunchId: string
+    [<JsonName "location">] Location: ActivityLocation
+    [<JsonName "users">] Users: string list
 }
 
 // https://discord.com/developers/docs/resources/guild#integration-account-object-integration-account-structure
 type GuildIntegrationAccount = {
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("name")>]
-    Name: string
+    [<JsonName "id">] Id: string
+    [<JsonName "name">] Name: string
 }
 
 // https://discord.com/developers/docs/resources/guild#integration-application-object-integration-application-structure
 type GuildIntegrationApplication = {
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("name")>]
-    Name: string
-    
-    [<JsonField("icon")>]
-    Icon: string option
-    
-    [<JsonField("description")>]
-    Description: string
-    
-    [<JsonField("bot")>]
-    Bot: User option
+    [<JsonName "id">] Id: string
+    [<JsonName "name">] Name: string
+    [<JsonName "icon">] Icon: string option
+    [<JsonName "description">] Description: string
+    [<JsonName "bot">] Bot: User option
 }
 
 // https://discord.com/developers/docs/resources/guild#integration-object-integration-structure
 type GuildIntegration = {
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("name")>]
-    Name: string
-    
-    [<JsonField("type")>]
-    Type: GuildIntegrationType
-    
-    [<JsonField("enabled")>]
-    Enabled: bool
-    
-    [<JsonField("syncing")>]
-    Syncing: bool option
-    
-    [<JsonField("role_id")>]
-    RoleId: string option
-    
-    [<JsonField("enable_emoticons")>]
-    EnableEmoticons: bool option
-    
-    [<JsonField("expire_behavior", EnumValue = EnumMode.Value)>]
-    ExpireBehavior: IntegrationExpireBehaviorType option
-    
-    [<JsonField("expire_grace_period")>]
-    ExpireGracePeriod: int option
-    
-    [<JsonField("user")>]
-    User: User option
-    
-    [<JsonField("account")>]
-    Account: GuildIntegrationAccount
-    
-    [<JsonField("synced_at")>]
-    SyncedAt: DateTime option
-    
-    [<JsonField("subscriber_count")>]
-    SubscriberCount: int option
-    
-    [<JsonField("revoked")>]
-    Revoked: bool option
-    
-    [<JsonField("application")>]
-    Application: GuildIntegrationApplication option
-    
-    [<JsonField("scopes", Transform = typeof<OAuth2ScopeTransform>)>]
-    Scopes: OAuth2Scope list option
+    [<JsonName "id">] Id: string
+    [<JsonName "name">] Name: string
+    [<JsonName "type">] Type: GuildIntegrationType
+    [<JsonName "enabled">] Enabled: bool
+    [<JsonName "syncing">] Syncing: bool option
+    [<JsonName "role_id">] RoleId: string option
+    [<JsonName "enable_emoticons">] EnableEmoticons: bool option
+    [<JsonName "expire_behavior">] ExpireBehavior: IntegrationExpireBehaviorType option
+    [<JsonName "expire_grace_period">] ExpireGracePeriod: int option
+    [<JsonName "user">] User: User option
+    [<JsonName "account">] Account: GuildIntegrationAccount
+    [<JsonName "synced_at">] SyncedAt: DateTime option
+    [<JsonName "subscriber_count">] SubscriberCount: int option
+    [<JsonName "revoked">] Revoked: bool option
+    [<JsonName "application">] Application: GuildIntegrationApplication option
+    [<JsonName "scopes">] Scopes: OAuth2Scope list option
 }
 
 // https://discord.com/developers/docs/resources/guild#ban-object-ban-structure

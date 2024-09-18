@@ -48,124 +48,6 @@ with
         TargetApplicationId = targetApplicationId;
     }
 
-type CreateGlobalApplicationCommand = {
-    [<JsonField("name")>]
-    Name: string
-    
-    [<JsonField("name_localizations")>]
-    NameLocalizations: Dictionary<string, string> option
-    
-    [<JsonField("description")>]
-    Description: string option
-    
-    [<JsonField("description_localizations")>]
-    DescriptionLocalizations: Dictionary<string, string> option
-    
-    [<JsonField("options")>]
-    Options: ApplicationCommandOption list option
-    
-    [<JsonField("default_member_permissions")>]
-    DefaultMemberPermissions: string option
-    
-    [<JsonField("dm_permissions")>]
-    DmPermissions: bool option
-    
-    [<JsonField("name", EnumValue = EnumMode.Value)>]
-    IntegrationTypes: ApplicationIntegrationType list option
-    
-    [<JsonField("contexts", EnumValue = EnumMode.Value)>]
-    Contexts: InteractionContextType list option
-    
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: ApplicationCommandType option
-    
-    [<JsonField("nsfw")>]
-    Nsfw: bool option
-}
-with
-    static member build(
-        Name: string,
-        ?NameLocalizations: Dictionary<string, string>,
-        ?Description: string,
-        ?DescriptionLocalizations: Dictionary<string, string>,
-        ?Options: ApplicationCommandOption list,
-        ?DefaultMemberPermissions: string,
-        ?DmPermissions: bool,
-        ?IntegrationTypes: ApplicationIntegrationType list,
-        ?Contexts: InteractionContextType list,
-        ?Type: ApplicationCommandType,
-        ?Nsfw: bool
-    ) = {
-        Name = Name;
-        NameLocalizations = NameLocalizations;
-        Description = Description;
-        DescriptionLocalizations = DescriptionLocalizations;
-        Options = Options;
-        DefaultMemberPermissions = DefaultMemberPermissions;
-        DmPermissions = DmPermissions;
-        IntegrationTypes = IntegrationTypes;
-        Contexts = Contexts;
-        Type = Type;
-        Nsfw = Nsfw;
-    }
-
-type ExecuteWebhook = {
-    [<JsonField("content")>]
-    Content: string option
-    
-    [<JsonField("username")>]
-    Username: string
-    
-    [<JsonField("avatar_url")>]
-    AvatarUrl: string
-    
-    [<JsonField("tts")>]
-    Tts: bool
-    
-    [<JsonField("embeds")>]
-    Embeds: Embed list option
-    
-    [<JsonField("allowed_mentions")>]
-    AllowedMentions: AllowedMentions
-    
-    [<JsonField("components")>]
-    Components: Component list option
-
-    // TODO: Add `files`, `payload_json`, `attachments` support
-    
-    [<JsonField("flags")>]
-    Flags: int
-    
-    [<JsonField("thread_name")>]
-    ThreadName: string option
-    
-    [<JsonField("applied_tags")>]
-    AppliedTags: string list option
-    
-    [<JsonField("poll")>]
-    Poll: Poll option
-
-    // TODO: Check what types should be `option`
-}
-
-type EditWebhookMessage = {
-    [<JsonField("content")>]
-    Content: string option
-    
-    [<JsonField("embeds")>]
-    Embeds: Embed list option
-    
-    [<JsonField("allowed_mentions")>]
-    AllowedMentions: AllowedMentions
-    
-    [<JsonField("components")>]
-    Components: Component list option
-
-    // TODO: Add `files`, `payload_json`, `attachments` support
-
-    // TODO: Check what types should be `option`
-}
-
 type GetGateway = {
     [<JsonField("url")>]
     Url: string
@@ -183,29 +65,14 @@ type GetGatewayBot = {
 }
 
 type VoiceChannelEffect = {
-    [<JsonField("channel_id")>]
-    ChannelId: string
-    
-    [<JsonField("guild_id")>]
-    GuildId: string
-    
-    [<JsonField("user_id")>]
-    UserId: string
-    
-    [<JsonField("emoji")>]
-    Emoji: Emoji option
-    
-    [<JsonField("animation_type", EnumValue = EnumMode.Value)>]
-    AnimationType: AnimationType option
-    
-    [<JsonField("animation_id")>]
-    AnimationId: int option
-
-    [<JsonField("sound_id", Transform = typeof<SoundboardSoundIdTransform>)>]
-    SoundId: SoundboardSoundId option
-
-    [<JsonField("sound_volume")>]
-    SoundVolume: double option
+    [<JsonName "channel_id">] ChannelId: string
+    [<JsonName "guild_id">] GuildId: string
+    [<JsonName "user_id">] UserId: string
+    [<JsonName "emoji">] Emoji: Emoji option
+    [<JsonName "animation_type">] AnimationType: AnimationType option
+    [<JsonName "animation_id">] AnimationId: int option
+    [<JsonName "sound_id">] [<JsonConverter(typeof<SoundboardSoundIdConverter>)>] SoundId: SoundboardSoundId option
+    [<JsonName "sound_volume">] SoundVolume: double option
 }
 
 type EditChannelPermissions = {

@@ -1,6 +1,5 @@
 ﻿namespace Modkit.Discordfs.Types
 
-open FSharp.Json
 open System
 open System.Text.Json
 open System.Text.Json.Serialization
@@ -217,71 +216,71 @@ type GuildFeature =
     | VIP_REGIONS
     | WELCOME_SCREEN_ENABLED
 
-type GuildFeatureTransform () =
-    interface ITypeTransform with
-        member _.targetType () =
-            typeof<string>
-
-        member _.toTargetType value =
-            match value :?> GuildFeature with
-            | GuildFeature.ANIMATED_BANNER -> "ANIMATED_BANNER"
-            | GuildFeature.ANIMATED_ICON -> "ANIMATED_ICON"
-            | GuildFeature.APPLICATION_COMMAND_PERMISSIONS_V2 -> "APPLICATION_COMMAND_PERMISSIONS_V2"
-            | GuildFeature.AUTO_MODERATION -> "AUTO_MODERATION"
-            | GuildFeature.BANNER -> "BANNER"
-            | GuildFeature.COMMUNITY -> "COMMUNITY"
-            | GuildFeature.CREATOR_MONETIZABLE_PROVISIONAL -> "CREATOR_MONETIZABLE_PROVISIONAL"
-            | GuildFeature.CREATOR_STORE_PAGE -> "CREATOR_STORE_PAGE"
-            | GuildFeature.DEVELOPER_SUPPORT_SERVER -> "DEVELOPER_SUPPORT_SERVER"
-            | GuildFeature.DISCOVERABLE -> "DISCOVERABLE"
-            | GuildFeature.FEATURABLE -> "FEATURABLE"
-            | GuildFeature.INVITES_DISABLED -> "INVITES_DISABLED"
-            | GuildFeature.INVITE_SPLASH -> "INVITE_SPLASH"
-            | GuildFeature.MEMBER_VERIFICATION_GATE_ENABLED -> "MEMBER_VERIFICATION_GATE_ENABLED"
-            | GuildFeature.MORE_STICKERS -> "MORE_STICKERS"
-            | GuildFeature.NEWS -> "NEWS"
-            | GuildFeature.PARTNERED -> "PARTNERED"
-            | GuildFeature.PREVIEW_ENABLED -> "PREVIEW_ENABLED"
-            | GuildFeature.RAID_ALERTS_DISABLED -> "RAID_ALERTS_DISABLED"
-            | GuildFeature.ROLE_ICONS -> "ROLE_ICONS"
-            | GuildFeature.ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE -> "ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE"
-            | GuildFeature.ROLE_SUBSCRIPTIONS_ENABLED -> "ROLE_SUBSCRIPTIONS_ENABLED"
-            | GuildFeature.TICKETED_EVENTS_ENABLED -> "TICKETED_EVENTS_ENABLED"
-            | GuildFeature.VANITY_URL -> "VANITY_URL"
-            | GuildFeature.VERIFIED -> "VERIFIED"
-            | GuildFeature.VIP_REGIONS -> "VIP_REGIONS"
-            | GuildFeature.WELCOME_SCREEN_ENABLED -> "WELCOME_SCREEN_ENABLED"
-
-        member _.fromTargetType value =
-            match value with
-            | v when v = "ANIMATED_BANNER" -> GuildFeature.ANIMATED_BANNER
-            | v when v = "ANIMATED_ICON" -> GuildFeature.ANIMATED_ICON
-            | v when v = "APPLICATION_COMMAND_PERMISSIONS_V2" -> GuildFeature.APPLICATION_COMMAND_PERMISSIONS_V2
-            | v when v = "AUTO_MODERATION" -> GuildFeature.AUTO_MODERATION
-            | v when v = "BANNER" -> GuildFeature.BANNER
-            | v when v = "COMMUNITY" -> GuildFeature.COMMUNITY
-            | v when v = "CREATOR_MONETIZABLE_PROVISIONAL" -> GuildFeature.CREATOR_MONETIZABLE_PROVISIONAL
-            | v when v = "CREATOR_STORE_PAGE" -> GuildFeature.CREATOR_STORE_PAGE
-            | v when v = "DEVELOPER_SUPPORT_SERVER" -> GuildFeature.DEVELOPER_SUPPORT_SERVER
-            | v when v = "DISCOVERABLE" -> GuildFeature.DISCOVERABLE
-            | v when v = "FEATURABLE" -> GuildFeature.FEATURABLE
-            | v when v = "INVITES_DISABLED" -> GuildFeature.INVITES_DISABLED
-            | v when v = "INVITE_SPLASH" -> GuildFeature.INVITE_SPLASH
-            | v when v = "MEMBER_VERIFICATION_GATE_ENABLED" -> GuildFeature.MEMBER_VERIFICATION_GATE_ENABLED
-            | v when v = "MORE_STICKERS" -> GuildFeature.MORE_STICKERS
-            | v when v = "NEWS" -> GuildFeature.NEWS
-            | v when v = "PARTNERED" -> GuildFeature.PARTNERED
-            | v when v = "PREVIEW_ENABLED" -> GuildFeature.PREVIEW_ENABLED
-            | v when v = "RAID_ALERTS_DISABLED" -> GuildFeature.RAID_ALERTS_DISABLED
-            | v when v = "ROLE_ICONS" -> GuildFeature.ROLE_ICONS
-            | v when v = "ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE" -> GuildFeature.ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE
-            | v when v = "ROLE_SUBSCRIPTIONS_ENABLED" -> GuildFeature.ROLE_SUBSCRIPTIONS_ENABLED
-            | v when v = "TICKETED_EVENTS_ENABLED" -> GuildFeature.TICKETED_EVENTS_ENABLED
-            | v when v = "VANITY_URL" -> GuildFeature.VANITY_URL
-            | v when v = "VERIFIED" -> GuildFeature.VERIFIED
-            | v when v = "VIP_REGIONS" -> GuildFeature.VIP_REGIONS
-            | v when v = "WELCOME_SCREEN_ENABLED" -> GuildFeature.WELCOME_SCREEN_ENABLED
+type GuildFeatureConverter () =
+    inherit JsonConverter<GuildFeature> () with
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
+            match reader.GetString() with
+            | "ANIMATED_BANNER" -> GuildFeature.ANIMATED_BANNER
+            | "ANIMATED_ICON" -> GuildFeature.ANIMATED_ICON
+            | "APPLICATION_COMMAND_PERMISSIONS_V2" -> GuildFeature.APPLICATION_COMMAND_PERMISSIONS_V2
+            | "AUTO_MODERATION" -> GuildFeature.AUTO_MODERATION
+            | "BANNER" -> GuildFeature.BANNER
+            | "COMMUNITY" -> GuildFeature.COMMUNITY
+            | "CREATOR_MONETIZABLE_PROVISIONAL" -> GuildFeature.CREATOR_MONETIZABLE_PROVISIONAL
+            | "CREATOR_STORE_PAGE" -> GuildFeature.CREATOR_STORE_PAGE
+            | "DEVELOPER_SUPPORT_SERVER" -> GuildFeature.DEVELOPER_SUPPORT_SERVER
+            | "DISCOVERABLE" -> GuildFeature.DISCOVERABLE
+            | "FEATURABLE" -> GuildFeature.FEATURABLE
+            | "INVITES_DISABLED" -> GuildFeature.INVITES_DISABLED
+            | "INVITE_SPLASH" -> GuildFeature.INVITE_SPLASH
+            | "MEMBER_VERIFICATION_GATE_ENABLED" -> GuildFeature.MEMBER_VERIFICATION_GATE_ENABLED
+            | "MORE_STICKERS" -> GuildFeature.MORE_STICKERS
+            | "NEWS" -> GuildFeature.NEWS
+            | "PARTNERED" -> GuildFeature.PARTNERED
+            | "PREVIEW_ENABLED" -> GuildFeature.PREVIEW_ENABLED
+            | "RAID_ALERTS_DISABLED" -> GuildFeature.RAID_ALERTS_DISABLED
+            | "ROLE_ICONS" -> GuildFeature.ROLE_ICONS
+            | "ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE" -> GuildFeature.ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE
+            | "ROLE_SUBSCRIPTIONS_ENABLED" -> GuildFeature.ROLE_SUBSCRIPTIONS_ENABLED
+            | "TICKETED_EVENTS_ENABLED" -> GuildFeature.TICKETED_EVENTS_ENABLED
+            | "VANITY_URL" -> GuildFeature.VANITY_URL
+            | "VERIFIED" -> GuildFeature.VERIFIED
+            | "VIP_REGIONS" -> GuildFeature.VIP_REGIONS
+            | "WELCOME_SCREEN_ENABLED" -> GuildFeature.WELCOME_SCREEN_ENABLED
             | _ -> failwith "Unexpected GuildFeature type"
+
+        override _.Write (writer: Utf8JsonWriter, value: GuildFeature, options: JsonSerializerOptions) = 
+            let string =
+                match value with
+                | GuildFeature.ANIMATED_BANNER -> "ANIMATED_BANNER"
+                | GuildFeature.ANIMATED_ICON -> "ANIMATED_ICON"
+                | GuildFeature.APPLICATION_COMMAND_PERMISSIONS_V2 -> "APPLICATION_COMMAND_PERMISSIONS_V2"
+                | GuildFeature.AUTO_MODERATION -> "AUTO_MODERATION"
+                | GuildFeature.BANNER -> "BANNER"
+                | GuildFeature.COMMUNITY -> "COMMUNITY"
+                | GuildFeature.CREATOR_MONETIZABLE_PROVISIONAL -> "CREATOR_MONETIZABLE_PROVISIONAL"
+                | GuildFeature.CREATOR_STORE_PAGE -> "CREATOR_STORE_PAGE"
+                | GuildFeature.DEVELOPER_SUPPORT_SERVER -> "DEVELOPER_SUPPORT_SERVER"
+                | GuildFeature.DISCOVERABLE -> "DISCOVERABLE"
+                | GuildFeature.FEATURABLE -> "FEATURABLE"
+                | GuildFeature.INVITES_DISABLED -> "INVITES_DISABLED"
+                | GuildFeature.INVITE_SPLASH -> "INVITE_SPLASH"
+                | GuildFeature.MEMBER_VERIFICATION_GATE_ENABLED -> "MEMBER_VERIFICATION_GATE_ENABLED"
+                | GuildFeature.MORE_STICKERS -> "MORE_STICKERS"
+                | GuildFeature.NEWS -> "NEWS"
+                | GuildFeature.PARTNERED -> "PARTNERED"
+                | GuildFeature.PREVIEW_ENABLED -> "PREVIEW_ENABLED"
+                | GuildFeature.RAID_ALERTS_DISABLED -> "RAID_ALERTS_DISABLED"
+                | GuildFeature.ROLE_ICONS -> "ROLE_ICONS"
+                | GuildFeature.ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE -> "ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE"
+                | GuildFeature.ROLE_SUBSCRIPTIONS_ENABLED -> "ROLE_SUBSCRIPTIONS_ENABLED"
+                | GuildFeature.TICKETED_EVENTS_ENABLED -> "TICKETED_EVENTS_ENABLED"
+                | GuildFeature.VANITY_URL -> "VANITY_URL"
+                | GuildFeature.VERIFIED -> "VERIFIED"
+                | GuildFeature.VIP_REGIONS -> "VIP_REGIONS"
+                | GuildFeature.WELCOME_SCREEN_ENABLED -> "WELCOME_SCREEN_ENABLED"
+
+            writer.WriteStringValue string
 
 // https://discord.com/developers/docs/resources/guild#guild-onboarding-object-onboarding-mode
 type OnboardingMode =
@@ -299,25 +298,22 @@ type CommandInteractionDataOptionValue =
     | Double of double
     | Bool of bool
 
-type CommandInteractionDataOptionValueTransform () =
-    interface ITypeTransform with
-        member _.targetType () =
-            typeof<obj>
+type CommandInteractionDataOptionValueConverter () =
+    inherit JsonConverter<CommandInteractionDataOptionValue> () with
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
+            match reader.TokenType with
+            | JsonTokenType.String -> CommandInteractionDataOptionValue.String (reader.GetString())
+            | JsonTokenType.Number -> CommandInteractionDataOptionValue.Int (reader.GetInt32())
+            | JsonTokenType.True -> CommandInteractionDataOptionValue.Bool true
+            | JsonTokenType.False -> CommandInteractionDataOptionValue.Bool false
+            | _ -> failwith "Unexpected CommandInteractionDataOptionValue value"
 
-        member _.toTargetType value =
-            match value :?> CommandInteractionDataOptionValue with
-            | CommandInteractionDataOptionValue.String v -> v
-            | CommandInteractionDataOptionValue.Int v -> v
-            | CommandInteractionDataOptionValue.Double v -> v
-            | CommandInteractionDataOptionValue.Bool v -> v
-
-        member _.fromTargetType value =
+        override _.Write (writer: Utf8JsonWriter, value: CommandInteractionDataOptionValue, options: JsonSerializerOptions) =
             match value with
-            | :? string as v -> CommandInteractionDataOptionValue.String v
-            | :? int as v -> CommandInteractionDataOptionValue.Int v
-            | :? double as v -> CommandInteractionDataOptionValue.Double v
-            | :? bool as v -> CommandInteractionDataOptionValue.Bool v
-            | _ -> failwith "Unexpected CommandInteractionDataOptionValue type"
+            | CommandInteractionDataOptionValue.String v -> writer.WriteStringValue v
+            | CommandInteractionDataOptionValue.Int v -> writer.WriteNumberValue v
+            | CommandInteractionDataOptionValue.Bool v -> writer.WriteBooleanValue v
+            | CommandInteractionDataOptionValue.Double v -> writer.WriteNumberValue v
 
 type ApplicationCommandType = 
     | CHAT_INPUT = 1
@@ -377,107 +373,119 @@ type MessageNonce =
     | Number of int
     | String of string
 
-type MessageNonceTransform () =
-    interface ITypeTransform with
-        member _.targetType () =
-            typeof<obj>
+type MessageNonceConverter () =
+    inherit JsonConverter<MessageNonce> () with
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
+            match reader.TokenType with
+            | JsonTokenType.Number -> MessageNonce.Number (reader.GetInt32())
+            | JsonTokenType.String -> MessageNonce.String (reader.GetString())
+            | _ -> failwith "Unexpected MessageNonce value"
 
-        member _.toTargetType value =
-            match value :?> MessageNonce with
-            | MessageNonce.Number v -> v
-            | MessageNonce.String v -> v
-
-        member _.fromTargetType value =
+        override _.Write (writer: Utf8JsonWriter, value: MessageNonce, options: JsonSerializerOptions) =
             match value with
-            | :? int as v -> MessageNonce.Number v
-            | :? string as v -> MessageNonce.String v
-            | _ -> failwith "Unexpected MessageNonce type"
+            | MessageNonce.Number v -> writer.WriteNumberValue v
+            | MessageNonce.String v -> writer.WriteStringValue v
 
 type ApplicationCommandOptionChoiceValue =
     | String of string
-    | Integer of int
+    | Int of int
     | Double of double
 
-type ApplicationCommandOptionChoiceValueTransform () =
-    interface ITypeTransform with
-        member _.targetType () =
-            typeof<obj>
+type ApplicationCommandOptionChoiceValueConverter () =
+    inherit JsonConverter<ApplicationCommandOptionChoiceValue> () with
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
+            match reader.TokenType with
+            | JsonTokenType.String -> ApplicationCommandOptionChoiceValue.String (reader.GetString())
+            | JsonTokenType.Number ->
+                let double: double = 0
+                let int: int = 0
+                if reader.TryGetInt32(ref int) then
+                    ApplicationCommandOptionChoiceValue.Int int
+                else if reader.TryGetDouble(ref double) then
+                    ApplicationCommandOptionChoiceValue.Double double
+                else
+                    failwith "Unexpected ApplicationCommandOptionChoiceValue value"
+                // TODO: Test if this correctly handles int and double
+            | _ -> failwith "Unexpected ApplicationCommandOptionChoiceValue value"
 
-        member _.toTargetType value =
-            match value :?> ApplicationCommandOptionChoiceValue with
-            | ApplicationCommandOptionChoiceValue.String v -> v
-            | ApplicationCommandOptionChoiceValue.Integer v -> v
-            | ApplicationCommandOptionChoiceValue.Double v -> v
-
-        member _.fromTargetType value =
+        override _.Write (writer: Utf8JsonWriter, value: ApplicationCommandOptionChoiceValue, options: JsonSerializerOptions) =
             match value with
-            | :? string as v -> ApplicationCommandOptionChoiceValue.String v
-            | :? int as v -> ApplicationCommandOptionChoiceValue.Integer v
-            | :? double as v -> ApplicationCommandOptionChoiceValue.Double v
-            | _ -> failwith "Unexpected ApplicationCommandOptionChoiceValue type"
+            | ApplicationCommandOptionChoiceValue.String v -> writer.WriteStringValue v
+            | ApplicationCommandOptionChoiceValue.Int v -> writer.WriteNumberValue v
+            | ApplicationCommandOptionChoiceValue.Double v -> writer.WriteNumberValue v
     
 type ApplicationCommandMinValue =
-    | Integer of int
+    | Int of int
     | Double of double
 
-type ApplicationCommandMinValueTransform () =
-    interface ITypeTransform with
-        member _.targetType () =
-            typeof<obj>
+type ApplicationCommandMinValueConverter () =
+    inherit JsonConverter<ApplicationCommandMinValue> () with
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
+            match reader.TokenType with
+            | JsonTokenType.Number ->
+                let double: double = 0
+                let int: int = 0
+                if reader.TryGetInt32(ref int) then
+                    ApplicationCommandMinValue.Int int
+                else if reader.TryGetDouble(ref double) then
+                    ApplicationCommandMinValue.Double double
+                else
+                    failwith "Unexpected ApplicationCommandMinValue value"
+                // TODO: Test if this correctly handles int and double
+            | _ -> failwith "Unexpected ApplicationCommandMinValue value"
 
-        member _.toTargetType value =
-            match value :?> ApplicationCommandMinValue with
-            | ApplicationCommandMinValue.Integer v -> v
-            | ApplicationCommandMinValue.Double v -> v
-
-        member _.fromTargetType value =
+        override _.Write (writer: Utf8JsonWriter, value: ApplicationCommandMinValue, options: JsonSerializerOptions) = 
             match value with
-            | :? int as v -> ApplicationCommandMinValue.Integer v
-            | :? double as v -> ApplicationCommandMinValue.Double v
-            | _ -> failwith "Unexpected ApplicationCommandMinValue type"
+            | ApplicationCommandMinValue.Int v -> writer.WriteNumberValue v
+            | ApplicationCommandMinValue.Double v -> writer.WriteNumberValue v
     
 type ApplicationCommandMaxValue =
-    | Integer of int
+    | Int of int
     | Double of double
 
-type ApplicationCommandMaxValueTransform () =
-    interface ITypeTransform with
-        member _.targetType () =
-            typeof<obj>
+type ApplicationCommandMaxValueConverter () =
+    inherit JsonConverter<ApplicationCommandMaxValue> () with
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
+            match reader.TokenType with
+            | JsonTokenType.Number ->
+                let double: double = 0
+                let int: int = 0
+                if reader.TryGetInt32(ref int) then
+                    ApplicationCommandMaxValue.Int int
+                else if reader.TryGetDouble(ref double) then
+                    ApplicationCommandMaxValue.Double double
+                else
+                    failwith "Unexpected ApplicationCommandMaxValue value"
+                // TODO: Test if this correctly handles int and double
+            | _ -> failwith "Unexpected ApplicationCommandMaxValue value"
 
-        member _.toTargetType value =
-            match value :?> ApplicationCommandMaxValue with
-            | ApplicationCommandMaxValue.Integer v -> v
-            | ApplicationCommandMaxValue.Double v -> v
-
-        member _.fromTargetType value =
+        override _.Write (writer: Utf8JsonWriter, value: ApplicationCommandMaxValue, options: JsonSerializerOptions) = 
             match value with
-            | :? int as v -> ApplicationCommandMaxValue.Integer v
-            | :? double as v -> ApplicationCommandMaxValue.Double v
-            | _ -> failwith "Unexpected ApplicationCommandMaxValue type"
+            | ApplicationCommandMaxValue.Int v -> writer.WriteNumberValue v
+            | ApplicationCommandMaxValue.Double v -> writer.WriteNumberValue v
 
 type AllowedMentionsParseType =
     | Roles
     | Users
     | Everyone
 
-type AllowedMentionsParseTypeTransform () =
-    interface ITypeTransform with
-        member _.targetType () =
-            typeof<string>
+type AllowedMentionsParseTypeConverter () =
+    inherit JsonConverter<AllowedMentionsParseType> () with
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
+            match reader.GetString() with
+            | "roles" -> AllowedMentionsParseType.Roles
+            | "users" -> AllowedMentionsParseType.Users
+            | "everyone" -> AllowedMentionsParseType.Everyone
+            | _ -> failwith "Unexpected AllowedMentionsParseType value"
 
-        member _.toTargetType value =
-            match value :?> AllowedMentionsParseType with
-            | AllowedMentionsParseType.Roles -> "roles"
-            | AllowedMentionsParseType.Users -> "users"
-            | AllowedMentionsParseType.Everyone -> "everyone"
+        override _.Write (writer: Utf8JsonWriter, value: AllowedMentionsParseType, options: JsonSerializerOptions) =
+            let string =
+                match value with
+                | AllowedMentionsParseType.Roles -> "roles"
+                | AllowedMentionsParseType.Users -> "users"
+                | AllowedMentionsParseType.Everyone -> "everyone"
 
-        member _.fromTargetType value =
-            match value with
-            | v when v = "roles" -> AllowedMentionsParseType.Roles
-            | v when v = "users" -> AllowedMentionsParseType.Users
-            | v when v = "everyone" -> AllowedMentionsParseType.Everyone
-            | _ -> failwith "Unexpected AllowedMentionsParseType type"
+            writer.WriteStringValue string
 
 type ApplicationCommandHandlerType =
     | APP_HANDER = 1
@@ -492,21 +500,21 @@ with
         | GatewayEncoding.JSON -> "json"
         | GatewayEncoding.ETF -> "etf"
 
-type GatewayEncodingTransform () =
-    interface ITypeTransform with
-        member _.targetType () =
-            typeof<obj>
+type GatewayEncodingConverter () =
+    inherit JsonConverter<GatewayEncoding> () with
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
+            match reader.GetString() with
+            | "json" -> GatewayEncoding.JSON
+            | "etf" -> GatewayEncoding.ETF
+            | _ -> failwith "Unexpected GatewayEncoding value"
 
-        member _.toTargetType value =
-            match value :?> GatewayEncoding with
-            | GatewayEncoding.JSON -> "json"
-            | GatewayEncoding.ETF -> "etf"
+        override _.Write (writer: Utf8JsonWriter, value: GatewayEncoding, options: JsonSerializerOptions) =
+            let string =
+                match value with
+                | GatewayEncoding.JSON -> "json"
+                | GatewayEncoding.ETF -> "etf"
 
-        member _.fromTargetType value =
-            match value with
-            | v when v = "json" -> GatewayEncoding.JSON
-            | v when v = "etf" -> GatewayEncoding.ETF
-            | _ -> failwith "Unexpected GatewayEncoding type"
+            writer.WriteStringValue string
 
 type GatewayCompression =
     | ZLIBSTREAM
@@ -517,21 +525,21 @@ with
         | GatewayCompression.ZLIBSTREAM -> "zlib-stream"
         | GatewayCompression.ZSTDSTREAM -> "zstd-stream"
 
-type GatewayCompressionTransform () =
-    interface ITypeTransform with
-        member _.targetType () =
-            typeof<string>
+type GatewayCompressionConverter () =
+    inherit JsonConverter<GatewayCompression> () with
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
+            match reader.GetString() with
+            | "zlib-stream" -> GatewayCompression.ZLIBSTREAM
+            | "zstd-stream" -> GatewayCompression.ZSTDSTREAM
+            | _ -> failwith "Unexpected GatewayCompression value"
 
-        member _.toTargetType value =
-            match value :?> GatewayCompression with
-            | GatewayCompression.ZLIBSTREAM -> "zlib-stream"
-            | GatewayCompression.ZSTDSTREAM -> "zstd-stream"
+        override _.Write (writer: Utf8JsonWriter, value: GatewayCompression, options: JsonSerializerOptions) =
+            let string =
+                match value with
+                | GatewayCompression.ZLIBSTREAM -> "zlib-stream"
+                | GatewayCompression.ZSTDSTREAM -> "zstd-stream"
 
-        member _.fromTargetType value =
-            match value with
-            | v when v = "zlib-stream" -> GatewayCompression.ZLIBSTREAM
-            | v when v = "zstd-stream" -> GatewayCompression.ZSTDSTREAM
-            | _ -> failwith "Unexpected GatewayCompression type"
+            writer.WriteStringValue string
 
 type GatewayOpcode =
     | DISPATCH = 0
@@ -641,21 +649,18 @@ type SoundboardSoundId =
     | String of string
     | Int of int
 
-type SoundboardSoundIdTransform () =
-    interface ITypeTransform with
-        member _.targetType () =
-            typeof<string>
+type SoundboardSoundIdConverter () =
+    inherit JsonConverter<SoundboardSoundId> () with
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
+            match reader.TokenType with // TODO: Test this, sounds wrong
+            | JsonTokenType.String -> SoundboardSoundId.String (reader.GetString())
+            | JsonTokenType.Number -> SoundboardSoundId.Int (reader.GetInt32())
+            | _ -> failwith "Unexpected SoundboardSoundId value"
 
-        member _.toTargetType value =
-            match value :?> SoundboardSoundId with
-            | SoundboardSoundId.String v -> v
-            | SoundboardSoundId.Int v -> v
-
-        member _.fromTargetType value =
+        override _.Write (writer: Utf8JsonWriter, value: SoundboardSoundId, options: JsonSerializerOptions) =
             match value with
-            | :? string as v -> SoundboardSoundId.String v
-            | :? int as v -> SoundboardSoundId.Int v
-            | _ -> failwith "Unexpected SoundboardSoundId type"
+            | SoundboardSoundId.String v -> writer.WriteStringValue v
+            | SoundboardSoundId.Int v -> writer.WriteNumberValue v
 
 type ApplicationRoleConnectionMetadataType =
     | INTEGER_LESS_THAN_OR_EQUAL = 1
@@ -721,21 +726,21 @@ type ActivityLocationKind =
     | GUILD_CHANNEL
     | PRIVATE_CHANNEL
 
-type ActivityLocationKindTransform () =
-    interface ITypeTransform with
-        member _.targetType () =
-            typeof<string>
+type ActivityLocationKindConverter () =
+    inherit JsonConverter<ActivityLocationKind> () with
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
+            match reader.GetString() with
+            | "gc" -> ActivityLocationKind.GUILD_CHANNEL
+            | "pc" -> ActivityLocationKind.PRIVATE_CHANNEL
+            | _ -> failwith "Unexpected ActivityLocationKind value"
 
-        member _.toTargetType value =
-            match value :?> ActivityLocationKind with
-            | ActivityLocationKind.GUILD_CHANNEL -> "gc"
-            | ActivityLocationKind.PRIVATE_CHANNEL -> "pc"
+        override _.Write (writer: Utf8JsonWriter, value: ActivityLocationKind, options: JsonSerializerOptions) =
+            let string =
+                match value with
+                | ActivityLocationKind.GUILD_CHANNEL -> "gc"
+                | ActivityLocationKind.PRIVATE_CHANNEL -> "pc"
 
-        member _.fromTargetType value =
-            match value with
-            | v when v = "gc" -> ActivityLocationKind.GUILD_CHANNEL
-            | v when v = "pc" -> ActivityLocationKind.PRIVATE_CHANNEL
-            | _ -> failwith "Unexpected ActivityLocationKind type"
+            writer.WriteStringValue string
 
 // https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object-audit-log-events
 type AuditLogEventType =
@@ -810,25 +815,25 @@ type GuildIntegrationType =
     | DISCORD
     | GUILD_SUBSCRIPTION
 
-type GuildIntegrationTypeTransform () =
-    interface ITypeTransform with
-        member _.targetType () =
-            typeof<string>
+type GuildIntegrationTypeConverter () =
+    inherit JsonConverter<GuildIntegrationType> () with
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
+            match reader.GetString() with
+            | "twitch" -> GuildIntegrationType.TWITCH
+            | "youtube" -> GuildIntegrationType.YOUTUBE
+            | "discord" -> GuildIntegrationType.DISCORD
+            | "guild_subscription" -> GuildIntegrationType.GUILD_SUBSCRIPTION
+            | _ -> failwith "Unexpected GuildIntegrationType value"
 
-        member _.toTargetType value =
-            match value :?> GuildIntegrationType with
-            | GuildIntegrationType.TWITCH -> "twitch"
-            | GuildIntegrationType.YOUTUBE -> "youtube"
-            | GuildIntegrationType.DISCORD -> "discord"
-            | GuildIntegrationType.GUILD_SUBSCRIPTION -> "guild_subscription"
+        override _.Write (writer: Utf8JsonWriter, value: GuildIntegrationType, options: JsonSerializerOptions) =
+            let string =
+                match value with
+                | GuildIntegrationType.TWITCH -> "twitch"
+                | GuildIntegrationType.YOUTUBE -> "youtube"
+                | GuildIntegrationType.DISCORD -> "discord"
+                | GuildIntegrationType.GUILD_SUBSCRIPTION -> "guild_subscription"
 
-        member _.fromTargetType value =
-            match value with
-            | v when v = "twitch" -> GuildIntegrationType.TWITCH
-            | v when v = "youtube" -> GuildIntegrationType.YOUTUBE
-            | v when v = "discord" -> GuildIntegrationType.DISCORD
-            | v when v = "guild_subscription" -> GuildIntegrationType.GUILD_SUBSCRIPTION
-            | _ -> failwith "Unexpected GuildIntegrationType type"
+            writer.WriteStringValue string
 
 type IntegrationExpireBehaviorType =
     | REMOVE_ROLE = 0
@@ -864,73 +869,73 @@ type OAuth2Scope =
     | VOICE
     | WEBHOOK_INCOMING
 
-type OAuth2ScopeTransform () =
-    interface ITypeTransform with
-        member _.targetType () =
-            typeof<string>
-
-        member _.toTargetType value =
-            match value :?> OAuth2Scope with
-            | OAuth2Scope.ACTIVITIES_READ -> "activities.read"
-            | OAuth2Scope.ACTIVITIES_WRITE -> "activities.write"
-            | OAuth2Scope.APPLICATIONS_BUILDS_READ -> "applications.builds.read"
-            | OAuth2Scope.APPLICATIONS_BUILDS_UPLOAD -> "applications.builds.upload"
-            | OAuth2Scope.APPLICATIONS_COMMANDS -> "applications.commands"
-            | OAuth2Scope.APPLICATIONS_COMMANDS_UPDATE -> "applications.commands.update"
-            | OAuth2Scope.APPLICATIONS_COMMANDS_PERMISSIONS_UPDATE -> "applications.commands.permissions.update"
-            | OAuth2Scope.APPLICATIONS_ENTITLEMENTS -> "applications.entitlements"
-            | OAuth2Scope.APPLICATIONS_STORE_UPDATE -> "applications.store.update"
-            | OAuth2Scope.BOT -> "bot"
-            | OAuth2Scope.CONNECTIONS -> "connections"
-            | OAuth2Scope.DM_CHANNELS_READ -> "dm_channels.read"
-            | OAuth2Scope.EMAIL -> "email"
-            | OAuth2Scope.GDM_JOIN -> "gdm.join"
-            | OAuth2Scope.GUILDS -> "guilds"
-            | OAuth2Scope.GUILDS_JOIN -> "guilds.join"
-            | OAuth2Scope.GUILDS_MEMBERS_READ -> "guilds.members.read"
-            | OAuth2Scope.IDENTIFY -> "identify"
-            | OAuth2Scope.MESSAGES_READ -> "messages.read"
-            | OAuth2Scope.RELATIONSHIPS_READ -> "relationships.read"
-            | OAuth2Scope.ROLE_CONNECTIONS_WRITE -> "role_connections.write"
-            | OAuth2Scope.RPC -> "rpc"
-            | OAuth2Scope.RPC_ACTIVITIES_WRITE -> "rpc.activities.write"
-            | OAuth2Scope.RPC_NOTIFICATIONS_READ -> "rpc.notifications.read"
-            | OAuth2Scope.RPC_VOICE_READ -> "rpc.voice.read"
-            | OAuth2Scope.RPC_VOICE_WRITE -> "rpc.voice.write"
-            | OAuth2Scope.VOICE -> "voice"
-            | OAuth2Scope.WEBHOOK_INCOMING -> "webhook.incoming"
-
-        member _.fromTargetType value =
-            match value with
-            | v when v = "activities.read" -> OAuth2Scope.ACTIVITIES_READ
-            | v when v = "activities.write" -> OAuth2Scope.ACTIVITIES_WRITE
-            | v when v = "applications.builds.read" -> OAuth2Scope.APPLICATIONS_BUILDS_READ
-            | v when v = "applications.builds.upload" -> OAuth2Scope.APPLICATIONS_BUILDS_UPLOAD
-            | v when v = "applications.commands" -> OAuth2Scope.APPLICATIONS_COMMANDS
-            | v when v = "applications.commands.update" -> OAuth2Scope.APPLICATIONS_COMMANDS_UPDATE
-            | v when v = "applications.commands.permissions.update" -> OAuth2Scope.APPLICATIONS_COMMANDS_PERMISSIONS_UPDATE
-            | v when v = "applications.entitlements" -> OAuth2Scope.APPLICATIONS_ENTITLEMENTS
-            | v when v = "applications.store.update" -> OAuth2Scope.APPLICATIONS_STORE_UPDATE
-            | v when v = "bot" -> OAuth2Scope.BOT
-            | v when v = "connections" -> OAuth2Scope.CONNECTIONS
-            | v when v = "dm_channels.read" -> OAuth2Scope.DM_CHANNELS_READ
-            | v when v = "email" -> OAuth2Scope.EMAIL
-            | v when v = "gdm.join" -> OAuth2Scope.GDM_JOIN
-            | v when v = "guilds" -> OAuth2Scope.GUILDS
-            | v when v = "guilds.join" -> OAuth2Scope.GUILDS_JOIN
-            | v when v = "guilds.members.read" -> OAuth2Scope.GUILDS_MEMBERS_READ
-            | v when v = "identify" -> OAuth2Scope.IDENTIFY
-            | v when v = "messages.read" -> OAuth2Scope.MESSAGES_READ
-            | v when v = "relationships.read" -> OAuth2Scope.RELATIONSHIPS_READ
-            | v when v = "role_connections.write" -> OAuth2Scope.ROLE_CONNECTIONS_WRITE
-            | v when v = "rpc" -> OAuth2Scope.RPC
-            | v when v = "rpc.activities.write" -> OAuth2Scope.RPC_ACTIVITIES_WRITE
-            | v when v = "rpc.notifications.read" -> OAuth2Scope.RPC_NOTIFICATIONS_READ
-            | v when v = "rpc.voice.read" -> OAuth2Scope.RPC_VOICE_READ
-            | v when v = "rpc.voice.write" -> OAuth2Scope.RPC_VOICE_WRITE
-            | v when v = "voice" -> OAuth2Scope.VOICE
-            | v when v = "webhook.incoming" -> OAuth2Scope.WEBHOOK_INCOMING
+type OAuth2ScopeConverter () =
+    inherit JsonConverter<OAuth2Scope> () with
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
+            match reader.GetString() with
+            | "activities.read" -> OAuth2Scope.ACTIVITIES_READ
+            | "activities.write" -> OAuth2Scope.ACTIVITIES_WRITE
+            | "applications.builds.read" -> OAuth2Scope.APPLICATIONS_BUILDS_READ
+            | "applications.builds.upload" -> OAuth2Scope.APPLICATIONS_BUILDS_UPLOAD
+            | "applications.commands" -> OAuth2Scope.APPLICATIONS_COMMANDS
+            | "applications.commands.update" -> OAuth2Scope.APPLICATIONS_COMMANDS_UPDATE
+            | "applications.commands.permissions.update" -> OAuth2Scope.APPLICATIONS_COMMANDS_PERMISSIONS_UPDATE
+            | "applications.entitlements" -> OAuth2Scope.APPLICATIONS_ENTITLEMENTS
+            | "applications.store.update" -> OAuth2Scope.APPLICATIONS_STORE_UPDATE
+            | "bot" -> OAuth2Scope.BOT
+            | "connections" -> OAuth2Scope.CONNECTIONS
+            | "dm_channels.read" -> OAuth2Scope.DM_CHANNELS_READ
+            | "email" -> OAuth2Scope.EMAIL
+            | "gdm.join" -> OAuth2Scope.GDM_JOIN
+            | "guilds" -> OAuth2Scope.GUILDS
+            | "guilds.join" -> OAuth2Scope.GUILDS_JOIN
+            | "guilds.members.read" -> OAuth2Scope.GUILDS_MEMBERS_READ
+            | "identify" -> OAuth2Scope.IDENTIFY
+            | "messages.read" -> OAuth2Scope.MESSAGES_READ
+            | "relationships.read" -> OAuth2Scope.RELATIONSHIPS_READ
+            | "role_connections.write" -> OAuth2Scope.ROLE_CONNECTIONS_WRITE
+            | "rpc" -> OAuth2Scope.RPC
+            | "rpc.activities.write" -> OAuth2Scope.RPC_ACTIVITIES_WRITE
+            | "rpc.notifications.read" -> OAuth2Scope.RPC_NOTIFICATIONS_READ
+            | "rpc.voice.read" -> OAuth2Scope.RPC_VOICE_READ
+            | "rpc.voice.write" -> OAuth2Scope.RPC_VOICE_WRITE
+            | "voice" -> OAuth2Scope.VOICE
+            | "webhook.incoming" -> OAuth2Scope.WEBHOOK_INCOMING
             | _ -> failwith "Unexpected OAuth2Scope type"
+
+        override _.Write (writer: Utf8JsonWriter, value: OAuth2Scope, options: JsonSerializerOptions) = 
+            let string =
+                match value with
+                | OAuth2Scope.ACTIVITIES_READ -> "activities.read"
+                | OAuth2Scope.ACTIVITIES_WRITE -> "activities.write"
+                | OAuth2Scope.APPLICATIONS_BUILDS_READ -> "applications.builds.read"
+                | OAuth2Scope.APPLICATIONS_BUILDS_UPLOAD -> "applications.builds.upload"
+                | OAuth2Scope.APPLICATIONS_COMMANDS -> "applications.commands"
+                | OAuth2Scope.APPLICATIONS_COMMANDS_UPDATE -> "applications.commands.update"
+                | OAuth2Scope.APPLICATIONS_COMMANDS_PERMISSIONS_UPDATE -> "applications.commands.permissions.update"
+                | OAuth2Scope.APPLICATIONS_ENTITLEMENTS -> "applications.entitlements"
+                | OAuth2Scope.APPLICATIONS_STORE_UPDATE -> "applications.store.update"
+                | OAuth2Scope.BOT -> "bot"
+                | OAuth2Scope.CONNECTIONS -> "connections"
+                | OAuth2Scope.DM_CHANNELS_READ -> "dm_channels.read"
+                | OAuth2Scope.EMAIL -> "email"
+                | OAuth2Scope.GDM_JOIN -> "gdm.join"
+                | OAuth2Scope.GUILDS -> "guilds"
+                | OAuth2Scope.GUILDS_JOIN -> "guilds.join"
+                | OAuth2Scope.GUILDS_MEMBERS_READ -> "guilds.members.read"
+                | OAuth2Scope.IDENTIFY -> "identify"
+                | OAuth2Scope.MESSAGES_READ -> "messages.read"
+                | OAuth2Scope.RELATIONSHIPS_READ -> "relationships.read"
+                | OAuth2Scope.ROLE_CONNECTIONS_WRITE -> "role_connections.write"
+                | OAuth2Scope.RPC -> "rpc"
+                | OAuth2Scope.RPC_ACTIVITIES_WRITE -> "rpc.activities.write"
+                | OAuth2Scope.RPC_NOTIFICATIONS_READ -> "rpc.notifications.read"
+                | OAuth2Scope.RPC_VOICE_READ -> "rpc.voice.read"
+                | OAuth2Scope.RPC_VOICE_WRITE -> "rpc.voice.write"
+                | OAuth2Scope.VOICE -> "voice"
+                | OAuth2Scope.WEBHOOK_INCOMING -> "webhook.incoming"
+
+            writer.WriteStringValue string
 
 // https://discord.com/developers/docs/resources/webhook#webhook-object-webhook-types
 type WebhookType =
@@ -958,11 +963,26 @@ with
         | GuildWidgetStyle.BANNER_2 -> "banner_2"
         | GuildWidgetStyle.BANNER_3 -> "banner_3"
         | GuildWidgetStyle.BANNER_4 -> "banner_4"
-            
-type UnixEpochConverter () =
-    inherit JsonConverter<DateTime> () with
-        override __.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
-            DateTimeOffset.FromUnixTimeMilliseconds(reader.GetInt64()).DateTime
 
-        override __.Write (writer: Utf8JsonWriter, value: DateTime, options: JsonSerializerOptions) =
-            DateTimeOffset(value).ToUnixTimeMilliseconds() |> writer.WriteNumberValue
+type GuildWidgetStyleConverter () =
+    inherit JsonConverter<GuildWidgetStyle> () with
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
+            match reader.GetString() with
+            | "shield" -> GuildWidgetStyle.SHIELD
+            | "banner_1" -> GuildWidgetStyle.BANNER_1
+            | "banner_2" -> GuildWidgetStyle.BANNER_2
+            | "banner_3" -> GuildWidgetStyle.BANNER_3
+            | "banner_4" -> GuildWidgetStyle.BANNER_4
+            | _ -> failwith "Unexpected GuildWidgetStyle type"
+
+        override _.Write (writer: Utf8JsonWriter, value: GuildWidgetStyle, options: JsonSerializerOptions) =
+            let string =
+                match value with
+                | GuildWidgetStyle.SHIELD -> "shield"
+                | GuildWidgetStyle.BANNER_1 -> "banner_1"
+                | GuildWidgetStyle.BANNER_2 -> "banner_2"
+                | GuildWidgetStyle.BANNER_3 -> "banner_3"
+                | GuildWidgetStyle.BANNER_4 -> "banner_4"
+
+            writer.WriteStringValue string
+         

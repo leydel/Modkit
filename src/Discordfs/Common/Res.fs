@@ -1,18 +1,10 @@
 ﻿namespace Modkit.Discordfs.Common
 
-open FSharp.Json
 open Modkit.Discordfs.Utils
 open System.Net.Http
 open System.Threading.Tasks
 
 module Res =
-    // TODO: Mark `body` obsolete and remove once all converted to STJ
-    let body<'a> (resTask: Task<HttpResponseMessage>) = task {
-        let! res = resTask
-        let! body = res.Content.ReadAsStringAsync()
-        return Json.deserialize<'a> body
-    }
-
     let json (resTask: Task<HttpResponseMessage>) = task {
         let! res = resTask
         let! body = res.Content.ReadAsStringAsync()

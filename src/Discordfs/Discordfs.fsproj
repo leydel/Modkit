@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Utils\Converters.fs" />
     <Compile Include="Utils\FsJson.fs" />
     <Compile Include="Common\Constants.fs" />
     <Compile Include="Common\Dto.fs" />

@@ -9,7 +9,8 @@ type IDiscordHttpInteractionActions =
     abstract member CreateInteractionResponse:
         id: string ->
         token: string ->
-        payload: InteractionCallback ->
+        ``type``: InteractionType ->
+        data: InteractionCallbackData ->
         Task<unit>
 
     abstract member GetOriginalInteractionResponse:
@@ -20,7 +21,12 @@ type IDiscordHttpInteractionActions =
     abstract member EditOriginalInteractionResponse:
         id: string ->
         token: string ->
-        payload: EditWebhookMessage ->
+        content: string option ->
+        embeds: Embed list option ->
+        allowedMentions: AllowedMentions option ->
+        components: Component list option ->
+        // TODO: Add `files`, `payload_json`, `attachments` support
+        // TODO: Check what types should be `option`
         Task<Message>
 
     abstract member DeleteOriginalInteractionResponse:
@@ -32,7 +38,19 @@ type IDiscordHttpInteractionActions =
         id: string ->
         token: string ->
         threadId: string option ->
-        payload: ExecuteWebhook ->
+        content: string option ->
+        username: string ->
+        avatarUrl: string ->
+        tts: bool ->
+        embeds: Embed list option ->
+        allowedMentions: AllowedMentions option ->
+        components: Component list option ->
+        // TODO: Add `files`, `payload_json`, `attachments` support
+        flags: int ->
+        threadName: string option ->
+        appliedTags: string list option ->
+        poll: Poll option ->
+        // TODO: Check what types should be `option`
         Task<Message>
 
     abstract member GetFollowUpMessage:
@@ -47,7 +65,12 @@ type IDiscordHttpInteractionActions =
         token: string ->
         messageId: string ->
         threadId: string option ->
-        payload: EditWebhookMessage ->
+        content: string option ->
+        embeds: Embed list option ->
+        allowedMentions: AllowedMentions option ->
+        components: Component list option ->
+        // TODO: Add `files`, `payload_json`, `attachments` support
+        // TODO: Check what types should be `option`
         Task<Message>
 
     abstract member DeleteFollowUpMessage:
@@ -58,81 +81,123 @@ type IDiscordHttpInteractionActions =
 
 type DiscordHttpInteractionActions (httpClientFactory: IHttpClientFactory, token: string) =
     interface IDiscordHttpInteractionActions with
-        member _.CreateInteractionResponse id token payload =
-            Req.create
-                HttpMethod.Post
-                Constants.DISCORD_API_URL
-                $"interactions/{id}/{token}/callback"
-            |> Req.bot token
-            |> Req.body payload
-            |> Req.send httpClientFactory
-            |> Res.ignore
+        member _.CreateInteractionResponse
+            id token ``type`` data =
+                Req.create
+                    HttpMethod.Post
+                    Constants.DISCORD_API_URL
+                    $"interactions/{id}/{token}/callback"
+                |> Req.bot token
+                |> Req.json (
+                    Dto()
+                    |> Dto.property "type" ``type``
+                    |> Dto.property "data" data
+                    |> Dto.json
+                )
+                |> Req.send httpClientFactory
+                |> Res.ignore
 
-        member _.GetOriginalInteractionResponse id token =
-            Req.create
-                HttpMethod.Get
-                Constants.DISCORD_API_URL
-                $"webhooks/{id}/{token}/messages/@original"
-            |> Req.bot token
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.GetOriginalInteractionResponse
+            id token =
+                Req.create
+                    HttpMethod.Get
+                    Constants.DISCORD_API_URL
+                    $"webhooks/{id}/{token}/messages/@original"
+                |> Req.bot token
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.EditOriginalInteractionResponse id token payload =
-            Req.create
-                HttpMethod.Patch
-                Constants.DISCORD_API_URL
-                $"webhooks/{id}/{token}/messages/@original"
-            |> Req.bot token
-            |> Req.body payload
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.EditOriginalInteractionResponse
+            id token content embeds allowedMentions components =
+                Req.create
+                    HttpMethod.Patch
+                    Constants.DISCORD_API_URL
+                    $"webhooks/{id}/{token}/messages/@original"
+                |> Req.bot token
+                |> Req.json (
+                    Dto()
+                    |> Dto.propertyIf "content" content
+                    |> Dto.propertyIf "embeds" embeds
+                    |> Dto.propertyIf "allowed_mentions" allowedMentions
+                    |> Dto.propertyIf "components" components
+                    |> Dto.json
+                )
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.DeleteOriginalInteractionResponse id token =
-            Req.create
-                HttpMethod.Delete
-                Constants.DISCORD_API_URL
-                $"webhooks/{id}/{token}/messages/@original"
-            |> Req.bot token
-            |> Req.send httpClientFactory
-            |> Res.ignore
+        member _.DeleteOriginalInteractionResponse
+            id token =
+                Req.create
+                    HttpMethod.Delete
+                    Constants.DISCORD_API_URL
+                    $"webhooks/{id}/{token}/messages/@original"
+                |> Req.bot token
+                |> Req.send httpClientFactory
+                |> Res.ignore
 
-        member _.CreateFollowUpMessage id token threadId payload =
-            Req.create
-                HttpMethod.Post
-                Constants.DISCORD_API_URL
-                $"webhooks/{id}/{token}"
-            |> Req.bot token
-            |> Req.queryOpt "thread_id" threadId
-            |> Req.body payload
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.CreateFollowUpMessage
+            id token threadId content username avatarUrl tts embeds allowedMentions components flags threadName
+            appliedTags poll =
+                Req.create
+                    HttpMethod.Post
+                    Constants.DISCORD_API_URL
+                    $"webhooks/{id}/{token}"
+                |> Req.bot token
+                |> Req.queryOpt "thread_id" threadId
+                |> Req.json (
+                    Dto()
+                    |> Dto.propertyIf "content" content
+                    |> Dto.property "username" username
+                    |> Dto.property "avatar_url" avatarUrl
+                    |> Dto.property "tts" tts
+                    |> Dto.propertyIf "embeds" embeds
+                    |> Dto.propertyIf "allowed_mentions" allowedMentions
+                    |> Dto.propertyIf "components" components
+                    |> Dto.property "flags" flags
+                    |> Dto.propertyIf "thread_name" threadName
+                    |> Dto.propertyIf "applied_tags" appliedTags
+                    |> Dto.propertyIf "poll" poll
+                    |> Dto.json
+                )
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.GetFollowUpMessage id token messageId threadId =
-            Req.create
-                HttpMethod.Get
-                Constants.DISCORD_API_URL
-                $"webhooks/{id}/{token}/messages/{messageId}"
-            |> Req.bot token
-            |> Req.queryOpt "thread_id" threadId
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.GetFollowUpMessage
+            id token messageId threadId =
+                Req.create
+                    HttpMethod.Get
+                    Constants.DISCORD_API_URL
+                    $"webhooks/{id}/{token}/messages/{messageId}"
+                |> Req.bot token
+                |> Req.queryOpt "thread_id" threadId
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.EditFollowUpMessage id token messageId threadId payload =
-            Req.create
-                HttpMethod.Patch
-                Constants.DISCORD_API_URL
-                $"webhooks/{id}/{token}/messages/{messageId}"
-            |> Req.bot token
-            |> Req.queryOpt "thread_id" threadId
-            |> Req.body payload
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.EditFollowUpMessage
+            id token messageId threadId content embeds allowedMentions components =
+                Req.create
+                    HttpMethod.Patch
+                    Constants.DISCORD_API_URL
+                    $"webhooks/{id}/{token}/messages/{messageId}"
+                |> Req.bot token
+                |> Req.queryOpt "thread_id" threadId
+                |> Req.json (
+                    Dto()
+                    |> Dto.propertyIf "content" content
+                    |> Dto.propertyIf "embeds" embeds
+                    |> Dto.propertyIf "allowed_mentions" allowedMentions
+                    |> Dto.propertyIf "components" components
+                    |> Dto.json
+                )
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.DeleteFollowUpMessage id token messageId =
-            Req.create
-                HttpMethod.Delete
-                Constants.DISCORD_API_URL
-                $"webhooks/{id}/{token}/messages/{messageId}"
-            |> Req.bot token
-            |> Req.send httpClientFactory
-            |> Res.ignore
+        member _.DeleteFollowUpMessage
+            id token messageId =
+                Req.create
+                    HttpMethod.Delete
+                    Constants.DISCORD_API_URL
+                    $"webhooks/{id}/{token}/messages/{messageId}"
+                |> Req.bot token
+                |> Req.send httpClientFactory
+                |> Res.ignore

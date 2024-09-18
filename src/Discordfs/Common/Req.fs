@@ -1,6 +1,5 @@
 ﻿namespace Modkit.Discordfs.Common
 
-open FSharp.Json
 open System
 open System.Net.Http
 open System.Web
@@ -35,11 +34,6 @@ module Req =
 
     let queryOpt (key: string) (value: string option) (req: HttpRequestMessage) =
         Option.foldBack (query key) value req
-
-    [<Obsolete>]
-    let body<'a> (payload: 'a) (req: HttpRequestMessage) =
-        req.Content <- new StringContent (Json.serializeU payload)
-        req
 
     let json (json: string) (req: HttpRequestMessage) =
         req.Content <- new StringContent(json)

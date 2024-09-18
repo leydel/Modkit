@@ -31,7 +31,7 @@ type IDiscordHttpGuildActions =
     // https://discord.com/developers/docs/resources/guild#get-guild-preview
     abstract member GetGuildPreview:
         guildId: string ->
-        Task<Guild>
+        Task<GuildPreview>
 
     // https://discord.com/developers/docs/resources/guild#modify-guild
     abstract member ModifyGuild:
@@ -398,7 +398,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     |> Dto.json
                 )
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
 
         member _.GetGuild
             guildId withCounts =
@@ -409,7 +409,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                 |> Req.bot token
                 |> Req.queryOpt "with_counts" (Option.map _.ToString() withCounts)
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
 
         member _.GetGuildPreview
             guildId =
@@ -419,7 +419,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     $"guilds/{guildId}/preview"
                 |> Req.bot token
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
 
         member _.ModifyGuild
             guildId auditLogReason name verificationLevel defaultMessageNotifications
@@ -450,14 +450,14 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     |> Dto.propertyIf "rules_channel_id" rulesChannelId
                     |> Dto.propertyIf "public_updates_channel_id" publicUpdatesChannelId
                     |> Dto.propertyIf "preferred_locale" preferredLocale
-                    |> Dto.propertyIf "features" features
+                    |> Dto.propertyIf "features" features // TODO: Setup this to serialize using GuildFeatureConverter
                     |> Dto.propertyIf "description" description
                     |> Dto.propertyIf "premium_progress_bar_enabled" premiumProgressBarEnabled
                     |> Dto.propertyIf "safety_alerts_channel_id" safetyAlertsChannelId
                     |> Dto.json
                 )
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
 
         member _.DeleteGuild
             guildId =
@@ -477,7 +477,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     $"guilds/{guildId}/channels"
                 |> Req.bot token
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
 
         member _.CreateGuildChannel
             guildId auditLogReason name channelType topic bitrate userLimit rateLimitPerUser position
@@ -512,7 +512,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     |> Dto.json
                 )
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
 
         member _.ModifyGuildChannelPositions
             guildId payload =
@@ -547,7 +547,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     $"guilds/{guildId}/members/{userId}"
                 |> Req.bot token
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
 
         member _.ListGuildMembers
             guildId limit after =
@@ -559,7 +559,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                 |> Req.queryOpt "limit" (Option.map _.ToString() limit)
                 |> Req.queryOpt "after" after
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
                 
         member _.SearchGuildMembers
             guildId query limit =
@@ -571,7 +571,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                 |> Req.query "query" query
                 |> Req.queryOpt "limit" (Option.map _.ToString() limit)
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
 
         member _.AddGuildMember
             guildId userId accessToken nick roles mute deaf =
@@ -590,7 +590,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     |> Dto.json
                 )
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
 
         member _.ModifyGuildMember
             guildId userId auditLogReason nick roles mute deaf channelId communicationDisabledUntil flags =
@@ -612,7 +612,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     |> Dto.json
                 )
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
                 
         member _.ModifyCurrentMember
             guildId auditLogReason nick =
@@ -628,7 +628,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     |> Dto.json
                 )
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
                 
         member _.AddGuildMemberRole
             guildId userId roleId auditLogReason =
@@ -674,7 +674,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                 |> Req.queryOpt "before" before
                 |> Req.queryOpt "after" after
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
 
         member _.GetGuildBan
             guildId userId =
@@ -684,7 +684,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     $"guilds/{guildId}/bans/{userId}"
                 |> Req.bot token
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
 
         member _.CreateGuildBan
             guildId userId auditLogReason deleteMessageDays deleteMessageSeconds =
@@ -729,7 +729,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     |> Dto.json
                 )
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
 
         member _.GetGuildRoles
             guildId =
@@ -739,7 +739,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     $"guilds/{guildId}/roles"
                 |> Req.bot token
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
 
         member _.GetGuildRole
             guildId roleId =
@@ -749,7 +749,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     $"guilds/{guildId}/roles/{roleId}"
                 |> Req.bot token
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
 
         member _.CreateGuildRole
             guildId auditLogReason name permissions color hoist icon unicodeEmoji mentionable =
@@ -771,7 +771,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     |> Dto.json
                 )
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
 
         member _.ModifyGuildRolePositions
             guildId auditLogReason payload =
@@ -787,7 +787,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     |> Dto.jsonPartial "positions"
                 )
                 |> Req.send httpClientFactory
-                |> Res.body   
+                |> Res.json   
 
         member _.ModifyGuildRole
             guildId roleId auditLogReason name permissions color hoist icon unicodeEmoji mentionable =
@@ -809,7 +809,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     |> Dto.json
                 )
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
                 
         member _.ModifyGuildMfaLevel
             guildId auditLogReason level =
@@ -825,7 +825,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     |> Dto.json
                 )
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
 
         member _.DeleteGuildRole
             guildId roleId auditLogReason =
@@ -836,7 +836,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                 |> Req.bot token
                 |> Req.audit auditLogReason
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
 
         member _.GetGuildPruneCount
             guildId days includeRoles =
@@ -872,7 +872,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     $"guilds/{guildId}/regions"
                 |> Req.bot token
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
                 
         member _.GetGuildInvites
             guildId =
@@ -882,7 +882,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     $"guilds/{guildId}/invites"
                 |> Req.bot token
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
 
         member _.GetGuildIntegrations
             guildId =
@@ -892,7 +892,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     $"guilds/{guildId}/integrations"
                 |> Req.bot token
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
 
         member _.DeleteGuildIntegration
             guildId integrationId auditLogReason =
@@ -913,7 +913,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     $"guilds/{guildId}/widget"
                 |> Req.bot token
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
                 
         member _.ModifyGuildWidget
             guildId auditLogReason enabled channelId =
@@ -930,7 +930,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     |> Dto.json
                 )
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
 
         member _.GetGuildWidget
             guildId =
@@ -940,7 +940,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     $"guilds/{guildId}/widget.json"
                 |> Req.bot token
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
 
         member _.GetGuildVanityUrl
             guildId =
@@ -950,7 +950,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     $"guilds/{guildId}/vanity-url"
                 |> Req.bot token
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
                 
         member _.GetGuildWidgetImage
             guildId style =
@@ -971,7 +971,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     $"guilds/{guildId}/welcome-screen"
                 |> Req.bot token
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
 
         member _.ModifyGuildWelcomeScreen
             guildId auditLogReason enabled welcomeChannels description =
@@ -989,7 +989,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     |> Dto.json
                 )
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
                 
         member _.GetGuildOnboarding
             guildId =
@@ -999,7 +999,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     $"guilds/{guildId}/onboarding"
                 |> Req.bot token
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json
         
         member _.ModifyGuildOnboarding
             guildId auditLogReason prompts defaultChannelIds enabled mode =
@@ -1018,4 +1018,4 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     |> Dto.json
                 )
                 |> Req.send httpClientFactory
-                |> Res.body
+                |> Res.json

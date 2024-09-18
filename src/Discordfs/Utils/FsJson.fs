@@ -4,7 +4,7 @@ open System.Text.Json
 open System.Text.Json.Serialization
 
 module FsJson =
-    let options = JsonFSharpOptions.Default().ToJsonSerializerOptions()
+    let options = JsonFSharpOptions.Default().WithUnionUntagged().ToJsonSerializerOptions()
 
     let serialize<'T> (value: 'T) =
         JsonSerializer.Serialize(value, options)
