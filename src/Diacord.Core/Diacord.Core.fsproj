@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Types\Api.fs" />
     <Compile Include="Types\Diff.fs" />
     <Compile Include="Types\DiffNode.fs" />
     <Compile Include="Structures\DiacordChannel.fs" />
@@ -18,8 +19,10 @@
     <Compile Include="Structures\DiacordState.fs" />
     <Compile Include="Interfaces\IParserStrategy.fs" />
     <Compile Include="Strategies\Parser\JsonParserStrategy.fs" />
+    <Compile Include="Providers\MappingProvider.fs" />
     <Compile Include="Providers\ParserStrategyProvider.fs" />
     <Compile Include="Providers\StateProvider.fs" />
+    <Compile Include="Services\MappingService.fs" />
     <Compile Include="Services\StateService.fs" />
   </ItemGroup>
 

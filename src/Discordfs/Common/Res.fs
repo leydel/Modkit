@@ -5,7 +5,7 @@ open System.Net.Http
 open System.Threading.Tasks
 
 module Res =
-    let json (resTask: Task<HttpResponseMessage>) = task {
+    let json<'a> (resTask: Task<HttpResponseMessage>) = task {
         let! res = resTask
         let! body = res.Content.ReadAsStringAsync()
         return FsJson.deserialize<'a> body
