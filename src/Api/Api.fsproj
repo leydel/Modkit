@@ -10,13 +10,22 @@
   </PropertyGroup>
 	
   <ItemGroup>
+    <Compile Include="Models\DiacordMapping.fs" />
     <Compile Include="Models\Note.fs" />
+    <Compile Include="DTOs\DiacordMappingDto.fs" />
     <Compile Include="DTOs\NoteDto.fs" />
+    <Compile Include="Repositories\DiacordMappingRepository.fs" />
     <Compile Include="Repositories\NoteRepository.fs" />
+    <Compile Include="Actions\DiacordMappings\DiacordMappingGetAction.fs" />
+    <Compile Include="Actions\DiacordMappings\DiacordMappingPutAction.fs" />
+    <Compile Include="Actions\DiacordMappings\DiacordMappingDeleteAction.fs" />
     <Compile Include="Actions\Notes\NoteListAction.fs" />
     <Compile Include="Actions\Notes\NoteGetAction.fs" />
     <Compile Include="Actions\Notes\NoteAddAction.fs" />
     <Compile Include="Actions\Notes\NoteRemoveAction.fs" />
+    <Compile Include="Functions\Http\DiacordMappings\DiacordMappingGetFunction.fs" />
+    <Compile Include="Functions\Http\DiacordMappings\DiacordMappingPutFunction.fs" />
+    <Compile Include="Functions\Http\DiacordMappings\DiacordMappingDeleteFunction.fs" />
     <Compile Include="Functions\Http\Notes\NoteListFunction.fs" />
     <Compile Include="Functions\Http\Notes\NoteGetFunction.fs" />
     <Compile Include="Functions\Http\Notes\NoteAddFunction.fs" />
