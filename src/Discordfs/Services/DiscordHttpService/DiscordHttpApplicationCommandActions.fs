@@ -2,6 +2,7 @@
 
 open Modkit.Discordfs.Common
 open Modkit.Discordfs.Types
+open Modkit.Discordfs.Utils
 open System.Collections.Generic
 open System.Net.Http
 open System.Threading.Tasks
@@ -23,7 +24,7 @@ type IDiscordHttpApplicationCommandActions =
 
     abstract member BulkOverwriteGlobalApplicationCommands:
         applicationId: string -> 
-        commands: ApplicationCommand list ->
+        payload: ApplicationCommand list ->
         Task<ApplicationCommand list>
 
     // TODO: Check above types for what needs to be `option` or not
@@ -58,16 +59,12 @@ type DiscordHttpApplicationCommandActions (httpClientFactory: IHttpClientFactory
                 |> Res.json
 
         member _.BulkOverwriteGlobalApplicationCommands
-            applicationId commands =
+            applicationId payload =
                 Req.create
                     HttpMethod.Patch
                     Constants.DISCORD_API_URL
                     $"applications/{applicationId}/commands"
                 |> Req.bot token
-                |> Req.json (
-                    Dto()
-                    |> Dto.property "commands" commands
-                    |> Dto.jsonPartial "commands"
-                )
+                |> Req.json (FsJson.serialize payload)
                 |> Req.send httpClientFactory
                 |> Res.json

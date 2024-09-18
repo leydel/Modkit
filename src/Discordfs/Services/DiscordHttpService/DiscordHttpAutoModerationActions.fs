@@ -16,7 +16,14 @@ type IDiscordHttpAutoModerationActions =
     abstract member CreateAutoModerationRule:
         guildId: string ->
         auditLogReason: string option ->
-        payload: CreateAutoModerationRule ->
+        name: string ->
+        eventType: AutoModerationEventType ->
+        triggerType: AutoModerationTriggerType ->
+        triggerMetadata: AutoModerationTriggerMetadata option ->
+        actions: AutoModerationAction list ->
+        enabled: bool option ->
+        exemptRoles: string list option ->
+        exemptChannels: string list option ->
         Task<AutoModerationRule>
 
     // https://discord.com/developers/docs/resources/auto-moderation#modify-auto-moderation-rule
@@ -24,7 +31,14 @@ type IDiscordHttpAutoModerationActions =
         guildId: string ->
         autoModerationRuleId: string ->
         auditLogReason: string option ->
-        payload: ModifyAutoModerationRule ->
+        name: string option ->
+        eventType: AutoModerationEventType option ->
+        triggerType: AutoModerationTriggerType option ->
+        triggerMetadata: AutoModerationTriggerMetadata option ->
+        actions: AutoModerationAction list option ->
+        enabled: bool option ->
+        exemptRoles: string list option ->
+        exemptChannels: string list option ->
         Task<AutoModerationRule>
 
     // https://discord.com/developers/docs/resources/auto-moderation#delete-auto-moderation-rule
@@ -36,43 +50,71 @@ type IDiscordHttpAutoModerationActions =
 
 type DiscordHttpAutoModerationActions (httpClientFactory: IHttpClientFactory, token: string) =
     interface IDiscordHttpAutoModerationActions with
-        member _.GetAutoModerationRule guildId autoModerationRuleId =
-            Req.create
-                HttpMethod.Get
-                Constants.DISCORD_API_URL
-                $"guilds/{guildId}/auto-moderation/rules/{autoModerationRuleId}"
-            |> Req.bot token
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.GetAutoModerationRule
+            guildId autoModerationRuleId =
+                Req.create
+                    HttpMethod.Get
+                    Constants.DISCORD_API_URL
+                    $"guilds/{guildId}/auto-moderation/rules/{autoModerationRuleId}"
+                |> Req.bot token
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.CreateAutoModerationRule guildId auditLogReason payload =
-            Req.create
-                HttpMethod.Post
-                Constants.DISCORD_API_URL
-                $"guilds/{guildId}/auto-moderation/rules"
-            |> Req.bot token
-            |> Req.audit auditLogReason
-            |> Req.body payload
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.CreateAutoModerationRule
+            guildId auditLogReason name eventType triggerType triggerMetadata actions enabled exemptRoles
+            exemptChannels =
+                Req.create
+                    HttpMethod.Post
+                    Constants.DISCORD_API_URL
+                    $"guilds/{guildId}/auto-moderation/rules"
+                |> Req.bot token
+                |> Req.audit auditLogReason
+                |> Req.json (
+                    Dto()
+                    |> Dto.property "name" name
+                    |> Dto.property "event_type" eventType
+                    |> Dto.property "trigger_type" triggerType
+                    |> Dto.propertyIf "trigger_metadata" triggerMetadata
+                    |> Dto.property "actions" actions
+                    |> Dto.property "enabled" enabled
+                    |> Dto.propertyIf "exempt_roles" exemptRoles
+                    |> Dto.propertyIf "exempt_channels" exemptChannels
+                    |> Dto.json
+                )
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.ModifyAutoModerationRule guildId autoModerationRuleId auditLogReason payload =
-            Req.create
-                HttpMethod.Get
-                Constants.DISCORD_API_URL
-                $"guilds/{guildId}/auto-moderation/rules/{autoModerationRuleId}"
-            |> Req.bot token
-            |> Req.audit auditLogReason
-            |> Req.body payload
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.ModifyAutoModerationRule
+            guildId autoModerationRuleId auditLogReason name eventType triggerType triggerMetadata actions enabled
+            exemptRoles exemptChannels =
+                Req.create
+                    HttpMethod.Get
+                    Constants.DISCORD_API_URL
+                    $"guilds/{guildId}/auto-moderation/rules/{autoModerationRuleId}"
+                |> Req.bot token
+                |> Req.audit auditLogReason
+                |> Req.json (
+                        Dto()
+                        |> Dto.property "name" name
+                        |> Dto.property "event_type" eventType
+                        |> Dto.property "trigger_type" triggerType
+                        |> Dto.propertyIf "trigger_metadata" triggerMetadata
+                        |> Dto.property "actions" actions
+                        |> Dto.property "enabled" enabled
+                        |> Dto.propertyIf "exempt_roles" exemptRoles
+                        |> Dto.propertyIf "exempt_channels" exemptChannels
+                        |> Dto.json
+                    )
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.DeleteAutoModerationRule guildId autoModerationRuleId auditLogReason =
-            Req.create
-                HttpMethod.Delete
-                Constants.DISCORD_API_URL
-                $"guilds/{guildId}/auto-moderation/rules/{autoModerationRuleId}"
-            |> Req.bot token
-            |> Req.audit auditLogReason
-            |> Req.send httpClientFactory
-            |> Res.ignore
+        member _.DeleteAutoModerationRule
+            guildId autoModerationRuleId auditLogReason =
+                Req.create
+                    HttpMethod.Delete
+                    Constants.DISCORD_API_URL
+                    $"guilds/{guildId}/auto-moderation/rules/{autoModerationRuleId}"
+                |> Req.bot token
+                |> Req.audit auditLogReason
+                |> Req.send httpClientFactory
+                |> Res.ignore

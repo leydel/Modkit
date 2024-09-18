@@ -10,35 +10,37 @@ type IDiscordHttpGatewayActions =
         version: string ->
         encoding: GatewayEncoding ->
         compression: GatewayCompression option ->
-        Task<GetGateway>
+        Task<GetGatewayResponse>
 
     abstract member GetGatewayBot:
         version: string ->
         encoding: GatewayEncoding ->
         compression: GatewayCompression option ->
-        Task<GetGatewayBot>
+        Task<GetGatewayBotResponse>
 
 type DiscordHttpGatewayActions (httpClientFactory: IHttpClientFactory, token: string) =
     interface IDiscordHttpGatewayActions with
-        member _.GetGateway version encoding compression =
-            Req.create
-                HttpMethod.Get
-                Constants.DISCORD_API_URL
-                $"gateway"
-            |> Req.query "v" version
-            |> Req.query "encoding" (encoding.ToString())
-            |> Req.queryOpt "compress" (Option.map _.ToString() compression)
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.GetGateway
+            version encoding compression =
+                Req.create
+                    HttpMethod.Get
+                    Constants.DISCORD_API_URL
+                    $"gateway"
+                |> Req.query "v" version
+                |> Req.query "encoding" (encoding.ToString())
+                |> Req.queryOpt "compress" (Option.map _.ToString() compression)
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.GetGatewayBot version encoding compression =
-            Req.create
-                HttpMethod.Get
-                Constants.DISCORD_API_URL
-                $"gateway/bot"
-            |> Req.bot token
-            |> Req.query "v" version
-            |> Req.query "encoding" (encoding.ToString())
-            |> Req.queryOpt "compress" (Option.map _.ToString() compression)
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.GetGatewayBot
+            version encoding compression =
+                Req.create
+                    HttpMethod.Get
+                    Constants.DISCORD_API_URL
+                    $"gateway/bot"
+                |> Req.bot token
+                |> Req.query "v" version
+                |> Req.query "encoding" (encoding.ToString())
+                |> Req.queryOpt "compress" (Option.map _.ToString() compression)
+                |> Req.send httpClientFactory
+                |> Res.json

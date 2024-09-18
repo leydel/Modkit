@@ -41,6 +41,8 @@ type IDiscordHttpRoleConnectionActions =
         descriptionLocalizations: IDictionary<string, string> option ->
         Task<ApplicationRoleConnection>
 
+    // TODO: CurrentUser endpoints not showing in documentation, may have been moved/removed?
+
  type DiscordHttpRoleConnectionActions (httpClientFactory: IHttpClientFactory, token: string) =
     interface IDiscordHttpRoleConnectionActions with
         member _.GetApplicationRoleConnectionMetadataRecords

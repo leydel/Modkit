@@ -21,7 +21,9 @@ type IDiscordHttpEmojiActions =
     abstract member CreateGuildEmoji:
         guildId: string ->
         auditLogReason: string option ->
-        payload: CreateGuildEmoji ->
+        name: string ->
+        image: string ->
+        roles: string list ->
         Task<Emoji>
 
     // https://discord.com/developers/docs/resources/emoji#modify-guild-emoji
@@ -29,7 +31,8 @@ type IDiscordHttpEmojiActions =
         guildId: string ->
         emojiId: string ->
         auditLogReason: string option ->
-        payload: ModifyGuildEmoji ->
+        name: string ->
+        roles: string list ->
         Task<Emoji>
 
     // https://discord.com/developers/docs/resources/emoji#delete-guild-emoji
@@ -53,14 +56,15 @@ type IDiscordHttpEmojiActions =
     // https://discord.com/developers/docs/resources/emoji#create-application-emoji
     abstract member CreateApplicationEmoji:
         applicationId: string ->
-        payload: CreateApplicationEmoji ->
+        name: string ->
+        image: string ->
         Task<Emoji>
 
     // https://discord.com/developers/docs/resources/emoji#modify-application-emoji
     abstract member ModifyApplicationEmoji:
         applicationId: string ->
         emojiId: string ->
-        payload: ModifyApplicationEmoji ->
+        name: string ->
         Task<Emoji>
 
     // https://discord.com/developers/docs/resources/emoji#delete-application-emoji
@@ -71,99 +75,129 @@ type IDiscordHttpEmojiActions =
 
 type DiscordHttpEmojiActions (httpClientFactory: IHttpClientFactory, token: string) =
     interface IDiscordHttpEmojiActions with
-        member _.ListGuildEmojis guildId =
-            Req.create
-                HttpMethod.Get
-                Constants.DISCORD_API_URL
-                $"guilds/{guildId}/emojis"
-            |> Req.bot token
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.ListGuildEmojis
+            guildId =
+                Req.create
+                    HttpMethod.Get
+                    Constants.DISCORD_API_URL
+                    $"guilds/{guildId}/emojis"
+                |> Req.bot token
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.GetGuildEmoji guildId emojiId =
-            Req.create
-                HttpMethod.Get
-                Constants.DISCORD_API_URL
-                $"guilds/{guildId}/emojis/{emojiId}"
-            |> Req.bot token
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.GetGuildEmoji
+            guildId emojiId =
+                Req.create
+                    HttpMethod.Get
+                    Constants.DISCORD_API_URL
+                    $"guilds/{guildId}/emojis/{emojiId}"
+                |> Req.bot token
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.CreateGuildEmoji guildId auditLogReason payload =
-            Req.create
-                HttpMethod.Post
-                Constants.DISCORD_API_URL
-                $"guilds/{guildId}/emojis"
-            |> Req.bot token
-            |> Req.audit auditLogReason
-            |> Req.body payload
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.CreateGuildEmoji
+            guildId auditLogReason name image roles =
+                Req.create
+                    HttpMethod.Post
+                    Constants.DISCORD_API_URL
+                    $"guilds/{guildId}/emojis"
+                |> Req.bot token
+                |> Req.audit auditLogReason
+                |> Req.json (
+                    Dto()
+                    |> Dto.property "name" name
+                    |> Dto.property "image" image
+                    |> Dto.property "roles" roles
+                    |> Dto.json
+                )
+                |> Req.send httpClientFactory
+                |> Res.json
             
-        member _.ModifyGuildEmoji guildId emojiId auditLogReason payload =
-            Req.create
-                HttpMethod.Patch
-                Constants.DISCORD_API_URL
-                $"guilds/{guildId}/emojis/{emojiId}"
-            |> Req.bot token
-            |> Req.audit auditLogReason
-            |> Req.body payload
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.ModifyGuildEmoji
+            guildId emojiId auditLogReason name roles =
+                Req.create
+                    HttpMethod.Patch
+                    Constants.DISCORD_API_URL
+                    $"guilds/{guildId}/emojis/{emojiId}"
+                |> Req.bot token
+                |> Req.audit auditLogReason
+                |> Req.json (
+                    Dto()
+                    |> Dto.property "name" name
+                    |> Dto.property "roles" roles
+                    |> Dto.json
+                )
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.DeleteGuildEmoji guildId emojiId auditLogReason =
-            Req.create
-                HttpMethod.Delete
-                Constants.DISCORD_API_URL
-                $"guilds/{guildId}/emojis/{emojiId}"
-            |> Req.bot token
-            |> Req.audit auditLogReason
-            |> Req.send httpClientFactory
-            |> Res.ignore
+        member _.DeleteGuildEmoji
+            guildId emojiId auditLogReason =
+                Req.create
+                    HttpMethod.Delete
+                    Constants.DISCORD_API_URL
+                    $"guilds/{guildId}/emojis/{emojiId}"
+                |> Req.bot token
+                |> Req.audit auditLogReason
+                |> Req.send httpClientFactory
+                |> Res.ignore
 
-        member _.ListApplicationEmojis applicationId =
-            Req.create
-                HttpMethod.Get
-                Constants.DISCORD_API_URL
-                $"applications/{applicationId}/emojis"
-            |> Req.bot token
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.ListApplicationEmojis
+            applicationId =
+                Req.create
+                    HttpMethod.Get
+                    Constants.DISCORD_API_URL
+                    $"applications/{applicationId}/emojis"
+                |> Req.bot token
+                |> Req.send httpClientFactory
+                |> Res.json
             
-        member _.GetApplicationEmoji applicationId emojiId =
-            Req.create
-                HttpMethod.Get
-                Constants.DISCORD_API_URL
-                $"applications/{applicationId}/emojis/{emojiId}"
-            |> Req.bot token
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.GetApplicationEmoji
+            applicationId emojiId =
+                Req.create
+                    HttpMethod.Get
+                    Constants.DISCORD_API_URL
+                    $"applications/{applicationId}/emojis/{emojiId}"
+                |> Req.bot token
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.CreateApplicationEmoji applicationId payload =
-            Req.create
-                HttpMethod.Post
-                Constants.DISCORD_API_URL
-                $"applications/{applicationId}/emojis"
-            |> Req.bot token
-            |> Req.body payload
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.CreateApplicationEmoji
+            applicationId name image =
+                Req.create
+                    HttpMethod.Post
+                    Constants.DISCORD_API_URL
+                    $"applications/{applicationId}/emojis"
+                |> Req.bot token
+                |> Req.json (
+                    Dto()
+                    |> Dto.property "name" name
+                    |> Dto.property "image" image
+                    |> Dto.json
+                )
+                |> Req.send httpClientFactory
+                |> Res.json
             
-        member _.ModifyApplicationEmoji applicationId emojiId payload =
-            Req.create
-                HttpMethod.Patch
-                Constants.DISCORD_API_URL
-                $"applications/{applicationId}/emojis/{emojiId}"
-            |> Req.bot token
-            |> Req.body payload
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.ModifyApplicationEmoji
+            applicationId emojiId name =
+                Req.create
+                    HttpMethod.Patch
+                    Constants.DISCORD_API_URL
+                    $"applications/{applicationId}/emojis/{emojiId}"
+                |> Req.bot token
+                |> Req.json (
+                    Dto()
+                    |> Dto.property "name" name
+                    |> Dto.json
+                )
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.DeleteApplicationEmoji applicationId emojiId =
-            Req.create
-                HttpMethod.Delete
-                Constants.DISCORD_API_URL
-                $"applications/{applicationId}/emojis/{emojiId}"
-            |> Req.bot token
-            |> Req.send httpClientFactory
-            |> Res.ignore
+        member _.DeleteApplicationEmoji
+            applicationId emojiId =
+                Req.create
+                    HttpMethod.Delete
+                    Constants.DISCORD_API_URL
+                    $"applications/{applicationId}/emojis/{emojiId}"
+                |> Req.bot token
+                |> Req.send httpClientFactory
+                |> Res.ignore

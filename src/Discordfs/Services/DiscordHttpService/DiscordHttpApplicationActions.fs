@@ -20,8 +20,8 @@ type IDiscordHttpApplicationActions =
         installParams: OAuth2InstallParams option ->
         integrationTypesConfig: IDictionary<ApplicationIntegrationType, ApplicationIntegrationTypeConfiguration> option ->
         flags: int option ->
-        icon: string option ->
-        coverImage: string option ->
+        icon: string option option ->
+        coverImage: string option option ->
         interactionsEndpointUrl: string option ->
         tags: string list option ->
         Task<Application>

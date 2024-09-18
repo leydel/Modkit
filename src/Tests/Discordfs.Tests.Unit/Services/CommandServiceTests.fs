@@ -8,7 +8,8 @@ open System.Threading.Tasks
 type SampleCommand () =
     inherit Command ()
 
-    override _.Data = CreateGlobalApplicationCommand.build(
+    override _.Data = CommandData.build(
+        Type = ApplicationCommandType.CHAT_INPUT,
         Name = "sample",
         Description = "Sample command for testing the command service"
     )

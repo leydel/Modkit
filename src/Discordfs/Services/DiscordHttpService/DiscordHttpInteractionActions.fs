@@ -21,10 +21,10 @@ type IDiscordHttpInteractionActions =
     abstract member EditOriginalInteractionResponse:
         id: string ->
         token: string ->
-        content: string option ->
-        embeds: Embed list option ->
-        allowedMentions: AllowedMentions option ->
-        components: Component list option ->
+        content: string option option ->
+        embeds: Embed list option option ->
+        allowedMentions: AllowedMentions option option ->
+        components: Component list option option ->
         // TODO: Add `files`, `payload_json`, `attachments` support
         // TODO: Check what types should be `option`
         Task<Message>
@@ -65,10 +65,10 @@ type IDiscordHttpInteractionActions =
         token: string ->
         messageId: string ->
         threadId: string option ->
-        content: string option ->
-        embeds: Embed list option ->
-        allowedMentions: AllowedMentions option ->
-        components: Component list option ->
+        content: string option option ->
+        embeds: Embed list option option ->
+        allowedMentions: AllowedMentions option option ->
+        components: Component list option option ->
         // TODO: Add `files`, `payload_json`, `attachments` support
         // TODO: Check what types should be `option`
         Task<Message>

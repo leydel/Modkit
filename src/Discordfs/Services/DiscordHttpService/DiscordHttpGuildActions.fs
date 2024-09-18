@@ -2,6 +2,7 @@
 
 open Modkit.Discordfs.Common
 open Modkit.Discordfs.Types
+open Modkit.Discordfs.Utils
 open System
 open System.Net.Http
 open System.Threading.Tasks
@@ -521,11 +522,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     Constants.DISCORD_API_URL
                     $"guilds/{guildId}/channels"
                 |> Req.bot token
-                |> Req.json (
-                    Dto()
-                    |> Dto.property "positions" payload
-                    |> Dto.jsonPartial "positions"
-                )
+                |> Req.json (FsJson.serialize payload)
                 |> Req.send httpClientFactory
                 |> Res.ignore                
 
@@ -781,11 +778,7 @@ type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: stri
                     $"guilds/{guildId}/channels"
                 |> Req.bot token
                 |> Req.audit auditLogReason
-                |> Req.json (
-                    Dto()
-                    |> Dto.property "positions" payload
-                    |> Dto.jsonPartial "positions"
-                )
+                |> Req.json (FsJson.serialize payload)
                 |> Req.send httpClientFactory
                 |> Res.json   
 

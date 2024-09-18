@@ -1,6 +1,5 @@
 ﻿namespace Modkit.Discordfs.Common
 
-open FSharp.Json
 open Microsoft.VisualStudio.TestTools.UnitTesting
 open RichardSzalay.MockHttp
 open System.Net
@@ -161,18 +160,7 @@ type ReqTests () =
         let query = HttpUtility.ParseQueryString(req.RequestUri.Query)
         Assert.IsFalse(query.HasKeys())
 
-    [<TestMethod>]
-    member this.body_AddsJsonSerializedStringContentBodyToHttpRequestMessage (): Task = task {
-        // Arrange
-        let payload = {| test = 1 |}
-
-        // Act
-        let req = Req.body payload this._req
-
-        // Assert
-        let! body = req.Content.ReadAsStringAsync()
-        Assert.AreEqual<string>(Json.serializeU payload, body)
-    }
+    // TODO: Add `json` tests
 
     [<TestMethod>]
     member this.send_SendsRequestUsingHttpClient (): Task = task {

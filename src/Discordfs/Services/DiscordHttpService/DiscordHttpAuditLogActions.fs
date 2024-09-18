@@ -18,16 +18,17 @@ type IDiscordHttpAuditLogActions =
 
 type DiscordHttpAuditLogActions (httpClientFactory: IHttpClientFactory, token: string) =
     interface IDiscordHttpAuditLogActions with
-        member _.GetGuildAuditLog guildId userId actionType before after limit =
-            Req.create
-                HttpMethod.Get
-                Constants.DISCORD_API_URL
-                $"guilds/{guildId}/audit-logs"
-            |> Req.bot token
-            |> Req.queryOpt "user_id" userId
-            |> Req.queryOpt "action_type" (Option.map (fun a -> (int a).ToString()) actionType)
-            |> Req.queryOpt "before" before
-            |> Req.queryOpt "after" after
-            |> Req.queryOpt "limit" (Option.map _.ToString() limit)
-            |> Req.send httpClientFactory
-            |> Res.json
+        member _.GetGuildAuditLog
+            guildId userId actionType before after limit =
+                Req.create
+                    HttpMethod.Get
+                    Constants.DISCORD_API_URL
+                    $"guilds/{guildId}/audit-logs"
+                |> Req.bot token
+                |> Req.queryOpt "user_id" userId
+                |> Req.queryOpt "action_type" (Option.map (fun a -> (int a).ToString()) actionType)
+                |> Req.queryOpt "before" before
+                |> Req.queryOpt "after" after
+                |> Req.queryOpt "limit" (Option.map _.ToString() limit)
+                |> Req.send httpClientFactory
+                |> Res.json

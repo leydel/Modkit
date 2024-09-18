@@ -1,6 +1,5 @@
 ﻿namespace Modkit.Discordfs.Types
 
-open FSharp.Json
 open System
 open System.Text.Json.Serialization
 
@@ -19,63 +18,6 @@ with
         Data = Data;
     }
 
-type CreateChannelInvite = {
-    [<JsonField("max_age")>]
-    MaxAge: int option
-    
-    [<JsonField("max_uses")>]
-    MaxUses: int option
-    
-    [<JsonField("temporary")>]
-    Temporary: bool option
-    
-    [<JsonField("unique")>]
-    Unique: bool option
-    
-    [<JsonField("target_type", EnumValue = EnumMode.Value)>]
-    TargetType: InviteTargetType option
-    
-    [<JsonField("target_user_id")>]
-    TargetUserId: string option
-    
-    [<JsonField("target_application_id")>]
-    TargetApplicationId: string option
-}
-with
-    static member build(
-        ?maxAge: int,
-        ?maxUses: int,
-        ?temporary: bool,
-        ?unique: bool,
-        ?targetType: InviteTargetType,
-        ?targetUserId: string,
-        ?targetApplicationId: string
-    ) = {
-        MaxAge = maxAge;
-        MaxUses = maxUses;
-        Temporary = temporary;
-        Unique = unique;
-        TargetType = targetType;
-        TargetUserId = targetUserId;
-        TargetApplicationId = targetApplicationId;
-    }
-
-type GetGateway = {
-    [<JsonField("url")>]
-    Url: string
-}
-
-type GetGatewayBot = {
-    [<JsonField("url")>]
-    Url: string
-
-    [<JsonField("shards")>]
-    Shards: int
-
-    [<JsonField("session_start_limit")>]
-    SessionStartLimit: SessionStartLimit
-}
-
 type VoiceChannelEffect = {
     [<JsonName "channel_id">] ChannelId: string
     [<JsonName "guild_id">] GuildId: string
@@ -87,197 +29,59 @@ type VoiceChannelEffect = {
     [<JsonName "sound_volume">] SoundVolume: double option
 }
 
-type EditChannelPermissions = {
-    [<JsonField("allow")>]
-    Allow: string option
-
-    [<JsonField("deny")>]
-    Deny: string option
-
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: EditChannelPermissionsType
-}
-
-type FollowAnnouncementChannel = {
-    [<JsonField("webhook_channel_id")>]
-    WebhookChannelId: string
-}
-
-type GroupDmAddRecipient = {
-    [<JsonField("access_token")>]
-    AccessToken: string
-
-    [<JsonField("nick")>]
-    Nick: string // TODO: Check if this is optional (documented as not, but I expect it is)
-}
-
-type StartThreadFromMessage = {
-    [<JsonField("name")>]
-    Name: string
-
-    [<JsonField("auto_archive_duration", EnumValue = EnumMode.Value)>]
-    AutoArchiveDuration: AutoArchiveDurationType option
-
-    [<JsonField("rate_limit_per_user")>]
-    RateLimitPerUser: int option
-}
-
-type StartThreadWithoutMessage = {
-    [<JsonField("name")>]
-    Name: string
-
-    [<JsonField("auto_archive_duration", EnumValue = EnumMode.Value)>]
-    AutoArchiveDuration: AutoArchiveDurationType option
-
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: ThreadType
-
-    [<JsonField("invitable")>]
-    Invitable: bool option
-
-    [<JsonField("rate_limit_per_user")>]
-    RateLimitPerUser: int option
-}
-
 type ListPublicArchivedThreadsResponse = {
-    [<JsonField("threads")>]
+    [<JsonName "threads">]
     Threads: Channel list
     
-    [<JsonField("members")>]
+    [<JsonName "members">]
     Members: ThreadMember list
     
-    [<JsonField("has_more")>]
+    [<JsonName "has_more">]
     HasMore: bool
 }
 
 type ListPrivateArchivedThreadsResponse = {
-    [<JsonField("threads")>]
+    [<JsonName "threads">]
     Threads: Channel list
     
-    [<JsonField("members")>]
+    [<JsonName "members">]
     Members: ThreadMember list
     
-    [<JsonField("has_more")>]
+    [<JsonName "has_more">]
     HasMore: bool
 }
 
 type ListJoinedPrivateArchivedThreadsResponse = {
-    [<JsonField("threads")>]
+    [<JsonName "threads">]
     Threads: Channel list
     
-    [<JsonField("members")>]
+    [<JsonName "members">]
     Members: ThreadMember list
     
-    [<JsonField("has_more")>]
+    [<JsonName "has_more">]
     HasMore: bool
-}
-
-// https://discord.com/developers/docs/resources/auto-moderation#create-auto-moderation-rule-json-params
-type CreateAutoModerationRule = {
-    [<JsonField("name")>]
-    Name: string
-    
-    [<JsonField("event_type")>]
-    EventType: AutoModerationEventType
-    
-    [<JsonField("trigger_type")>]
-    TriggerType: AutoModerationTriggerType
-    
-    [<JsonField("trigger_metadata")>]
-    TriggerMetadata: AutoModerationTriggerMetadata option
-    
-    [<JsonField("actions")>]
-    Actions: AutoModerationAction list
-    
-    [<JsonField("enabled")>]
-    Enabled: bool option
-    
-    [<JsonField("exempt_roles")>]
-    ExemptRoles: string list option
-    
-    [<JsonField("exempt_channels")>]
-    ExemptChannels: string list option
-}
-
-// https://discord.com/developers/docs/resources/auto-moderation#modify-auto-moderation-rule-json-params
-type ModifyAutoModerationRule = {
-    [<JsonField("name")>]
-    Name: string option
-    
-    [<JsonField("event_type")>]
-    EventType: AutoModerationEventType option
-    
-    [<JsonField("trigger_type")>]
-    TriggerType: AutoModerationTriggerType option
-    
-    [<JsonField("trigger_metadata")>]
-    TriggerMetadata: AutoModerationTriggerMetadata option
-    
-    [<JsonField("actions")>]
-    Actions: AutoModerationAction list option
-    
-    [<JsonField("enabled")>]
-    Enabled: bool option
-    
-    [<JsonField("exempt_roles")>]
-    ExemptRoles: string list option
-    
-    [<JsonField("exempt_channels")>]
-    ExemptChannels: string list option
-}
-
-// https://discord.com/developers/docs/resources/emoji#create-guild-emoji-json-params
-type CreateGuildEmoji = {
-    [<JsonField("name")>]
-    Name: string
-    
-    [<JsonField("image")>]
-    Image: string
-    
-    [<JsonField("roles")>]
-    Roles: string list
-}
-
-// https://discord.com/developers/docs/resources/emoji#modify-guild-emoji-json-params
-type ModifyGuildEmoji = {
-    [<JsonField("name")>]
-    Name: string option
-    
-    [<JsonField("roles")>]
-    Roles: string list option
 }
 
 // https://discord.com/developers/docs/resources/emoji#list-application-emojis
 type ListApplicationEmojisResponse = {
-    [<JsonField("items")>]
+    [<JsonName "items">]
     Items: Emoji list
 }
 
-// https://discord.com/developers/docs/resources/emoji#create-application-emoji-json-params
-type CreateApplicationEmoji = {
-    [<JsonField("name")>]
-    Name: string
-    
-    [<JsonField("image")>]
-    Image: string
+type GetGatewayResponse = {
+    [<JsonName "url">]
+    Url: string
 }
 
-// https://discord.com/developers/docs/resources/emoji#modify-application-emoji-json-params
-type ModifyApplicationEmoji = {
-    [<JsonField("name")>]
-    Name: string
-}
+type GetGatewayBotResponse = {
+    [<JsonName "url">]
+    Url: string
 
-// https://discord.com/developers/docs/resources/entitlement#create-test-entitlement-json-params
-type CreateTestEntitlement = {
-    [<JsonField("sku_id")>]
-    SkuId: string
-    
-    [<JsonField("owner_id")>]
-    OwnerId: string
-    
-    [<JsonField("owner_type", EnumValue = EnumMode.Value)>]
-    OwnerType: EntitlementOwnerType
+    [<JsonName "shards">]
+    Shards: int
+
+    [<JsonName "session_start_limit">]
+    SessionStartLimit: SessionStartLimit
 }
 
 // https://discord.com/developers/docs/resources/guild#modify-guild-channel-positions-json-params

@@ -15,11 +15,12 @@ type IDiscordHttpStickerActions =
 
 type DiscordHttpStickerActions (httpClientFactory: IHttpClientFactory, token: string) =
     interface IDiscordHttpStickerActions with
-        member _.ListGuildStickers guildId =
-            Req.create
-                HttpMethod.Get
-                Constants.DISCORD_API_URL
-                $"guilds/{guildId}/stickers"
-            |> Req.bot token
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.ListGuildStickers
+            guildId =
+                Req.create
+                    HttpMethod.Get
+                    Constants.DISCORD_API_URL
+                    $"guilds/{guildId}/stickers"
+                |> Req.bot token
+                |> Req.send httpClientFactory
+                |> Res.json

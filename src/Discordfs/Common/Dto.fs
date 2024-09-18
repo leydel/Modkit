@@ -23,8 +23,3 @@ type Dto () =
             obj.Add(property.Key, JsonValue.Create property.Value)
         
         FsJson.serialize (JsonValue.Create obj)
-
-    static member jsonPartial (key: string) (dto: Dto) =
-        match dto.Properties.TryGetValue key with
-        | false, _ -> failwith "Could not find partial to serialize"
-        | true, value -> FsJson.serialize (JsonValue.Create value)

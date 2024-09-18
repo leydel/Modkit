@@ -14,8 +14,7 @@ type IDiscordHttpChannelActions =
         Task<Channel>
     
     // https://discord.com/developers/docs/resources/channel#modify-channel
-    abstract member ModifyChannel:
-        unit -> unit // TODO: Implement
+    // TODO: Implement modify channel endpoint
 
     // https://discord.com/developers/docs/resources/channel#deleteclose-channel
     abstract member DeleteChannel:
@@ -28,7 +27,9 @@ type IDiscordHttpChannelActions =
         channelId: string ->
         overwriteId: string ->
         auditLogReason: string option ->
-        payload: EditChannelPermissions ->
+        allow: string option ->
+        deny: string option ->
+        ``type``: EditChannelPermissionsType ->
         Task<unit>
 
     // https://discord.com/developers/docs/resources/channel#get-channel-invites
@@ -40,7 +41,13 @@ type IDiscordHttpChannelActions =
     abstract member CreateChannelInvite:
         channelId: string ->
         auditLogReason: string option ->
-        payload: CreateChannelInvite ->
+        maxAge: int option ->
+        maxUses: int option ->
+        temporary: bool option ->
+        unique: bool option ->
+        targetType: InviteTargetType option ->
+        targetUserId: string option ->
+        targetApplicationId: string option ->
         Task<Invite>
 
     // https://discord.com/developers/docs/resources/channel#delete-channel-permission
@@ -54,7 +61,7 @@ type IDiscordHttpChannelActions =
     abstract member FollowAnnouncementChannel:
         channelId: string ->
         auditLogReason: string option ->
-        payload: FollowAnnouncementChannel ->
+        webhookChannelId: string ->
         Task<FollowedChannel>
 
     // https://discord.com/developers/docs/resources/channel#trigger-typing-indicator
@@ -85,7 +92,8 @@ type IDiscordHttpChannelActions =
     abstract member GroupDmAddRecipient:
         channelId: string ->
         recipientId: string ->
-        payload: GroupDmAddRecipient ->
+        accessToken: string ->
+        nick: string -> // TODO: Check if this is optional (documented as not, but I expect it is)
         Task<unit> // TODO: Test return type, currently undocumented
 
     // https://discord.com/developers/docs/resources/channel#group-dm-remove-recipient
@@ -99,19 +107,24 @@ type IDiscordHttpChannelActions =
         channelId: string ->
         messageId: string ->
         auditLogReason: string option ->
-        payload: StartThreadFromMessage ->
+        name: string ->
+        autoArchiveDuration: AutoArchiveDurationType option ->
+        rateLimitPerUser: int option ->
         Task<Channel>
 
     // https://discord.com/developers/docs/resources/channel#start-thread-without-message
     abstract member StartThreadWithoutMessage:
         channelId: string ->
         auditLogReason: string option ->
-        payload: StartThreadWithoutMessage ->
+        name: string ->
+        autoArchiveDuration: AutoArchiveDurationType option ->
+        ``type``: ThreadType ->
+        invitable: bool option ->
+        rateLimitPerUser: int option ->
         Task<Channel>
 
     // https://discord.com/developers/docs/resources/channel#start-thread-in-forum-or-media-channel
-    abstract member StartThreadInForumOrMediaChannel:
-        unit -> unit // TODO: Implement
+    // TODO: Implement start thread in forum or media channel endpoint
 
     // https://discord.com/developers/docs/resources/channel#join-thread
     abstract member JoinThread:
@@ -145,8 +158,7 @@ type IDiscordHttpChannelActions =
         Task<ThreadMember>
 
     // https://discord.com/developers/docs/resources/channel#list-thread-members
-    abstract member ListThreadMembers:
-        unit -> unit // TODO: Implement
+    // TODO: Implement list thread members endpoint
 
     // https://discord.com/developers/docs/resources/channel#list-public-archived-threads
     abstract member ListPublicArchivedThreads:
@@ -172,240 +184,293 @@ type IDiscordHttpChannelActions =
 
 type DiscordHttpChannelActions (httpClientFactory: IHttpClientFactory, token: string) =
     interface IDiscordHttpChannelActions with
-        member _.GetChannel channelId =
-            Req.create
-                HttpMethod.Get
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}"
-            |> Req.bot token
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.GetChannel
+            channelId =
+                Req.create
+                    HttpMethod.Get
+                    Constants.DISCORD_API_URL
+                    $"channels/{channelId}"
+                |> Req.bot token
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.ModifyChannel () =
-            raise (NotImplementedException())
+        member _.DeleteChannel
+            channelId auditLogReason =
+                Req.create
+                        HttpMethod.Delete
+                        Constants.DISCORD_API_URL
+                        $"channels/{channelId}"
+                    |> Req.bot token
+                    |> Req.audit auditLogReason
+                    |> Req.send httpClientFactory
+                    |> Res.json
 
-        member _.DeleteChannel channelId auditLogReason =
-            Req.create
-                HttpMethod.Delete
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}"
-            |> Req.bot token
-            |> Req.audit auditLogReason
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.EditChannelPermissions
+            channelId overwriteId auditLogReason allow deny ``type`` =
+                Req.create
+                    HttpMethod.Put
+                    Constants.DISCORD_API_URL
+                    $"channels/{channelId}/permissions/{overwriteId}"
+                |> Req.bot token
+                |> Req.audit auditLogReason
+                |> Req.json (
+                    Dto()
+                    |> Dto.propertyIf "allow" allow
+                    |> Dto.propertyIf "deny" deny
+                    |> Dto.property "type" ``type``
+                    |> Dto.json
+                )
+                |> Req.send httpClientFactory
+                |> Res.ignore
 
-        member _.EditChannelPermissions channelId overwriteId auditLogReason payload =
-            Req.create
-                HttpMethod.Put
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}/permissions/{overwriteId}"
-            |> Req.bot token
-            |> Req.audit auditLogReason
-            |> Req.body payload
-            |> Req.send httpClientFactory
-            |> Res.ignore
+        member _.GetChannelInvites
+            channelId =
+                Req.create
+                    HttpMethod.Get
+                    Constants.DISCORD_API_URL
+                    $"channels/{channelId}/invites"
+                |> Req.bot token
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.GetChannelInvites channelId =
-            Req.create
-                HttpMethod.Get
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}/invites"
-            |> Req.bot token
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.CreateChannelInvite
+            channelId auditLogReason maxAge maxUses temporary unique targetType targetUserId targetApplicationId =
+                Req.create
+                    HttpMethod.Post
+                    Constants.DISCORD_API_URL
+                    $"channels/{channelId}/invites"
+                |> Req.bot token
+                |> Req.audit auditLogReason
+                |> Req.json (
+                    Dto()
+                    |> Dto.propertyIf "max_age" maxAge
+                    |> Dto.propertyIf "max_uses" maxUses
+                    |> Dto.propertyIf "temporary" temporary
+                    |> Dto.propertyIf "unique" unique
+                    |> Dto.propertyIf "target_type" targetType
+                    |> Dto.propertyIf "target_user_id" targetUserId
+                    |> Dto.propertyIf "target_application_id" targetApplicationId
+                    |> Dto.json
+                )
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.CreateChannelInvite channelId auditLogReason payload =
-            Req.create
-                HttpMethod.Post
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}/invites"
-            |> Req.bot token
-            |> Req.audit auditLogReason
-            |> Req.body payload
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.DeleteChannelPermission
+            channelId overwriteId auditLogReason =
+                Req.create
+                    HttpMethod.Delete
+                    Constants.DISCORD_API_URL
+                    $"channels/{channelId}/permissions/{overwriteId}"
+                |> Req.bot token
+                |> Req.audit auditLogReason
+                |> Req.send httpClientFactory
+                |> Res.ignore
 
-        member _.DeleteChannelPermission channelId overwriteId auditLogReason =
-            Req.create
-                HttpMethod.Delete
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}/permissions/{overwriteId}"
-            |> Req.bot token
-            |> Req.audit auditLogReason
-            |> Req.send httpClientFactory
-            |> Res.ignore
+        member _.FollowAnnouncementChannel
+            channelId auditLogReason webhookChannelId =
+                Req.create
+                    HttpMethod.Post
+                    Constants.DISCORD_API_URL
+                    $"channels/{channelId}/followers"
+                |> Req.bot token
+                |> Req.audit auditLogReason
+                |> Req.json (
+                    Dto()
+                    |> Dto.property "webhook_channel_id" webhookChannelId
+                    |> Dto.json
+                )
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.FollowAnnouncementChannel channelId auditLogReason payload =
-            Req.create
-                HttpMethod.Post
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}/followers"
-            |> Req.bot token
-            |> Req.audit auditLogReason
-            |> Req.body payload
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.TriggerTypingIndicator
+            channelId =
+                Req.create
+                    HttpMethod.Post
+                    Constants.DISCORD_API_URL
+                    $"channels/{channelId}/typing"
+                |> Req.bot token
+                |> Req.send httpClientFactory
+                |> Res.ignore
 
-        member _.TriggerTypingIndicator channelId =
-            Req.create
-                HttpMethod.Post
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}/typing"
-            |> Req.bot token
-            |> Req.send httpClientFactory
-            |> Res.ignore
+        member _.GetPinnedMessages
+            channelId =
+                Req.create
+                    HttpMethod.Get
+                    Constants.DISCORD_API_URL
+                    $"channels/{channelId}/pins"
+                |> Req.bot token
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.GetPinnedMessages channelId =
-            Req.create
-                HttpMethod.Get
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}/pins"
-            |> Req.bot token
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.PinMessage
+            channelId messageId auditLogReason =
+                Req.create
+                    HttpMethod.Put
+                    Constants.DISCORD_API_URL
+                    $"channels/{channelId}/pins/{messageId}"
+                |> Req.bot token
+                |> Req.audit auditLogReason
+                |> Req.send httpClientFactory
+                |> Res.ignore
 
-        member _.PinMessage channelId messageId auditLogReason =
-            Req.create
-                HttpMethod.Put
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}/pins/{messageId}"
-            |> Req.bot token
-            |> Req.audit auditLogReason
-            |> Req.send httpClientFactory
-            |> Res.ignore
+        member _.UnpinMessage
+            channelId messageId auditLogReason =
+                Req.create
+                    HttpMethod.Delete
+                    Constants.DISCORD_API_URL
+                    $"channels/{channelId}/pins/{messageId}"
+                |> Req.bot token
+                |> Req.audit auditLogReason
+                |> Req.send httpClientFactory
+                |> Res.ignore
 
-        member _.UnpinMessage channelId messageId auditLogReason =
-            Req.create
-                HttpMethod.Delete
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}/pins/{messageId}"
-            |> Req.bot token
-            |> Req.audit auditLogReason
-            |> Req.send httpClientFactory
-            |> Res.ignore
+        member _.GroupDmAddRecipient
+            channelId userId accessToken nick =
+                Req.create
+                    HttpMethod.Put
+                    Constants.DISCORD_API_URL
+                    $"channels/{channelId}/recipients/{userId}"
+                |> Req.bot token
+                |> Req.json (
+                    Dto()
+                    |> Dto.property "access_token" accessToken
+                    |> Dto.property "nick" nick
+                    |> Dto.json
+                )
+                |> Req.send httpClientFactory
+                |> Res.ignore
 
-        member _.GroupDmAddRecipient channelId userId payload =
-            Req.create
-                HttpMethod.Put
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}/recipients/{userId}"
-            |> Req.bot token
-            |> Req.body payload
-            |> Req.send httpClientFactory
-            |> Res.ignore
+        member _.GroupDmRemoveRecipient
+            channelId userId =
+                Req.create
+                    HttpMethod.Delete
+                    Constants.DISCORD_API_URL
+                    $"channels/{channelId}/recipients/{userId}"
+                |> Req.bot token
+                |> Req.send httpClientFactory
+                |> Res.ignore
 
-        member _.GroupDmRemoveRecipient channelId userId =
-            Req.create
-                HttpMethod.Delete
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}/recipients/{userId}"
-            |> Req.bot token
-            |> Req.send httpClientFactory
-            |> Res.ignore
+        member _.StartThreadFromMessage
+            channelId messageId auditLogReason name autoArchiveDuration rateLimitPerUser =
+                Req.create
+                    HttpMethod.Post
+                    Constants.DISCORD_API_URL
+                    $"channels/{channelId}/messages/{messageId}/threads"
+                |> Req.bot token
+                |> Req.audit auditLogReason
+                |> Req.json (
+                    Dto()
+                    |> Dto.property "name" name
+                    |> Dto.propertyIf "auto_archive_duration" autoArchiveDuration
+                    |> Dto.propertyIf "rate_limit_per_user" rateLimitPerUser
+                    |> Dto.json
+                )
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.StartThreadFromMessage channelId messageId auditLogReason payload =
-            Req.create
-                HttpMethod.Post
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}/messages/{messageId}/threads"
-            |> Req.bot token
-            |> Req.audit auditLogReason
-            |> Req.body payload
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.StartThreadWithoutMessage
+            channelId auditLogReason name autoArchiveDuration ``type`` invitable rateLimitPerUser =
+                Req.create
+                    HttpMethod.Post
+                    Constants.DISCORD_API_URL
+                    $"channels/{channelId}/threads"
+                |> Req.bot token
+                |> Req.audit auditLogReason
+                |> Req.json (
+                    Dto()
+                    |> Dto.property "name" name
+                    |> Dto.propertyIf "auto_archive_duration" autoArchiveDuration
+                    |> Dto.property "type" ``type``
+                    |> Dto.propertyIf "invitable" invitable
+                    |> Dto.propertyIf "rate_limit_per_user" rateLimitPerUser
+                    |> Dto.json
+                )
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.StartThreadWithoutMessage channelId auditLogReason payload =
-            Req.create
-                HttpMethod.Post
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}/threads"
-            |> Req.bot token
-            |> Req.audit auditLogReason
-            |> Req.body payload
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.JoinThread
+            channelId =
+                Req.create
+                    HttpMethod.Put
+                    Constants.DISCORD_API_URL
+                    $"channels/{channelId}/thread-members/@me"
+                |> Req.bot token
+                |> Req.send httpClientFactory
+                |> Res.ignore
 
-        member _.StartThreadInForumOrMediaChannel () =
-            raise (NotImplementedException())
+        member _.AddThreadMember
+            channelId userId =
+                Req.create
+                    HttpMethod.Put
+                    Constants.DISCORD_API_URL
+                    $"channels/{channelId}/thread-members/{userId}"
+                |> Req.bot token
+                |> Req.send httpClientFactory
+                |> Res.ignore
 
-        member _.JoinThread channelId =
-            Req.create
-                HttpMethod.Put
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}/thread-members/@me"
-            |> Req.bot token
-            |> Req.send httpClientFactory
-            |> Res.ignore
-
-        member _.AddThreadMember channelId userId =
-            Req.create
-                HttpMethod.Put
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}/thread-members/{userId}"
-            |> Req.bot token
-            |> Req.send httpClientFactory
-            |> Res.ignore
-
-        member _.LeaveThread channelId =
-            Req.create
-                HttpMethod.Delete
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}/thread-members/@me"
-            |> Req.bot token
-            |> Req.send httpClientFactory
-            |> Res.ignore
+        member _.LeaveThread
+            channelId =
+                Req.create
+                    HttpMethod.Delete
+                    Constants.DISCORD_API_URL
+                    $"channels/{channelId}/thread-members/@me"
+                |> Req.bot token
+                |> Req.send httpClientFactory
+                |> Res.ignore
             
-        member _.RemoveThreadMember channelId userId =
-            Req.create
-                HttpMethod.Delete
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}/thread-members/{userId}"
-            |> Req.bot token
-            |> Req.send httpClientFactory
-            |> Res.ignore
+        member _.RemoveThreadMember
+            channelId userId =
+                Req.create
+                    HttpMethod.Delete
+                    Constants.DISCORD_API_URL
+                    $"channels/{channelId}/thread-members/{userId}"
+                |> Req.bot token
+                |> Req.send httpClientFactory
+                |> Res.ignore
 
-        member _.GetThreadMember channelId userId withMember =
-            Req.create
-                HttpMethod.Get
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}/thread-members/{userId}"
-            |> Req.bot token
-            |> Req.queryOpt "with_member" (if withMember then Some "true" else None)
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.GetThreadMember
+            channelId userId withMember =
+                Req.create
+                    HttpMethod.Get
+                    Constants.DISCORD_API_URL
+                    $"channels/{channelId}/thread-members/{userId}"
+                |> Req.bot token
+                |> Req.queryOpt "with_member" (if withMember then Some "true" else None)
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.ListThreadMembers () =
-            raise (NotImplementedException())
+        member _.ListPublicArchivedThreads
+            channelId before limit =
+                Req.create
+                    HttpMethod.Get
+                    Constants.DISCORD_API_URL
+                    $"channels/{channelId}/threads/archived/public"
+                |> Req.bot token
+                |> Req.queryOpt "before" (Option.map _.ToString() before)
+                |> Req.queryOpt "limit" (Option.map _.ToString() limit)
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.ListPublicArchivedThreads channelId before limit =
-            Req.create
-                HttpMethod.Get
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}/threads/archived/public"
-            |> Req.bot token
-            |> Req.queryOpt "before" (Option.map _.ToString() before)
-            |> Req.queryOpt "limit" (Option.map _.ToString() limit)
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.ListPrivateArchivedThreads
+            channelId before limit =
+                Req.create
+                    HttpMethod.Get
+                    Constants.DISCORD_API_URL
+                    $"channels/{channelId}/threads/archived/private"
+                |> Req.bot token
+                |> Req.queryOpt "before" (Option.map _.ToString() before)
+                |> Req.queryOpt "limit" (Option.map _.ToString() limit)
+                |> Req.send httpClientFactory
+                |> Res.json
 
-        member _.ListPrivateArchivedThreads channelId before limit =
-            Req.create
-                HttpMethod.Get
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}/threads/archived/private"
-            |> Req.bot token
-            |> Req.queryOpt "before" (Option.map _.ToString() before)
-            |> Req.queryOpt "limit" (Option.map _.ToString() limit)
-            |> Req.send httpClientFactory
-            |> Res.body
-
-        member _.ListJoinedPrivateArchivedThreads channelId before limit =
-            Req.create
-                HttpMethod.Get
-                Constants.DISCORD_API_URL
-                $"channels/{channelId}/users/@me/threads/archived/private"
-            |> Req.bot token
-            |> Req.queryOpt "before" (Option.map _.ToString() before)
-            |> Req.queryOpt "limit" (Option.map _.ToString() limit)
-            |> Req.send httpClientFactory
-            |> Res.body
+        member _.ListJoinedPrivateArchivedThreads
+            channelId before limit =
+                Req.create
+                    HttpMethod.Get
+                    Constants.DISCORD_API_URL
+                    $"channels/{channelId}/users/@me/threads/archived/private"
+                |> Req.bot token
+                |> Req.queryOpt "before" (Option.map _.ToString() before)
+                |> Req.queryOpt "limit" (Option.map _.ToString() limit)
+                |> Req.send httpClientFactory
+                |> Res.json
