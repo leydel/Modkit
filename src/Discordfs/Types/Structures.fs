@@ -555,6 +555,11 @@ type Application = {
     [<JsonName "custom_install_url">] CustomInstallUrl: string option
 }
 
+type PartialApplication = {
+    [<JsonName "id">] Id: string
+    [<JsonName "flags">] Flags: int option
+}
+
 type MessageReference = {
     [<JsonName "message_id">] MessageId: string option
     [<JsonName "channel_id">] ChannelId: string option

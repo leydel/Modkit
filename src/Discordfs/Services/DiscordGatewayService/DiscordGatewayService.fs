@@ -4,7 +4,6 @@ open Modkit.Discordfs.Types
 open System
 open System.IO
 open System.Net.WebSockets
-open System.Text
 open System.Threading
 open System.Threading.Tasks
 
@@ -57,7 +56,7 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
         while not isEndOfMessage do
             let buffer = Array.zeroCreate<byte> 4096 |> ArraySegment
             let! res = _ws.ReceiveAsync(buffer, CancellationToken.None)
-            Console.WriteLine($"Close status: {res.CloseStatus}")
+            Console.WriteLine $"Close status: {res.CloseStatus}"
             ms.Write(buffer.Array, buffer.Offset, res.Count)
             isEndOfMessage <- res.EndOfMessage
             messageType <- res.MessageType
@@ -79,11 +78,11 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
                 do! _ws.ConnectAsync(Uri gateway.Url, CancellationToken.None)
 
                 let rec loop (sequenceId: int option): Task<Result<int option, string>> = task {
-                    Console.WriteLine("Awaiting new message...")
+                    Console.WriteLine "Awaiting new message..."
 
                     let! messageType, message = this.read ()
 
-                    Console.WriteLine("Message received!")
+                    Console.WriteLine "Message received!"
 
                     match messageType with
                     | WebSocketMessageType.Close ->
@@ -124,15 +123,15 @@ type DiscordGatewayService (discordHttpService: IDiscordHttpService) =
                 let! close = loop None
 
                 match close with
-                | Error message -> Console.WriteLine($"Error occurred: {message}")
-                | Ok sequenceId -> Console.WriteLine($"Closed on sequence ID {sequenceId}")
+                | Error message -> Console.WriteLine $"Error occurred: {message}"
+                | Ok sequenceId -> Console.WriteLine $"Closed on sequence ID {sequenceId}"
 
                 // TODO: Handle gateway disconnect and resuming
 
                 return close |> Result.map (fun _ -> ())
             with
-            | _ ->
-                Console.WriteLine("Error occurred")
+            | exn ->
+                Console.WriteLine $"Error occurred: {exn}"
                 return Error "Unexpected error occurred with gateway connection"
         }
 

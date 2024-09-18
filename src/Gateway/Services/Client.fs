@@ -14,12 +14,9 @@ type Client (
     serviceBusClientFactory: IServiceBusClientFactory
 ) =
     let serviceBusConnectionString = configuration.GetValue "AzureWebJobsServiceBus"
-    let serviceBusQueueName = configuration.GetValue "GatewayQueueName"
-    let discordBotToken = configuration.GetValue "DiscordBotToken"
-
-    let handle (sender: ServiceBusSender) (event: string) = task {
-        do! sender.SendMessageAsync <| ServiceBusMessage event
-    }
+    let serviceBusQueueName = configuration.GetValue<string> "GatewayQueueName"
+    let discordBotToken = configuration.GetValue<string> "DiscordBotToken"
+    let useGateway = configuration.GetValue<bool> "UseGateway"
 
     member _.Start () =
         let intents = 
@@ -70,10 +67,21 @@ type Client (
             )
         )
 
-        let client = serviceBusClientFactory.CreateClient serviceBusConnectionString
-        let sender = client.CreateSender serviceBusQueueName
+        match useGateway with
+        | false ->
+            discordGatewayService.Connect identify (fun _ -> Task.FromResult ())
+            :> Task
+            |> Async.AwaitTask
+            |> Async.RunSynchronously
+        | true ->
+            let client = serviceBusClientFactory.CreateClient serviceBusConnectionString
+            let sender = client.CreateSender serviceBusQueueName
 
-        discordGatewayService.Connect identify (handle sender)
-        :> Task
-        |> Async.AwaitTask
-        |> Async.RunSynchronously
+            let handle (sender: ServiceBusSender) (event: string) = task {
+                do! sender.SendMessageAsync <| ServiceBusMessage event
+            }
+
+            discordGatewayService.Connect identify (handle sender)
+            :> Task
+            |> Async.AwaitTask
+            |> Async.RunSynchronously

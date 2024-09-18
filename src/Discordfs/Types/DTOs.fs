@@ -250,11 +250,11 @@ type Hello = {
 type Ready = {
     [<JsonName "v">] Version: int
     [<JsonName "user">] User: User
-    [<JsonName "guilds">] Guilds: Guild list // Unavailable guilds only (id, unavailable=true) (should this type be created)
+    [<JsonName "guilds">] Guilds: UnavailableGuild list
     [<JsonName "session_id">] SessionId: string
     [<JsonName "resume_gateway_url">] ResumeGatewayUrl: string
     [<JsonName "shard">] Shard: (int * int) option
-    [<JsonName "application">] Application: Application // partion, only contains id and flags (should this type be created)
+    [<JsonName "application">] Application: PartialApplication
 }
 
 // https://discord.com/developers/docs/topics/gateway-events#typing-start-typing-start-event-fields
