@@ -1,6 +1,5 @@
 ﻿namespace Modkit.Discordfs.Types
 
-open FSharp.Json
 open Modkit.Discordfs.Utils
 open System
 open System.Collections.Generic
@@ -10,33 +9,20 @@ open System.Text.Json.Serialization
 #nowarn "49"
 
 type DefaultReaction = {
-    [<JsonField("emoji_id")>]
-    EmojiId: string option
-    
-    [<JsonField("emoji_name")>]
-    EmojiName: string option
+    [<JsonName "emoji_id">] EmojiId: string option
+    [<JsonName "emoji_name">] EmojiName: string option
 }
 
 type WelcomeScreenChannel = {
-    [<JsonField("channel_id")>]
-    ChannelId: string
-
-    [<JsonField("description")>]
-    Description: string
-    
-    [<JsonField("emoji_id")>]
-    EmojiId: string option
-
-    [<JsonField("emoji_name")>]
-    EmojiName: string option
+    [<JsonName "channel_id">] ChannelId: string
+    [<JsonName "description">] Description: string
+    [<JsonName "emoji_id">] EmojiId: string option
+    [<JsonName "emoji_name">] EmojiName: string option
 }
 
 type WelcomeScreen = {
-    [<JsonField("description")>]
-    Description: string option
-
-    [<JsonField("welcome_channels")>]
-    WelcomeChannels: WelcomeScreenChannel list
+    [<JsonName "description">] Description: string option
+    [<JsonName "welcome_channels">] WelcomeChannels: WelcomeScreenChannel list
 }
 
 type CommandInteractionDataOption = {
@@ -62,64 +48,28 @@ with
     }
 
 type Attachment = {
-    [<JsonField("id")>]
-    Id: string
-
-    [<JsonField("filename")>]
-    Filename: string
-
-    [<JsonField("description")>]
-    Description: string
-
-    [<JsonField("content_type")>]
-    ContentType: string option
-
-    [<JsonField("size")>]
-    Size: int
-
-    [<JsonField("url")>]
-    Url: string
-
-    [<JsonField("proxy_url")>]
-    ProxyUrl: string
-
-    [<JsonField("height")>]
-    Height: int option
-
-    [<JsonField("width")>]
-    Width: int option
-
-    [<JsonField("ephemeral")>]
-    Ephemeral: bool option
-
-    [<JsonField("duration_secs")>]
-    DurationSecs: float option
-
-    [<JsonField("waveform")>]
-    Waveform: string option
-
-    [<JsonField("flags")>]
-    Flags: int option
+    [<JsonName "id">] Id: string
+    [<JsonName "filename">] Filename: string
+    [<JsonName "description">] Description: string
+    [<JsonName "content_type">] ContentType: string option
+    [<JsonName "size">] Size: int
+    [<JsonName "url">] Url: string
+    [<JsonName "proxy_url">] ProxyUrl: string
+    [<JsonName "height">] Height: int option
+    [<JsonName "width">] Width: int option
+    [<JsonName "ephemeral">] Ephemeral: bool option
+    [<JsonName "duration_secs">] DurationSecs: float option
+    [<JsonName "waveform">] Waveform: string option
+    [<JsonName "flags">] Flags: int option
 }
 
 type RoleTags = {
-    [<JsonField("bot_id")>]
-    BotId: string option
-    
-    [<JsonField("integration_id")>]
-    IntegrationId: string option
-
-    [<JsonField("premium_subscriber")>]
-    PremiumSubscriber: unit option
-
-    [<JsonField("subscription_listing_id")>]
-    SubscriptionListingId: string option
-    
-    [<JsonField("available_for_purchase")>]
-    AvailableForPurchase: unit option
-    
-    [<JsonField("guild_connections")>]
-    GuildConnections: unit option
+    [<JsonName "bot_id">] BotId: string option
+    [<JsonName "integration_id">] IntegrationId: string option
+    [<JsonName "premium_subscriber">] PremiumSubscriber: unit option
+    [<JsonName "subscription_listing_id">] SubscriptionListingId: string option
+    [<JsonName "available_for_purchase">] AvailableForPurchase: unit option
+    [<JsonName "guild_connections">] GuildConnections: unit option
 }
 
 // TODO: Figure out how to transform above `unit option` types to `bool` where null = true & undefined = false
@@ -128,238 +78,97 @@ type RoleTags = {
 // https://discord.com/channels/196693847965696000/1279795576569069714/1279974826458484816
 
 type Role = {
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("name")>]
-    Name: string
-
-    [<JsonField("color")>]
-    Color: int
-
-    [<JsonField("hoist")>]
-    Hoist: bool
-
-    [<JsonField("icon")>]
-    Icon: string option
-
-    [<JsonField("unicode_emoji")>]
-    UnicodeEmoji: string option
-
-    [<JsonField("position")>]
-    Position: int
-
-    [<JsonField("permissions")>]
-    Permissions: string
-
-    [<JsonField("managed")>]
-    Managed: bool
-
-    [<JsonField("mentionable")>]
-    Mentionable: bool
-
-    [<JsonField("tags")>]
-    Tags: RoleTags option
-
-    [<JsonField("flags")>]
-    Flags: int
+    [<JsonName "id">] Id: string
+    [<JsonName "name">] Name: string
+    [<JsonName "color">] Color: int
+    [<JsonName "hoist">] Hoist: bool
+    [<JsonName "icon">] Icon: string option
+    [<JsonName "unicode_emoji">] UnicodeEmoji: string option
+    [<JsonName "position">] Position: int
+    [<JsonName "permissions">] Permissions: string
+    [<JsonName "managed">] Managed: bool
+    [<JsonName "mentionable">] Mentionable: bool
+    [<JsonName "tags">] Tags: RoleTags option
+    [<JsonName "flags">] Flags: int
 }
 
 type Entitlement = {
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("sku_id")>]
-    SkuId: string
-
-    [<JsonField("application_id")>]
-    ApplicationId: string
-
-    [<JsonField("user_id")>]
-    UserId: string option
-
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: EntitlementType
-
-    [<JsonField("deleted")>]
-    Deleted: bool
-
-    [<JsonField("starts_at")>]
-    StartsAt: DateTime option
-
-    [<JsonField("ends_at")>]
-    EndsAt: DateTime option
-
-    [<JsonField("guild_id")>]
-    GuildId: string option
-
-    [<JsonField("consumed")>]
-    Consumed: bool option
-
-    // TODO: Add subscription_id to type (currently only partially documented, wait for docs to be fixed)
+    [<JsonName "id">] Id: string
+    [<JsonName "sku_id">] SkuId: string
+    [<JsonName "application_id">] ApplicationId: string
+    [<JsonName "user_id">] UserId: string option
+    [<JsonName "type">] Type: EntitlementType
+    [<JsonName "deleted">] Deleted: bool
+    [<JsonName "starts_at">] StartsAt: DateTime option
+    [<JsonName "ends_at">] EndsAt: DateTime option
+    [<JsonName "guild_id">] GuildId: string option
+    [<JsonName "consumed">] Consumed: bool option
 }
 
 type AvatarDecorationData = {
-    [<JsonField("asset")>]
-    Asset: string
-
-    [<JsonField("sku_id")>]
-    SkuId: string
+    [<JsonName "asset">] Asset: string
+    [<JsonName "sku_id">] SkuId: string
 }
 
 type User = {
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("username")>]
-    Username: string
-
-    [<JsonField("discriminator")>]
-    Discriminator: string
-
-    [<JsonField("global_name")>]
-    GlobalName: string option
-
-    [<JsonField("avatar")>]
-    Avatar: string option
-
-    [<JsonField("bot")>]
-    Bot: bool option
-
-    [<JsonField("system")>]
-    System: bool option
-
-    [<JsonField("mfa_enabled")>]
-    MfaEnabled: bool option
-
-    [<JsonField("banner")>]
-    Banner: string option
-
-    [<JsonField("accent_color")>]
-    AccentColor: int option
-
-    [<JsonField("locale")>]
-    Locale: string option
-
-    [<JsonField("verified")>]
-    Verified: bool option
-
-    [<JsonField("email")>]
-    Email: string option
-
-    [<JsonField("flags")>]
-    Flags: int option
-
-    [<JsonField("premium_type", EnumValue = EnumMode.Value)>]
-    PremiumType: UserPremiumType option
-
-    [<JsonField("public_flags")>]
-    PublicFlags: int option
-
-    [<JsonField("avatar_decoration_data")>]
-    AvatarDecorationData: AvatarDecorationData option
+    [<JsonName "id">] Id: string
+    [<JsonName "username">] Username: string
+    [<JsonName "discriminator">] Discriminator: string
+    [<JsonName "global_name">] GlobalName: string option
+    [<JsonName "avatar">] Avatar: string option
+    [<JsonName "bot">] Bot: bool option
+    [<JsonName "system">] System: bool option
+    [<JsonName "mfa_enabled">] MfaEnabled: bool option
+    [<JsonName "banner">] Banner: string option
+    [<JsonName "accent_color">] AccentColor: int option
+    [<JsonName "locale">] Locale: string option
+    [<JsonName "verified">] Verified: bool option
+    [<JsonName "email">] Email: string option
+    [<JsonName "flags">] Flags: int option
+    [<JsonName "premium_type">] PremiumType: UserPremiumType option
+    [<JsonName "public_flags">] PublicFlags: int option
+    [<JsonName "avatar_decoration_data">] AvatarDecorationData: AvatarDecorationData option
 }
 
 type GuildMember = {
-    [<JsonField("user")>]
-    User: User option
-    
-    [<JsonField("nick")>]
-    Nick: string option
-
-    [<JsonField("avatar")>]
-    Avatar: string option
-
-    [<JsonField("roles")>]
-    Roles: string list
-
-    [<JsonField("joined_at")>]
-    JoinedAt: DateTime option
-
-    [<JsonField("premium_since")>]
-    PremiumSince: DateTime option
-
-    [<JsonField("deaf")>]
-    Deaf: bool
-
-    [<JsonField("mute")>]
-    Mute: bool
-
-    [<JsonField("flags")>]
-    Flags: int
-
-    [<JsonField("pending")>]
-    Pending: bool option
-
-    [<JsonField("permissions")>]
-    Permissions: string option
-
-    [<JsonField("communication_disabled_until")>]
-    CommunicationDisabledUntil: DateTime option
-
-    [<JsonField("avatar_decoration_metadata")>]
-    AvatarDecorationData: AvatarDecorationData option
+    [<JsonName "user">] User: User option
+    [<JsonName "nick">] Nick: string option
+    [<JsonName "avatar">] Avatar: string option
+    [<JsonName "roles">] Roles: string list
+    [<JsonName "joined_at">] JoinedAt: DateTime option
+    [<JsonName "premium_since">] PremiumSince: DateTime option
+    [<JsonName "deaf">] Deaf: bool
+    [<JsonName "mute">] Mute: bool
+    [<JsonName "flags">] Flags: int
+    [<JsonName "pending">] Pending: bool option
+    [<JsonName "permissions">] Permissions: string option
+    [<JsonName "communication_disabled_until">] CommunicationDisabledUntil: DateTime option
+    [<JsonName "avatar_decoration_metadata">] AvatarDecorationData: AvatarDecorationData option
 }
 
 type Emoji = {
-    [<JsonField("id")>]
-    Id: string option
-    
-    [<JsonField("name")>]
-    Name: string option
-
-    [<JsonField("roles")>]
-    Roles: string list option
-
-    [<JsonField("user")>]
-    User: User option
-
-    [<JsonField("require_colons")>]
-    RequireColons: bool option
-
-    [<JsonField("managed")>]
-    Managed: bool option
-
-    [<JsonField("animated")>]
-    Animated: bool option
-
-    [<JsonField("available")>]
-    Available: bool option
+    [<JsonName "id">] Id: string option
+    [<JsonName "name">] Name: string option
+    [<JsonName "roles">] Roles: string list option
+    [<JsonName "user">] User: User option
+    [<JsonName "require_colons">] RequireColons: bool option
+    [<JsonName "managed">] Managed: bool option
+    [<JsonName "animated">] Animated: bool option
+    [<JsonName "available">] Available: bool option
 }
 
 type Sticker = {
-    [<JsonField("id")>]
-    Id: string
-
-    [<JsonField("pack_id")>]
-    PackId: string option
-
-    [<JsonField("name")>]
-    Name: string
-
-    [<JsonField("description")>]
-    Description: string option
-
-    [<JsonField("tags")>]
-    Tags: string
-
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: StickerType
-
-    [<JsonField("format_type", EnumValue = EnumMode.Value)>]
-    FormatType: StickerFormatType
-
-    [<JsonField("available")>]
-    Available: bool option
-
-    [<JsonField("guild_id")>]
-    GuildId: string option
-
-    [<JsonField("user")>]
-    User: User option
-
-    [<JsonField("sort_value")>]
-    SortValue: int option
+    [<JsonName "id">] Id: string
+    [<JsonName "pack_id">] PackId: string option
+    [<JsonName "name">] Name: string
+    [<JsonName "description">] Description: string option
+    [<JsonName "tags">] Tags: string
+    [<JsonName "type">] Type: StickerType
+    [<JsonName "format_type">] FormatType: StickerFormatType
+    [<JsonName "available">] Available: bool option
+    [<JsonName "guild_id">] GuildId: string option
+    [<JsonName "user">] User: User option
+    [<JsonName "sort_value">] SortValue: int option
 }
 
 // https://discord.com/developers/docs/resources/guild#guild-object-guild-structure
@@ -409,8 +218,8 @@ type Guild = {
 }
 
 type UnavailableGuild = {
-    [<JsonField("id")>] Id: string
-    [<JsonField("unavailable")>] Unavailable: bool
+    [<JsonName "id">] Id: string
+    [<JsonName "unavailable">] Unavailable: bool
 }
 
 // https://discord.com/developers/docs/resources/guild#guild-preview-object-guild-preview-structure
@@ -430,176 +239,86 @@ type GuildPreview = {
 
 // https://discord.com/developers/docs/resources/guild#guild-widget-settings-object-guild-widget-settings-structure
 type GuildWidgetSettings = {
-    [<JsonField("enabled")>]
-    Enabled: bool
-    
-    [<JsonField("channel_id")>]
-    ChannelId: string option
+    [<JsonName "enabled">] Enabled: bool
+    [<JsonName "channel_id">] ChannelId: string option
 }
 
 // https://discord.com/developers/docs/resources/guild#guild-onboarding-object-prompt-option-structure
 type GuildOnboardingPromptOption = {
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("channel_ids")>]
-    ChannelIds: string list
-    
-    [<JsonField("role_ids")>]
-    RoleIds: string list
-    
-    [<JsonField("emoji")>]
-    Emoji: Emoji option
-    
-    [<JsonField("emoji_id")>]
-    EmojiId: string option
-    
-    [<JsonField("emoji_name")>]
-    EmojiName: string option
-    
-    [<JsonField("emoji_animated")>]
-    EmojiAnimated: bool option
-    
-    [<JsonField("title")>]
-    Title: string
-    
-    [<JsonField("description")>]
-    Description: string
+    [<JsonName "id">] Id: string
+    [<JsonName "channel_ids">] ChannelIds: string list
+    [<JsonName "role_ids">] RoleIds: string list
+    [<JsonName "emoji">] Emoji: Emoji option
+    [<JsonName "emoji_id">] EmojiId: string option
+    [<JsonName "emoji_name">] EmojiName: string option
+    [<JsonName "emoji_animated">] EmojiAnimated: bool option
+    [<JsonName "title">] Title: string
+    [<JsonName "description">] Description: string
 }
 
 // https://discord.com/developers/docs/resources/guild#guild-onboarding-object-onboarding-prompt-structure
 type GuildOnboardingPrompt = {
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: OnboardingPromptType
-    
-    [<JsonField("options")>]
-    Options: GuildOnboardingPromptOption list
-    
-    [<JsonField("title")>]
-    Title: string
-    
-    [<JsonField("single_select")>]
-    SingleSelect: bool
-    
-    [<JsonField("required")>]
-    Required: bool
-    
-    [<JsonField("in_onboarding")>]
-    InOnboarding: bool
+    [<JsonName "id">] Id: string
+    [<JsonName "type">] Type: OnboardingPromptType
+    [<JsonName "options">] Options: GuildOnboardingPromptOption list
+    [<JsonName "title">] Title: string
+    [<JsonName "single_select">] SingleSelect: bool
+    [<JsonName "required">] Required: bool
+    [<JsonName "in_onboarding">] InOnboarding: bool
 }
 
 // https://discord.com/developers/docs/resources/guild#guild-onboarding-object-guild-onboarding-structure
 type GuildOnboarding = {
-    [<JsonField("guild_id")>]
-    GuildId: string
-    
-    [<JsonField("prompts")>]
-    Prompts: GuildOnboardingPrompt list
-    
-    [<JsonField("default_channel_ids")>]
-    DefaultChannelIds: string list
-    
-    [<JsonField("enabled")>]
-    Enabled: bool
-    
-    [<JsonField("mode")>]
-    Mode: OnboardingMode
+    [<JsonName "guild_id">] GuildId: string
+    [<JsonName "prompts">] Prompts: GuildOnboardingPrompt list
+    [<JsonName "default_channel_ids">] DefaultChannelIds: string list
+    [<JsonName "enabled">] Enabled: bool
+    [<JsonName "mode">] Mode: OnboardingMode
 }
 
 type ChannelMention = {
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("guild_id")>]
-    GuildId: string
-    
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: ChannelType
-    
-    [<JsonField("name")>]
-    Name: string
+    [<JsonName "id">] Id: string
+    [<JsonName "guild_id">] GuildId: string
+    [<JsonName "type">] Type: ChannelType
+    [<JsonName "name">] Name: string
 }
 
 type PermissionOverwrite = {
-    [<JsonField("id")>]
-    Id: string
-
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: PermissionOverwriteType
-
-    [<JsonField("allow")>]
-    Allow: string
-
-    [<JsonField("deny")>]
-    Deny: string
+    [<JsonName "id">] Id: string
+    [<JsonName "type">] Type: PermissionOverwriteType
+    [<JsonName "allow">] Allow: string
+    [<JsonName "deny">] Deny: string
 }
 
 type ThreadMetadata = {
-    [<JsonField("archived")>]
-    Archived: bool
-    
-    [<JsonField("auto_archive_duration")>]
-    AutoArchiveDuration: int
-    
-    [<JsonField("archive_timestamp")>]
-    ArchiveTimestamp: DateTime
-    
-    [<JsonField("locked")>]
-    Locked: bool
-    
-    [<JsonField("invitable")>]
-    Invitable: bool option
-    
-    [<JsonField("create_timestamp")>]
-    CreateTimestamp: DateTime option
+    [<JsonName "archived">] Archived: bool
+    [<JsonName "auto_archive_duration">] AutoArchiveDuration: int
+    [<JsonName "archive_timestamp">] ArchiveTimestamp: DateTime
+    [<JsonName "locked">] Locked: bool
+    [<JsonName "invitable">] Invitable: bool option
+    [<JsonName "create_timestamp">] CreateTimestamp: DateTime option
 }
 
 type ThreadMember = {
-    [<JsonField("id")>]
-    Id: string option
-    
-    [<JsonField("user_id")>]
-    UserId: string option
-    
-    [<JsonField("join_timestamp")>]
-    JoinTimestamp: DateTime
-    
-    [<JsonField("flags")>]
-    Flags: int
-    
-    [<JsonField("member")>]
-    Member: GuildMember option
+    [<JsonName "id">] Id: string option
+    [<JsonName "user_id">] UserId: string option
+    [<JsonName "join_timestamp">] JoinTimestamp: DateTime
+    [<JsonName "flags">] Flags: int
+    [<JsonName "member">] Member: GuildMember option
 }
 
 type ChannelTag = {
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("name")>]
-    Name: string
-    
-    [<JsonField("moderated")>]
-    Moderated: bool
-    
-    [<JsonField("emoji_id")>]
-    EmojiId: string option
-    
-    [<JsonField("emoji_name")>]
-    EmojiName: string option
+    [<JsonName "id">] Id: string
+    [<JsonName "name">] Name: string
+    [<JsonName "moderated">] Moderated: bool
+    [<JsonName "emoji_id">] EmojiId: string option
+    [<JsonName "emoji_name">] EmojiName: string option
 }
 
 type EmbedFooter = {
-    [<JsonField("text")>]
-    Text: string
-    
-    [<JsonField("icon_url")>]
-    IconUrl: string option
-    
-    [<JsonField("proxy_icon_url")>]
-    ProxyIconUrl: string option
+    [<JsonName "text">] Text: string
+    [<JsonName "icon_url">] IconUrl: string option
+    [<JsonName "proxy_icon_url">] ProxyIconUrl: string option
 }
 with
     static member build(
@@ -613,17 +332,10 @@ with
     }
 
 type EmbedImage = {
-    [<JsonField("url")>]
-    Url: string
-    
-    [<JsonField("proxy_url")>]
-    ProxyUrl: string option
-    
-    [<JsonField("height")>]
-    Height: int option
-    
-    [<JsonField("width")>]
-    Width: int option
+    [<JsonName "url">] Url: string
+    [<JsonName "proxy_url">] ProxyUrl: string option
+    [<JsonName "height">] Height: int option
+    [<JsonName "width">] Width: int option
 }
 with
     static member build(
@@ -639,17 +351,10 @@ with
     }
 
 type EmbedThumbnail = {
-    [<JsonField("url")>]
-    Url: string
-    
-    [<JsonField("proxy_url")>]
-    ProxyUrl: string option
-    
-    [<JsonField("height")>]
-    Height: int option
-    
-    [<JsonField("width")>]
-    Width: int option
+    [<JsonName "url">] Url: string
+    [<JsonName "proxy_url">] ProxyUrl: string option
+    [<JsonName "height">] Height: int option
+    [<JsonName "width">] Width: int option
 }
 with
     static member build(
@@ -665,17 +370,10 @@ with
     }
 
 type EmbedVideo = {
-    [<JsonField("url")>]
-    Url: string option
-    
-    [<JsonField("proxy_url")>]
-    ProxyUrl: string option
-    
-    [<JsonField("height")>]
-    Height: int option
-    
-    [<JsonField("width")>]
-    Width: int option
+    [<JsonName "url">] Url: string option
+    [<JsonName "proxy_url">] ProxyUrl: string option
+    [<JsonName "height">] Height: int option
+    [<JsonName "width">] Width: int option
 }
 with
     static member build(
@@ -691,11 +389,8 @@ with
     }
 
 type EmbedProvider = {
-    [<JsonField("name")>]
-    Name: string option
-
-    [<JsonField("url")>]
-    Url: string option
+    [<JsonName "name">] Name: string option
+    [<JsonName "url">] Url: string option
 }
 with
     static member build(
@@ -707,17 +402,10 @@ with
     }
 
 type EmbedAuthor = {
-    [<JsonField("name")>]
-    Name: string
-
-    [<JsonField("url")>]
-    Url: string option
-
-    [<JsonField("icon_url")>]
-    IconUrl: string option
-    
-    [<JsonField("proxy_icon_url")>]
-    ProxyIconUrl: string option
+    [<JsonName "name">] Name: string
+    [<JsonName "url">] Url: string option
+    [<JsonName "icon_url">] IconUrl: string option
+    [<JsonName "proxy_icon_url">] ProxyIconUrl: string option
 }
 with
     static member build(
@@ -733,14 +421,9 @@ with
     }
 
 type EmbedField = {
-    [<JsonField("name")>]
-    Name: string
-
-    [<JsonField("value")>]
-    Value: string
-
-    [<JsonField("inline")>]
-    Inline: bool option
+    [<JsonName "name">] Name: string
+    [<JsonName "value">] Value: string
+    [<JsonName "inline">] Inline: bool option
 }
 with
     static member build(
@@ -754,44 +437,19 @@ with
     }
 
 type Embed = {
-    [<JsonField("title")>]
-    Title: string option
-    
-    [<JsonField("type")>]
-    Type: string option
-    
-    [<JsonField("description")>]
-    Description: string option
-
-    [<JsonField("url")>]
-    Url: string option
-
-    [<JsonField("timestamp")>]
-    Timestamp: DateTime option
-
-    [<JsonField("color")>]
-    Color: int option
-
-    [<JsonField("footer")>]
-    Footer: EmbedFooter option
-
-    [<JsonField("image")>]
-    Image: EmbedImage option
-
-    [<JsonField("thumbnail")>]
-    Thumbnail: EmbedThumbnail option
-
-    [<JsonField("video")>]
-    Video: EmbedVideo option
-
-    [<JsonField("provider")>]
-    Provider: EmbedProvider option
-
-    [<JsonField("author")>]
-    Author: EmbedAuthor option
-
-    [<JsonField("fields")>]
-    Fields: EmbedField list option
+    [<JsonName "title">] Title: string option
+    [<JsonName "type">] Type: string option
+    [<JsonName "description">] Description: string option
+    [<JsonName "url">] Url: string option
+    [<JsonName "timestamp">] Timestamp: DateTime option
+    [<JsonName "color">] Color: int option
+    [<JsonName "footer">] Footer: EmbedFooter option
+    [<JsonName "image">] Image: EmbedImage option
+    [<JsonName "thumbnail">] Thumbnail: EmbedThumbnail option
+    [<JsonName "video">] Video: EmbedVideo option
+    [<JsonName "provider">] Provider: EmbedProvider option
+    [<JsonName "author">] Author: EmbedAuthor option
+    [<JsonName "fields">] Fields: EmbedField list option
 }
 with
     static member build(
@@ -825,411 +483,195 @@ with
     }
 
 type ReactionCountDetails = {
-    [<JsonField("burst")>]
-    Burst: int
-
-    [<JsonField("normal")>]
-    Normal: int
+    [<JsonName "burst">] Burst: int
+    [<JsonName "normal">] Normal: int
 }
 
 type Reaction = {
-    [<JsonField("count")>]
-    Count: int
-    
-    [<JsonField("count_details")>]
-    CountDetails: ReactionCountDetails
-
-    [<JsonField("me")>]
-    Me: bool
-
-    [<JsonField("me_burst")>]
-    MeBurst: bool
-
-    [<JsonField("emoji")>]
-    Emoji: Emoji
-
-    [<JsonField("burst_colors")>]
-    BurstColors: int list
+    [<JsonName "count">] Count: int
+    [<JsonName "count_details">] CountDetails: ReactionCountDetails
+    [<JsonName "me">] Me: bool
+    [<JsonName "me_burst">] MeBurst: bool
+    [<JsonName "emoji">] Emoji: Emoji
+    [<JsonName "burst_colors">] BurstColors: int list
 }
 
 type MessageActivity = {
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: MessageActivityType
-
-    [<JsonField("party_id")>]
-    PartyId: string option
+    [<JsonName "type">] Type: MessageActivityType
+    [<JsonName "party_id">] PartyId: string option
 }
 
 type OAuth2InstallParams = {
-    [<JsonField("scopes")>]
-    Scopes: string list
-
-    [<JsonField("permissions")>]
-    Permissions: string
+    [<JsonName "scopes">] Scopes: string list
+    [<JsonName "permissions">] Permissions: string
 }
 
 type ApplicationIntegrationTypeConfiguration = {
-    [<JsonField("oauth2_install_params")>]
-    Oauth2InstallParams: OAuth2InstallParams option
+    [<JsonName "oauth2_install_params">] Oauth2InstallParams: OAuth2InstallParams option
 }
 
 type TeamMember = {
-    [<JsonField("membership_state", EnumValue = EnumMode.Value)>]
-    MembershipState: TeamMembershipState
-    
-    [<JsonField("team_id")>]
-    TeamId: string
-
-    [<JsonField("user")>]
-    User: User
-
-    [<JsonField("role")>]
-    Role: string
+    [<JsonName "membership_state">] MembershipState: TeamMembershipState
+    [<JsonName "team_id">] TeamId: string
+    [<JsonName "user">] User: User
+    [<JsonName "role">] Role: string
 }
 
 type Team = {
-    [<JsonField("icon")>]
-    Icon: string option
-    
-    [<JsonField("id")>]
-    Id: string
-
-    [<JsonField("members")>]
-    Members: TeamMember list
-
-    [<JsonField("name")>]
-    Name: string
-
-    [<JsonField("owner_user_id")>]
-    OwnerUserId: string
+    [<JsonName "icon">] Icon: string option
+    [<JsonName "id">] Id: string
+    [<JsonName "members">] Members: TeamMember list
+    [<JsonName "name">] Name: string
+    [<JsonName "owner_user_id">] OwnerUserId: string
 }
 
 type Application = {
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("name")>]
-    Name: string
-
-    [<JsonField("icon")>]
-    Icon: string option
-
-    [<JsonField("description")>]
-    Description: string
-
-    [<JsonField("rpc_origins")>]
-    RpcOrigins: string list option
-
-    [<JsonField("bot_public")>]
-    BotPublic: bool
-
-    [<JsonField("bot_require_code_grant")>]
-    BotRequireCodeGrant: bool
-
-    [<JsonField("bot")>]
-    Bot: User option
-
-    [<JsonField("terms_of_Service_url")>]
-    TermsOfServiceUrl: string option
-
-    [<JsonField("privacy_policy_url")>]
-    PrivacyPolicyUrl: string option
-
-    [<JsonField("owner")>]
-    Owner: User option
-
-    [<JsonField("verify_key")>]
-    VerifyKey: string
-
-    [<JsonField("team")>]
-    Team: Team option
-
-    [<JsonField("guild_id")>]
-    GuildId: string option
-
-    [<JsonField("guild")>]
-    Guild: Guild option
-
-    [<JsonField("primary_sku_id")>]
-    PrimarySkuId: string option
-
-    [<JsonField("slug")>]
-    Slug: string option
-
-    [<JsonField("cover_image")>]
-    CoverImage: string option
-
-    [<JsonField("flags")>]
-    Flags: int option
-
-    [<JsonField("approximate_guild_count")>]
-    ApproximateGuildCount: int option
-
-    [<JsonField("redirect_uris")>]
-    RedirectUris: string list option
-
-    [<JsonField("interactions_endpoint_url")>]
-    InteractionsEndpointUrl: string option
-
-    [<JsonField("role_connections_verification_url")>]
-    RoleConnectionsVerificationUrl: string option
-
-    [<JsonField("tags")>]
-    Tags: string list option
-
-    [<JsonField("install_params")>]
-    InstallParams: OAuth2InstallParams option
-
-    [<JsonField("integration_types_config")>]
-    IntegrationTypesConfig: Map<ApplicationIntegrationType, ApplicationIntegrationTypeConfiguration> option
-
-    [<JsonField("custom_install_url")>]
-    CustomInstallUrl: string option
+    [<JsonName "id">] Id: string
+    [<JsonName "name">] Name: string
+    [<JsonName "icon">] Icon: string option
+    [<JsonName "description">] Description: string
+    [<JsonName "rpc_origins">] RpcOrigins: string list option
+    [<JsonName "bot_public">] BotPublic: bool
+    [<JsonName "bot_require_code_grant">] BotRequireCodeGrant: bool
+    [<JsonName "bot">] Bot: User option
+    [<JsonName "terms_of_Service_url">] TermsOfServiceUrl: string option
+    [<JsonName "privacy_policy_url">] PrivacyPolicyUrl: string option
+    [<JsonName "owner">] Owner: User option
+    [<JsonName "verify_key">] VerifyKey: string
+    [<JsonName "team">] Team: Team option
+    [<JsonName "guild_id">] GuildId: string option
+    [<JsonName "guild">] Guild: Guild option
+    [<JsonName "primary_sku_id">] PrimarySkuId: string option
+    [<JsonName "slug">] Slug: string option
+    [<JsonName "cover_image">] CoverImage: string option
+    [<JsonName "flags">] Flags: int option
+    [<JsonName "approximate_guild_count">] ApproximateGuildCount: int option
+    [<JsonName "redirect_uris">] RedirectUris: string list option
+    [<JsonName "interactions_endpoint_url">] InteractionsEndpointUrl: string option
+    [<JsonName "role_connections_verification_url">] RoleConnectionsVerificationUrl: string option
+    [<JsonName "tags">] Tags: string list option
+    [<JsonName "install_params">] InstallParams: OAuth2InstallParams option
+    [<JsonName "integration_types_config">] IntegrationTypesConfig: Map<ApplicationIntegrationType, ApplicationIntegrationTypeConfiguration> option
+    [<JsonName "custom_install_url">] CustomInstallUrl: string option
 }
 
 type MessageReference = {
-    [<JsonField("message_id")>]
-    MessageId: string option
-
-    [<JsonField("channel_id")>]
-    ChannelId: string option
-
-    [<JsonField("guild_id")>]
-    GuildId: string option
-
-    [<JsonField("fail_if_not_exists")>]
-    FailIfNotExists: bool option
+    [<JsonName "message_id">] MessageId: string option
+    [<JsonName "channel_id">] ChannelId: string option
+    [<JsonName "guild_id">] GuildId: string option
+    [<JsonName "fail_if_not_exists">] FailIfNotExists: bool option
 }
 
 type MessageInteractionMetadata = {
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("type")>]
-    Type: InteractionType
-    
-    [<JsonField("user")>]
-    User: User
-    
-    [<JsonField("authorizing_integration_owners")>]
-    AuthorizingIntegrationOwners: Map<ApplicationIntegrationType, ApplicationIntegrationTypeConfiguration>
-
-    [<JsonField("original_response_message_id")>]
-    OriginalResponseMessage: string option
-
-    [<JsonField("interacted_message_id")>]
-    InteractedMessageId: string option
-
-    [<JsonField("triggering_interaction_metadata")>]
-    TriggeringInteractionMetadata: MessageInteractionMetadata option
+    [<JsonName "id">] Id: string
+    [<JsonName "type">] Type: InteractionType
+    [<JsonName "user">] User: User
+    [<JsonName "authorizing_integration_owners">] AuthorizingIntegrationOwners: Map<ApplicationIntegrationType, ApplicationIntegrationTypeConfiguration>
+    [<JsonName "original_response_message_id">] OriginalResponseMessage: string option
+    [<JsonName "interacted_message_id">] InteractedMessageId: string option
+    [<JsonName "triggering_interaction_metadata">] TriggeringInteractionMetadata: MessageInteractionMetadata option
 }
 
 type MessageInteraction = {
-    [<JsonField("id")>]
-    Id: string
-
-    [<JsonField("type")>]
-    Type: InteractionType
-
-    [<JsonField("name")>]
-    Name: string
-
-    [<JsonField("user")>]
-    User: User
-
-    [<JsonField("member")>]
-    Member: GuildMember option
+    [<JsonName "id">] Id: string
+    [<JsonName "type">] Type: InteractionType
+    [<JsonName "name">] Name: string
+    [<JsonName "user">] User: User
+    [<JsonName "member">] Member: GuildMember option
 }
 
 type RoleSubscriptionData = {
-    [<JsonField("role_subscription_listing_id")>]
-    RoleSubscriptionListingId: string
-
-    [<JsonField("tier_name")>]
-    TierName: string
-
-    [<JsonField("total_months_subscribed")>]
-    TotalMonthsSubscribed: int
-
-    [<JsonField("is_renewal")>]
-    IsRenewal: bool
+    [<JsonName "role_subscription_listing_id">] RoleSubscriptionListingId: string
+    [<JsonName "tier_name">] TierName: string
+    [<JsonName "total_months_subscribed">] TotalMonthsSubscribed: int
+    [<JsonName "is_renewal">] IsRenewal: bool
 }
 
 type PollMedia = {
-    [<JsonField("text")>]
-    Text: string option
-
-    [<JsonField("emoji")>]
-    Emoji: Emoji option
+    [<JsonName "text">] Text: string option
+    [<JsonName "emoji">] Emoji: Emoji option
 }
 
 type PollAnswer = {
-    [<JsonField("answer_id")>]
-    AnswerId: int
-
-    [<JsonField("poll_media")>]
-    PollMedia: PollMedia
+    [<JsonName "answer_id">] AnswerId: int
+    [<JsonName "poll_media">] PollMedia: PollMedia
 }
 
 type PollAnswerCount = {
-    [<JsonField("id")>]
-    Id: string
-
-    [<JsonField("count")>]
-    Count: int
-
-    [<JsonField("me_voted")>]
-    MeVoted: bool
+    [<JsonName "id">] Id: string
+    [<JsonName "count">] Count: int
+    [<JsonName "me_voted">] MeVoted: bool
 }
 
 type PollResults = {
-    [<JsonField("is_finalized")>]
-    IsFinalized: bool
-
-    [<JsonField("answer_counts")>]
-    AnswerCounts: PollAnswerCount list
+    [<JsonName "is_finalized">] IsFinalized: bool
+    [<JsonName "answer_counts">] AnswerCounts: PollAnswerCount list
 }
 
 type Poll = {
-    [<JsonField("question")>]
-    Question: PollMedia
-
-    [<JsonField("answers")>]
-    Answers: PollAnswer list
-
-    [<JsonField("expiry")>]
-    Expiry: DateTime option
-
-    [<JsonField("allow_multiselect")>]
-    AllowMultiselect: bool
-
-    [<JsonField("layout_type", EnumValue = EnumMode.Value)>]
-    LayoutType: PollLayoutType
-
-    [<JsonField("results")>]
-    Results: PollResults option
+    [<JsonName "question">] Question: PollMedia
+    [<JsonName "answers">] Answers: PollAnswer list
+    [<JsonName "expiry">] Expiry: DateTime option
+    [<JsonName "allow_multiselect">] AllowMultiselect: bool
+    [<JsonName "layout_type">] LayoutType: PollLayoutType
+    [<JsonName "results">] Results: PollResults option
 }
 
 type MessageCall = {
-    [<JsonField("participants")>]
-    Participants: string list
-
-    [<JsonField("ended_timestamp")>]
-    EndedTimestamp: DateTime option
+    [<JsonName "participants">] Participants: string list
+    [<JsonName "ended_timestamp">] EndedTimestamp: DateTime option
 }
 
 type SelectMenuOption = {
-    [<JsonField("label")>]
-    Label: string
-
-    [<JsonField("value")>]
-    Value: string
-
-    [<JsonField("description")>]
-    Description: string option
-
-    [<JsonField("emoji")>]
-    Emoji: Emoji option
-
-    [<JsonField("default")>]
-    Default: bool option
+    [<JsonName "label">] Label: string
+    [<JsonName "value">] Value: string
+    [<JsonName "description">] Description: string option
+    [<JsonName "emoji">] Emoji: Emoji option
+    [<JsonName "default">] Default: bool option
 }
 
 type SelectMenuDefaultValue = {
-    [<JsonField("id")>]
-    Id: string
-
-    [<JsonField("type")>]
-    Type: string
+    [<JsonName "id">] Id: string
+    [<JsonName "type">] Type: string
 }
 
 type ActionRowComponent = {
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: ComponentType
-    
-    [<JsonField("components", Transform = typeof<ComponentTransform>)>]
-    Components: Component list
+    [<JsonName "type">] Type: ComponentType
+    [<JsonName "components">] [<JsonConverter(typeof<ComponentConverter>)>] Components: Component list
 }
 
 and ButtonComponent = {
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: ComponentType
-
-    [<JsonField("style", EnumValue = EnumMode.Value)>]
-    Style: ButtonStyle
-
-    [<JsonField("label")>]
-    Label: string
-
-    [<JsonField("emoji")>]
-    Emoji: Emoji option
-    
-    [<JsonField("custom_id")>]
-    CustomId: string option
-
-    [<JsonField("url")>]
-    Url: string option
-
-    [<JsonField("disabled")>]
-    Disabled: bool option
+    [<JsonName "type">] Type: ComponentType
+    [<JsonName "style">] Style: ButtonStyle
+    [<JsonName "label">] Label: string
+    [<JsonName "emoji">] Emoji: Emoji option
+    [<JsonName "custom_id">] CustomId: string option
+    [<JsonName "url">] Url: string option
+    [<JsonName "disabled">] Disabled: bool option
 }
 
 and SelectMenuComponent = {
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: ComponentType
-
-    [<JsonField("custom_id")>]
-    CustomId: string
-
-    [<JsonField("options")>]
-    Options: SelectMenuOption list option
-
-    [<JsonField("channel_types", EnumValue = EnumMode.Value)>]
-    ChannelTypes: ChannelType list option
-
-    [<JsonField("placeholder")>]
-    Placeholder: string option
-
-    [<JsonField("default_values")>]
-    DefaultValues: SelectMenuDefaultValue option
-
-    [<JsonField("min_values")>]
-    MinValues: int option
-
-    [<JsonField("max_values")>]
-    MaxValues: int option
-
-    [<JsonField("disabled")>]
-    Disabled: bool option
+    [<JsonName "type">] Type: ComponentType
+    [<JsonName "custom_id">] CustomId: string
+    [<JsonName "options">] Options: SelectMenuOption list option
+    [<JsonName "channel_types">] ChannelTypes: ChannelType list option
+    [<JsonName "placeholder">] Placeholder: string option
+    [<JsonName "default_values">] DefaultValues: SelectMenuDefaultValue option
+    [<JsonName "min_values">] MinValues: int option
+    [<JsonName "max_values">] MaxValues: int option
+    [<JsonName "disabled">] Disabled: bool option
 }
 
 and TextInputComponent = {
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: ComponentType
-
-    [<JsonField("custom_id")>]
-    CustomId: string
-
-    [<JsonField("style", EnumValue = EnumMode.Value)>]
-    Style: TextInputStyle
-
-    [<JsonField("label")>]
-    Label: string
-
-    [<JsonField("min_length")>]
-    MinLength: int option
-
-    [<JsonField("max_length")>]
-    MaxLength: int option
-
-    [<JsonField("required")>]
-    Required: bool option
-
-    [<JsonField("value")>]
-    Value: string option
-
-    [<JsonField("placeholder")>]
-    Placeholder: string option
+    [<JsonName "type">] Type: ComponentType
+    [<JsonName "custom_id">] CustomId: string
+    [<JsonName "style">] Style: TextInputStyle
+    [<JsonName "label">] Label: string
+    [<JsonName "min_length">] MinLength: int option
+    [<JsonName "max_length">] MaxLength: int option
+    [<JsonName "required">] Required: bool option
+    [<JsonName "value">] Value: string option
+    [<JsonName "placeholder">] Placeholder: string option
 }
 
 and Component =
@@ -1238,172 +680,71 @@ and Component =
     | SelectMenu of SelectMenuComponent
     | TextInput of TextInputComponent
 
-and ComponentTransform () =
-    interface ITypeTransform with
-        member _.targetType () =
-            typeof<obj>
+and ComponentConverter () =
+    inherit JsonConverter<Component> () with
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
+            raise <| NotImplementedException()
+            
+        override _.Write (writer: Utf8JsonWriter, value: Component, options: JsonSerializerOptions) = 
+            raise <| NotImplementedException()
 
-        member _.toTargetType value =
-            match value :?> Component with
-            | Component.ActionRow v -> v
-            | Component.Button v -> v
-            | Component.SelectMenu v -> v
-            | Component.TextInput v -> v
-
-        member _.fromTargetType value =
-            match value with
-            | :? ActionRowComponent as v -> Component.ActionRow v
-            | :? ButtonComponent as v -> Component.Button v
-            | :? SelectMenuComponent as v -> Component.SelectMenu v
-            | :? TextInputComponent as v -> Component.TextInput v
-            | _ -> failwith "Unexpected Component type"
+    // TODO: Implement (Consider making a single `Component` with all properties and try to convert to specific in code elsewhere?)
 
 type Channel = {
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: ChannelType
-    
-    [<JsonField("guild_id")>]
-    GuildId: string option
-    
-    [<JsonField("position")>]
-    Position: int option
-    
-    [<JsonField("permission_overwrites")>]
-    PermissionOverwrites: PermissionOverwrite list option
-
-    [<JsonField("name")>]
-    Name: string option
-    
-    [<JsonField("topic")>]
-    Topic: string option
-    
-    [<JsonField("nsfw")>]
-    Nsfw: bool option
-    
-    [<JsonField("last_message_id")>]
-    LastMessageId: string option
-    
-    [<JsonField("bitrate")>]
-    Bitrate: int option
-    
-    [<JsonField("user_limit")>]
-    UserLimit: int option
-    
-    [<JsonField("rate_limit_per_user")>]
-    RateLimitPerUser: int option
-    
-    [<JsonField("recipients")>]
-    Recipients: User list option
-    
-    [<JsonField("icon")>]
-    Icon: string option
-    
-    [<JsonField("owner_id")>]
-    OwnerId: string option
-    
-    [<JsonField("application_id")>]
-    ApplicationId: string option
-    
-    [<JsonField("managed")>]
-    Managed: bool option
-    
-    [<JsonField("parent_id")>]
-    ParentId: string option
-    
-    [<JsonField("last_pin_timestamp")>]
-    LastPinTimestamp: DateTime option
-    
-    [<JsonField("rtc_region")>]
-    RtcRegion: string option
-    
-    [<JsonField("video_quality_mode", EnumValue = EnumMode.Value)>]
-    VideoQualityMode: VideoQualityMode option
-    
-    [<JsonField("message_count")>]
-    MessageCount: int option
-    
-    [<JsonField("member_count")>]
-    MemberCount: int option
-    
-    [<JsonField("thread_metadata")>]
-    ThreadMetadata: ThreadMetadata option
-    
-    [<JsonField("member")>]
-    Member: ThreadMember option
-    
-    [<JsonField("default_auto_archive_duration", EnumValue = EnumMode.Value)>]
-    DefaultAutoArchiveDuration: AutoArchiveDurationType option
-    
-    [<JsonField("permissions")>]
-    Permissions: string option
-    
-    [<JsonField("flags")>]
-    Flags: int option
-    
-    [<JsonField("total_messages_sent")>]
-    TotalMessagesSent: int option
-    
-    [<JsonField("available_tags")>]
-    AvailableTags: ChannelTag list option
-    
-    [<JsonField("applied_tags")>]
-    AppliedTags: int list option
-    
-    [<JsonField("default_reaction_emoji")>]
-    DefaultReactionEmoji: DefaultReaction option
-    
-    [<JsonField("default_thread_rate_limit_per_user")>]
-    DefaultThreadRateLimitPerUser: int option
-    
-    [<JsonField("default_sort_order", EnumValue = EnumMode.Value)>]
-    DefaultSortOrder: ChannelSortOrder option
-    
-    [<JsonField("default_forum_layout", EnumValue = EnumMode.Value)>]
-    DefaultForumLayout: ChannelForumLayout option
+    [<JsonName "id">] Id: string
+    [<JsonName "type">] Type: ChannelType
+    [<JsonName "guild_id">] GuildId: string option
+    [<JsonName "position">] Position: int option
+    [<JsonName "permission_overwrites">] PermissionOverwrites: PermissionOverwrite list option
+    [<JsonName "name">] Name: string option
+    [<JsonName "topic">] Topic: string option
+    [<JsonName "nsfw">] Nsfw: bool option
+    [<JsonName "last_message_id">] LastMessageId: string option
+    [<JsonName "bitrate">] Bitrate: int option
+    [<JsonName "user_limit">] UserLimit: int option
+    [<JsonName "rate_limit_per_user">] RateLimitPerUser: int option
+    [<JsonName "recipients">] Recipients: User list option
+    [<JsonName "icon">] Icon: string option
+    [<JsonName "owner_id">] OwnerId: string option
+    [<JsonName "application_id">] ApplicationId: string option
+    [<JsonName "managed">] Managed: bool option
+    [<JsonName "parent_id">] ParentId: string option
+    [<JsonName "last_pin_timestamp">] LastPinTimestamp: DateTime option
+    [<JsonName "rtc_region">] RtcRegion: string option
+    [<JsonName "video_quality_mode">] VideoQualityMode: VideoQualityMode option
+    [<JsonName "message_count">] MessageCount: int option
+    [<JsonName "member_count">] MemberCount: int option
+    [<JsonName "thread_metadata">] ThreadMetadata: ThreadMetadata option
+    [<JsonName "member">] Member: ThreadMember option
+    [<JsonName "default_auto_archive_duration">] DefaultAutoArchiveDuration: AutoArchiveDurationType option
+    [<JsonName "permissions">] Permissions: string option
+    [<JsonName "flags">] Flags: int option
+    [<JsonName "total_messages_sent">] TotalMessagesSent: int option
+    [<JsonName "available_tags">] AvailableTags: ChannelTag list option
+    [<JsonName "applied_tags">] AppliedTags: int list option
+    [<JsonName "default_reaction_emoji">] DefaultReactionEmoji: DefaultReaction option
+    [<JsonName "default_thread_rate_limit_per_user">] DefaultThreadRateLimitPerUser: int option
+    [<JsonName "default_sort_order">] DefaultSortOrder: ChannelSortOrder option
+    [<JsonName "default_forum_layout">] DefaultForumLayout: ChannelForumLayout option
 }
 
 // https://discord.com/developers/docs/resources/guild#guild-widget-object-guild-widget-structure
 type GuildWidget = {
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("name")>]
-    Name: string
-    
-    [<JsonField("instant_invite")>]
-    InstantInvite: string option
-    
-    [<JsonField("channels")>]
-    Channels: Channel list
-    
-    [<JsonField("members")>]
-    Members: User list
-    
-    [<JsonField("presence_count")>]
-    PresenceCount: int
+    [<JsonName "id">] Id: string
+    [<JsonName "name">] Name: string
+    [<JsonName "instant_invite">] InstantInvite: string option
+    [<JsonName "channels">] Channels: Channel list
+    [<JsonName "members">] Members: User list
+    [<JsonName "presence_count">] PresenceCount: int
 }
 
 type ResolvedData = {
-    [<JsonField("users")>]
-    Users: Map<string, User> option
-    
-    [<JsonField("members")>]
-    Members: Map<string, GuildMember> option
-    
-    [<JsonField("roles")>]
-    Roles: Map<string, Role> option
-    
-    [<JsonField("channels")>]
-    Channels: Map<string, Channel> option
-    
-    [<JsonField("messages")>]
-    Messages: Map<string, Message> option
-    
-    [<JsonField("attachments")>]
-    Attachments: Map<string, Attachment> option
+    [<JsonName "users">] Users: IDictionary<string, User> option
+    [<JsonName "members">] Members: IDictionary<string, GuildMember> option
+    [<JsonName "roles">] Roles: IDictionary<string, Role> option
+    [<JsonName "channels">] Channels: IDictionary<string, Channel> option
+    [<JsonName "messages">] Messages: IDictionary<string, Message> option
+    [<JsonName "attachments">] Attachments: IDictionary<string, Attachment> option
 }
 
 and Message = {
@@ -1443,57 +784,26 @@ and Message = {
 }
 
 type Invite = {
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: InviteType
-
-    [<JsonField("code")>]
-    Code: string
-    
-    [<JsonField("guild")>]
-    Guild: Guild option
-    
-    [<JsonField("channel")>]
-    Channel: Channel option
-    
-    [<JsonField("inviter")>]
-    Inviter: User option
-    
-    [<JsonField("target_type", EnumValue = EnumMode.Value)>]
-    TargetType: InviteTargetType option
-    
-    [<JsonField("target_user")>]
-    TargetUser: User option
-    
-    [<JsonField("target_application")>]
-    TargetApplication: Application option
-    
-    [<JsonField("approximate_presence_count")>]
-    ApproximatePresenceCount: int option
-    
-    [<JsonField("approximate_member_count")>]
-    ApproximateMemberCount: int option
-    
-    [<JsonField("expires_at")>]
-    ExpiresAt: DateTime
-
+    [<JsonName "type">] Type: InviteType
+    [<JsonName "code">] Code: string
+    [<JsonName "guild">] Guild: Guild option
+    [<JsonName "channel">] Channel: Channel option
+    [<JsonName "inviter">] Inviter: User option
+    [<JsonName "target_type">] TargetType: InviteTargetType option
+    [<JsonName "target_user">] TargetUser: User option
+    [<JsonName "target_application">] TargetApplication: Application option
+    [<JsonName "approximate_presence_count">] ApproximatePresenceCount: int option
+    [<JsonName "approximate_member_count">] ApproximateMemberCount: int option
+    [<JsonName "expires_at">] ExpiresAt: DateTime
     // TODO: Add `guild_scheduled_event` with type from: https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-structure
 }
 
 type InviteMetadata = {
-    [<JsonField("uses")>]
-    Uses: int
-    
-    [<JsonField("max_uses")>]
-    MaxUses: int
-    
-    [<JsonField("max_age")>]
-    MaxAge: int
-    
-    [<JsonField("temporary")>]
-    Temporary: bool
-    
-    [<JsonField("created_at")>]
-    CreatedAt: DateTime
+    [<JsonName "uses">] Uses: int
+    [<JsonName "max_uses">] MaxUses: int
+    [<JsonName "max_age">] MaxAge: int
+    [<JsonName "temporary">] Temporary: bool
+    [<JsonName "created_at">] CreatedAt: DateTime
 }
 
 // GetChannelInvite returns a list Invite objects with InviteMetadata added. To make this easy to implement here, I've
@@ -1501,81 +811,36 @@ type InviteMetadata = {
 // duplicated here. A proper fix for this is probably possible, but implementing this way means the return type is more
 // accurate for now making it a lower priority fix.
 
+// TODO: Make below type by combining `Invite` and `InviteMetadata` somehow without code duplication
+
 type InviteWithMetadata = {
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: InviteType
-
-    [<JsonField("code")>]
-    Code: string
-    
-    [<JsonField("guild")>]
-    Guild: Guild option
-    
-    [<JsonField("channel")>]
-    Channel: Channel option
-    
-    [<JsonField("inviter")>]
-    Inviter: User option
-    
-    [<JsonField("target_type", EnumValue = EnumMode.Value)>]
-    TargetType: InviteTargetType option
-    
-    [<JsonField("target_user")>]
-    TargetUser: User option
-    
-    [<JsonField("target_application")>]
-    TargetApplication: Application option
-    
-    [<JsonField("approximate_presence_count")>]
-    ApproximatePresenceCount: int option
-    
-    [<JsonField("approximate_member_count")>]
-    ApproximateMemberCount: int option
-    
-    [<JsonField("expires_at")>]
-    ExpiresAt: DateTime
-
+    [<JsonName "type">] Type: InviteType
+    [<JsonName "code">] Code: string
+    [<JsonName "guild">] Guild: Guild option
+    [<JsonName "channel">] Channel: Channel option
+    [<JsonName "inviter">] Inviter: User option
+    [<JsonName "target_type">] TargetType: InviteTargetType option
+    [<JsonName "target_user">] TargetUser: User option
+    [<JsonName "target_application">] TargetApplication: Application option
+    [<JsonName "approximate_presence_count">] ApproximatePresenceCount: int option
+    [<JsonName "approximate_member_count">] ApproximateMemberCount: int option
+    [<JsonName "expires_at">] ExpiresAt: DateTime
     // TODO: Add `guild_scheduled_event` with type from: https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-structure
-    
-    [<JsonField("uses")>]
-    Uses: int
-    
-    [<JsonField("max_uses")>]
-    MaxUses: int
-    
-    [<JsonField("max_age")>]
-    MaxAge: int
-    
-    [<JsonField("temporary")>]
-    Temporary: bool
-    
-    [<JsonField("created_at")>]
-    CreatedAt: DateTime
-
-    // TODO: Make this type by combining `Invite` and `InviteMetadata` somehow without code duplication
+    [<JsonName "uses">] Uses: int
+    [<JsonName "max_uses">] MaxUses: int
+    [<JsonName "max_age">] MaxAge: int
+    [<JsonName "temporary">] Temporary: bool
+    [<JsonName "created_at">] CreatedAt: DateTime
 }
 
 type InteractionData = {
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("name")>]
-    Name: string
-    
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: ApplicationCommandType
-    
-    [<JsonField("resolved")>]
-    Resolved: ResolvedData option
-
-    [<JsonField("options")>]
-    Options: CommandInteractionDataOption list option
-    
-    [<JsonField("guild_id")>]
-    GuildId: string option
-    
-    [<JsonField("target_it")>]
-    TargetId: string option
+    [<JsonName "id">] Id: string
+    [<JsonName "name">] Name: string
+    [<JsonName "type">] Type: ApplicationCommandType
+    [<JsonName "resolved">] Resolved: ResolvedData option
+    [<JsonName "options">] Options: CommandInteractionDataOption list option
+    [<JsonName "guild_id">] GuildId: string option
+    [<JsonName "target_it">] TargetId: string option
 }
 with
     static member build(
@@ -1597,62 +862,25 @@ with
     }
 
 type Interaction = {
-    [<JsonField("id")>]
-    Id: string
-
-    [<JsonField("application_id")>]
-    ApplicationId: string
-
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: InteractionType
-
-    [<JsonField("data")>]
-    Data: InteractionData option
-
-    [<JsonField("guild")>]
-    Guild: Guild option
-
-    [<JsonField("guild_id")>]
-    GuildId: string option
-
-    [<JsonField("channel")>]
-    Channel: Channel option
-
-    [<JsonField("channel_id")>]
-    ChannelId: string option
-
-    [<JsonField("member")>]
-    Member: GuildMember option
-
-    [<JsonField("user")>]
-    User: User option
-
-    [<JsonField("token")>]
-    Token: string
-
-    [<JsonField("version")>]
-    Version: int
-
-    [<JsonField("message")>]
-    Message: Message option
-
-    [<JsonField("app_permissions")>]
-    AppPermissions: string
-
-    [<JsonField("locale")>]
-    Locale: string option
-
-    [<JsonField("guild_locale")>]
-    GuildLocale: string option
-
-    [<JsonField("entitlements")>]
-    Entitlements: Entitlement list
-
-    [<JsonField("authorizing_integration_owners")>]
-    AuthorizingIntegrationOwners: Map<ApplicationIntegrationType, ApplicationIntegrationTypeConfiguration>
-
-    [<JsonField("context", EnumValue = EnumMode.Value)>]
-    Context: InteractionContextType option
+    [<JsonName "id">] Id: string
+    [<JsonName "application_id">] ApplicationId: string
+    [<JsonName "type">] Type: InteractionType
+    [<JsonName "data">] Data: InteractionData option
+    [<JsonName "guild">] Guild: Guild option
+    [<JsonName "guild_id">] GuildId: string option
+    [<JsonName "channel">] Channel: Channel option
+    [<JsonName "channel_id">] ChannelId: string option
+    [<JsonName "member">] Member: GuildMember option
+    [<JsonName "user">] User: User option
+    [<JsonName "token">] Token: string
+    [<JsonName "version">] Version: int
+    [<JsonName "message">] Message: Message option
+    [<JsonName "app_permissions">] AppPermissions: string
+    [<JsonName "locale">] Locale: string option
+    [<JsonName "guild_locale">] GuildLocale: string option
+    [<JsonName "entitlements">] Entitlements: Entitlement list
+    [<JsonName "authorizing_integration_owners">] AuthorizingIntegrationOwners: IDictionary<ApplicationIntegrationType, ApplicationIntegrationTypeConfiguration>
+    [<JsonName "context">] Context: InteractionContextType option
 }
 with
     static member build(
@@ -1696,10 +924,6 @@ with
         AuthorizingIntegrationOwners = AuthorizingIntegrationOwners;
         Context = Context;
     }
-
-    static member deserialize(json: string) =
-        try Some(Json.deserialize<Interaction> json) with
-        | _ -> None
 
 type AllowedMentions = {
     [<JsonName "parse">] [<JsonConverter(typeof<AllowedMentionsParseTypeConverter>)>] Parse: AllowedMentionsParseType list
@@ -1795,29 +1019,14 @@ type ApplicationCommand = {
 }
 
 type InteractionCallbackMessageData = {
-    [<JsonField("tts")>]
-    Tts: bool option
-    
-    [<JsonField("content")>]
-    Content: string option
-    
-    [<JsonField("embeds")>]
-    Embeds: Embed list option
-    
-    [<JsonField("allowed_mentions")>]
-    AllowedMentions: AllowedMentions option
-    
-    [<JsonField("flags")>]
-    Flags: int option
-    
-    [<JsonField("components", Transform = typeof<ComponentTransform>)>]
-    Components: Component list option
-    
-    [<JsonField("attachments")>]
-    Attachments: Attachment list option
-    
-    [<JsonField("poll")>]
-    Poll: Poll option
+    [<JsonName "tts">] Tts: bool option
+    [<JsonName "content">] Content: string option
+    [<JsonName "embeds">] Embeds: Embed list option
+    [<JsonName "allowed_mentions">] AllowedMentions: AllowedMentions option
+    [<JsonName "flags">] Flags: int option
+    [<JsonName "components">] [<JsonConverter(typeof<ComponentConverter>)>] Components: Component list option
+    [<JsonName "attachments">] Attachments: Attachment list option
+    [<JsonName "poll">] Poll: Poll option
 }
 with
     static member build(
@@ -1864,8 +1073,7 @@ with
     )
 
 and InteractionCallbackAutocompleteData = {
-    [<JsonField("choices")>]
-    Choices: ApplicationCommandOptionChoice list
+    [<JsonName "choices">] Choices: ApplicationCommandOptionChoice list
 }
 with
     static member build(
@@ -1881,14 +1089,9 @@ with
     )
 
 and InteractionCallbackModalData = {
-    [<JsonField("custom_id")>]
-    CustomId: string
-    
-    [<JsonField("title")>]
-    Title: string
-    
-    [<JsonField("components", Transform = typeof<ComponentTransform>)>]
-    Components: Component list
+    [<JsonName "custom_id">] CustomId: string
+    [<JsonName "title">] Title: string
+    [<JsonName "components">] [<JsonConverter(typeof<ComponentConverter>)>] Components: Component list
 }
 with
     static member build(
@@ -1914,18 +1117,15 @@ and InteractionCallbackData =
     | Autocomplete of InteractionCallbackAutocompleteData
     | Modal of InteractionCallbackModalData
 
-type InteractionCallback = {
-    [<JsonName "type">] Type: InteractionCallbackType
-    [<JsonName "data">] Data: InteractionCallbackData option
-}
-with
-    static member build(
-        Type: InteractionCallbackType,
-        ?Data: InteractionCallbackData
-    ) = {
-        Type = Type;
-        Data = Data;
-    }
+and InteractionCallbackDataConverter () =
+    inherit JsonConverter<InteractionCallbackData> () with
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
+            raise <| NotImplementedException()
+            
+        override _.Write (writer: Utf8JsonWriter, value: InteractionCallbackData, options: JsonSerializerOptions) = 
+            raise <| NotImplementedException()
+
+    // TODO: Implement (Consider making a single `InteractionCallbackData` with all properties and try to convert to specific in code elsewhere?)
 
 type ActivityTimestamps = {
     [<JsonName "start">] [<JsonConverter(typeof<Converters.UnixEpoch>)>] Start: DateTime option
@@ -2015,120 +1215,61 @@ with
     }
 
 type ApplicationRoleConnectionMetadata = {
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: ApplicationRoleConnectionMetadataType
-    
-    [<JsonField("key")>]
-    Key: string
-    
-    [<JsonField("name")>]
-    Name: string
-    
-    [<JsonField("name_localizations")>]
-    NameLocalizations: Dictionary<string, string> option
-    
-    [<JsonField("description")>]
-    Description: string
-    
-    [<JsonField("description_localizations")>]
-    DescriptionLocalizations: Dictionary<string, string> option
+    [<JsonName "type">] Type: ApplicationRoleConnectionMetadataType
+    [<JsonName "key">] Key: string
+    [<JsonName "name">] Name: string
+    [<JsonName "name_localizations">] NameLocalizations: Dictionary<string, string> option
+    [<JsonName "description">] Description: string
+    [<JsonName "description_localizations">] DescriptionLocalizations: Dictionary<string, string> option
 }
 
 type ApplicationRoleConnection = {
-    [<JsonField("platform_name")>]
-    PlatformName: string option
-    
-    [<JsonField("platform_username")>]
-    PlatformUsername: string option
-    
-    [<JsonField("metadata")>]
-    Metadata: ApplicationRoleConnectionMetadata
+    [<JsonName "platform_name">] PlatformName: string option
+    [<JsonName "platform_username">] PlatformUsername: string option
+    [<JsonName "metadata">] Metadata: ApplicationRoleConnectionMetadata
 }
 
 type FollowedChannel = {
-    [<JsonField("channel_id")>]
-    ChannelId: string
-
-    [<JsonField("webhook_id")>]
-    WebhookId: string
+    [<JsonName "channel_id">] ChannelId: string
+    [<JsonName "webhook_id">] WebhookId: string
 }
 
 // https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-rule-object-trigger-metadata
 type AutoModerationTriggerMetadata = {
-    [<JsonField("keyword_filter")>]
-    KeywordFilter: string list option
-    
-    [<JsonField("regex_patterns")>]
-    RegexPatterns: string list option
-    
-    [<JsonField("presets", EnumValue = EnumMode.Value)>]
-    Presets: AutoModerationKeywordPresetType option
-    
-    [<JsonField("allow_list")>]
-    AllowList: string list option
-    
-    [<JsonField("mention_total_limit")>]
-    MentionTotalLimit: int option
-    
-    [<JsonField("mention_raid_protection_enabled")>]
-    MentionRaidProtectionEnabled: bool option
+    [<JsonName "keyword_filter">] KeywordFilter: string list option
+    [<JsonName "regex_patterns">] RegexPatterns: string list option
+    [<JsonName "presets">] Presets: AutoModerationKeywordPresetType option
+    [<JsonName "allow_list">] AllowList: string list option
+    [<JsonName "mention_total_limit">] MentionTotalLimit: int option
+    [<JsonName "mention_raid_protection_enabled">] MentionRaidProtectionEnabled: bool option
 }
 
 // https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-action-object-action-metadata
 type AutoModerationActionMetadata = {
-    [<JsonField("channel_id")>]
-    ChannelId: string option
-
-    [<JsonField("duration_seconds")>]
-    DurationSeconds: int option
-
-    [<JsonField("custom_message")>]
-    CustomMessage: string option
+    [<JsonName "channel_id">] ChannelId: string option
+    [<JsonName "duration_seconds">] DurationSeconds: int option
+    [<JsonName "custom_message">] CustomMessage: string option
 }
 
 // https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-action-object
 type AutoModerationAction = {
-    [<JsonField("type", EnumValue = EnumMode.Value)>]
-    Type: AutoModerationActionType
-
-    [<JsonField("metadata")>]
-    Metadata: AutoModerationActionMetadata option
+    [<JsonName "type">] Type: AutoModerationActionType
+    [<JsonName "metadata">] Metadata: AutoModerationActionMetadata option
 }
 
 // https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-rule-object-auto-moderation-rule-structure
 type AutoModerationRule = {
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("guild_id")>]
-    GuildId: string
-    
-    [<JsonField("name")>]
-    Name: string
-    
-    [<JsonField("creator_id")>]
-    CreatorId: string
-    
-    [<JsonField("event_type", EnumValue = EnumMode.Value)>]
-    EventType: AutoModerationEventType
-    
-    [<JsonField("trigger_type", EnumValue = EnumMode.Value)>]
-    TriggerType: AutoModerationTriggerType
-    
-    [<JsonField("trigger_metadata")>]
-    TriggerMetadata: AutoModerationTriggerMetadata
-    
-    [<JsonField("actions")>]
-    Actions: AutoModerationAction list
-    
-    [<JsonField("enabled")>]
-    Enabled: bool
-    
-    [<JsonField("exempt_roles")>]
-    ExemptRoles: string list
-    
-    [<JsonField("exempt_channels")>]
-    ExemptChannels: string list
+    [<JsonName "id">] Id: string
+    [<JsonName "guild_id">] GuildId: string
+    [<JsonName "name">] Name: string
+    [<JsonName "creator_id">] CreatorId: string
+    [<JsonName "event_type">] EventType: AutoModerationEventType
+    [<JsonName "trigger_type">] TriggerType: AutoModerationTriggerType
+    [<JsonName "trigger_metadata">] TriggerMetadata: AutoModerationTriggerMetadata
+    [<JsonName "actions">] Actions: AutoModerationAction list
+    [<JsonName "enabled">] nabled: bool
+    [<JsonName "exempt_roles">] ExemptRoles: string list
+    [<JsonName "exempt_channels">] ExemptChannels: string list
 }
 
 // https://discord.com/developers/docs/resources/application#get-application-activity-instance-activity-location-object
@@ -2185,200 +1326,96 @@ type GuildIntegration = {
 
 // https://discord.com/developers/docs/resources/guild#ban-object-ban-structure
 type GuildBan = {
-    [<JsonField("reason")>]
-    Reason: string option
-    
-    [<JsonField("user")>]
-    User: User
+    [<JsonName "reason">] Reason: string option
+    [<JsonName "user">] User: User
 }
 
 // https://discord.com/developers/docs/resources/webhook#webhook-object-webhook-structure
 type Webhook = {
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("webhook_type", EnumValue = EnumMode.Value)>]
-    Type: WebhookType
-    
-    [<JsonField("guild_id")>]
-    GuildId: string option
-    
-    [<JsonField("channel_id")>]
-    ChannelId: string option
-    
-    [<JsonField("user")>]
-    User: User option
-    
-    [<JsonField("name")>]
-    Name: string option
-    
-    [<JsonField("avatar")>]
-    Avatar: string option
-    
-    [<JsonField("token")>]
-    Token: string option
-    
-    [<JsonField("application_id")>]
-    ApplicationId: string option
-    
-    [<JsonField("source_guild")>]
-    SourceGuild: Guild option
-    
-    [<JsonField("source_channel")>]
-    SourceChannel: Channel option
-    
-    [<JsonField("url")>]
-    Url: string option
+    [<JsonName "id">] Id: string
+    [<JsonName "webhook_type">] Type: WebhookType
+    [<JsonName "guild_id">] GuildId: string option
+    [<JsonName "channel_id">] ChannelId: string option
+    [<JsonName "user">] User: User option
+    [<JsonName "name">] Name: string option
+    [<JsonName "avatar">] Avatar: string option
+    [<JsonName "token">] Token: string option
+    [<JsonName "application_id">] ApplicationId: string option
+    [<JsonName "source_guild">] SourceGuild: Guild option
+    [<JsonName "source_channel">] SourceChannel: Channel option
+    [<JsonName "url">] Url: string option
 }
 
 // https://discord.com/developers/docs/resources/audit-log#audit-log-change-object
 type AuditLogChange = {
-    [<JsonField("new_value")>]
-    NewValue: obj option
-    
-    [<JsonField("old_value")>]
-    OldValue: obj option
-    
-    [<JsonField("key")>]
-    Key: string
-
+    [<JsonName "new_value">] NewValue: obj option
+    [<JsonName "old_value">] OldValue: obj option
+    [<JsonName "key">] Key: string
     // TODO: Determine what possible types the values can be and create discriminated union for them
 }
 
 // https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object-optional-audit-entry-info
 type AuditLogEntryOptionalInfo = {
-    [<JsonField("application_id")>]
-    ApplicationId: string option
-    
-    [<JsonField("auto_moderation_rule_name")>]
-    AutoModerationRuleName: string option
-    
-    [<JsonField("auto_moderation_rule_trigger_type")>]
-    AutoModerationRuleTriggerType: string option
-    
-    [<JsonField("channel_id")>]
-    ChannelId: string option
-    
-    [<JsonField("count")>]
-    Count: string option
-    
-    [<JsonField("delete_member_days")>]
-    DeleteMemberDays: string option
-    
-    [<JsonField("id")>]
-    Id: string option
-    
-    [<JsonField("members_removed")>]
-    MembersRemoved: string option
-    
-    [<JsonField("message_id")>]
-    MessageId: string option
-    
-    [<JsonField("role_name")>]
-    RoleName: string option
-    
-    [<JsonField("type")>]
-    Type: string option
-    
-    [<JsonField("integration_type")>]
-    IntegrationType: string option
-
+    [<JsonName "application_id">] ApplicationId: string option
+    [<JsonName "auto_moderation_rule_name">] AutoModerationRuleName: string option
+    [<JsonName "auto_moderation_rule_trigger_type">] AutoModerationRuleTriggerType: string option
+    [<JsonName "channel_id">] ChannelId: string option
+    [<JsonName "count">] Count: string option
+    [<JsonName "delete_member_days">] DeleteMemberDays: string option
+    [<JsonName "id">] Id: string option
+    [<JsonName "members_removed">] MembersRemoved: string option
+    [<JsonName "message_id">] MessageId: string option
+    [<JsonName "role_name">] RoleName: string option
+    [<JsonName "type">] Type: string option
+    [<JsonName "integration_type">] IntegrationType: string option
     // TODO: Determine if the documentation is incorrect about everything being strings
 }
 
 // https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object-audit-log-entry-structure
 type AuditLogEntry = {
-    [<JsonField("target_id")>]
-    TargetId: string option
-    
-    [<JsonField("changes")>]
-    Changes: AuditLogChange list option
-    
-    [<JsonField("user_id")>]
-    UserId: string option
-    
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("action_type", EnumValue = EnumMode.Value)>]
-    ActionType: AuditLogEventType
-    
-    [<JsonField("options")>]
-    Options: AuditLogEntryOptionalInfo option
-    
-    [<JsonField("reason")>]
-    Reason: string option
+    [<JsonName "target_id">] TargetId: string option
+    [<JsonName "changes">] Changes: AuditLogChange list option
+    [<JsonName "user_id">] UserId: string option
+    [<JsonName "id">] Id: string
+    [<JsonName "action_type">] ActionType: AuditLogEventType
+    [<JsonName "options">] Options: AuditLogEntryOptionalInfo option
+    [<JsonName "reason">] Reason: string option
 }
 
 // https://discord.com/developers/docs/resources/audit-log#audit-log-object-audit-log-structure
 type AuditLog = {
-    [<JsonField("application_commands")>]
-    ApplicationCommands: ApplicationCommand list
-    
-    [<JsonField("audit_log_entries")>]
-    AuditLogEntries: AuditLogEntry list
-    
-    [<JsonField("auto_moderation_rules")>]
-    AutoModerationRules: AutoModerationRule list
-    
+    [<JsonName "application_commands">] ApplicationCommands: ApplicationCommand list
+    [<JsonName "audit_log_entries">] AuditLogEntries: AuditLogEntry list
+    [<JsonName "auto_moderation_rules">] AutoModerationRules: AutoModerationRule list
     // TODO: Add `guild_scheduled_events` with list type from: https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-structure
-    
-    [<JsonField("integrations")>]
-    Integrations: GuildIntegration list
-    
-    [<JsonField("threads")>]
-    Threads: Channel list
-    
-    [<JsonField("users")>]
-    Users: User list
-    
-    [<JsonField("webhooks")>]
-    Webhooks: Webhook list
+    [<JsonName "integrations">] Integrations: GuildIntegration list
+    [<JsonName "threads">] Threads: Channel list
+    [<JsonName "users">] Users: User list
+    [<JsonName "webhooks">] Webhooks: Webhook list
 }
 
 // https://discord.com/developers/docs/resources/voice#voice-region-object-voice-region-structure
 type VoiceRegion = {
-    [<JsonField("id")>]
-    Id: string
-    
-    [<JsonField("name")>]
-    Name: string
-    
-    [<JsonField("optimal")>]
-    Optimal: bool
-    
-    [<JsonField("deprecated")>]
-    Deprecated: bool
-    
-    [<JsonField("custom")>]
-    Custom: bool
+    [<JsonName "id">] Id: string
+    [<JsonName "name">] Name: string
+    [<JsonName "optimal">] Optimal: bool
+    [<JsonName "deprecated">] Deprecated: bool
+    [<JsonName "custom">] Custom: bool
 }
 
 // https://discord.com/developers/docs/topics/gateway#session-start-limit-object-session-start-limit-structure
 type SessionStartLimit = {
-    [<JsonField("total")>]
-    Total: int
-
-    [<JsonField("remaining")>]
-    Remaining: int
-    
-    [<JsonField("reset_after")>]
-    ResetAfter: int
-
-    [<JsonField("max_concurrency")>]
-    MaxConcurrency: int
+    [<JsonName "total">] Total: int
+    [<JsonName "remaining">] Remaining: int
+    [<JsonName "reset_after">] ResetAfter: int
+    [<JsonName "max_concurrency">] MaxConcurrency: int
 }
 
 // https://discord.com/developers/docs/topics/gateway-events#identify-identify-connection-properties
 type ConnectionProperties = {
-    [<JsonField("os")>]
-    OperatingSystem: string
-    
-    [<JsonField("browser")>]
-    Browser: string
-    
-    [<JsonField("device")>]
-    Device: string
+    [<JsonName "os">] OperatingSystem: string
+    [<JsonName "browser">] Browser: string
+    [<JsonName "device">] Device: string
 }
 with
     static member build(

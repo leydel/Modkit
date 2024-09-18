@@ -26,6 +26,8 @@ type IDiscordHttpApplicationCommandActions =
         commands: ApplicationCommand list ->
         Task<ApplicationCommand list>
 
+    // TODO: Check above types for what needs to be `option` or not
+
     // TODO: Implement remaining endpoints
 
 type DiscordHttpApplicationCommandActions (httpClientFactory: IHttpClientFactory, token: string) =
