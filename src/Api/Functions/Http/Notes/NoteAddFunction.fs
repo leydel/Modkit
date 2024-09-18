@@ -1,16 +1,16 @@
 ﻿namespace Modkit.Api.Functions
 
-open FSharp.Json
 open Microsoft.Azure.Functions.Worker
 open Microsoft.Extensions.Logging
 open Modkit.Api.Actions
 open Modkit.Api.DTOs
+open Modkit.Discordfs.Utils
 open System.Net
 open System.Net.Http
+open System.Text.Json.Serialization
 
 type NoteAddFunctionPayload = {
-    [<JsonField("message")>]
-    Message: string
+    [<JsonName "message">] Message: string
 }
 
 type NoteAddFunction (noteAddAction: INoteAddAction) =
@@ -21,7 +21,7 @@ type NoteAddFunction (noteAddAction: INoteAddAction) =
         userId: string
     ) = task {
         let! json = req.Content.ReadAsStringAsync()
-        let body = Json.deserialize<NoteAddFunctionPayload> json
+        let body = FsJson.deserialize<NoteAddFunctionPayload> json
 
         let! note = noteAddAction.run userId body.Message
 
@@ -33,7 +33,7 @@ type NoteAddFunction (noteAddAction: INoteAddAction) =
             let payload = NoteDto.from note
 
             let res = new HttpResponseMessage(HttpStatusCode.OK)
-            res.Content <- new StringContent(Json.serialize payload)
+            res.Content <- new StringContent(FsJson.serialize payload)
             res.Headers.Add("Content-Type", "application/json")
             
             log.LogInformation($"Successfully called note add function for user {userId}")

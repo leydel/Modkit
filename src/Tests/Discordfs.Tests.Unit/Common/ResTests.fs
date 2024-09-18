@@ -1,13 +1,14 @@
 ﻿namespace Modkit.Discordfs.Common
 
 open Microsoft.VisualStudio.TestTools.UnitTesting
+open Modkit.Discordfs.Utils
 open System.Net
 open System.Net.Http
+open System.Text.Json.Serialization
 open System.Threading.Tasks
 
 type Nonce = {
-    [<JsonField("nonce")>]
-    Nonce: int
+    [<JsonName "nonce">] Nonce: int
 }
 
 [<TestClass>]
@@ -19,7 +20,7 @@ type ResTests () =
         // Arrange
         let body = { Nonce = 1 }
         let httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
-        httpResponseMessage.Content <- new StringContent(Json.serializeU body)
+        httpResponseMessage.Content <- new StringContent(FsJson.serialize body)
 
         let task = Task.FromResult httpResponseMessage
 

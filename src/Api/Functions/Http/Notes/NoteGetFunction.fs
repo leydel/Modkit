@@ -1,10 +1,10 @@
 ﻿namespace Modkit.Api.Functions
 
-open FSharp.Json
 open Microsoft.Azure.Functions.Worker
 open Microsoft.Extensions.Logging
 open Modkit.Api.Actions
 open Modkit.Api.DTOs
+open Modkit.Discordfs.Utils
 open System.Net
 open System.Net.Http
 
@@ -26,7 +26,7 @@ type NoteGetFunction (noteGetAction: INoteGetAction) =
             let payload = NoteDto.from note
 
             let res = new HttpResponseMessage(HttpStatusCode.OK)
-            res.Content <- new StringContent(Json.serialize payload)
+            res.Content <- new StringContent(FsJson.serialize payload)
             res.Headers.Add("Content-Type", "application/json")
 
             log.LogInformation($"Successfully called note get function for user {userId} and note {noteId}")
