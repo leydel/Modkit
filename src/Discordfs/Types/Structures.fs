@@ -1218,10 +1218,26 @@ type ApplicationRoleConnectionMetadata = {
     [<JsonName "type">] Type: ApplicationRoleConnectionMetadataType
     [<JsonName "key">] Key: string
     [<JsonName "name">] Name: string
-    [<JsonName "name_localizations">] NameLocalizations: Dictionary<string, string> option
+    [<JsonName "name_localizations">] NameLocalizations: IDictionary<string, string> option
     [<JsonName "description">] Description: string
-    [<JsonName "description_localizations">] DescriptionLocalizations: Dictionary<string, string> option
+    [<JsonName "description_localizations">] DescriptionLocalizations: IDictionary<string, string> option
 }
+with
+    static member build(
+        Type: ApplicationRoleConnectionMetadataType,
+        Key: string,
+        Name: string,
+        Description: string,
+        ?NameLocalizations: IDictionary<string, string>,
+        ?DescriptionLocalizations: IDictionary<string, string>
+    ) = {
+        Type = Type;
+        Key = Key;
+        Name = Name;
+        NameLocalizations = NameLocalizations;
+        Description = Description;
+        DescriptionLocalizations = DescriptionLocalizations;
+    }
 
 type ApplicationRoleConnection = {
     [<JsonName "platform_name">] PlatformName: string option

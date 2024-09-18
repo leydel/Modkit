@@ -30,4 +30,4 @@ type DiscordHttpAuditLogActions (httpClientFactory: IHttpClientFactory, token: s
             |> Req.queryOpt "after" after
             |> Req.queryOpt "limit" (Option.map _.ToString() limit)
             |> Req.send httpClientFactory
-            |> Res.body
+            |> Res.json

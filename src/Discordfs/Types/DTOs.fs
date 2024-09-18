@@ -226,39 +226,6 @@ type ModifyAutoModerationRule = {
     ExemptChannels: string list option
 }
 
-// https://discord.com/developers/docs/resources/application#edit-current-application-json-params
-type EditCurrentApplication = {
-    [<JsonField("custom_install_url")>]
-    CustomInstallUrl: string option
-    
-    [<JsonField("description")>]
-    Description: string option
-    
-    [<JsonField("role_connection_verification_url")>]
-    RoleConnectionVerificationUrl: string option
-    
-    [<JsonField("install_params")>]
-    InstallParams: OAuth2InstallParams option
-    
-    [<JsonField("integration_types_config")>]
-    IntegrationTypesConfig: Map<ApplicationIntegrationType, ApplicationIntegrationTypeConfiguration> option
-    
-    [<JsonField("flags")>]
-    Flags: int option
-    
-    [<JsonField("icon")>]
-    Icon: string option
-    
-    [<JsonField("cover_image")>]
-    CoverImage: string option
-    
-    [<JsonField("interactions_endpoint_url")>]
-    InteractionsEndpointUrl: string option
-    
-    [<JsonField("tags")>]
-    Tags: string list option
-}
-
 // https://discord.com/developers/docs/resources/emoji#create-guild-emoji-json-params
 type CreateGuildEmoji = {
     [<JsonField("name")>]
