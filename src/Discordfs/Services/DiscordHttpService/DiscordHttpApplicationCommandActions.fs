@@ -7,64 +7,70 @@ open System.Collections.Generic
 open System.Net.Http
 open System.Threading.Tasks
 
+type CreateGlobalApplicationCommand (
+    name:                        string,
+    ?description:                string,
+    ?name_localizations:         IDictionary<string, string> option,
+    ?description_localizations:  IDictionary<string, string> option,
+    ?options:                    ApplicationCommandOption list,
+    ?default_member_permissions: string option,
+    ?dm_permission:              bool option,
+    ?default_permission:         bool,
+    ?integration_types:          ApplicationIntegrationType list,
+    ?``type``:                   ApplicationCommandType,
+    ?nsfw:                       bool
+) =
+    inherit Payload(Json) with
+        override _.Serialize () = json {
+            required "name" name
+            optional "name_localizations" name_localizations
+            optional "description" description
+            optional "description_localizations" description_localizations
+            optional "options" options
+            optional "default_member_permissions" default_member_permissions
+            optional "dm_permission" dm_permission
+            optional "default_permission" default_permission
+            optional "integration_types" integration_types
+            optional "type" ``type``
+            optional "nsfw" nsfw
+        }
+
+type BulkOverwriteGlobalApplicationCommands (
+    commands: ApplicationCommand list
+) =
+    inherit Payload(Json) with
+        override _.Serialize () =
+            FsJson.serialize commands
+
 type IDiscordHttpApplicationCommandActions =
     abstract member CreateGlobalApplicationCommand:
         applicationId: string ->
-        name: string ->
-        nameLocalizations: IDictionary<string, string> option ->
-        description: string ->
-        descriptionLocalizations: IDictionary<string, string> option ->
-        options: ApplicationCommandOption list option ->
-        defaultMemberPermissions: string option ->
-        dmPermissions: bool option ->
-        integrationTypes: ApplicationIntegrationType list option ->
-        ``type``: ApplicationCommandType ->
-        nsfw: bool option ->
+        content: CreateGlobalApplicationCommand ->
         Task<ApplicationCommand>
 
     abstract member BulkOverwriteGlobalApplicationCommands:
         applicationId: string -> 
-        payload: ApplicationCommand list ->
+        content: BulkOverwriteGlobalApplicationCommands ->
         Task<ApplicationCommand list>
-
-    // TODO: Check above types for what needs to be `option` or not
 
     // TODO: Implement remaining endpoints
 
 type DiscordHttpApplicationCommandActions (httpClientFactory: IHttpClientFactory, token: string) =
     interface IDiscordHttpApplicationCommandActions with
-        member _.CreateGlobalApplicationCommand
-            applicationId name nameLocalizations description descriptionLocalizations options defaultMemberPermissions
-            dmPermissions integrationTypes ``type`` nsfw =
-                Req.create
-                    HttpMethod.Post
-                    Constants.DISCORD_API_URL
-                    $"applications/{applicationId}/commands"
-                |> Req.bot token
-                |> Req.json (
-                    Dto()
-                    |> Dto.property "name" name
-                    |> Dto.propertyIf "name_localizations" nameLocalizations
-                    |> Dto.property "description" description
-                    |> Dto.propertyIf "description_localizations" descriptionLocalizations
-                    |> Dto.propertyIf "options" options
-                    |> Dto.propertyIf "default_member_permissions" defaultMemberPermissions
-                    |> Dto.propertyIf "dm_permissions" dmPermissions
-                    |> Dto.propertyIf "integration_types" integrationTypes
-                    |> Dto.property "type" ``type``
-                    |> Dto.propertyIf "nsfw" nsfw
-                    |> Dto.json
-                )
-                |> Req.send httpClientFactory
-                |> Res.json
+        member _.CreateGlobalApplicationCommand applicationId content =
+            req {
+                post $"applications/{applicationId}/commands"
+                bot token
+                payload Json content
+            }
+            |> Http.send httpClientFactory
+            |> Task.mapT Http.toJson
 
-        member _.BulkOverwriteGlobalApplicationCommands
-            applicationId payload =
-                Req.create
-                    HttpMethod.Patch
-                    Constants.DISCORD_API_URL
-                    $"applications/{applicationId}/commands"
-                |> Req.bot token
-                |> Req.json (FsJson.serialize payload)
-                |> Req.send httpClientFactory
-                |> Res.json
+        member _.BulkOverwriteGlobalApplicationCommands applicationId content =
+            req {
+                put $"applications/{applicationId}/commands"
+                bot token
+                payload Json content
+            }
+            |> Http.send httpClientFactory
+            |> Task.mapT Http.toJson

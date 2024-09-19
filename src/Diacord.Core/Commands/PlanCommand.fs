@@ -54,16 +54,16 @@ type PlanCommand (stateProvider: IStateProvider) =
             let! state = stateProvider.get guildId
 
             // Determine command settings
-            let strictRoles = template.Settings |> Option.map _.StrictRoles |> Option.defaultValue false
-            let strictEmojis = template.Settings |> Option.map _.StrictEmojis |> Option.defaultValue false
-            let strictStickers = template.Settings |> Option.map _.StrictStickers |> Option.defaultValue false
-            let strictChannels = template.Settings |> Option.map _.StrictChannels |> Option.defaultValue false
+            let strictRoles = template.Settings >>= _.StrictRoles >>? false
+            let strictEmojis = template.Settings >>= _.StrictEmojis >>? false
+            let strictStickers = template.Settings >>= _.StrictStickers >>? false
+            let strictChannels = template.Settings >>= _.StrictChannels >>? false
 
             // Get templates to compare
-            let templateRoles = Option.defaultValue [] template.Roles
-            let templateEmojis = Option.defaultValue [] template.Emojis
-            let templateStickers = Option.defaultValue [] template.Stickers
-            let templateChannels = Option.defaultValue [] template.Channels
+            let templateRoles = template.Roles >>? []
+            let templateEmojis = template.Emojis >>? []
+            let templateStickers = template.Stickers >>? []
+            let templateChannels = template.Channels >>? []
 
             // Compare templates to state
             let roles = this.map<DiacordRole, Role> _.DiacordId _.Id templateRoles state.Roles strictRoles mappings

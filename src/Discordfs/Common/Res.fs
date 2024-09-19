@@ -4,6 +4,7 @@ open Modkit.Discordfs.Utils
 open System.Net.Http
 open System.Threading.Tasks
 
+[<System.Obsolete>]
 module Res =
     let json<'a> (resTask: Task<HttpResponseMessage>) = task {
         let! res = resTask
