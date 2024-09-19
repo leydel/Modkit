@@ -10,6 +10,7 @@
     <Compile Include="Utils\Converters.fs" />
     <Compile Include="Utils\FsJson.fs" />
     <Compile Include="Common\Constants.fs" />
+    <Compile Include="Common\Http.fs" />
     <Compile Include="Common\Dto.fs" />
     <Compile Include="Common\Req.fs" />
     <Compile Include="Common\Res.fs" />
@@ -18,8 +19,6 @@
     <Compile Include="Types\DTOs.fs" />
     <Compile Include="Commands\Command.fs" />
     <Compile Include="Commands\Options.fs" />
-    <Compile Include="Endpoints\Applications\[id]\Commands\CreateGlobalApplicationCommand.fs" />
-    <Compile Include="Endpoints\DiscordHttp.fs" />
     <Compile Include="Services\DiscordHttpService\DiscordHttpInteractionActions.fs" />
     <Compile Include="Services\DiscordHttpService\DiscordHttpApplicationCommandActions.fs" />
     <Compile Include="Services\DiscordHttpService\DiscordHttpApplicationActions.fs" />

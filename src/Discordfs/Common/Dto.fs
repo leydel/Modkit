@@ -2,8 +2,8 @@
 
 open Modkit.Discordfs.Utils
 open System.Collections.Generic
-open System.Text.Json.Nodes
 
+[<System.Obsolete>]
 type Dto () =
     member val private Properties: IDictionary<string, obj> = Dictionary()
 

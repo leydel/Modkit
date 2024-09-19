@@ -4,6 +4,7 @@ open System
 open System.Net.Http
 open System.Web
 
+[<System.Obsolete>]
 module Req =
     let create (method: HttpMethod) (host: string) (endpoint: string) =
         new HttpRequestMessage(method, host + "/" + endpoint)
