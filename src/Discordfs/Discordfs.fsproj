@@ -18,7 +18,7 @@
     <Compile Include="Types\DTOs.fs" />
     <Compile Include="Commands\Command.fs" />
     <Compile Include="Commands\Options.fs" />
-    <Compile Include="Endpoints\applications\[applicationId]\commands\CreateGlobalApplicationCommand.fs" />
+    <Compile Include="Endpoints\Applications\[id]\Commands\CreateGlobalApplicationCommand.fs" />
     <Compile Include="Endpoints\DiscordHttp.fs" />
     <Compile Include="Services\DiscordHttpService\DiscordHttpInteractionActions.fs" />
     <Compile Include="Services\DiscordHttpService\DiscordHttpApplicationCommandActions.fs" />

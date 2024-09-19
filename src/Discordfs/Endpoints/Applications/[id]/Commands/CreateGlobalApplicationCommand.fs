@@ -2,7 +2,6 @@
 
 open Modkit.Discordfs.Common
 open Modkit.Discordfs.Types
-open Modkit.Discordfs.Utils
 open System.Collections.Generic
 open System.Net.Http
 open System.Threading.Tasks
@@ -41,14 +40,21 @@ type CreateGlobalApplicationCommandPayload (
         |> Dto.propertyIf (nameof(nsfw)) this.Nsfw
         |> Dto.json
 
+type ICreateGlobalApplicationCommand =
+    abstract member Run:
+        applicationId: string ->
+        payload: CreateGlobalApplicationCommandPayload ->
+        Task<ApplicationCommand>
+
 type CreateGlobalApplicationCommand (httpClientFactory, token) =
-    member _.Run
-        applicationId payload =
-            Req.create
-                HttpMethod.Post
-                Constants.DISCORD_API_URL
-                $"applications/{applicationId}/commands"
-            |> Req.bot token
-            |> Req.json (payload.ToString())
-            |> Req.send httpClientFactory
-            |> Res.json
+    interface ICreateGlobalApplicationCommand with
+        member _.Run
+            applicationId payload =
+                Req.create
+                    HttpMethod.Post
+                    Constants.DISCORD_API_URL
+                    $"applications/{applicationId}/commands"
+                |> Req.bot token
+                |> Req.json (payload.ToString())
+                |> Req.send httpClientFactory
+                |> Res.json
