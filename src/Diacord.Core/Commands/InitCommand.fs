@@ -5,7 +5,7 @@ open Modkit.Diacord.Core.Structures
 open System.Collections.Generic
 open System.Threading.Tasks
 
-type ICreateCommand =
+type IInitCommand =
     abstract member run:
         guildId: string ->
         strictRoles: bool ->
@@ -14,8 +14,8 @@ type ICreateCommand =
         strictChannels: bool ->
         Task<(DiacordTemplate * IDictionary<string, string>)>
 
-type CreateCommand (stateProvider: IStateProvider) =
-    interface ICreateCommand with
+type InitCommand (stateProvider: IStateProvider) =
+    interface IInitCommand with
         member _.run guildId strictRoles strictEmojis strictStickers strictChannels = task {
             // Fetch state from Discord
             let! state = stateProvider.get guildId

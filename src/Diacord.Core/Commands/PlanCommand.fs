@@ -7,14 +7,14 @@ open Modkit.Discordfs.Types
 open System.Collections.Generic
 open System.Threading.Tasks
 
-type ICompareCommand =
+type IPlanCommand =
     abstract member run:
         guildId: string ->
         template: DiacordTemplate ->
         mappings: IDictionary<string, string> ->
         Task<DiffNode>
 
-type CompareCommand (stateProvider: IStateProvider) =
+type PlanCommand (stateProvider: IStateProvider) =
     member _.map<'a, 'b>
         (getLeftId: 'a -> string) (getRightId: 'b -> string) (template: 'a list) (state: 'b list) (strict: bool)
         (mappings: IDictionary<string, string>) =
@@ -48,7 +48,7 @@ type CompareCommand (stateProvider: IStateProvider) =
             |> List.append (List.collect (rightJoin mappings) state)
             |> List.filter (ignoreIfNotStrict strict)
 
-    interface ICompareCommand with
+    interface IPlanCommand with
         member this.run guildId template mappings = task {
             // Fetch state from Discord
             let! state = stateProvider.get guildId
