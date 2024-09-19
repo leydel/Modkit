@@ -4,7 +4,6 @@ open Modkit.Discordfs.Utils
 open System
 open System.Collections.Generic
 open System.Net.Http
-open System.Threading.Tasks
 open System.Web
 
 [<AutoOpen>]
@@ -12,19 +11,12 @@ module Http =
     let send (httpClientFactory: IHttpClientFactory) (req: HttpRequestMessage) =
         httpClientFactory.CreateClient().SendAsync req
 
-    let toJson<'a> (resTask: Task<HttpResponseMessage>) = task {
-        let! res = resTask
-        let! body = res.Content.ReadAsStringAsync()
-        return FsJson.deserialize<'a> body
-    }
-    let toRaw (resTask: Task<HttpResponseMessage>) = task {
-        let! res = resTask
-        return! res.Content.ReadAsStringAsync()
-    }
+    let toJson<'a> (res: HttpResponseMessage) =
+        res.Content.ReadAsStringAsync()
+        |> Task.map (fun body -> FsJson.deserialize<'a> body) 
 
-    let ignore (resTask: Task<HttpResponseMessage>) = task {
-        do! resTask :> Task
-    }
+    let toRaw (res: HttpResponseMessage) =
+        res.Content.ReadAsStringAsync()
 
     [<AutoOpen>]
     type PayloadType =
@@ -53,17 +45,6 @@ module Http =
 
         [<CustomOperation("optional")>]
         member this.Optional (_, name: string, value: 'a option) =
-            if value.IsSome then
-                this.Properties.Add(name, value)
-
-            this.Serialize()
-
-        [<CustomOperation("property")>]
-        member this.Property (_, name: string, value: 'a) =
-            0
-
-        [<CustomOperation("property")>]
-        member this.Property (_, name: string, value: 'a option) =
             if value.IsSome then
                 this.Properties.Add(name, value)
 

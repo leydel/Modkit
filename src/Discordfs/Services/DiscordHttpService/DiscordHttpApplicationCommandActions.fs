@@ -64,7 +64,7 @@ type DiscordHttpApplicationCommandActions (httpClientFactory: IHttpClientFactory
                 payload Json content
             }
             |> Http.send httpClientFactory
-            |> Http.toJson
+            |> Task.mapT Http.toJson
 
         member _.BulkOverwriteGlobalApplicationCommands applicationId content =
             req {
@@ -73,4 +73,4 @@ type DiscordHttpApplicationCommandActions (httpClientFactory: IHttpClientFactory
                 payload Json content
             }
             |> Http.send httpClientFactory
-            |> Http.toJson
+            |> Task.mapT Http.toJson
