@@ -12,6 +12,13 @@ type DiacordSticker = {
     [<JsonName "tags">] [<JsonRequired>] Tags: string
 }
 with
+    static member from (sticker: Sticker) = {
+        DiacordId = sticker.Id;
+        Name = sticker.Name;
+        Description = sticker.Description;
+        Tags = sticker.Tags;
+    }
+
     static member diff (mappings: IDictionary<string, string>) ((a: DiacordSticker option), (b: Sticker option)) =
         let (>>=) ma f = Option.bind f ma
         let (>>.) ma f = Option.map f ma

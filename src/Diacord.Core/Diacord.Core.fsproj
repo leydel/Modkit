@@ -26,6 +26,7 @@
     <Compile Include="Providers\MappingStrategyProvider.fs" />
     <Compile Include="Providers\StateProvider.fs" />
     <Compile Include="Services\StateService.fs" />
+    <Compile Include="Commands\CreateCommand.fs" />
     <Compile Include="Commands\CompareCommand.fs" />
   </ItemGroup>
 

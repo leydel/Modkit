@@ -16,6 +16,17 @@ type DiacordRole = {
     [<JsonName "mentionable">] Mentionable: bool option
 }
 with
+    static member from (role: Role) =
+        {
+            DiacordId = role.Id;
+            Name = role.Name;
+            Color = match role.Color with | 0 -> None | v -> Some v;
+            Hoist = match role.Hoist with | false -> None | true -> Some true;
+            Icon = role.Icon;
+            UnicodeEmoji = role.UnicodeEmoji;
+            Mentionable = match role.Mentionable with | false -> None | true -> Some true;
+        }
+
     static member diff (mappings: IDictionary<string, string>) ((a: DiacordRole option), (b: Role option)) =
         let (>>=) ma f = Option.bind f ma
         let (>>.) ma f = Option.map f ma

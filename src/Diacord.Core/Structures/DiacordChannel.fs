@@ -27,6 +27,27 @@ type DiacordChannel = {
     [<JsonName "default_thread_rate_limit_per_user">] DefaultThreadRateLimitPerUser: int option
 }
 with
+    static member from (channel: Channel) = {
+        DiacordId = channel.Id;
+        Type = channel.Type;
+        Name = channel.Name;
+        Topic = channel.Topic;
+        Bitrate = channel.Bitrate;
+        UserLimit = channel.UserLimit;
+        RateLimitPerUser = channel.RateLimitPerUser;
+        Position = channel.Position;
+        ParentId = channel.ParentId;
+        Nsfw = channel.Nsfw;
+        RtcRegion = channel.RtcRegion;
+        VideoQualityMode = channel.VideoQualityMode;
+        DefaultAutoArchiveDuration = channel.DefaultAutoArchiveDuration;
+        DefaultReactionEmoji = channel.DefaultReactionEmoji;
+        AvailableTags = channel.AvailableTags;
+        DefaultSortOrder = channel.DefaultSortOrder;
+        DefaultForumLayout = channel.DefaultForumLayout;
+        DefaultThreadRateLimitPerUser = channel.DefaultThreadRateLimitPerUser;
+    }
+
     static member diff (mappings: IDictionary<string, string>) ((a: DiacordChannel option), (b: Channel option)) =
         let (>>=) ma f = Option.bind f ma
         let (>>.) ma f = Option.map f ma

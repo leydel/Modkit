@@ -11,6 +11,12 @@ type DiacordEmoji = {
     [<JsonName "roles">] Roles: string list option
 }
 with
+    static member from (emoji: Emoji) = {
+        DiacordId = match emoji.Id with | Some id -> id | None -> failwith "Invalid emoji provided";
+        Name = match emoji.Name with | Some name -> name | None -> failwith "Invalid emoji provided";
+        Roles = emoji.Roles;
+    }
+
     static member diff (mappings: IDictionary<string, string>) ((a: DiacordEmoji option), (b: Emoji option)) =
         let (>>=) ma f = Option.bind f ma
         let (>>.) ma f = Option.map f ma
