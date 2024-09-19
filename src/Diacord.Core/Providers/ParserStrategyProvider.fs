@@ -6,11 +6,11 @@ open Modkit.Diacord.Core.Strategies
 type IParserStrategyProvider =
     abstract member GetStrategy:
         strategy: string ->
-        Result<IParserStrategy, string>
+        IParserStrategy
 
 type ParserStrategyProvider () =
     interface IParserStrategyProvider with
         member _.GetStrategy strategy =
             match strategy with
-            | "json" -> Ok (JsonParserStrategy())
-            | _ -> Error "Unsupported parser strategy"
+            | "json" -> JsonParserStrategy()
+            | _ -> failwith "Unsupported parser strategy"

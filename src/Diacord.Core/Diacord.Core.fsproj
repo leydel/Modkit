@@ -19,11 +19,12 @@
     <Compile Include="Structures\DiacordTemplate.fs" />
     <Compile Include="Structures\DiacordState.fs" />
     <Compile Include="Interfaces\IParserStrategy.fs" />
+    <Compile Include="Interfaces\IMappingStrategy.fs" />
     <Compile Include="Strategies\Parser\JsonParserStrategy.fs" />
-    <Compile Include="Providers\MappingProvider.fs" />
+    <Compile Include="Strategies\Mapping\ApiMappingStrategy.fs" />
     <Compile Include="Providers\ParserStrategyProvider.fs" />
+    <Compile Include="Providers\MappingStrategyProvider.fs" />
     <Compile Include="Providers\StateProvider.fs" />
-    <Compile Include="Services\MappingService.fs" />
     <Compile Include="Services\StateService.fs" />
     <Compile Include="Commands\CompareCommand.fs" />
   </ItemGroup>

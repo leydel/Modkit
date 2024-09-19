@@ -11,9 +11,10 @@ type ICompareCommand =
     abstract member run:
         guildId: string ->
         template: DiacordTemplate ->
+        mappings: IDictionary<string, string> ->
         Task<DiffNode>
 
-type CompareCommand (stateProvider: IStateProvider, mappingProvider: IMappingProvider) =
+type CompareCommand (stateProvider: IStateProvider) =
     member _.map<'a, 'b>
         (getLeftId: 'a -> string) (getRightId: 'b -> string) (template: 'a list) (state: 'b list) (strict: bool)
         (mappings: IDictionary<string, string>) =
@@ -48,15 +49,9 @@ type CompareCommand (stateProvider: IStateProvider, mappingProvider: IMappingPro
             |> List.filter (ignoreIfNotStrict strict)
 
     interface ICompareCommand with
-        member this.run guildId template = task {
-            // Fetch data from API and Discord
+        member this.run guildId template mappings = task {
+            // Fetch state from Discord
             let! state = stateProvider.get guildId
-            let! mapping = mappingProvider.get guildId
-
-            let mappings =
-                match mapping with
-                | Error _ -> Dictionary<string, string>() :> IDictionary<string, string>
-                | Ok mappings -> mappings
 
             // Determine command settings
             let strictRoles = template.Settings |> Option.map _.StrictRoles |> Option.defaultValue false
