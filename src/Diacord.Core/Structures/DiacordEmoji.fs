@@ -18,9 +18,6 @@ with
     }
 
     static member diff (mappings: IDictionary<string, string>) ((a: DiacordEmoji option), (b: Emoji option)) =
-        let (>>=) ma f = Option.bind f ma
-        let (>>.) ma f = Option.map f ma
-
         DiffNode.leaf a b [
             Diff.from "name" (a >>. _.Name) (b >>= _.Name);
             Diff.from "roles" (a >>= _.Roles) (b >>= _.Roles);

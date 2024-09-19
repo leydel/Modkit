@@ -28,9 +28,6 @@ with
         }
 
     static member diff (mappings: IDictionary<string, string>) ((a: DiacordRole option), (b: Role option)) =
-        let (>>=) ma f = Option.bind f ma
-        let (>>.) ma f = Option.map f ma
-
         let color =
             match (a >>= _.Color) with
             | None -> Some 0

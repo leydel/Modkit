@@ -49,9 +49,6 @@ with
     }
 
     static member diff (mappings: IDictionary<string, string>) ((a: DiacordChannel option), (b: Channel option)) =
-        let (>>=) ma f = Option.bind f ma
-        let (>>.) ma f = Option.map f ma
-
         // TODO: Add `permission_overwrites`
 
         let parentId =
