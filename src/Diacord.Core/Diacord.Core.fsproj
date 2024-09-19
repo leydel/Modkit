@@ -10,6 +10,7 @@
     <Compile Include="Types\Api.fs" />
     <Compile Include="Types\Diff.fs" />
     <Compile Include="Types\DiffNode.fs" />
+    <Compile Include="Clients\ApiClient.fs" />
     <Compile Include="Structures\DiacordChannel.fs" />
     <Compile Include="Structures\DiacordSticker.fs" />
     <Compile Include="Structures\DiacordEmoji.fs" />
@@ -24,6 +25,7 @@
     <Compile Include="Providers\StateProvider.fs" />
     <Compile Include="Services\MappingService.fs" />
     <Compile Include="Services\StateService.fs" />
+    <Compile Include="Commands\CompareCommand.fs" />
   </ItemGroup>
 
   <ItemGroup>

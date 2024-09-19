@@ -5,13 +5,13 @@ open Modkit.Discordfs.Services
 open System.Threading.Tasks
 
 type IStateProvider =
-    abstract member GetState:
+    abstract member get:
         guildId: string ->
         Task<DiacordState>
 
 type StateProvider (discordHttpService: IDiscordHttpService) =
     interface IStateProvider with
-        member _.GetState guildId = task {
+        member _.get guildId = task {
             let! roles = discordHttpService.Guilds.GetGuildRoles guildId
             let! emojis = discordHttpService.Emojis.ListGuildEmojis guildId
             let! stickers = discordHttpService.Stickers.ListGuildStickers guildId
