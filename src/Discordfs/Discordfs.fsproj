@@ -32,6 +32,7 @@
     <Compile Include="Services\DiscordHttpService\DiscordHttpEntitlementActions.fs" />
     <Compile Include="Services\DiscordHttpService\DiscordHttpGatewayActions.fs" />
     <Compile Include="Services\DiscordHttpService\DiscordHttpGuildActions.fs" />
+    <Compile Include="Services\DiscordHttpService\DiscordHttpGuildScheduledEventActions.fs" />
     <Compile Include="Services\DiscordHttpService\DiscordHttpStickerActions.fs" />
     <Compile Include="Services\DiscordHttpService\DiscordHttpService.fs" />
     <Compile Include="Services\DiscordGatewayService\DiscordGatewayActions.fs" />

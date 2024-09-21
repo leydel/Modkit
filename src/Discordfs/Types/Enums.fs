@@ -990,4 +990,52 @@ type GuildWidgetStyleConverter () =
                 | GuildWidgetStyle.BANNER_4 -> "banner_4"
 
             writer.WriteStringValue string
-         
+       
+// https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-privacy-level
+type PrivacyLevelType =
+    | GUILD_ONLY = 2
+
+// https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-status
+type EventStatusType =
+    | SCHEDULED = 1
+    | ACTIVE = 2
+    | COMPLETED = 3
+    | CANCELED = 4
+
+// https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-entity-types
+type ScheduledEntityType =
+    | STANCE_INSTANCE = 1
+    | VOICE = 2
+    | EXTERNAL = 3
+
+// https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-recurrence-rule-object-guild-scheduled-event-recurrence-rule-frequency
+type RecurrenceRuleFrequencyType =
+    | YEARLY = 0
+    | MONTHLY = 1
+    | WEEKLY = 2
+    | DAILY = 3
+
+// https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-recurrence-rule-object-guild-scheduled-event-recurrence-rule-weekday
+type RecurrenceRuleWeekdayType =
+    | MONDAY = 1
+    | TUESDAY = 2
+    | WEDNESDAY = 3
+    | THURSDAY = 4
+    | FRIDAY = 5
+    | SATURDAY = 6
+    | SUNDAY = 7
+
+// https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-recurrence-rule-object-guild-scheduled-event-recurrence-rule-month
+type RecurrenceRuleMonthType =
+    | JANUARY = 1
+    | FEBRUARY = 2
+    | MARCH = 3
+    | APRIL = 4
+    | MAY = 5
+    | JUNE = 6
+    | JULY = 7
+    | AUGUST = 8
+    | SEPTEMBER = 9
+    | OCTOBER = 10
+    | NOVEMBER = 11
+    | DECEMBER = 12

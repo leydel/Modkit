@@ -788,6 +788,60 @@ and Message = {
     [<JsonName "call">] Call: MessageCall option
 }
 
+// https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-entity-metadata
+type EntityMetadata = {
+    [<JsonName "location">] Location: string option
+}
+
+// https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-recurrence-rule-object-guild-scheduled-event-recurrence-rule-nweekday-structure
+type RecurrenceRuleNWeekday = {
+    [<JsonName "n">] N: int
+    [<JsonName "day">] Day: RecurrenceRuleWeekdayType
+}
+
+// https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-recurrence-rule-object
+type RecurrenceRule = {
+    Start: string
+    End: string option
+    Frequency: RecurrenceRuleFrequencyType
+    Interval: int
+    ByWeekday: RecurrenceRuleWeekdayType list option
+    ByWeekend: RecurrenceRuleNWeekday list option
+    ByMonth: RecurrenceRuleMonthType list option
+    ByMonthDay: int list option
+    ByYearDay: int list option
+    Count: int option
+
+}
+
+// https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-structure
+type GuildScheduledEvent = {
+    [<JsonName "id">] Id: string
+    [<JsonName "id">] GuildId: string
+    [<JsonName "id">] ChannelId: string option
+    [<JsonName "id">] CreatorId: string option
+    [<JsonName "id">] Name: string
+    [<JsonName "id">] Description: string option
+    [<JsonName "id">] ScheduledStartTime: DateTime option
+    [<JsonName "id">] ScheduledEndTime: DateTime option
+    [<JsonName "id">] PrivacyLevel: PrivacyLevelType
+    [<JsonName "id">] EventStatus: EventStatusType
+    [<JsonName "id">] EntityType: ScheduledEntityType
+    [<JsonName "id">] EntityId: string option
+    [<JsonName "id">] EntityMetadata: EntityMetadata option
+    [<JsonName "id">] Creator: User option
+    [<JsonName "id">] UserCount: int option
+    [<JsonName "id">] Image: string option
+    [<JsonName "id">] RecurrenceRule: RecurrenceRule option
+}
+
+// https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-user-object-guild-scheduled-event-user-structure
+type GuildScheduledEventUser = {
+    [<JsonName "guild_scheduled_event_id">] GuildScheduledEventId: string
+    [<JsonName "user">] User: User
+    [<JsonName "member">] Member: GuildMember option
+}
+
 type Invite = {
     [<JsonName "type">] Type: InviteType
     [<JsonName "code">] Code: string
@@ -800,7 +854,7 @@ type Invite = {
     [<JsonName "approximate_presence_count">] ApproximatePresenceCount: int option
     [<JsonName "approximate_member_count">] ApproximateMemberCount: int option
     [<JsonName "expires_at">] ExpiresAt: DateTime
-    // TODO: Add `guild_scheduled_event` with type from: https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-structure
+    [<JsonName "guild_scheduled_event">] GuildScheduledEvent: GuildScheduledEvent option
 }
 
 type InviteMetadata = {
@@ -830,7 +884,7 @@ type InviteWithMetadata = {
     [<JsonName "approximate_presence_count">] ApproximatePresenceCount: int option
     [<JsonName "approximate_member_count">] ApproximateMemberCount: int option
     [<JsonName "expires_at">] ExpiresAt: DateTime
-    // TODO: Add `guild_scheduled_event` with type from: https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-structure
+    [<JsonName "guild_scheduled_event">] GuildScheduledEvent: GuildScheduledEvent option
     [<JsonName "uses">] Uses: int
     [<JsonName "max_uses">] MaxUses: int
     [<JsonName "max_age">] MaxAge: int
@@ -1429,7 +1483,7 @@ type AuditLog = {
     [<JsonName "application_commands">] ApplicationCommands: ApplicationCommand list
     [<JsonName "audit_log_entries">] AuditLogEntries: AuditLogEntry list
     [<JsonName "auto_moderation_rules">] AutoModerationRules: AutoModerationRule list
-    // TODO: Add `guild_scheduled_events` with list type from: https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-structure
+    [<JsonName "guild_scheduled_events">] GuildScheduledEvents: GuildScheduledEvent list
     [<JsonName "integrations">] Integrations: GuildIntegration list
     [<JsonName "threads">] Threads: Channel list
     [<JsonName "users">] Users: User list
