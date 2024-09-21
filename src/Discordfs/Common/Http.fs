@@ -155,8 +155,8 @@ module Http =
             this.HttpRequestMessage
 
         [<CustomOperation("payload")>]
-        member this.Payload(_, payloadType: PayloadType, content: Payload) =
-            match payloadType with
+        member this.Payload(_, content: Payload) =
+            match content.Type with
             | Json ->
                 this.HttpRequestMessage.Content <- new StringContent(content.ToString())
                 this.HttpRequestMessage.Headers.Add("Content-Type", "application/json")

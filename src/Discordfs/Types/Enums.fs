@@ -334,6 +334,11 @@ type ApplicationCommandOptionType =
     | NUMBER = 10
     | ATTACHMENT = 11
 
+type ApplicationCommandPermissionType =
+    | ROLE = 1
+    | USER = 2
+    | CHANNEL = 3
+
 type InteractionContextType =
     | GUILD = 0
     | BOT_DM = 1

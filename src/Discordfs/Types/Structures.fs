@@ -1015,12 +1015,33 @@ type ApplicationCommand = {
     [<JsonName "description_localizations">] DescriptionLocalizations: Dictionary<string, string> option
     [<JsonName "options">] Options: ApplicationCommandOption list option
     [<JsonName "default_member_permissions">] DefaultMemberPermissions: string option
-    [<JsonName "dm_permissions">] DmPermissions: bool option
+    [<JsonName "dm_permission">] DmPermission: bool option
     [<JsonName "nsfw">] Nsfw: bool option
     [<JsonName "integration_types">] IntegrationTypes: ApplicationIntegrationType list option
     [<JsonName "contexts">] Contexts: InteractionContextType list option
     [<JsonName "version">] Version: string
     [<JsonName "handler">] Handler: ApplicationCommandHandlerType option
+
+    // Only present under certain conditions: https://discord.com/developers/docs/interactions/application-commands#retrieving-localized-commands
+    [<JsonName "name_localized">] NameLocalized: string option
+    [<JsonName "description_localized">] DescriptionLocalized: string option
+
+    // TODO: Create separate type with these special properties? Like invite metadata?
+}
+
+// https://discord.com/developers/docs/interactions/application-commands#application-command-permissions-object-application-command-permissions-structure
+type ApplicationCommandPermission = {
+    [<JsonName "id">] Id: string
+    [<JsonName "type">] Type: ApplicationCommandPermissionType
+    [<JsonName "permission">] Permission: bool
+}
+
+// https://discord.com/developers/docs/interactions/application-commands#application-command-permissions-object-guild-application-command-permissions-structure
+type GuildApplicationCommandPermissions = {
+    [<JsonName "id">] Id: string
+    [<JsonName "application_id">] ApplicationId: string
+    [<JsonName "guild_id">] GuildId: string
+    [<JsonName "permissions">] Permissions: ApplicationCommandPermission list
 }
 
 type InteractionCallbackMessageData = {
