@@ -28,7 +28,6 @@
     <Compile Include="Resources\ChannelResource.fs" />
     <Compile Include="Resources\EmojiResource.fs" />
     <Compile Include="Resources\EntitlementResource.fs" />
-    <Compile Include="Resources\GatewayResource.fs" />
     <Compile Include="Resources\GuildResource.fs" />
     <Compile Include="Resources\GuildScheduledEventResource.fs" />
     <Compile Include="Resources\GuildTemplateResource.fs" />
@@ -38,6 +37,7 @@
     <Compile Include="Resources\StageInstanceResource.fs" />
     <Compile Include="Resources\StickerResource.fs" />
     <Compile Include="Resources\SubscriptionResource.fs" />
+    <Compile Include="Resources\GatewayResource.fs" />
     <Compile Include="Commands\Command.fs" />
     <Compile Include="Commands\Options.fs" />
     <Compile Include="Services\Ed25519SigningService.fs" />

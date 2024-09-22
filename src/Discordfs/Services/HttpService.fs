@@ -14,7 +14,6 @@ type IHttpService =
     abstract member Channels: IChannelResource
     abstract member Emojis: IEmojiResource
     abstract member Entitlements: IEntitlementResource
-    abstract member Gateway: IGatewayResource
     abstract member Guilds: IGuildResource
     abstract member GuildScheduledEvents: IGuildScheduledEventResource
     abstract member GuildTemplates: IGuildTemplateResource
@@ -28,6 +27,8 @@ type IHttpService =
     // TODO: User
     // TODO: Voice
     // TODO: Webhook
+    abstract member Gateway: IGatewayResource
+    // TODO: OAuth2
 
 type HttpService (configuration: IConfiguration, httpClientFactory: IHttpClientFactory) =
     let discordBotToken = configuration.GetValue "DiscordBotToken"
@@ -42,13 +43,18 @@ type HttpService (configuration: IConfiguration, httpClientFactory: IHttpClientF
         member _.Channels = ChannelResource(httpClientFactory, discordBotToken)
         member _.Emojis = EmojiResource(httpClientFactory, discordBotToken)
         member _.Entitlements = EntitlementResource(httpClientFactory, discordBotToken)
-        member _.Gateway = GatewayResource(httpClientFactory, discordBotToken)
         member _.Guilds = GuildResource(httpClientFactory, discordBotToken)
         member _.GuildScheduledEvents = GuildScheduledEventResource(httpClientFactory, discordBotToken)
         member _.GuildTemplates = GuildTemplateResource(httpClientFactory, discordBotToken)
         member _.Invites = InviteResource(httpClientFactory, discordBotToken)
+        // TODO: Messsage
         member _.Polls = PollResource(httpClientFactory, discordBotToken)
         member _.Skus = SkuResource(httpClientFactory, discordBotToken)
         member _.StageInstances = StageInstanceResource(httpClientFactory, discordBotToken)
         member _.Stickers = StickerResource(httpClientFactory, discordBotToken)
         member _.Subscriptions = SubscriptionResource(httpClientFactory, discordBotToken)
+        // TODO: User
+        // TODO: Voice
+        // TODO: Webhook
+        member _.Gateway = GatewayResource(httpClientFactory, discordBotToken)
+        // TODO: OAuth2
