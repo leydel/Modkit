@@ -15,6 +15,9 @@ type IDiscordHttpService =
     abstract member Entitlements: IDiscordHttpEntitlementActions
     abstract member Gateway: IDiscordHttpGatewayActions
     abstract member Guilds: IDiscordHttpGuildActions
+    abstract member GuildScheduledEvents: IDiscordHttpGuildScheduledEventActions
+    abstract member GuildTemplates: IDiscordHttpGuildTemplateActions
+    abstract member Invites: IDiscordHttpInviteActions
     abstract member Stickers: IDiscordHttpStickerActions
 
 type DiscordHttpService (configuration: IConfiguration, httpClientFactory: IHttpClientFactory) =
@@ -32,4 +35,7 @@ type DiscordHttpService (configuration: IConfiguration, httpClientFactory: IHttp
         member _.Entitlements = DiscordHttpEntitlementActions(httpClientFactory, discordBotToken)
         member _.Gateway = DiscordHttpGatewayActions(httpClientFactory, discordBotToken)
         member _.Guilds = DiscordHttpGuildActions(httpClientFactory, discordBotToken)
+        member _.GuildScheduledEvents = DiscordHttpGuildScheduledEventActions(httpClientFactory, discordBotToken)
+        member _.GuildTemplates = DiscordHttpGuildTemplateActions(httpClientFactory, discordBotToken)
+        member _.Invites = DiscordHttpInviteActions(httpClientFactory, discordBotToken)
         member _.Stickers = DiscordHttpStickerActions(httpClientFactory, discordBotToken)
