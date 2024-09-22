@@ -842,6 +842,21 @@ type GuildScheduledEventUser = {
     [<JsonName "member">] Member: GuildMember option
 }
 
+// https://discord.com/developers/docs/resources/guild-template#guild-template-object-guild-template-structure
+type GuildTemplate = {
+    [<JsonName "code">] Code: string
+    [<JsonName "name">] Name: string
+    [<JsonName "description">] Description: string option
+    [<JsonName "usage_count">] UsageCount: int
+    [<JsonName "creator_id">] CreatorId: string
+    [<JsonName "creator">] Creator: User
+    [<JsonName "created_at">] CreatedAt: DateTime
+    [<JsonName "updated_at">] UpdatedAt: DateTime
+    [<JsonName "source_guild_id">] SourceGuildId: string
+    [<JsonName "serialized_source_guild">] SerializedSourceGuild: Guild
+    [<JsonName "is_dirty">] IsDirty: bool option
+}
+
 type Invite = {
     [<JsonName "type">] Type: InviteType
     [<JsonName "code">] Code: string
