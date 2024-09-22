@@ -1052,3 +1052,9 @@ type SkuFlag =
     | AVAILABLE          = 0b00000000_00000100
     | GUILD_SUBSCRIPTION = 0b00000000_10000000
     | USER_SUBSCRIPTION  = 0b00000001_00000000
+
+// https://discord.com/developers/docs/resources/subscription#subscription-statuses
+type SubscriptionStatusType =
+    | ACTIVE = 0
+    | ENDING = 1
+    | INACTIVE = 2

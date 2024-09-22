@@ -19,6 +19,7 @@
     <Compile Include="Types\Enums.fs" />
     <Compile Include="Types\Structures.fs" />
     <Compile Include="Types\DTOs.fs" />
+    <Compile Include="Resources\SubscriptionResource.fs" />
     <Compile Include="Resources\InteractionResource.fs" />
     <Compile Include="Resources\ApplicationCommandResource.fs" />
     <Compile Include="Resources\ApplicationResource.fs" />

@@ -1622,6 +1622,7 @@ with
         | _ ->
             None
 
+// https://discord.com/developers/docs/resources/sku#sku-object-sku-structure
 type Sku = {
     [<JsonName "id">] Id: string
     [<JsonName "type">] Type: SkuType
@@ -1629,4 +1630,17 @@ type Sku = {
     [<JsonName "name">] Name: string
     [<JsonName "slug">] Slug: string
     [<JsonName "flags">] Flags: int
+}
+
+// https://discord.com/developers/docs/resources/subscription#subscription-object
+type Subscription = {
+    [<JsonName "id">] Id: string
+    [<JsonName "user_id">] UserId: string
+    [<JsonName "sku_id">] SkuId: string
+    [<JsonName "entitlement_ids">] EntitlmentIds: string list
+    [<JsonName "current_period_start">] CurrentPeriodStart: DateTime
+    [<JsonName "current_period_end">] CurrentPeriodEnd: DateTime
+    [<JsonName "status">] Status: SubscriptionStatusType
+    [<JsonName "created_at">] CanceledAt: DateTime option
+    [<JsonName "country">] Country: string option
 }

@@ -24,7 +24,7 @@ type IHttpService =
     abstract member Skus: ISkuResource
     // TODO: StageInstance
     abstract member Stickers: IStickerResource
-    // TODO: Subscription
+    abstract member Subscriptions: ISubscriptionResource
     // TODO: User
     // TODO: Voice
     // TODO: Webhook
@@ -50,3 +50,4 @@ type HttpService (configuration: IConfiguration, httpClientFactory: IHttpClientF
         member _.Polls = PollResource(httpClientFactory, discordBotToken)
         member _.Skus = SkuResource(httpClientFactory, discordBotToken)
         member _.Stickers = StickerResource(httpClientFactory, discordBotToken)
+        member _.Subscriptions = SubscriptionResource(httpClientFactory, discordBotToken)
