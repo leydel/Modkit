@@ -1602,4 +1602,12 @@ with
         with
         | _ ->
             None
-        
+
+type Sku = {
+    [<JsonName "id">] Id: string
+    [<JsonName "type">] Type: SkuType
+    [<JsonName "application_id">] ApplicationId: string
+    [<JsonName "name">] Name: string
+    [<JsonName "slug">] Slug: string
+    [<JsonName "flags">] Flags: int
+}

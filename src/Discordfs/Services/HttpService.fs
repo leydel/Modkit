@@ -19,9 +19,15 @@ type IHttpService =
     abstract member GuildScheduledEvents: IGuildScheduledEventResource
     abstract member GuildTemplates: IGuildTemplateResource
     abstract member Invites: IInviteResource
+    // TODO: Messsage
+    // TODO: Poll
+    abstract member Skus: ISkuResource
+    // TODO: StageInstance
     abstract member Stickers: IStickerResource
-
-    // TODO: Add remaining resources
+    // TODO: Subscription
+    // TODO: User
+    // TODO: Voice
+    // TODO: Webhook
 
 type HttpService (configuration: IConfiguration, httpClientFactory: IHttpClientFactory) =
     let discordBotToken = configuration.GetValue "DiscordBotToken"
@@ -41,4 +47,5 @@ type HttpService (configuration: IConfiguration, httpClientFactory: IHttpClientF
         member _.GuildScheduledEvents = GuildScheduledEventResource(httpClientFactory, discordBotToken)
         member _.GuildTemplates = GuildTemplateResource(httpClientFactory, discordBotToken)
         member _.Invites = InviteResource(httpClientFactory, discordBotToken)
+        member _.Skus = SkuResource(httpClientFactory, discordBotToken)
         member _.Stickers = StickerResource(httpClientFactory, discordBotToken)

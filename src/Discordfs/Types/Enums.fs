@@ -1039,3 +1039,16 @@ type RecurrenceRuleMonthType =
     | OCTOBER = 10
     | NOVEMBER = 11
     | DECEMBER = 12
+
+// https://discord.com/developers/docs/resources/sku#sku-object-sku-types
+type SkuType =
+    | DURABLE = 2
+    | CONSUMABLE = 3
+    | SUBSCRIPTION = 5
+    | SUBSCRIPTION_GROUP = 6
+
+// https://discord.com/developers/docs/resources/sku#sku-object-sku-flags
+type SkuFlag =
+    | AVAILABLE          = 0b00000000_00000100
+    | GUILD_SUBSCRIPTION = 0b00000000_10000000
+    | USER_SUBSCRIPTION  = 0b00000001_00000000
