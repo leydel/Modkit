@@ -126,6 +126,11 @@ type GetGuildVanityUrlResponse = {
     [<JsonName "uses">] Uses: int
 }
 
+// https://discord.com/developers/docs/resources/poll#get-answer-voters-response-body
+type GetAnswerVotersResponse = {
+    [<JsonName "users">] Users: User list
+}
+
 // https://discord.com/developers/docs/topics/gateway-events#identify-identify-structure
 type Identify = {
     [<JsonName "token">] Token: string
