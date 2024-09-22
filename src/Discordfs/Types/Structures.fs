@@ -1644,3 +1644,14 @@ type Subscription = {
     [<JsonName "created_at">] CanceledAt: DateTime option
     [<JsonName "country">] Country: string option
 }
+
+// https://discord.com/developers/docs/resources/stage-instance#stage-instance-object-stage-instance-structure
+type StageInstance = {
+    [<JsonName "id">] Id: string
+    [<JsonName "guild_id">] GuildId: string
+    [<JsonName "channel_id">] ChannelId: string
+    [<JsonName "topic">] Topic: string
+    [<JsonName "privacy_level">] PrivacyLevel: PrivacyLevelType
+    [<JsonName "discoverable_enabled">] DiscoverableEnabled: bool
+    [<JsonName "guild_scheduled_event_id">] GuildScheduledEventId: string option
+}

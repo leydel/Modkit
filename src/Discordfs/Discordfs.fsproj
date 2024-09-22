@@ -19,7 +19,6 @@
     <Compile Include="Types\Enums.fs" />
     <Compile Include="Types\Structures.fs" />
     <Compile Include="Types\DTOs.fs" />
-    <Compile Include="Resources\SubscriptionResource.fs" />
     <Compile Include="Resources\InteractionResource.fs" />
     <Compile Include="Resources\ApplicationCommandResource.fs" />
     <Compile Include="Resources\ApplicationResource.fs" />
@@ -36,7 +35,9 @@
     <Compile Include="Resources\InviteResource.fs" />
     <Compile Include="Resources\PollResource.fs" />
     <Compile Include="Resources\SkuResource.fs" />
+    <Compile Include="Resources\StageInstanceResource.fs" />
     <Compile Include="Resources\StickerResource.fs" />
+    <Compile Include="Resources\SubscriptionResource.fs" />
     <Compile Include="Commands\Command.fs" />
     <Compile Include="Commands\Options.fs" />
     <Compile Include="Services\Ed25519SigningService.fs" />
