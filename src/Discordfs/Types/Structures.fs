@@ -1655,3 +1655,20 @@ type StageInstance = {
     [<JsonName "discoverable_enabled">] DiscoverableEnabled: bool
     [<JsonName "guild_scheduled_event_id">] GuildScheduledEventId: string option
 }
+
+// https://discord.com/developers/docs/resources/voice#voice-state-object-voice-state-structure
+type VoiceState = {
+    [<JsonName "guild_id">] GuildId: string option
+    [<JsonName "channel_id">] ChannelId: string option
+    [<JsonName "user_id">] UserId: string option
+    [<JsonName "member">] Member: GuildMember option
+    [<JsonName "session_id">] SessionId: string
+    [<JsonName "deaf">] Deaf: bool
+    [<JsonName "mute">] Mute: bool
+    [<JsonName "self_deaf">] SelfDeaf: bool
+    [<JsonName "self_mute">] SelfMute: bool
+    [<JsonName "self_stream">] SelfStream: bool option
+    [<JsonName "self_video">] SelfVideo: bool
+    [<JsonName "suppress">] Suppress: bool
+    [<JsonName "request_to_speak_timestamp">] RequestToSpeakTimestamp: DateTime option
+}

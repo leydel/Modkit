@@ -18,14 +18,14 @@ type IHttpService =
     abstract member GuildScheduledEvents: IGuildScheduledEventResource
     abstract member GuildTemplates: IGuildTemplateResource
     abstract member Invites: IInviteResource
-    // TODO: Messsage
+    // TODO: Message
     abstract member Polls: IPollResource
     abstract member Skus: ISkuResource
     abstract member StageInstances: IStageInstanceResource
     abstract member Stickers: IStickerResource
     abstract member Subscriptions: ISubscriptionResource
     // TODO: User
-    // TODO: Voice
+    abstract member Voice: IVoiceResource
     // TODO: Webhook
     abstract member Gateway: IGatewayResource
     // TODO: OAuth2
@@ -47,14 +47,14 @@ type HttpService (configuration: IConfiguration, httpClientFactory: IHttpClientF
         member _.GuildScheduledEvents = GuildScheduledEventResource(httpClientFactory, discordBotToken)
         member _.GuildTemplates = GuildTemplateResource(httpClientFactory, discordBotToken)
         member _.Invites = InviteResource(httpClientFactory, discordBotToken)
-        // TODO: Messsage
+        // TODO: Message
         member _.Polls = PollResource(httpClientFactory, discordBotToken)
         member _.Skus = SkuResource(httpClientFactory, discordBotToken)
         member _.StageInstances = StageInstanceResource(httpClientFactory, discordBotToken)
         member _.Stickers = StickerResource(httpClientFactory, discordBotToken)
         member _.Subscriptions = SubscriptionResource(httpClientFactory, discordBotToken)
         // TODO: User
-        // TODO: Voice
+        member _.Voice = VoiceResource(httpClientFactory, discordBotToken)
         // TODO: Webhook
         member _.Gateway = GatewayResource(httpClientFactory, discordBotToken)
         // TODO: OAuth2

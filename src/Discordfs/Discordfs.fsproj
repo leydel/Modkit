@@ -37,6 +37,7 @@
     <Compile Include="Resources\StageInstanceResource.fs" />
     <Compile Include="Resources\StickerResource.fs" />
     <Compile Include="Resources\SubscriptionResource.fs" />
+    <Compile Include="Resources\VoiceResource.fs" />
     <Compile Include="Resources\GatewayResource.fs" />
     <Compile Include="Commands\Command.fs" />
     <Compile Include="Commands\Options.fs" />
