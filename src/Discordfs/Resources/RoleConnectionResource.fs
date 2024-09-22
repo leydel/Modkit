@@ -1,4 +1,4 @@
-﻿namespace Modkit.Discordfs.Services
+﻿namespace Modkit.Discordfs.Resources
 
 open Modkit.Discordfs.Common
 open Modkit.Discordfs.Types
@@ -6,7 +6,7 @@ open System.Collections.Generic
 open System.Net.Http
 open System.Threading.Tasks
 
-type IDiscordHttpRoleConnectionActions =
+type IRoleConnectionResource =
     abstract member GetApplicationRoleConnectionMetadataRecords:
         applicationId: string ->
         Task<ApplicationRoleConnectionMetadata list>
@@ -43,8 +43,8 @@ type IDiscordHttpRoleConnectionActions =
 
     // TODO: CurrentUser endpoints not showing in documentation, may have been moved/removed?
 
- type DiscordHttpRoleConnectionActions (httpClientFactory: IHttpClientFactory, token: string) =
-    interface IDiscordHttpRoleConnectionActions with
+ type RoleConnectionResource (httpClientFactory: IHttpClientFactory, token: string) =
+    interface IRoleConnectionResource with
         member _.GetApplicationRoleConnectionMetadataRecords
             applicationId =
                 Req.create

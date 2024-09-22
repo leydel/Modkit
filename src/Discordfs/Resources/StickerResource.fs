@@ -1,11 +1,11 @@
-﻿namespace Modkit.Discordfs.Services
+﻿namespace Modkit.Discordfs.Resources
 
 open Modkit.Discordfs.Common
 open Modkit.Discordfs.Types
 open System.Net.Http
 open System.Threading.Tasks
 
-type IDiscordHttpStickerActions =
+type IStickerResource =
     // https://discord.com/developers/docs/resources/sticker#list-guild-stickers
     abstract member ListGuildStickers:
         guildId: string ->
@@ -13,8 +13,8 @@ type IDiscordHttpStickerActions =
 
     // TODO: Add other endpoints
 
-type DiscordHttpStickerActions (httpClientFactory: IHttpClientFactory, token: string) =
-    interface IDiscordHttpStickerActions with
+type StickerResource (httpClientFactory: IHttpClientFactory, token: string) =
+    interface IStickerResource with
         member _.ListGuildStickers
             guildId =
                 Req.create

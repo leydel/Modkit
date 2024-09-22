@@ -1,4 +1,4 @@
-﻿namespace Modkit.Discordfs.Services
+﻿namespace Modkit.Discordfs.Resources
 
 open Modkit.Discordfs.Common
 open Modkit.Discordfs.Types
@@ -6,7 +6,7 @@ open System.Collections.Generic
 open System.Net.Http
 open System.Threading.Tasks
 
-type IDiscordHttpApplicationActions =
+type IApplicationResource =
     // https://discord.com/developers/docs/resources/application#get-current-application
     abstract member GetCurrentApplication:
         unit ->
@@ -32,8 +32,8 @@ type IDiscordHttpApplicationActions =
         instanceId: string ->
         Task<ActivityInstance>
 
-type DiscordHttpApplicationActions (httpClientFactory: IHttpClientFactory, token: string) =
-    interface IDiscordHttpApplicationActions with
+type ApplicationResource (httpClientFactory: IHttpClientFactory, token: string) =
+    interface IApplicationResource with
         member _.GetCurrentApplication
             () =
                 Req.create

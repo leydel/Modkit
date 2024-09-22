@@ -1,11 +1,11 @@
-﻿namespace Modkit.Discordfs.Services
+﻿namespace Modkit.Discordfs.Resources
 
 open Modkit.Discordfs.Common
 open Modkit.Discordfs.Types
 open System.Net.Http
 open System.Threading.Tasks
 
-type IDiscordHttpAutoModerationActions =
+type IAutoModerationResource =
     // https://discord.com/developers/docs/resources/auto-moderation#get-auto-moderation-rule
     abstract member GetAutoModerationRule:
         guildId: string ->
@@ -48,8 +48,8 @@ type IDiscordHttpAutoModerationActions =
         auditLogReason: string option ->
         Task<unit>
 
-type DiscordHttpAutoModerationActions (httpClientFactory: IHttpClientFactory, token: string) =
-    interface IDiscordHttpAutoModerationActions with
+type AutoModerationResource (httpClientFactory: IHttpClientFactory, token: string) =
+    interface IAutoModerationResource with
         member _.GetAutoModerationRule
             guildId autoModerationRuleId =
                 Req.create

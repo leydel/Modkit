@@ -1,11 +1,11 @@
-﻿namespace Modkit.Discordfs.Services
+﻿namespace Modkit.Discordfs.Resources
 
 open Modkit.Discordfs.Common
 open Modkit.Discordfs.Types
 open System.Net.Http
 open System.Threading.Tasks
 
-type IDiscordHttpAuditLogActions =
+type IAuditLogResource =
     // https://discord.com/developers/docs/resources/audit-log#get-guild-audit-log
     abstract member GetGuildAuditLog:
         guildId: string ->
@@ -16,8 +16,8 @@ type IDiscordHttpAuditLogActions =
         limit: int option ->
         Task<AuditLog>
 
-type DiscordHttpAuditLogActions (httpClientFactory: IHttpClientFactory, token: string) =
-    interface IDiscordHttpAuditLogActions with
+type AuditLogResource (httpClientFactory: IHttpClientFactory, token: string) =
+    interface IAuditLogResource with
         member _.GetGuildAuditLog
             guildId userId actionType before after limit =
                 Req.create

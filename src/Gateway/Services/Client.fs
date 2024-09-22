@@ -10,7 +10,7 @@ open System.Threading.Tasks
 
 type Client (
     configuration: IConfiguration,
-    discordGatewayService: IDiscordGatewayService,
+    gatewayService: IGatewayService,
     serviceBusClientFactory: IServiceBusClientFactory
 ) =
     let serviceBusConnectionString = configuration.GetValue "AzureWebJobsServiceBus"
@@ -69,7 +69,7 @@ type Client (
 
         match useGateway with
         | false ->
-            discordGatewayService.Connect identify (fun _ -> Task.FromResult ())
+            gatewayService.Connect identify (fun _ -> Task.FromResult ())
             :> Task
             |> Async.AwaitTask
             |> Async.RunSynchronously
@@ -81,7 +81,7 @@ type Client (
                 do! sender.SendMessageAsync <| ServiceBusMessage event
             }
 
-            discordGatewayService.Connect identify (handle sender)
+            gatewayService.Connect identify (handle sender)
             :> Task
             |> Async.AwaitTask
             |> Async.RunSynchronously

@@ -1,11 +1,11 @@
-﻿namespace Modkit.Discordfs.Services
+﻿namespace Modkit.Discordfs.Resources
 
 open Modkit.Discordfs.Common
 open Modkit.Discordfs.Types
 open System.Net.Http
 open System.Threading.Tasks
 
-type IDiscordHttpGatewayActions =
+type IGatewayResource =
     abstract member GetGateway:
         version: string ->
         encoding: GatewayEncoding ->
@@ -18,8 +18,8 @@ type IDiscordHttpGatewayActions =
         compression: GatewayCompression option ->
         Task<GetGatewayBotResponse>
 
-type DiscordHttpGatewayActions (httpClientFactory: IHttpClientFactory, token: string) =
-    interface IDiscordHttpGatewayActions with
+type GatewayResource (httpClientFactory: IHttpClientFactory, token: string) =
+    interface IGatewayResource with
         member _.GetGateway
             version encoding compression =
                 Req.create

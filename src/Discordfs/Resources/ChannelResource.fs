@@ -1,4 +1,4 @@
-﻿namespace Modkit.Discordfs.Services
+﻿namespace Modkit.Discordfs.Resources
 
 open Modkit.Discordfs.Common
 open Modkit.Discordfs.Types
@@ -7,7 +7,7 @@ open System.Net.Http
 open System.Threading.Tasks
 
 // https://discord.com/developers/docs/resources/channel
-type IDiscordHttpChannelActions =
+type IChannelResource =
     // https://discord.com/developers/docs/resources/channel#get-channel
     abstract member GetChannel:
         channelId: string ->
@@ -182,8 +182,8 @@ type IDiscordHttpChannelActions =
         limit: int option ->
         Task<ListJoinedPrivateArchivedThreadsResponse>
 
-type DiscordHttpChannelActions (httpClientFactory: IHttpClientFactory, token: string) =
-    interface IDiscordHttpChannelActions with
+type ChannelResource (httpClientFactory: IHttpClientFactory, token: string) =
+    interface IChannelResource with
         member _.GetChannel
             channelId =
                 Req.create

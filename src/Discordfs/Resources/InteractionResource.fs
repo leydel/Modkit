@@ -1,11 +1,11 @@
-﻿namespace Modkit.Discordfs.Services
+﻿namespace Modkit.Discordfs.Resources
 
 open Modkit.Discordfs.Common
 open Modkit.Discordfs.Types
 open System.Net.Http
 open System.Threading.Tasks
 
-type IDiscordHttpInteractionActions =
+type IInteractionResource =
     abstract member CreateInteractionResponse:
         id: string ->
         token: string ->
@@ -79,8 +79,8 @@ type IDiscordHttpInteractionActions =
         messageId: string ->
         Task<unit>
 
-type DiscordHttpInteractionActions (httpClientFactory: IHttpClientFactory, token: string) =
-    interface IDiscordHttpInteractionActions with
+type InteractionResource (httpClientFactory: IHttpClientFactory, token: string) =
+    interface IInteractionResource with
         member _.CreateInteractionResponse
             id token ``type`` data =
                 Req.create

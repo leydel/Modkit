@@ -1,4 +1,4 @@
-﻿namespace Modkit.Discordfs.Services
+﻿namespace Modkit.Discordfs.Resources
 
 open Modkit.Discordfs.Common
 open Modkit.Discordfs.Types
@@ -35,7 +35,7 @@ type ModifyGuildTemplate (
             optional "description" description
         }
 
-type IDiscordHttpGuildTemplateActions =
+type IGuildTemplateResource =
     abstract member GetGuildTemplate:
         templateCode: string ->
         Task<GuildTemplate>
@@ -70,8 +70,8 @@ type IDiscordHttpGuildTemplateActions =
         templateCode: string ->
         Task<GuildTemplate>
 
-type DiscordHttpGuildTemplateActions (httpClientFactory, token) =
-    interface IDiscordHttpGuildTemplateActions with
+type GuildTemplateResource (httpClientFactory, token) =
+    interface IGuildTemplateResource with
         member _.GetGuildTemplate templateCode =
             req {
                 get $"guilds/templates/{templateCode}"

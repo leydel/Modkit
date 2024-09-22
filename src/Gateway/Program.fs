@@ -20,8 +20,8 @@ let host =
         .ConfigureServices(fun services ->
             services
                 .AddHttpClient()
-                .AddTransient<IDiscordHttpService, DiscordHttpService>()
-                .AddSingleton<IDiscordGatewayService, DiscordGatewayService>()
+                .AddTransient<IHttpService, HttpService>()
+                .AddSingleton<IGatewayService, GatewayService>()
                 .AddSingleton<IServiceBusClientFactory, ServiceBusClientFactory>()
                 .AddTransient<Client>()
             |> ignore

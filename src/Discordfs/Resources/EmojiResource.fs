@@ -1,11 +1,11 @@
-﻿namespace Modkit.Discordfs.Services
+﻿namespace Modkit.Discordfs.Resources
 
 open Modkit.Discordfs.Common
 open Modkit.Discordfs.Types
 open System.Net.Http
 open System.Threading.Tasks
 
-type IDiscordHttpEmojiActions =
+type IEmojiResource =
     // https://discord.com/developers/docs/resources/emoji#list-guild-emojis
     abstract member ListGuildEmojis:
         guildId: string ->
@@ -73,8 +73,8 @@ type IDiscordHttpEmojiActions =
         emojiId: string ->
         Task<unit>
 
-type DiscordHttpEmojiActions (httpClientFactory: IHttpClientFactory, token: string) =
-    interface IDiscordHttpEmojiActions with
+type EmojiResource (httpClientFactory: IHttpClientFactory, token: string) =
+    interface IEmojiResource with
         member _.ListGuildEmojis
             guildId =
                 Req.create

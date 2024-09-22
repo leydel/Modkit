@@ -1,4 +1,4 @@
-﻿namespace Modkit.Discordfs.Services
+﻿namespace Modkit.Discordfs.Resources
 
 open Modkit.Discordfs.Common
 open Modkit.Discordfs.Types
@@ -7,7 +7,7 @@ open System
 open System.Net.Http
 open System.Threading.Tasks
 
-type IDiscordHttpGuildActions =
+type IGuildResource =
     // https://discord.com/developers/docs/resources/guild#create-guild
     abstract member CreateGuild:
         name: string ->
@@ -373,8 +373,8 @@ type IDiscordHttpGuildActions =
         mode: OnboardingMode ->
         Task<GuildOnboarding>
 
-type DiscordHttpGuildActions (httpClientFactory: IHttpClientFactory, token: string) =
-    interface IDiscordHttpGuildActions with
+type GuildResource (httpClientFactory: IHttpClientFactory, token: string) =
+    interface IGuildResource with
         member _.CreateGuild
             name icon verificationLevel defaultMessageNotifications explicitContentFilter roles channels afkChannelId
             afkTimeout systemChannelId systemChannelFlags =

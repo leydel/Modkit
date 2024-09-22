@@ -1,4 +1,4 @@
-﻿namespace Modkit.Discordfs.Services
+﻿namespace Modkit.Discordfs.Resources
 
 open Modkit.Discordfs.Common
 open Modkit.Discordfs.Types
@@ -137,7 +137,7 @@ type EditApplicationCommandPermissions (
 
     // TODO: Figure out how to correctly define this payload (ApplicationCommand is wrong - e.g. requires ID)
 
-type IDiscordHttpApplicationCommandActions =
+type IApplicationCommandResource =
     // https://discord.com/developers/docs/interactions/application-commands#get-global-application-commands
     abstract member GetGlobalApplicationCommands:
         applicationId: string ->
@@ -240,8 +240,8 @@ type IDiscordHttpApplicationCommandActions =
         content: EditApplicationCommandPermissions ->
         Task<GuildApplicationCommandPermissions>
 
-type DiscordHttpApplicationCommandActions (httpClientFactory: IHttpClientFactory, token: string) =
-    interface IDiscordHttpApplicationCommandActions with
+type ApplicationCommandResource (httpClientFactory: IHttpClientFactory, token: string) =
+    interface IApplicationCommandResource with
         member _.GetGlobalApplicationCommands applicationId withLocalizations =
             req {
                 get $"applications/{applicationId}/commands"

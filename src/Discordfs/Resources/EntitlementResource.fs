@@ -1,11 +1,11 @@
-﻿namespace Modkit.Discordfs.Services
+﻿namespace Modkit.Discordfs.Resources
 
 open Modkit.Discordfs.Common
 open Modkit.Discordfs.Types
 open System.Net.Http
 open System.Threading.Tasks
 
-type IDiscordHttpEntitlementActions =
+type IEntitlementResource =
     // https://discord.com/developers/docs/resources/entitlement#list-entitlements
     abstract member ListEntitlements:
         applicationId: string ->
@@ -38,8 +38,8 @@ type IDiscordHttpEntitlementActions =
         entitlementId: string ->
         Task<unit>
 
-type DiscordHttpEntitlementActions (httpClientFactory: IHttpClientFactory, token: string) =
-    interface IDiscordHttpEntitlementActions with
+type EntitlementResource (httpClientFactory: IHttpClientFactory, token: string) =
+    interface IEntitlementResource with
         member _.ListEntitlements
             applicationId userId skuIds before after limit guildId excludeEnded =
                 Req.create

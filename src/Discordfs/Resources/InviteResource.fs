@@ -1,11 +1,11 @@
-﻿namespace Modkit.Discordfs.Services
+﻿namespace Modkit.Discordfs.Resources
 
 open Modkit.Discordfs.Common
 open Modkit.Discordfs.Types
 open Modkit.Discordfs.Utils
 open System.Threading.Tasks
 
-type IDiscordHttpInviteActions =
+type IInviteResource =
     abstract member GetInvite:
         inviteCode: string ->
         withCounts: bool option ->
@@ -18,8 +18,8 @@ type IDiscordHttpInviteActions =
         auditLogReason: string option ->
         Task<Invite>
 
-type DiscordHttpInviteActions (httpClientFactory, token) =
-    interface IDiscordHttpInviteActions with
+type InviteResource (httpClientFactory, token) =
+    interface IInviteResource with
         member _.GetInvite inviteCode withCounts withExpiration guildScheduledEventId =
             req {
                 get $"invites/{inviteCode}"

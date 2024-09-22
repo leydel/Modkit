@@ -19,28 +19,27 @@
     <Compile Include="Types\Enums.fs" />
     <Compile Include="Types\Structures.fs" />
     <Compile Include="Types\DTOs.fs" />
+    <Compile Include="Resources\InteractionResource.fs" />
+    <Compile Include="Resources\ApplicationCommandResource.fs" />
+    <Compile Include="Resources\ApplicationResource.fs" />
+    <Compile Include="Resources\RoleConnectionResource.fs" />
+    <Compile Include="Resources\AuditLogResource.fs" />
+    <Compile Include="Resources\AutoModerationResource.fs" />
+    <Compile Include="Resources\ChannelResource.fs" />
+    <Compile Include="Resources\EmojiResource.fs" />
+    <Compile Include="Resources\EntitlementResource.fs" />
+    <Compile Include="Resources\GatewayResource.fs" />
+    <Compile Include="Resources\GuildResource.fs" />
+    <Compile Include="Resources\GuildScheduledEventResource.fs" />
+    <Compile Include="Resources\GuildTemplateResource.fs" />
+    <Compile Include="Resources\InviteResource.fs" />
+    <Compile Include="Resources\StickerResource.fs" />
     <Compile Include="Commands\Command.fs" />
     <Compile Include="Commands\Options.fs" />
-    <Compile Include="Services\DiscordHttpService\DiscordHttpInteractionActions.fs" />
-    <Compile Include="Services\DiscordHttpService\DiscordHttpApplicationCommandActions.fs" />
-    <Compile Include="Services\DiscordHttpService\DiscordHttpApplicationActions.fs" />
-    <Compile Include="Services\DiscordHttpService\DiscordHttpRoleConnectionActions.fs" />
-    <Compile Include="Services\DiscordHttpService\DiscordHttpAuditLogActions.fs" />
-    <Compile Include="Services\DiscordHttpService\DiscordHttpAutoModerationActions.fs" />
-    <Compile Include="Services\DiscordHttpService\DiscordHttpChannelActions.fs" />
-    <Compile Include="Services\DiscordHttpService\DiscordHttpEmojiActions.fs" />
-    <Compile Include="Services\DiscordHttpService\DiscordHttpEntitlementActions.fs" />
-    <Compile Include="Services\DiscordHttpService\DiscordHttpGatewayActions.fs" />
-    <Compile Include="Services\DiscordHttpService\DiscordHttpGuildActions.fs" />
-    <Compile Include="Services\DiscordHttpService\DiscordHttpGuildScheduledEventActions.fs" />
-    <Compile Include="Services\DiscordHttpService\DiscordHttpGuildTemplateActions.fs" />
-    <Compile Include="Services\DiscordHttpService\DiscordHttpInviteActions.fs" />
-    <Compile Include="Services\DiscordHttpService\DiscordHttpStickerActions.fs" />
-    <Compile Include="Services\DiscordHttpService\DiscordHttpService.fs" />
-    <Compile Include="Services\DiscordGatewayService\DiscordGatewayActions.fs" />
-    <Compile Include="Services\DiscordGatewayService\DiscordGatewayService.fs" />
     <Compile Include="Services\Ed25519SigningService.fs" />
     <Compile Include="Services\CommandService.fs" />
+    <Compile Include="Services\HttpService.fs" />
+    <Compile Include="Services\GatewayService.fs" />
   </ItemGroup>
 
   <ItemGroup>

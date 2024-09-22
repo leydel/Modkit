@@ -1,4 +1,4 @@
-﻿namespace Modkit.Discordfs.Services
+﻿namespace Modkit.Discordfs.Resources
 
 open Modkit.Discordfs.Common
 open Modkit.Discordfs.Types
@@ -58,7 +58,7 @@ type ModifyGuildScheduledEvent (
             optional "recurrence_rule" recurrence_rule
         }
 
-type IDiscordHttpGuildScheduledEventActions =
+type IGuildScheduledEventResource =
     // https://discord.com/developers/docs/resources/guild-scheduled-event#list-scheduled-events-for-guild
     abstract member ListGuildScheduledEvents:
         guildId: string ->
@@ -103,8 +103,8 @@ type IDiscordHttpGuildScheduledEventActions =
         after: string option ->
         Task<GuildScheduledEventUser list>
 
-type DiscordHttpGuildScheduledEventActions (httpClientFactory, token) =
-    interface IDiscordHttpGuildScheduledEventActions with
+type GuildScheduledEventResource (httpClientFactory, token) =
+    interface IGuildScheduledEventResource with
         member _.ListGuildScheduledEvents guildId withUserCount =
             req {
                 get $"guilds/{guildId}/scheduled-events"
