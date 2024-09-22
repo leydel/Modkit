@@ -157,6 +157,7 @@ type Emoji = {
     [<JsonName "available">] Available: bool option
 }
 
+// https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-structure
 type Sticker = {
     [<JsonName "id">] Id: string
     [<JsonName "pack_id">] PackId: string option
@@ -169,6 +170,24 @@ type Sticker = {
     [<JsonName "guild_id">] GuildId: string option
     [<JsonName "user">] User: User option
     [<JsonName "sort_value">] SortValue: int option
+}
+
+// https://discord.com/developers/docs/resources/sticker#sticker-item-object-sticker-item-structure
+type StickerItem = {
+    [<JsonName "id">] Id: string
+    [<JsonName "name">] Name: string
+    [<JsonName "format_type">] FormatType: StickerFormatType
+}
+
+// https://discord.com/developers/docs/resources/sticker#sticker-pack-object
+type StickerPack = {
+    [<JsonName "id">] Id: string
+    [<JsonName "stickers">] Stickers: Sticker list
+    [<JsonName "name">] Name: string
+    [<JsonName "sku_id">] SkuId: string
+    [<JsonName "cover_sticker_id">] CoverStickerId: string option
+    [<JsonName "description">] Description: string
+    [<JsonName "banner_asset_id">] BannerAssetId: string option
 }
 
 // https://discord.com/developers/docs/resources/guild#guild-object-guild-structure

@@ -131,6 +131,11 @@ type GetAnswerVotersResponse = {
     [<JsonName "users">] Users: User list
 }
 
+// https://discord.com/developers/docs/resources/sticker#list-sticker-packs-response-structure
+type ListStickerPacksResponse = {
+    [<JsonName "sticker_packs">] StickerPacks: StickerPack list
+}
+
 // https://discord.com/developers/docs/topics/gateway-events#identify-identify-structure
 type Identify = {
     [<JsonName "token">] Token: string
