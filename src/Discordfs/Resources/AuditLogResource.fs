@@ -2,7 +2,7 @@
 
 open Modkit.Discordfs.Common
 open Modkit.Discordfs.Types
-open System.Net.Http
+open Modkit.Discordfs.Utils
 open System.Threading.Tasks
 
 type IAuditLogResource =
@@ -16,19 +16,17 @@ type IAuditLogResource =
         limit: int option ->
         Task<AuditLog>
 
-type AuditLogResource (httpClientFactory: IHttpClientFactory, token: string) =
+type AuditLogResource (httpClientFactory, token) =
     interface IAuditLogResource with
-        member _.GetGuildAuditLog
-            guildId userId actionType before after limit =
-                Req.create
-                    HttpMethod.Get
-                    Constants.DISCORD_API_URL
-                    $"guilds/{guildId}/audit-logs"
-                |> Req.bot token
-                |> Req.queryOpt "user_id" userId
-                |> Req.queryOpt "action_type" (Option.map (fun a -> (int a).ToString()) actionType)
-                |> Req.queryOpt "before" before
-                |> Req.queryOpt "after" after
-                |> Req.queryOpt "limit" (Option.map _.ToString() limit)
-                |> Req.send httpClientFactory
-                |> Res.json
+        member _.GetGuildAuditLog guildId userId actionType before after limit =
+            req {
+                get "guilds/{guildId}/audit-logs"
+                bot token
+                query "user_id" userId
+                query "action_type" (actionType >>. _.ToString())
+                query "before" before
+                query "after" after
+                query "limit" (limit >>. _.ToString())
+            }
+            |> Http.send httpClientFactory
+            |> Task.mapT Http.toJson
