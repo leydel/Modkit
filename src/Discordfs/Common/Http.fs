@@ -198,8 +198,44 @@ module Http =
         [<CustomOperation("success")>]
         member this.Success (x, handler: TypedResponseHandler<'a>) =
             this.Success(x, Task.apply handler)
+            
+        [<CustomOperation("ok")>]
+        member this.Ok (_, handler: TypedTaskResponseHandler<'a>) =
+            this.Handle HttpStatusCode.OK (this.Map handler) |> ignore
+            this.Handlers
 
-        // TODO: Add other operations here
+        [<CustomOperation("ok")>]
+        member this.Ok (x, handler: TypedResponseHandler<'a>) =
+            this.Ok(x, Task.apply handler)
+            
+        [<CustomOperation("created")>]
+        member this.Created (_, handler: TypedTaskResponseHandler<'a>) =
+            this.Handle HttpStatusCode.Created (this.Map handler) |> ignore
+            this.Handlers
+
+        [<CustomOperation("created")>]
+        member this.Created (x, handler: TypedResponseHandler<'a>) =
+            this.Created(x, Task.apply handler)
+            
+        [<CustomOperation("accepted")>]
+        member this.Accepted (_, handler: TypedTaskResponseHandler<'a>) =
+            this.Handle HttpStatusCode.Accepted (this.Map handler) |> ignore
+            this.Handlers
+
+        [<CustomOperation("accepted")>]
+        member this.Accepted (x, handler: TypedResponseHandler<'a>) =
+            this.Accepted(x, Task.apply handler)
+            
+        [<CustomOperation("noContent")>]
+        member this.NoContent (_, handler: TypedTaskResponseHandler<'a>) =
+            this.Handle HttpStatusCode.NoContent (this.Map handler) |> ignore
+            this.Handlers
+
+        [<CustomOperation("noContent")>]
+        member this.NoContent (x, handler: TypedResponseHandler<'a>) =
+            this.NoContent(x, Task.apply handler)
+
+        // TODO: Add specific failure operations here
 
     let res = ResponseBuilder()
 
