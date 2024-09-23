@@ -22,6 +22,7 @@
     <Compile Include="Interfaces\IParserStrategy.fs" />
     <Compile Include="Interfaces\IMappingStrategy.fs" />
     <Compile Include="Strategies\Parser\JsonParserStrategy.fs" />
+    <Compile Include="Strategies\Mapping\FileMappingStrategy.fs" />
     <Compile Include="Strategies\Mapping\ApiMappingStrategy.fs" />
     <Compile Include="Providers\ParserStrategyProvider.fs" />
     <Compile Include="Providers\MappingStrategyProvider.fs" />
