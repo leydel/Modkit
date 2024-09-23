@@ -3,7 +3,9 @@
 open Modkit.Discordfs.Utils
 open System
 open System.Collections.Generic
+open System.Net
 open System.Net.Http
+open System.Threading.Tasks
 open System.Web
 
 [<AutoOpen>]
@@ -164,3 +166,61 @@ module Http =
             this.HttpRequestMessage
 
     let req = RequestBuilder()
+    
+    type TypedResponseHandler<'a> = HttpResponseMessage -> Result<'a, HttpStatusCode>
+    type TypedTaskResponseHandler<'a> = HttpResponseMessage -> Task<Result<'a, HttpStatusCode>>
+    type ResponseHandler = HttpResponseMessage -> Result<obj, HttpStatusCode>
+    type TaskResponseHandler = HttpResponseMessage -> Task<Result<obj, HttpStatusCode>>
+    type ResponseHandlers = IDictionary<HttpStatusCode * HttpStatusCode, TaskResponseHandler>
+
+    type ResponseBuilder() =
+        member val Handlers: ResponseHandlers = Dictionary()
+
+        member this.HandleRange (min: HttpStatusCode) (max: HttpStatusCode) (handler: TaskResponseHandler) =
+            this.Handlers.Add((min, max), handler)
+
+        member this.Handle (status: HttpStatusCode) (handler: TaskResponseHandler) =
+            this.HandleRange status status handler
+
+        member _.Map<'a> (handler: TypedTaskResponseHandler<'a>) (res: HttpResponseMessage) = task {
+            let! value = handler res
+            return Result.map (fun v -> v :> obj) value
+        }
+
+        member this.Yield(_) =
+            this
+            
+        [<CustomOperation("success")>]
+        member this.Success (_, handler: TypedTaskResponseHandler<'a>) =
+            this.HandleRange (enum<HttpStatusCode> 200) (enum<HttpStatusCode> 299) (this.Map handler) |> ignore
+            this.Handlers
+            
+        [<CustomOperation("success")>]
+        member this.Success (x, handler: TypedResponseHandler<'a>) =
+            this.Success(x, Task.apply handler)
+
+        // TODO: Add other operations here
+
+    let res = ResponseBuilder()
+
+    let handle<'a> (handlers: ResponseHandlers) (res: HttpResponseMessage) =
+        let status = res.StatusCode
+
+        let handler =
+            handlers
+            |> Seq.toList
+            |> List.map (fun kvp -> (kvp.Key, kvp.Value))
+            |> List.tryFind (fun ((min, max), _) -> status >= min && status <= max)
+            |> Option.map (fun (_, handler) -> handler)
+            
+        match handler with
+        | Some handler -> (handler res) |> Task.map (Result.map (fun v -> v :?> 'a))
+        | None -> Error res.StatusCode |> Task.FromResult
+
+    let toOk<'a> (apply: string -> 'a) (res: HttpResponseMessage) =
+        res.Content.ReadAsStringAsync()
+        |> Task.map apply
+        |> Task.map Ok
+
+    let toOkJson<'a> (res: HttpResponseMessage) =
+        toOk (fun body -> FsJson.deserialize<'a> body)
