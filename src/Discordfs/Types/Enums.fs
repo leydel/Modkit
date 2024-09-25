@@ -1066,3 +1066,92 @@ type SubscriptionStatusType =
 type ReactionType =
     | NORMAL = 0
     | BURST = 1
+
+// https://discord.com/developers/docs/resources/user#connection-object-services
+type ConnectionServiceType =
+    | AMAZON_MUSIC
+    | BATTLE_NET
+    | BUNGIE
+    | DOMAIN
+    | EBAY
+    | EPIC_GAMES
+    | FACEBOOK
+    | GITHUB
+    | INSTAGRAM
+    | LEAGUE_OF_LEGENDS
+    | PAYPAL
+    | PLAYSTATION
+    | REDDIT
+    | RIOT_GAMES
+    | ROBLOX
+    | SPOTIFY
+    | SKYPE
+    | STEAM
+    | TIKTOK
+    | TWITCH
+    | TWITTER
+    | XBOX
+    | YOUTUBE
+
+type ConnectionServiceTypeConverter () =
+    inherit JsonConverter<ConnectionServiceType> () with
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
+            match reader.GetString() with
+            | "amazon-music" -> ConnectionServiceType.AMAZON_MUSIC
+            | "battlenet" -> ConnectionServiceType.BATTLE_NET
+            | "bungie" -> ConnectionServiceType.BUNGIE
+            | "domain" -> ConnectionServiceType.DOMAIN
+            | "ebay" -> ConnectionServiceType.EBAY
+            | "epicgames" -> ConnectionServiceType.EPIC_GAMES
+            | "facebook" -> ConnectionServiceType.FACEBOOK
+            | "github" -> ConnectionServiceType.GITHUB
+            | "instagram" -> ConnectionServiceType.INSTAGRAM
+            | "leagueoflegends" -> ConnectionServiceType.LEAGUE_OF_LEGENDS
+            | "paypal" -> ConnectionServiceType.PAYPAL
+            | "playstation" -> ConnectionServiceType.PLAYSTATION
+            | "reddit" -> ConnectionServiceType.REDDIT
+            | "riotgames" -> ConnectionServiceType.RIOT_GAMES
+            | "roblox" -> ConnectionServiceType.ROBLOX
+            | "spotify" -> ConnectionServiceType.SPOTIFY
+            | "skype" -> ConnectionServiceType.SKYPE
+            | "steam" -> ConnectionServiceType.STEAM
+            | "tiktok" -> ConnectionServiceType.TIKTOK
+            | "twitch" -> ConnectionServiceType.TWITCH
+            | "twitter" -> ConnectionServiceType.TWITTER
+            | "xbox" -> ConnectionServiceType.XBOX
+            | "youtube" -> ConnectionServiceType.YOUTUBE
+            | _ -> failwith "Unexpected ConnectionServiceType type"
+
+        override _.Write (writer: Utf8JsonWriter, value: ConnectionServiceType, options: JsonSerializerOptions) = 
+            let string =
+                match value with
+                | ConnectionServiceType.AMAZON_MUSIC -> "amazon-music"
+                | ConnectionServiceType.BATTLE_NET -> "battlenet"
+                | ConnectionServiceType.BUNGIE -> "bungie"
+                | ConnectionServiceType.DOMAIN -> "domain"
+                | ConnectionServiceType.EBAY -> "ebay"
+                | ConnectionServiceType.EPIC_GAMES -> "epicgames"
+                | ConnectionServiceType.FACEBOOK -> "facebook"
+                | ConnectionServiceType.GITHUB -> "github"
+                | ConnectionServiceType.INSTAGRAM -> "instagram"
+                | ConnectionServiceType.LEAGUE_OF_LEGENDS -> "leagueoflegends"
+                | ConnectionServiceType.PAYPAL -> "paypal"
+                | ConnectionServiceType.PLAYSTATION -> "playstation"
+                | ConnectionServiceType.REDDIT -> "reddit"
+                | ConnectionServiceType.RIOT_GAMES -> "riotgames"
+                | ConnectionServiceType.ROBLOX -> "roblox"
+                | ConnectionServiceType.SPOTIFY -> "spotify"
+                | ConnectionServiceType.SKYPE -> "skype"
+                | ConnectionServiceType.STEAM -> "steam"
+                | ConnectionServiceType.TIKTOK -> "tiktok"
+                | ConnectionServiceType.TWITCH -> "twitch"
+                | ConnectionServiceType.TWITTER -> "twitter"
+                | ConnectionServiceType.XBOX -> "xbox"
+                | ConnectionServiceType.YOUTUBE -> "youtube"
+
+            writer.WriteStringValue string
+
+// https://discord.com/developers/docs/resources/user#connection-object-visibility-types
+type ConnectionVisibilityType =
+    | NONE = 0
+    | EVERYONE = 1

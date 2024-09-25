@@ -24,7 +24,7 @@ type IHttpService =
     abstract member StageInstances: IStageInstanceResource
     abstract member Stickers: IStickerResource
     abstract member Subscriptions: ISubscriptionResource
-    // TODO: User
+    abstract member Users: IUserResource
     abstract member Voice: IVoiceResource
     // TODO: Webhook
     abstract member Gateway: IGatewayResource
@@ -53,7 +53,7 @@ type HttpService (configuration: IConfiguration, httpClientFactory: IHttpClientF
         member _.StageInstances = StageInstanceResource(httpClientFactory, discordBotToken)
         member _.Stickers = StickerResource(httpClientFactory, discordBotToken)
         member _.Subscriptions = SubscriptionResource(httpClientFactory, discordBotToken)
-        // TODO: User
+        member _.Users = UserResource(httpClientFactory, discordBotToken)
         member _.Voice = VoiceResource(httpClientFactory, discordBotToken)
         // TODO: Webhook
         member _.Gateway = GatewayResource(httpClientFactory, discordBotToken)

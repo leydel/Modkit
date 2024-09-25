@@ -1454,6 +1454,20 @@ type GuildIntegration = {
     [<JsonName "scopes">] Scopes: OAuth2Scope list option
 }
 
+// https://discord.com/developers/docs/resources/user#connection-object-connection-structure
+type Connection = {
+    [<JsonName "id">] Id: string
+    [<JsonName "name">] Name: string
+    [<JsonName "type">] [<JsonConverter(typeof<ConnectionServiceTypeConverter>)>] Type: ConnectionServiceType
+    [<JsonName "revoked">] Revoked: bool option
+    [<JsonName "integrations">] Integrations: GuildIntegration list option
+    [<JsonName "verified">] Verified: bool
+    [<JsonName "friend_sync">] FriendSync: bool
+    [<JsonName "show_activity">] ShowActivity: bool
+    [<JsonName "two_way_link">] TwoWayLink: bool
+    [<JsonName "visibility">] Visibility: ConnectionVisibilityType
+}
+
 // https://discord.com/developers/docs/resources/guild#ban-object-ban-structure
 type GuildBan = {
     [<JsonName "reason">] Reason: string option
