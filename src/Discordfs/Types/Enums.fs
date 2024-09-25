@@ -1061,3 +1061,8 @@ type SubscriptionStatusType =
     | ACTIVE = 0
     | ENDING = 1
     | INACTIVE = 2
+
+// https://discord.com/developers/docs/resources/message#get-reactions-reaction-types
+type ReactionType =
+    | NORMAL = 0
+    | BURST = 1

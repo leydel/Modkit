@@ -32,6 +32,7 @@
     <Compile Include="Resources\GuildScheduledEventResource.fs" />
     <Compile Include="Resources\GuildTemplateResource.fs" />
     <Compile Include="Resources\InviteResource.fs" />
+    <Compile Include="Resources\MessageResource.fs" />
     <Compile Include="Resources\PollResource.fs" />
     <Compile Include="Resources\SkuResource.fs" />
     <Compile Include="Resources\StageInstanceResource.fs" />

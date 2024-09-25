@@ -18,7 +18,7 @@ type IHttpService =
     abstract member GuildScheduledEvents: IGuildScheduledEventResource
     abstract member GuildTemplates: IGuildTemplateResource
     abstract member Invites: IInviteResource
-    // TODO: Message
+    abstract member Messages: IMessageResource
     abstract member Polls: IPollResource
     abstract member Skus: ISkuResource
     abstract member StageInstances: IStageInstanceResource
@@ -47,7 +47,7 @@ type HttpService (configuration: IConfiguration, httpClientFactory: IHttpClientF
         member _.GuildScheduledEvents = GuildScheduledEventResource(httpClientFactory, discordBotToken)
         member _.GuildTemplates = GuildTemplateResource(httpClientFactory, discordBotToken)
         member _.Invites = InviteResource(httpClientFactory, discordBotToken)
-        // TODO: Message
+        member _.Messages = MessageResource(httpClientFactory, discordBotToken)
         member _.Polls = PollResource(httpClientFactory, discordBotToken)
         member _.Skus = SkuResource(httpClientFactory, discordBotToken)
         member _.StageInstances = StageInstanceResource(httpClientFactory, discordBotToken)
