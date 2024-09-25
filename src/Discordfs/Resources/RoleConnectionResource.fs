@@ -24,8 +24,6 @@ type UpdateApplicationRoleConnectionMetadataRecords (
             optional "description_localizations" description_localizations
         }
 
-    // TODO: Double check this is valid (specific payload not documented)
-
 type IRoleConnectionResource =
     abstract member GetApplicationRoleConnectionMetadataRecords:
         applicationId: string ->

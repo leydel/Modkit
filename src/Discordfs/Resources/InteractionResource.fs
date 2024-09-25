@@ -16,11 +16,13 @@ type IInteractionResource =
     abstract member GetOriginalInteractionResponse:
         id: string ->
         token: string ->
+        threadId: string option ->
         Task<Message>
 
     abstract member EditOriginalInteractionResponse:
         id: string ->
         token: string ->
+        threadId: string option ->
         content: string option option ->
         embeds: Embed list option option ->
         allowedMentions: AllowedMentions option option ->
@@ -98,12 +100,13 @@ type InteractionResource (httpClientFactory: IHttpClientFactory, token: string) 
                 |> Res.ignore
 
         member _.GetOriginalInteractionResponse
-            id token =
+            id token threadId =
                 Req.create
                     HttpMethod.Get
                     Constants.DISCORD_API_URL
                     $"webhooks/{id}/{token}/messages/@original"
                 |> Req.bot token
+                |> Req.queryOpt "thread_id" threadId
                 |> Req.send httpClientFactory
                 |> Res.json
 

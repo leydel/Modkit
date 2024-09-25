@@ -268,7 +268,7 @@ type IGuildResource =
         guildId: string ->
         auditLogReason: string option ->
         level: GuildMfaLevel ->
-        Task<GuildMfaLevel> // TODO: Test if this correctly deserializes the enum
+        Task<GuildMfaLevel>
 
     // https://discord.com/developers/docs/resources/guild#delete-guild-role
     abstract member DeleteGuildRole:

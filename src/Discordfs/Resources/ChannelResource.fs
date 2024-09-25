@@ -6,7 +6,6 @@ open System
 open System.Net.Http
 open System.Threading.Tasks
 
-// https://discord.com/developers/docs/resources/channel
 type IChannelResource =
     // https://discord.com/developers/docs/resources/channel#get-channel
     abstract member GetChannel:
@@ -93,14 +92,14 @@ type IChannelResource =
         channelId: string ->
         recipientId: string ->
         accessToken: string ->
-        nick: string -> // TODO: Check if this is optional (documented as not, but I expect it is)
-        Task<unit> // TODO: Test return type, currently undocumented
+        nick: string option ->
+        Task<unit> // According to openapi sec, appears to return 201 or 204 (remove this comment once status codes handled properly)
 
     // https://discord.com/developers/docs/resources/channel#group-dm-remove-recipient
     abstract member GroupDmRemoveRecipient:
         channelId: string ->
         recipientId: string ->
-        Task<unit> // TODO: Test return type, currently undocumented
+        Task<unit>
 
     // https://discord.com/developers/docs/resources/channel#start-thread-from-message
     abstract member StartThreadFromMessage:
@@ -129,7 +128,6 @@ type IChannelResource =
     // https://discord.com/developers/docs/resources/channel#join-thread
     abstract member JoinThread:
         channelId: string ->
-        // TODO: Check if oauth token can be used here
         Task<unit>
 
     // https://discord.com/developers/docs/resources/channel#add-thread-member
@@ -141,7 +139,6 @@ type IChannelResource =
     // https://discord.com/developers/docs/resources/channel#leave-thread
     abstract member LeaveThread:
         channelId: string ->
-        // TODO: Check if oauth token can be used here
         Task<unit>
 
     // https://discord.com/developers/docs/resources/channel#remove-thread-member
@@ -177,7 +174,6 @@ type IChannelResource =
     // https://discord.com/developers/docs/resources/channel#list-joined-private-archived-threads
     abstract member ListJoinedPrivateArchivedThreads:
         channelId: string ->
-        // TODO: Check if oauth token can be used here
         before: DateTime option ->
         limit: int option ->
         Task<ListJoinedPrivateArchivedThreadsResponse>
@@ -334,7 +330,7 @@ type ChannelResource (httpClientFactory: IHttpClientFactory, token: string) =
                 |> Req.json (
                     Dto()
                     |> Dto.property "access_token" accessToken
-                    |> Dto.property "nick" nick
+                    |> Dto.propertyIf "nick" nick
                     |> Dto.json
                 )
                 |> Req.send httpClientFactory

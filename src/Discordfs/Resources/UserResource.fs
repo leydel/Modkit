@@ -28,13 +28,16 @@ type CreateDm (
 
 type CreateGroupDm (
     access_tokens: string list,
-    nicks:         IDictionary<string, string> // TODO: Check if this is optional
+    nicks:         IDictionary<string, string>
 ) =
     inherit Payload(Json) with
         override _.Serialize () = json {
             required "access_tokens" access_tokens
             required "nicks" nicks
         }
+
+    // TODO: Test if these are optional (likely just nicks is, but cant use openapi spec to check because same endpoint
+    //       used for createDM which uses a different kind of payload and it doesnt discriminate them)
 
 type UpdateCurrentUserApplicationRoleConnection (
     ?platform_name:     string,
@@ -45,7 +48,7 @@ type UpdateCurrentUserApplicationRoleConnection (
         override _.Serialize () = json {
             optional "platform_name" platform_name
             optional "platform_username" platform_username
-            optional "metadata" metadata // TODO: Test how "stringified values" are supposed to work
+            optional "metadata" metadata // TODO: Test how "stringified values" work (not in openapi spec)
         }
 
 type IUserResource =
@@ -93,8 +96,6 @@ type IUserResource =
     abstract member CreateGroupDm:
         content: CreateGroupDm ->
         Task<Channel>
-
-    // TODO: Check if above request is deprecated (says it was intended to be used by now-deprecated sdk)
 
     // https://discord.com/developers/docs/resources/user#get-current-user-connections
     abstract member GetCurrentUserConnections:

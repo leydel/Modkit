@@ -57,7 +57,7 @@ type IVoiceResource =
         guildId: string ->
         userId: string ->
         content: ModifyUserVoiceState ->
-        Task<unit> // TODO: Confirm this returns 204
+        Task<unit>
 
 type VoiceResource (httpClientFactory: IHttpClientFactory, token: string) =
     interface IVoiceResource with
