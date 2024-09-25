@@ -136,6 +136,14 @@ type ListStickerPacksResponse = {
     [<JsonName "sticker_packs">] StickerPacks: StickerPack list
 }
 
+// https://discord.com/developers/docs/topics/oauth2#get-current-authorization-information-response-structure
+type GetCurrentAuthorizationInformationResponse = {
+    [<JsonName "application">] Application: Application
+    [<JsonName "scopes">] [<JsonConverter(typeof<OAuth2ScopeConverter>)>] Scopes: OAuth2Scope list // TODO: Test if converter works on list
+    [<JsonName "expires">] Expires: DateTime
+    [<JsonName "user">] User: User option
+}
+
 // https://discord.com/developers/docs/topics/gateway-events#identify-identify-structure
 type Identify = {
     [<JsonName "token">] Token: string

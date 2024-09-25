@@ -1451,7 +1451,7 @@ type GuildIntegration = {
     [<JsonName "subscriber_count">] SubscriberCount: int option
     [<JsonName "revoked">] Revoked: bool option
     [<JsonName "application">] Application: GuildIntegrationApplication option
-    [<JsonName "scopes">] Scopes: OAuth2Scope list option
+    [<JsonName "scopes">] [<JsonConverter(typeof<OAuth2ScopeConverter>)>] Scopes: OAuth2Scope list option // TODO: Test if converter works on list
 }
 
 // https://discord.com/developers/docs/resources/user#connection-object-connection-structure

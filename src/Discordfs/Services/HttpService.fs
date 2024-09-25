@@ -28,7 +28,7 @@ type IHttpService =
     abstract member Voice: IVoiceResource
     // TODO: Webhook
     abstract member Gateway: IGatewayResource
-    // TODO: OAuth2
+    abstract member OAuth2: IOauth2Resource
 
 type HttpService (configuration: IConfiguration, httpClientFactory: IHttpClientFactory) =
     let discordBotToken = configuration.GetValue "DiscordBotToken"
@@ -57,4 +57,4 @@ type HttpService (configuration: IConfiguration, httpClientFactory: IHttpClientF
         member _.Voice = VoiceResource(httpClientFactory, discordBotToken)
         // TODO: Webhook
         member _.Gateway = GatewayResource(httpClientFactory, discordBotToken)
-        // TODO: OAuth2
+        member _.OAuth2 = OAuth2Resource(httpClientFactory, discordBotToken)
