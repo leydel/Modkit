@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RootNamespace>Modkit.Diacord.Core</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Types\Api.fs" />
+    <Compile Include="Types\Diff.fs" />
+    <Compile Include="Types\DiffNode.fs" />
+    <Compile Include="Clients\ApiClient.fs" />
+    <Compile Include="Structures\DiacordChannel.fs" />
+    <Compile Include="Structures\DiacordSticker.fs" />
+    <Compile Include="Structures\DiacordEmoji.fs" />
+    <Compile Include="Structures\DiacordRole.fs" />
+    <Compile Include="Structures\DiacordSettings.fs" />
+    <Compile Include="Structures\DiacordTemplate.fs" />
+    <Compile Include="Structures\DiacordState.fs" />
+    <Compile Include="Interfaces\IParserStrategy.fs" />
+    <Compile Include="Interfaces\IMappingStrategy.fs" />
+    <Compile Include="Strategies\Parser\JsonParserStrategy.fs" />
+    <Compile Include="Strategies\Mapping\FileMappingStrategy.fs" />
+    <Compile Include="Strategies\Mapping\ApiMappingStrategy.fs" />
+    <Compile Include="Providers\ParserStrategyProvider.fs" />
+    <Compile Include="Providers\MappingStrategyProvider.fs" />
+    <Compile Include="Providers\StateProvider.fs" />
+    <Compile Include="Services\StateService.fs" />
+    <Compile Include="Commands\InitCommand.fs" />
+    <Compile Include="Commands\PlanCommand.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FSharp.SystemTextJson" Version="1.3.13" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Discordfs\Discordfs.Rest\Discordfs.Rest.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="8.0.400" />
+  </ItemGroup>
+
+</Project>
