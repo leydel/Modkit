@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Types\DiffNodeTests.fs" />
-    <Compile Include="Types\DiffTests.fs" />
+    <Compile Include="Common\ReqTests.fs" />
+    <Compile Include="Common\ResTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -22,10 +22,11 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.6.0" />
     <PackageReference Include="MSTest.TestFramework" Version="3.6.0" />
+    <PackageReference Include="RichardSzalay.MockHttp" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Diacord.Core\Diacord.Core.fsproj" />
+    <ProjectReference Include="..\Discordfs.Rest\Discordfs.Rest.fsproj" />
   </ItemGroup>
 
   <ItemGroup>

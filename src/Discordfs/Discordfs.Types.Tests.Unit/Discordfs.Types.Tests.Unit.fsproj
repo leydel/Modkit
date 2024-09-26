@@ -9,9 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Patterns\OptionsTests.fs" />
-    <Compile Include="Services\CommandServiceTests.fs" />
-    <Compile Include="Services\Ed25519SigningServiceTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -26,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Discordfs.Commands\Discordfs.Commands.fsproj" />
+    <ProjectReference Include="..\Discordfs.Types\Discordfs.Types.fsproj" />
   </ItemGroup>
 
   <ItemGroup>

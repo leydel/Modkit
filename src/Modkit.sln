@@ -3,49 +3,49 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Discordfs", "Discordfs", "{50913003-23E3-46A3-98E7-C58380A00FC2}"
-EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Discordfs.Rest", "Discordfs\Discordfs.Rest\Discordfs.Rest.fsproj", "{A285AAF6-C082-4D91-B255-5D26E879CF1D}"
-EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Discordfs.Types", "Discordfs\Discordfs.Types\Discordfs.Types.fsproj", "{BEC34D6E-F4DA-4002-BDF6-C6327B180D11}"
-EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Discordfs.Gateway", "Discordfs\Discordfs.Gateway\Discordfs.Gateway.fsproj", "{B5424619-9D3B-47CF-8904-BBE5C0A7CA2F}"
-EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Discordfs.Commands", "Discordfs\Discordfs.Commands\Discordfs.Commands.fsproj", "{32BA9B68-8D56-4DEF-AC01-682153F1C0DA}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{FEBEEC81-5761-48E1-B8B9-E4E83E4A7F1F}"
-EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Discordfs.Commands.Tests.Unit", "Discordfs\Tests\Discordfs.Commands.Tests.Unit\Discordfs.Commands.Tests.Unit.fsproj", "{E7187B04-C166-4F38-AD5F-F8B31828CAB3}"
-EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Discordfs.Rest.Tests.Unit", "Discordfs\Tests\Discordfs.Rest.Tests.Unit\Discordfs.Rest.Tests.Unit.fsproj", "{ACBBC98C-1FD4-4CFC-B7BC-7CDAA019833E}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Diacord", "Diacord", "{BE3D82C9-8556-460D-AD40-37BE533116B9}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Diacord.Core", "Diacord\Diacord.Core\Diacord.Core.fsproj", "{F6A162FC-CBC7-4190-9C13-C85B2B628616}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1CF02583-819A-4D2F-BD0B-B1B9E895C09B}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Diacord.Core.Tests.Unit", "Diacord\Tests\Diacord.Core.Tests.Unit\Diacord.Core.Tests.Unit.fsproj", "{14A9FD97-7486-4C82-8221-8DF6A396FD66}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Diacord.Core.Tests.Unit", "Diacord\Diacord.Core.Tests.Unit\Diacord.Core.Tests.Unit.fsproj", "{14A9FD97-7486-4C82-8221-8DF6A396FD66}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{5A8884C2-D7E1-4CAF-A47E-A8FC532A0BE6}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Discordfs", "Discordfs", "{50913003-23E3-46A3-98E7-C58380A00FC2}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "DiscordApiSwagger", "Tools\DiscordApiSwagger\DiscordApiSwagger.fsproj", "{30DF573F-A458-411D-89FB-C1B42B02C85E}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Discordfs.Commands", "Discordfs\Discordfs.Commands\Discordfs.Commands.fsproj", "{32BA9B68-8D56-4DEF-AC01-682153F1C0DA}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Discordfs.Gateway", "Discordfs\Discordfs.Gateway\Discordfs.Gateway.fsproj", "{B5424619-9D3B-47CF-8904-BBE5C0A7CA2F}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Discordfs.Rest", "Discordfs\Discordfs.Rest\Discordfs.Rest.fsproj", "{A285AAF6-C082-4D91-B255-5D26E879CF1D}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Discordfs.Types", "Discordfs\Discordfs.Types\Discordfs.Types.fsproj", "{BEC34D6E-F4DA-4002-BDF6-C6327B180D11}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{FEBEEC81-5761-48E1-B8B9-E4E83E4A7F1F}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Discordfs.Commands.Tests.Unit", "Discordfs\Discordfs.Commands.Tests.Unit\Discordfs.Commands.Tests.Unit.fsproj", "{E7187B04-C166-4F38-AD5F-F8B31828CAB3}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Discordfs.Gateway.Tests.Unit", "Discordfs\Discordfs.Gateway.Tests.Unit\Discordfs.Gateway.Tests.Unit.fsproj", "{FE220805-E00B-4B85-A424-649626F793D4}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Discordfs.Rest.Tests.Unit", "Discordfs\Discordfs.Rest.Tests.Unit\Discordfs.Rest.Tests.Unit.fsproj", "{ACBBC98C-1FD4-4CFC-B7BC-7CDAA019833E}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Discordfs.Types.Tests.Unit", "Discordfs\Discordfs.Types.Tests.Unit\Discordfs.Types.Tests.Unit.fsproj", "{36B2314E-DC98-4D53-A384-A5725712DA82}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modkit", "Modkit", "{3AF421C4-689C-46A7-9F96-1429150EBFE9}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AFA43FEE-9202-4BC3-BD28-FBABD2672E8A}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Api", "Modkit\Api\Api.fsproj", "{807C0FFE-B9CA-467D-9A2D-0AF492ED84FA}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Gateway", "Modkit\Gateway\Gateway.fsproj", "{A4266080-6AA1-42F7-9652-19ADCFDAF94E}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Api.Tests.Unit", "Modkit\Tests\Api.Tests.Unit\Api.Tests.Unit.fsproj", "{398569AF-870C-4086-B214-1DA42F15D9AC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AFA43FEE-9202-4BC3-BD28-FBABD2672E8A}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Gateway.Tests.Unit", "Modkit\Tests\Gateway.Tests.Unit\Gateway.Tests.Unit.fsproj", "{EBDB02ED-810C-42FA-8846-A8A0E69D2E07}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Api.Tests.Unit", "Modkit\Api.Tests.Unit\Api.Tests.Unit.fsproj", "{398569AF-870C-4086-B214-1DA42F15D9AC}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Discordfs.Gateway.Tests.Unit", "Discordfs\Tests\Discordfs.Gateway.Tests.Unit\Discordfs.Gateway.Tests.Unit.fsproj", "{FE220805-E00B-4B85-A424-649626F793D4}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Gateway.Tests.Unit", "Modkit\Gateway.Tests.Unit\Gateway.Tests.Unit.fsproj", "{EBDB02ED-810C-42FA-8846-A8A0E69D2E07}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Discordfs.Types.Tests.Unit", "Discordfs\Tests\Discordfs.Types.Tests.Unit\Discordfs.Types.Tests.Unit.fsproj", "{36B2314E-DC98-4D53-A384-A5725712DA82}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{5A8884C2-D7E1-4CAF-A47E-A8FC532A0BE6}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "DiscordApiSwagger", "Tools\DiscordApiSwagger\DiscordApiSwagger.fsproj", "{30DF573F-A458-411D-89FB-C1B42B02C85E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
