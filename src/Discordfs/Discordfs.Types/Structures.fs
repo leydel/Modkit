@@ -63,19 +63,38 @@ type Attachment = {
     [<JsonName "flags">] Flags: int option
 }
 
+type NullUndefinedAsBoolConverter() =
+    inherit JsonConverter<bool> () with
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
+            match reader.TokenType with
+            | JsonTokenType.Null -> true
+            | JsonTokenType.None -> false
+            | _ -> failwith "Unexpected token received in NullUndefinedAsBoolConverter"
+
+            //// if above doesn't work, this might
+            //try
+            //    JsonDocument.ParseValue(&reader) |> ignore
+            //    true
+            //with | _ ->
+            //    false
+
+            // TODO: Test this
+
+        override _.Write (writer: Utf8JsonWriter, value: bool, options: JsonSerializerOptions) =
+            match value with
+            | true -> writer.WriteNullValue()
+            | false -> ()
+
+            // TODO: Test this
+
 type RoleTags = {
-    [<JsonName "bot_id">] BotId: string option
-    [<JsonName "integration_id">] IntegrationId: string option
-    [<JsonName "premium_subscriber">] PremiumSubscriber: unit option
-    [<JsonName "subscription_listing_id">] SubscriptionListingId: string option
-    [<JsonName "available_for_purchase">] AvailableForPurchase: unit option
-    [<JsonName "guild_connections">] GuildConnections: unit option
+    [<JsonName "bot_id">] [<JsonConverter(typeof<NullUndefinedAsBoolConverter>)>] BotId: string option
+    [<JsonName "integration_id">] [<JsonConverter(typeof<NullUndefinedAsBoolConverter>)>] IntegrationId: string option
+    [<JsonName "premium_subscriber">] [<JsonConverter(typeof<NullUndefinedAsBoolConverter>)>] PremiumSubscriber: unit option
+    [<JsonName "subscription_listing_id">] [<JsonConverter(typeof<NullUndefinedAsBoolConverter>)>] SubscriptionListingId: string option
+    [<JsonName "available_for_purchase">] [<JsonConverter(typeof<NullUndefinedAsBoolConverter>)>] AvailableForPurchase: unit option
+    [<JsonName "guild_connections">] [<JsonConverter(typeof<NullUndefinedAsBoolConverter>)>] GuildConnections: unit option
 }
-
-// TODO: Figure out how to transform above `unit option` types to `bool` where null = true & undefined = false
-
-// You'd need to do some testing but you can probably rely on default bool being false and fromTargetType never being called. If it is called you just return true and ignore the value
-// https://discord.com/channels/196693847965696000/1279795576569069714/1279974826458484816
 
 type Role = {
     [<JsonName "id">] Id: string
