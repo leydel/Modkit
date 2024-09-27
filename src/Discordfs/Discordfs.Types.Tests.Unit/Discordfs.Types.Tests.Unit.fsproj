@@ -9,6 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Utils\ConvertersTests.fs" />
+    <Compile Include="Utils\FsJsonTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

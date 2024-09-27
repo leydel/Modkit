@@ -63,37 +63,13 @@ type Attachment = {
     [<JsonName "flags">] Flags: int option
 }
 
-type NullUndefinedAsBoolConverter() =
-    inherit JsonConverter<bool> () with
-        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
-            match reader.TokenType with
-            | JsonTokenType.Null -> true
-            | JsonTokenType.None -> false
-            | _ -> failwith "Unexpected token received in NullUndefinedAsBoolConverter"
-
-            //// if above doesn't work, this might
-            //try
-            //    JsonDocument.ParseValue(&reader) |> ignore
-            //    true
-            //with | _ ->
-            //    false
-
-            // TODO: Test this
-
-        override _.Write (writer: Utf8JsonWriter, value: bool, options: JsonSerializerOptions) =
-            match value with
-            | true -> writer.WriteNullValue()
-            | false -> ()
-
-            // TODO: Test this
-
 type RoleTags = {
-    [<JsonName "bot_id">] [<JsonConverter(typeof<NullUndefinedAsBoolConverter>)>] BotId: string option
-    [<JsonName "integration_id">] [<JsonConverter(typeof<NullUndefinedAsBoolConverter>)>] IntegrationId: string option
-    [<JsonName "premium_subscriber">] [<JsonConverter(typeof<NullUndefinedAsBoolConverter>)>] PremiumSubscriber: unit option
-    [<JsonName "subscription_listing_id">] [<JsonConverter(typeof<NullUndefinedAsBoolConverter>)>] SubscriptionListingId: string option
-    [<JsonName "available_for_purchase">] [<JsonConverter(typeof<NullUndefinedAsBoolConverter>)>] AvailableForPurchase: unit option
-    [<JsonName "guild_connections">] [<JsonConverter(typeof<NullUndefinedAsBoolConverter>)>] GuildConnections: unit option
+    [<JsonName "bot_id">] [<JsonConverter(typeof<Converters.NullUndefinedAsBool>)>] BotId: string option
+    [<JsonName "integration_id">] [<JsonConverter(typeof<Converters.NullUndefinedAsBool>)>] IntegrationId: string option
+    [<JsonName "premium_subscriber">] [<JsonConverter(typeof<Converters.NullUndefinedAsBool>)>] PremiumSubscriber: unit option
+    [<JsonName "subscription_listing_id">] [<JsonConverter(typeof<Converters.NullUndefinedAsBool>)>] SubscriptionListingId: string option
+    [<JsonName "available_for_purchase">] [<JsonConverter(typeof<Converters.NullUndefinedAsBool>)>] AvailableForPurchase: unit option
+    [<JsonName "guild_connections">] [<JsonConverter(typeof<Converters.NullUndefinedAsBool>)>] GuildConnections: unit option
 }
 
 type Role = {
