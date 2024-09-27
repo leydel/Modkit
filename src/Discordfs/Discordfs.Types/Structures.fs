@@ -28,7 +28,7 @@ type WelcomeScreen = {
 type CommandInteractionDataOption = {
     [<JsonName "name">] Name: string
     [<JsonName "type">] Type: ApplicationCommandOptionType
-    [<JsonName "value">] [<JsonConverter(typeof<CommandInteractionDataOptionValueConverter>)>] Value: CommandInteractionDataOptionValue option
+    [<JsonName "value">] Value: CommandInteractionDataOptionValue option
     [<JsonName "options">] Options: CommandInteractionDataOption list option
     [<JsonName "focused">] Focused: bool option
 }
@@ -64,10 +64,10 @@ type Attachment = {
 }
 
 type RoleTags = {
-    [<JsonName "bot_id">] [<JsonConverter(typeof<Converters.NullUndefinedAsBool>)>] BotId: string option
-    [<JsonName "integration_id">] [<JsonConverter(typeof<Converters.NullUndefinedAsBool>)>] IntegrationId: string option
+    [<JsonName "bot_id">] BotId: string option
+    [<JsonName "integration_id">] IntegrationId: string option
     [<JsonName "premium_subscriber">] [<JsonConverter(typeof<Converters.NullUndefinedAsBool>)>] PremiumSubscriber: unit option
-    [<JsonName "subscription_listing_id">] [<JsonConverter(typeof<Converters.NullUndefinedAsBool>)>] SubscriptionListingId: string option
+    [<JsonName "subscription_listing_id">] SubscriptionListingId: string option
     [<JsonName "available_for_purchase">] [<JsonConverter(typeof<Converters.NullUndefinedAsBool>)>] AvailableForPurchase: unit option
     [<JsonName "guild_connections">] [<JsonConverter(typeof<Converters.NullUndefinedAsBool>)>] GuildConnections: unit option
 }
@@ -205,7 +205,7 @@ type Guild = {
     [<JsonName "explicit_content_filter">] ExplicitContentFilter: GuildExplicitContentFilterLevel
     [<JsonName "roles">] Roles: Role list
     [<JsonName "emojis">] Emojis: Emoji list
-    [<JsonName "features">] [<JsonConverter(typeof<GuildFeatureConverter>)>] Features: GuildFeature list // TODO: Test if this transform works on list
+    [<JsonName "features">] Features: GuildFeature list
     [<JsonName "mfa_level">] MfaLevel: GuildMfaLevel
     [<JsonName "application_id">] ApplicationId: string option
     [<JsonName "system_channel_id">] SystemChannelId: string option
@@ -244,7 +244,7 @@ type GuildPreview = {
     [<JsonName "splash">] Splash: string option
     [<JsonName "discovery_splash">] DiscoverySplash: string option
     [<JsonName "emojis">] Emojis: Emoji list
-    [<JsonName "features">] [<JsonConverter(typeof<GuildFeatureConverter>)>] Features: GuildFeature list // TODO: Test if this transform works on list
+    [<JsonName "features">] Features: GuildFeature list
     [<JsonName "approximate_member_count">] ApproximateMemberCount: int
     [<JsonName "approximate_presence_count">] ApproximatePresenceCount: int
     [<JsonName "description">] Description: string option
@@ -654,9 +654,26 @@ type SelectMenuDefaultValue = {
     [<JsonName "type">] Type: string
 }
 
-type ActionRowComponent = {
+[<JsonConverter(typeof<ComponentConverter>)>]
+type Component =
+    | ActionRow of ActionRowComponent
+    | Button of ButtonComponent
+    | SelectMenu of SelectMenuComponent
+    | TextInput of TextInputComponent
+
+and ComponentConverter () =
+    inherit JsonConverter<Component> () with
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
+            raise <| NotImplementedException()
+            
+        override _.Write (writer: Utf8JsonWriter, value: Component, options: JsonSerializerOptions) = 
+            raise <| NotImplementedException()
+
+    // TODO: Implement (Consider making a single `Component` with all properties and try to convert to specific in code elsewhere?)
+
+and ActionRowComponent = {
     [<JsonName "type">] Type: ComponentType
-    [<JsonName "components">] [<JsonConverter(typeof<ComponentConverter>)>] Components: Component list
+    [<JsonName "components">] Components: Component list
 }
 
 and ButtonComponent = {
@@ -692,22 +709,6 @@ and TextInputComponent = {
     [<JsonName "value">] Value: string option
     [<JsonName "placeholder">] Placeholder: string option
 }
-
-and Component =
-    | ActionRow of ActionRowComponent
-    | Button of ButtonComponent
-    | SelectMenu of SelectMenuComponent
-    | TextInput of TextInputComponent
-
-and ComponentConverter () =
-    inherit JsonConverter<Component> () with
-        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
-            raise <| NotImplementedException()
-            
-        override _.Write (writer: Utf8JsonWriter, value: Component, options: JsonSerializerOptions) = 
-            raise <| NotImplementedException()
-
-    // TODO: Implement (Consider making a single `Component` with all properties and try to convert to specific in code elsewhere?)
 
 type Channel = {
     [<JsonName "id">] Id: string
@@ -781,7 +782,7 @@ and Message = {
     [<JsonName "attachments">] Attachments: Attachment list
     [<JsonName "embeds">] Embeds: Embed list
     [<JsonName "reactions">] Reactions: Reaction list
-    [<JsonName "nonce">] [<JsonConverter(typeof<MessageNonceConverter>)>] Nonce: MessageNonce option
+    [<JsonName "nonce">] Nonce: MessageNonce option
     [<JsonName "pinned">] Pinned: bool
     [<JsonName "webhook_id">] WebhookId: string option
     [<JsonName "type">] Type: MessageType
@@ -1014,7 +1015,7 @@ with
     }
 
 type AllowedMentions = {
-    [<JsonName "parse">] [<JsonConverter(typeof<AllowedMentionsParseTypeConverter>)>] Parse: AllowedMentionsParseType list
+    [<JsonName "parse">] Parse: AllowedMentionsParseType list
     [<JsonName "roles">] Roles: string list option
     [<JsonName "users">] Users: string list option
     [<JsonName "replied_user">] RepliedUser: bool option
@@ -1035,7 +1036,7 @@ with
 type ApplicationCommandOptionChoice = {
     [<JsonName "name">] Name: string
     [<JsonName "name_localizations">] NameLocalizations: Dictionary<string, string> option
-    [<JsonName "value">] [<JsonConverter(typeof<ApplicationCommandOptionChoiceValueConverter>)>] Value: ApplicationCommandOptionChoiceValue
+    [<JsonName "value">] Value: ApplicationCommandOptionChoiceValue
 }
 
 type ApplicationCommandOption = {
@@ -1048,8 +1049,8 @@ type ApplicationCommandOption = {
     [<JsonName "choices">] Choices: ApplicationCommandOptionChoice list option
     [<JsonName "options">] Options: ApplicationCommandOption list option
     [<JsonName "channel_types">] ChannelTypes: ChannelType list option
-    [<JsonName "min_value">] [<JsonConverter(typeof<ApplicationCommandMinValueConverter>)>] MinValue: ApplicationCommandMinValue option
-    [<JsonName "max_value">] [<JsonConverter(typeof<ApplicationCommandMaxValueConverter>)>] MaxValue: ApplicationCommandMaxValue option
+    [<JsonName "min_value">] MinValue: ApplicationCommandMinValue option
+    [<JsonName "max_value">] MaxValue: ApplicationCommandMaxValue option
     [<JsonName "min_length">] MinLength: int option
     [<JsonName "max_length">] MaxLength: int option
     [<JsonName "autocomplete">] Autocomplete: bool option
@@ -1127,13 +1128,29 @@ type GuildApplicationCommandPermissions = {
     [<JsonName "permissions">] Permissions: ApplicationCommandPermission list
 }
 
-type InteractionCallbackMessageData = {
+[<JsonConverter(typeof<InteractionCallbackDataConverter>)>]
+type InteractionCallbackData =
+    | Message of InteractionCallbackMessageData
+    | Autocomplete of InteractionCallbackAutocompleteData
+    | Modal of InteractionCallbackModalData
+
+and InteractionCallbackDataConverter () =
+    inherit JsonConverter<InteractionCallbackData> () with
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
+            raise <| NotImplementedException()
+            
+        override _.Write (writer: Utf8JsonWriter, value: InteractionCallbackData, options: JsonSerializerOptions) = 
+            raise <| NotImplementedException()
+
+    // TODO: Implement (Consider making a single `InteractionCallbackData` with all properties and try to convert to specific in code elsewhere?)
+
+and InteractionCallbackMessageData = {
     [<JsonName "tts">] Tts: bool option
     [<JsonName "content">] Content: string option
     [<JsonName "embeds">] Embeds: Embed list option
     [<JsonName "allowed_mentions">] AllowedMentions: AllowedMentions option
     [<JsonName "flags">] Flags: int option
-    [<JsonName "components">] [<JsonConverter(typeof<ComponentConverter>)>] Components: Component list option
+    [<JsonName "components">] Components: Component list option
     [<JsonName "attachments">] Attachments: Attachment list option
     [<JsonName "poll">] Poll: Poll option
 }
@@ -1200,7 +1217,7 @@ with
 and InteractionCallbackModalData = {
     [<JsonName "custom_id">] CustomId: string
     [<JsonName "title">] Title: string
-    [<JsonName "components">] [<JsonConverter(typeof<ComponentConverter>)>] Components: Component list
+    [<JsonName "components">] Components: Component list
 }
 with
     static member build(
@@ -1220,21 +1237,6 @@ with
     ) = InteractionCallbackData.Modal (
         InteractionCallbackModalData.build (CustomId, Title, Components)
     )
-
-and InteractionCallbackData =
-    | Message of InteractionCallbackMessageData
-    | Autocomplete of InteractionCallbackAutocompleteData
-    | Modal of InteractionCallbackModalData
-
-and InteractionCallbackDataConverter () =
-    inherit JsonConverter<InteractionCallbackData> () with
-        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
-            raise <| NotImplementedException()
-            
-        override _.Write (writer: Utf8JsonWriter, value: InteractionCallbackData, options: JsonSerializerOptions) = 
-            raise <| NotImplementedException()
-
-    // TODO: Implement (Consider making a single `InteractionCallbackData` with all properties and try to convert to specific in code elsewhere?)
 
 type ActivityTimestamps = {
     [<JsonName "start">] [<JsonConverter(typeof<Converters.UnixEpoch>)>] Start: DateTime option
@@ -1400,7 +1402,7 @@ type AutoModerationRule = {
 // https://discord.com/developers/docs/resources/application#get-application-activity-instance-activity-location-object
 type ActivityLocation = {
     [<JsonName "id">] Id: string
-    [<JsonName "kind">] [<JsonConverter(typeof<ActivityLocationKindConverter>)>] Kind: ActivityLocationKind
+    [<JsonName "kind">] Kind: ActivityLocationKind
     [<JsonName "channel_id">] ChannelId: string
     [<JsonName "guild_id">] GuildId: string option
 }
@@ -1446,14 +1448,14 @@ type GuildIntegration = {
     [<JsonName "subscriber_count">] SubscriberCount: int option
     [<JsonName "revoked">] Revoked: bool option
     [<JsonName "application">] Application: GuildIntegrationApplication option
-    [<JsonName "scopes">] [<JsonConverter(typeof<OAuth2ScopeConverter>)>] Scopes: OAuth2Scope list option // TODO: Test if converter works on list
+    [<JsonName "scopes">] Scopes: OAuth2Scope list option
 }
 
 // https://discord.com/developers/docs/resources/user#connection-object-connection-structure
 type Connection = {
     [<JsonName "id">] Id: string
     [<JsonName "name">] Name: string
-    [<JsonName "type">] [<JsonConverter(typeof<ConnectionServiceTypeConverter>)>] Type: ConnectionServiceType
+    [<JsonName "type">] Type: ConnectionServiceType
     [<JsonName "revoked">] Revoked: bool option
     [<JsonName "integrations">] Integrations: GuildIntegration list option
     [<JsonName "verified">] Verified: bool

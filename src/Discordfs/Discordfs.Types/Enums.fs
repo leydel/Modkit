@@ -187,6 +187,7 @@ type SystemChannelFlag =
     | SUPPRESS_ROLE_SUBSCRIPTION_PURCHASE_NOTIFICATION_REPLIES  = 0b00100000
 
 // https://discord.com/developers/docs/resources/guild#guild-object-guild-features
+[<JsonConverter(typeof<GuildFeatureConverter>)>]
 type GuildFeature =
     | ANIMATED_BANNER
     | ANIMATED_ICON
@@ -216,7 +217,7 @@ type GuildFeature =
     | VIP_REGIONS
     | WELCOME_SCREEN_ENABLED
 
-type GuildFeatureConverter () =
+and GuildFeatureConverter () =
     inherit JsonConverter<GuildFeature> () with
         override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
             match reader.GetString() with
@@ -292,13 +293,14 @@ type OnboardingPromptType =
     | MULTIPLE_CHOICE = 0
     | DROPDOWN = 1
 
+[<JsonConverter(typeof<CommandInteractionDataOptionValueConverter>)>]
 type CommandInteractionDataOptionValue =
     | String of string
     | Int of int
     | Double of double
     | Bool of bool
 
-type CommandInteractionDataOptionValueConverter () =
+and CommandInteractionDataOptionValueConverter () =
     inherit JsonConverter<CommandInteractionDataOptionValue> () with
         override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
             match reader.TokenType with
@@ -374,11 +376,12 @@ type InviteTargetType =
     | STREAM = 1
     | EMBEDDED_APPLICATION = 2
 
+[<JsonConverter(typeof<MessageNonceConverter>)>]
 type MessageNonce =
     | Number of int
     | String of string
 
-type MessageNonceConverter () =
+and MessageNonceConverter () =
     inherit JsonConverter<MessageNonce> () with
         override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
             match reader.TokenType with
@@ -391,12 +394,13 @@ type MessageNonceConverter () =
             | MessageNonce.Number v -> writer.WriteNumberValue v
             | MessageNonce.String v -> writer.WriteStringValue v
 
+[<JsonConverter(typeof<ApplicationCommandOptionChoiceValueConverter>)>]
 type ApplicationCommandOptionChoiceValue =
     | String of string
     | Int of int
     | Double of double
 
-type ApplicationCommandOptionChoiceValueConverter () =
+and ApplicationCommandOptionChoiceValueConverter () =
     inherit JsonConverter<ApplicationCommandOptionChoiceValue> () with
         override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
             match reader.TokenType with
@@ -419,11 +423,12 @@ type ApplicationCommandOptionChoiceValueConverter () =
             | ApplicationCommandOptionChoiceValue.Int v -> writer.WriteNumberValue v
             | ApplicationCommandOptionChoiceValue.Double v -> writer.WriteNumberValue v
     
+[<JsonConverter(typeof<ApplicationCommandMinValueConverter>)>]
 type ApplicationCommandMinValue =
     | Int of int
     | Double of double
 
-type ApplicationCommandMinValueConverter () =
+and ApplicationCommandMinValueConverter () =
     inherit JsonConverter<ApplicationCommandMinValue> () with
         override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
             match reader.TokenType with
@@ -444,11 +449,12 @@ type ApplicationCommandMinValueConverter () =
             | ApplicationCommandMinValue.Int v -> writer.WriteNumberValue v
             | ApplicationCommandMinValue.Double v -> writer.WriteNumberValue v
     
+[<JsonConverter(typeof<ApplicationCommandMaxValueConverter>)>]
 type ApplicationCommandMaxValue =
     | Int of int
     | Double of double
 
-type ApplicationCommandMaxValueConverter () =
+and ApplicationCommandMaxValueConverter () =
     inherit JsonConverter<ApplicationCommandMaxValue> () with
         override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
             match reader.TokenType with
@@ -469,12 +475,13 @@ type ApplicationCommandMaxValueConverter () =
             | ApplicationCommandMaxValue.Int v -> writer.WriteNumberValue v
             | ApplicationCommandMaxValue.Double v -> writer.WriteNumberValue v
 
+[<JsonConverter(typeof<AllowedMentionsParseTypeConverter>)>]
 type AllowedMentionsParseType =
     | Roles
     | Users
     | Everyone
 
-type AllowedMentionsParseTypeConverter () =
+and AllowedMentionsParseTypeConverter () =
     inherit JsonConverter<AllowedMentionsParseType> () with
         override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
             match reader.GetString() with
@@ -598,6 +605,7 @@ type GatewayIntent =
     | GUILD_MESSAGE_POLLS =             0b00000001_00000000_00000000_00000000
     | DIRECT_MESSAGE_POLLS =            0b00000010_00000000_00000000_00000000
 
+[<JsonConverter(typeof<StatusTypeConverter>)>]
 type StatusType =
     | ONLINE
     | DND
@@ -605,7 +613,7 @@ type StatusType =
     | INVISIBLE
     | OFFLINE
     
-type StatusTypeConverter () =
+and StatusTypeConverter () =
     inherit JsonConverter<StatusType> () with
         override __.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
             match reader.GetString() with
@@ -650,11 +658,12 @@ type AnimationType =
     | PREMIUM = 0
     | BAISC = 1
 
+[<JsonConverter(typeof<SoundboardSoundIdConverter>)>]
 type SoundboardSoundId =
     | String of string
     | Int of int
 
-type SoundboardSoundIdConverter () =
+and SoundboardSoundIdConverter () =
     inherit JsonConverter<SoundboardSoundId> () with
         override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
             match reader.TokenType with // TODO: Test this, sounds wrong
@@ -727,11 +736,12 @@ type ApplicationFlag =
     | APPLICATION_COMMAND_BADGE                     = 0b10000000_00000000_00000000
 
 // https://discord.com/developers/docs/resources/application#get-application-activity-instance-activity-location-kind-enum
+[<JsonConverter(typeof<ActivityLocationKindConverter>)>]
 type ActivityLocationKind =
     | GUILD_CHANNEL
     | PRIVATE_CHANNEL
 
-type ActivityLocationKindConverter () =
+and ActivityLocationKindConverter () =
     inherit JsonConverter<ActivityLocationKind> () with
         override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
             match reader.GetString() with
@@ -847,6 +857,7 @@ type IntegrationExpireBehaviorType =
     | REMOVE_ROLE = 0
     | KICK = 1
 
+[<JsonConverter(typeof<OAuth2ScopeConverter>)>]
 type OAuth2Scope =
     | ACTIVITIES_READ
     | ACTIVITIES_WRITE
@@ -877,7 +888,7 @@ type OAuth2Scope =
     | VOICE
     | WEBHOOK_INCOMING
 
-type OAuth2ScopeConverter () =
+and OAuth2ScopeConverter () =
     inherit JsonConverter<OAuth2Scope> () with
         override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
             match reader.GetString() with
@@ -1068,6 +1079,7 @@ type ReactionType =
     | BURST = 1
 
 // https://discord.com/developers/docs/resources/user#connection-object-services
+[<JsonConverter(typeof<ConnectionServiceTypeConverter>)>]
 type ConnectionServiceType =
     | AMAZON_MUSIC
     | BATTLE_NET
@@ -1093,7 +1105,7 @@ type ConnectionServiceType =
     | XBOX
     | YOUTUBE
 
-type ConnectionServiceTypeConverter () =
+and ConnectionServiceTypeConverter () =
     inherit JsonConverter<ConnectionServiceType> () with
         override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
             match reader.GetString() with

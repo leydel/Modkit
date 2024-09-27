@@ -105,7 +105,7 @@ with
 and UpdatePresence = {
     [<JsonName "since">] Since: int option
     [<JsonName "activities">] Activities: Activity list
-    [<JsonName "status">] [<JsonConverter(typeof<StatusTypeConverter>)>] Status: StatusType
+    [<JsonName "status">] Status: StatusType
     [<JsonName "afk">] Afk: bool
 }
 with
