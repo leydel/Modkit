@@ -10,7 +10,7 @@ open System.Net.Http
 open System.Text.Json.Serialization
 
 type NoteAddFunctionPayload = {
-    [<JsonName "message">] Message: string
+    [<JsonPropertyName "message">] Message: string
 }
 
 type NoteAddFunction (noteAddAction: INoteAddAction) =

@@ -5,8 +5,8 @@ open System.Collections.Generic
 open System.Text.Json.Serialization
 
 type DiacordMappingDto = {
-    [<JsonName "guild_id">] GuildId: string
-    [<JsonName "mappings">] Mappings: IDictionary<string, string>
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "mappings">] Mappings: IDictionary<string, string>
 }
 with
     static member from (model: DiacordMapping) = {

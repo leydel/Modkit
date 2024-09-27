@@ -4,7 +4,7 @@ open Microsoft.VisualStudio.TestTools.UnitTesting
 open System.Text.Json.Serialization
 
 type ExampleRecord = {
-    [<JsonName "nonce">] Nonce: int
+    [<JsonPropertyName "nonce">] Nonce: int
 }
 
 [<TestClass>]

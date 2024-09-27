@@ -11,7 +11,7 @@ open System.Net.Http
 open System.Text.Json.Serialization
 
 type DiacordMappingPutFunctionPayload = {
-    [<JsonName "mappings">] Mappings: IDictionary<string, string>
+    [<JsonPropertyName "mappings">] Mappings: IDictionary<string, string>
 }
 
 type DiacordMappingPutFunction (diacordMappingPutAction: IDiacordMappingPutAction) =

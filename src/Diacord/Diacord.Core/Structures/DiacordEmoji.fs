@@ -6,9 +6,9 @@ open System.Collections.Generic
 open System.Text.Json.Serialization
 
 type DiacordEmoji = {
-    [<JsonName "diacord_id">] [<JsonRequired>] DiacordId: string
-    [<JsonName "name">] [<JsonRequired>] Name: string
-    [<JsonName "roles">] Roles: string list option
+    [<JsonPropertyName "diacord_id">] [<JsonRequired>] DiacordId: string
+    [<JsonPropertyName "name">] [<JsonRequired>] Name: string
+    [<JsonPropertyName "roles">] Roles: string list option
 }
 with
     static member from (emoji: Emoji) = {

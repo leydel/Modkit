@@ -4,6 +4,6 @@ open System.Collections.Generic
 open System.Text.Json.Serialization
 
 type ApiDiacordMapping = {
-    [<JsonName "guild_id">] GuildId: string
-    [<JsonName "mappings">] Mappings: IDictionary<string, string>
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "mappings">] Mappings: IDictionary<string, string>
 }

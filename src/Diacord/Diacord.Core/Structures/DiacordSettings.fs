@@ -3,8 +3,8 @@
 open System.Text.Json.Serialization
 
 type DiacordSettings = {
-    [<JsonName "strict_roles">] StrictRoles: bool option
-    [<JsonName "strict_emojis">] StrictEmojis: bool option
-    [<JsonName "strict_stickers">] StrictStickers: bool option
-    [<JsonName "strict_channels">] StrictChannels: bool option
+    [<JsonPropertyName "strict_roles">] StrictRoles: bool option
+    [<JsonPropertyName "strict_emojis">] StrictEmojis: bool option
+    [<JsonPropertyName "strict_stickers">] StrictStickers: bool option
+    [<JsonPropertyName "strict_channels">] StrictChannels: bool option
 }

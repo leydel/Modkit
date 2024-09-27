@@ -6,14 +6,14 @@ open System.Collections.Generic
 open System.Text.Json.Serialization
 
 type DiacordRole = {
-    [<JsonName "diacord_id">] [<JsonRequired>] DiacordId: string
-    [<JsonName "name">] [<JsonRequired>] Name: string
-    [<JsonName "color">] Color: int option
-    [<JsonName "hoist">] Hoist: bool option
-    [<JsonName "icon">] Icon: string option
-    [<JsonName "unicode_emoji">] UnicodeEmoji: string option
+    [<JsonPropertyName "diacord_id">] [<JsonRequired>] DiacordId: string
+    [<JsonPropertyName "name">] [<JsonRequired>] Name: string
+    [<JsonPropertyName "color">] Color: int option
+    [<JsonPropertyName "hoist">] Hoist: bool option
+    [<JsonPropertyName "icon">] Icon: string option
+    [<JsonPropertyName "unicode_emoji">] UnicodeEmoji: string option
     // TODO: Add `permissions`
-    [<JsonName "mentionable">] Mentionable: bool option
+    [<JsonPropertyName "mentionable">] Mentionable: bool option
 }
 with
     static member from (role: Role) =

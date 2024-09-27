@@ -6,10 +6,10 @@ open System.Collections.Generic
 open System.Text.Json.Serialization
 
 type DiacordSticker = {
-    [<JsonName "diacord_id">] [<JsonRequired>] DiacordId: string
-    [<JsonName "name">] [<JsonRequired>] Name: string
-    [<JsonName "description">] Description: string option
-    [<JsonName "tags">] [<JsonRequired>] Tags: string
+    [<JsonPropertyName "diacord_id">] [<JsonRequired>] DiacordId: string
+    [<JsonPropertyName "name">] [<JsonRequired>] Name: string
+    [<JsonPropertyName "description">] Description: string option
+    [<JsonPropertyName "tags">] [<JsonRequired>] Tags: string
 }
 with
     static member from (sticker: Sticker) = {

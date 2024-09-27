@@ -8,7 +8,7 @@ open System.Text.Json.Serialization
 open System.Threading.Tasks
 
 type Nonce = {
-    [<JsonName "nonce">] Nonce: int
+    [<JsonPropertyName "nonce">] Nonce: int
 }
 
 [<TestClass>]

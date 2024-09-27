@@ -5,10 +5,10 @@ open System
 open System.Text.Json.Serialization
 
 type NoteDto = {
-    [<JsonName "id">] Id: string
-    [<JsonName "user_id">] UserId: string
-    [<JsonName "message">] Message: string
-    [<JsonName "created_at">] CreatedAt: DateTime
+    [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "user_id">] UserId: string
+    [<JsonPropertyName "message">] Message: string
+    [<JsonPropertyName "created_at">] CreatedAt: DateTime
 }
 with
     static member from (model: Note) = {

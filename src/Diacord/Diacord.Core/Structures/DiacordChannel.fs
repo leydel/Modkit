@@ -6,25 +6,25 @@ open System.Collections.Generic
 open System.Text.Json.Serialization
 
 type DiacordChannel = {
-    [<JsonName "diacord_id">] [<JsonRequired>] DiacordId: string
-    [<JsonName "type">] [<JsonRequired>] Type: ChannelType
-    [<JsonName "name">] Name: string option
-    [<JsonName "topic">] Topic: string option
-    [<JsonName "bitrate">] Bitrate: int option
-    [<JsonName "user_limit">] UserLimit: int option
-    [<JsonName "rate_limit_per_user">] RateLimitPerUser: int option
-    [<JsonName "position">] Position: int option
+    [<JsonPropertyName "diacord_id">] [<JsonRequired>] DiacordId: string
+    [<JsonPropertyName "type">] [<JsonRequired>] Type: ChannelType
+    [<JsonPropertyName "name">] Name: string option
+    [<JsonPropertyName "topic">] Topic: string option
+    [<JsonPropertyName "bitrate">] Bitrate: int option
+    [<JsonPropertyName "user_limit">] UserLimit: int option
+    [<JsonPropertyName "rate_limit_per_user">] RateLimitPerUser: int option
+    [<JsonPropertyName "position">] Position: int option
     // TODO: Add `permission_overwrites`
-    [<JsonName "parent_id">] ParentId: string option
-    [<JsonName "nsfw">] Nsfw: bool option
-    [<JsonName "rtc_region">] RtcRegion: string option
-    [<JsonName "video_quality_mode">] VideoQualityMode: VideoQualityMode option
-    [<JsonName "default_auto_archive_duration">] DefaultAutoArchiveDuration: AutoArchiveDurationType option
-    [<JsonName "default_reaction_emoji">] DefaultReactionEmoji: DefaultReaction option
-    [<JsonName "available_tags">] AvailableTags: ChannelTag list option
-    [<JsonName "default_sort_order">] DefaultSortOrder: ChannelSortOrder option
-    [<JsonName "default_forum_layout">] DefaultForumLayout: ChannelForumLayout option
-    [<JsonName "default_thread_rate_limit_per_user">] DefaultThreadRateLimitPerUser: int option
+    [<JsonPropertyName "parent_id">] ParentId: string option
+    [<JsonPropertyName "nsfw">] Nsfw: bool option
+    [<JsonPropertyName "rtc_region">] RtcRegion: string option
+    [<JsonPropertyName "video_quality_mode">] VideoQualityMode: VideoQualityMode option
+    [<JsonPropertyName "default_auto_archive_duration">] DefaultAutoArchiveDuration: AutoArchiveDurationType option
+    [<JsonPropertyName "default_reaction_emoji">] DefaultReactionEmoji: DefaultReaction option
+    [<JsonPropertyName "available_tags">] AvailableTags: ChannelTag list option
+    [<JsonPropertyName "default_sort_order">] DefaultSortOrder: ChannelSortOrder option
+    [<JsonPropertyName "default_forum_layout">] DefaultForumLayout: ChannelForumLayout option
+    [<JsonPropertyName "default_thread_rate_limit_per_user">] DefaultThreadRateLimitPerUser: int option
 }
 with
     static member from (channel: Channel) = {

@@ -7,127 +7,127 @@ open System.Text.Json.Serialization
 #nowarn "49"
 
 type VoiceChannelEffect = {
-    [<JsonName "channel_id">] ChannelId: string
-    [<JsonName "guild_id">] GuildId: string
-    [<JsonName "user_id">] UserId: string
-    [<JsonName "emoji">] Emoji: Emoji option
-    [<JsonName "animation_type">] AnimationType: AnimationType option
-    [<JsonName "animation_id">] AnimationId: int option
-    [<JsonName "sound_id">] SoundId: SoundboardSoundId option
-    [<JsonName "sound_volume">] SoundVolume: double option
+    [<JsonPropertyName "channel_id">] ChannelId: string
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "user_id">] UserId: string
+    [<JsonPropertyName "emoji">] Emoji: Emoji option
+    [<JsonPropertyName "animation_type">] AnimationType: AnimationType option
+    [<JsonPropertyName "animation_id">] AnimationId: int option
+    [<JsonPropertyName "sound_id">] SoundId: SoundboardSoundId option
+    [<JsonPropertyName "sound_volume">] SoundVolume: double option
 }
 
 type ListPublicArchivedThreadsResponse = {
-    [<JsonName "threads">]
+    [<JsonPropertyName "threads">]
     Threads: Channel list
     
-    [<JsonName "members">]
+    [<JsonPropertyName "members">]
     Members: ThreadMember list
     
-    [<JsonName "has_more">]
+    [<JsonPropertyName "has_more">]
     HasMore: bool
 }
 
 type ListPrivateArchivedThreadsResponse = {
-    [<JsonName "threads">]
+    [<JsonPropertyName "threads">]
     Threads: Channel list
     
-    [<JsonName "members">]
+    [<JsonPropertyName "members">]
     Members: ThreadMember list
     
-    [<JsonName "has_more">]
+    [<JsonPropertyName "has_more">]
     HasMore: bool
 }
 
 type ListJoinedPrivateArchivedThreadsResponse = {
-    [<JsonName "threads">]
+    [<JsonPropertyName "threads">]
     Threads: Channel list
     
-    [<JsonName "members">]
+    [<JsonPropertyName "members">]
     Members: ThreadMember list
     
-    [<JsonName "has_more">]
+    [<JsonPropertyName "has_more">]
     HasMore: bool
 }
 
 // https://discord.com/developers/docs/resources/emoji#list-application-emojis
 type ListApplicationEmojisResponse = {
-    [<JsonName "items">]
+    [<JsonPropertyName "items">]
     Items: Emoji list
 }
 
 type GetGatewayResponse = {
-    [<JsonName "url">]
+    [<JsonPropertyName "url">]
     Url: string
 }
 
 type GetGatewayBotResponse = {
-    [<JsonName "url">]
+    [<JsonPropertyName "url">]
     Url: string
 
-    [<JsonName "shards">]
+    [<JsonPropertyName "shards">]
     Shards: int
 
-    [<JsonName "session_start_limit">]
+    [<JsonPropertyName "session_start_limit">]
     SessionStartLimit: SessionStartLimit
 }
 
 // https://discord.com/developers/docs/resources/guild#modify-guild-channel-positions-json-params
 type ModifyGuildChannelPosition = {
-    [<JsonName "id">] Id: string
-    [<JsonName "position">] Position: int option
-    [<JsonName "lock_permissions">] LockPermissions: bool option
-    [<JsonName "parent_id">] ParentId: string option
+    [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "position">] Position: int option
+    [<JsonPropertyName "lock_permissions">] LockPermissions: bool option
+    [<JsonPropertyName "parent_id">] ParentId: string option
 }
 
 // https://discord.com/developers/docs/resources/guild#list-active-guild-threads-response-body
 type ListActiveGuildThreadsResponse = {
-    [<JsonName "threads">] Threads: Channel list
-    [<JsonName "members">] Members: GuildMember list
+    [<JsonPropertyName "threads">] Threads: Channel list
+    [<JsonPropertyName "members">] Members: GuildMember list
 }
 
 // https://discord.com/developers/docs/resources/guild#bulk-guild-ban-bulk-ban-response
 type BulkGuildBanResponse = {
-    [<JsonName "banned_users">] BannedUsers: string list
-    [<JsonName "failed_users">] FailedUsers: string list
+    [<JsonPropertyName "banned_users">] BannedUsers: string list
+    [<JsonPropertyName "failed_users">] FailedUsers: string list
 }
 
 // https://discord.com/developers/docs/resources/guild#modify-guild-role-positions-json-params
 type ModifyGuildRolePosition = {
-    [<JsonName "id">] Id: string
-    [<JsonName "position">] Position: int option
+    [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "position">] Position: int option
 }
 
 // https://discord.com/developers/docs/resources/guild#get-guild-prune-count
 type GetGuildPruneCountResponse = {
-    [<JsonName "pruned">] Pruned: int
+    [<JsonPropertyName "pruned">] Pruned: int
 }
 
 // https://discord.com/developers/docs/resources/guild#begin-guild-prune
 type BeginGuildPruneResponse = {
-    [<JsonName "pruned">] Pruned: int option
+    [<JsonPropertyName "pruned">] Pruned: int option
 }
 
 // https://discord.com/developers/docs/resources/guild#get-guild-vanity-url
 type GetGuildVanityUrlResponse = {
-    [<JsonName "code">] Code: string option
-    [<JsonName "uses">] Uses: int
+    [<JsonPropertyName "code">] Code: string option
+    [<JsonPropertyName "uses">] Uses: int
 }
 
 // https://discord.com/developers/docs/resources/poll#get-answer-voters-response-body
 type GetAnswerVotersResponse = {
-    [<JsonName "users">] Users: User list
+    [<JsonPropertyName "users">] Users: User list
 }
 
 // https://discord.com/developers/docs/resources/sticker#list-sticker-packs-response-structure
 type ListStickerPacksResponse = {
-    [<JsonName "sticker_packs">] StickerPacks: StickerPack list
+    [<JsonPropertyName "sticker_packs">] StickerPacks: StickerPack list
 }
 
 // https://discord.com/developers/docs/topics/oauth2#get-current-authorization-information-response-structure
 type GetCurrentAuthorizationInformationResponse = {
-    [<JsonName "application">] Application: Application
-    [<JsonName "scopes">] Scopes: OAuth2Scope list
-    [<JsonName "expires">] Expires: DateTime
-    [<JsonName "user">] User: User option
+    [<JsonPropertyName "application">] Application: Application
+    [<JsonPropertyName "scopes">] Scopes: OAuth2Scope list
+    [<JsonPropertyName "expires">] Expires: DateTime
+    [<JsonPropertyName "user">] User: User option
 }
