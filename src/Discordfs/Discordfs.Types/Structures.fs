@@ -1137,12 +1137,31 @@ type InteractionCallbackData =
 and InteractionCallbackDataConverter () =
     inherit JsonConverter<InteractionCallbackData> () with
         override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
-            raise <| NotImplementedException()
-            
-        override _.Write (writer: Utf8JsonWriter, value: InteractionCallbackData, options: JsonSerializerOptions) = 
-            raise <| NotImplementedException()
+            let success, document = JsonDocument.TryParseValue(&reader)
 
-    // TODO: Implement (Consider making a single `InteractionCallbackData` with all properties and try to convert to specific in code elsewhere?)
+            if not success then
+                raise (JsonException())
+
+            // Using required properties only present on single types to determine which since there is no `type`
+            // property for interaction callback data types.
+
+            let isAutocomplete, _ = document.RootElement.TryGetProperty "type"
+            let isModal, _ = document.RootElement.TryGetProperty "title"
+
+            if isAutocomplete then
+                InteractionCallbackData.Autocomplete (document.ToString() |> FsJson.deserialize<InteractionCallbackAutocompleteData>)
+            else if isModal then
+                InteractionCallbackData.Modal (document.ToString() |> FsJson.deserialize<InteractionCallbackModalData>)
+            else
+                InteractionCallbackData.Message (document.ToString() |> FsJson.deserialize<InteractionCallbackMessageData>)
+            
+        override _.Write (writer: Utf8JsonWriter, value: InteractionCallbackData, options: JsonSerializerOptions) =
+            match value with
+            | InteractionCallbackData.Message m -> FsJson.serialize m |> writer.WriteRawValue
+            | InteractionCallbackData.Autocomplete a -> FsJson.serialize a |> writer.WriteRawValue
+            | InteractionCallbackData.Modal m -> FsJson.serialize m |> writer.WriteRawValue
+
+        // TODO: Test if this serialization works as intended (write tests for all converters? probably?)
 
 and InteractionCallbackMessageData = {
     [<JsonPropertyName "tts">] Tts: bool option
