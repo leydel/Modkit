@@ -10,8 +10,8 @@ type ModifyGuildSticker (
     description: string option,
     tags:        string
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             required "name" name
             required "description" description
             required "tags" tags

@@ -13,8 +13,8 @@ type UpdateApplicationRoleConnectionMetadataRecords (
     ?name_localizations: IDictionary<string, string>,
     ?description_localizations: IDictionary<string, string>
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             required "type" ``type``
             required "key" key
             required "name" name

@@ -13,7 +13,7 @@ type VoiceChannelEffect = {
     [<JsonName "emoji">] Emoji: Emoji option
     [<JsonName "animation_type">] AnimationType: AnimationType option
     [<JsonName "animation_id">] AnimationId: int option
-    [<JsonName "sound_id">] [<JsonConverter(typeof<SoundboardSoundIdConverter>)>] SoundId: SoundboardSoundId option
+    [<JsonName "sound_id">] SoundId: SoundboardSoundId option
     [<JsonName "sound_volume">] SoundVolume: double option
 }
 
@@ -127,7 +127,7 @@ type ListStickerPacksResponse = {
 // https://discord.com/developers/docs/topics/oauth2#get-current-authorization-information-response-structure
 type GetCurrentAuthorizationInformationResponse = {
     [<JsonName "application">] Application: Application
-    [<JsonName "scopes">] [<JsonConverter(typeof<OAuth2ScopeConverter>)>] Scopes: OAuth2Scope list // TODO: Test if converter works on list
+    [<JsonName "scopes">] Scopes: OAuth2Scope list
     [<JsonName "expires">] Expires: DateTime
     [<JsonName "user">] User: User option
 }

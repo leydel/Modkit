@@ -9,6 +9,7 @@
     <Compile Include="Common\Overloads.fs" />
     <Compile Include="Common\Constants.fs" />
     <Compile Include="Common\Task.fs" />
+    <Compile Include="Common\Payload.fs" />
     <Compile Include="Common\Http.fs" />
     <Compile Include="Common\Dto.fs" />
     <Compile Include="Common\Req.fs" />

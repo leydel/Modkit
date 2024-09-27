@@ -10,8 +10,8 @@ type ModifyCurrentUser (
     ?avatar:   string option,
     ?banner:   string option
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             optional "username" username
             optional "avatar" avatar
             optional "banner" banner
@@ -20,8 +20,8 @@ type ModifyCurrentUser (
 type CreateDm (
     recipient_id: string
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             required "recipient_id" recipient_id
         }
 
@@ -29,8 +29,8 @@ type CreateGroupDm (
     access_tokens: string list,
     nicks:         IDictionary<string, string>
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             required "access_tokens" access_tokens
             required "nicks" nicks
         }
@@ -43,8 +43,8 @@ type UpdateCurrentUserApplicationRoleConnection (
     ?platform_username: string,
     ?metadata:          ApplicationRoleConnectionMetadata
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             optional "platform_name" platform_name
             optional "platform_username" platform_username
             optional "metadata" metadata // TODO: Test how "stringified values" work (not in openapi spec)

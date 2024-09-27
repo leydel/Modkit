@@ -11,8 +11,8 @@ type ModifyCurrentUserVoiceState (
     ?suppress:                   bool,
     ?request_to_speak_timestamp: DateTime option
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             optional "channel_id" channel_id
             optional "suppress" suppress
             optional "request_to_speak_timestamp" request_to_speak_timestamp
@@ -22,8 +22,8 @@ type ModifyUserVoiceState (
     channel_id: string,
     ?suppress:  bool
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             required "channel_id" channel_id
             optional "suppress" suppress
         }

@@ -2,7 +2,6 @@
 
 open Discordfs.Types.Utils
 open System
-open System.Collections.Generic
 open System.Net.Http
 open System.Web
 
@@ -17,46 +16,6 @@ module Http =
 
     let toRaw (res: HttpResponseMessage) =
         res.Content.ReadAsStringAsync()
-
-    [<AutoOpen>]
-    type PayloadType =
-        | Json
-
-    [<AbstractClass>]
-    type Payload(``type``: PayloadType) =
-        member val Type = ``type`` with get
-
-        abstract member Serialize: unit -> string
-    
-    [<AbstractClass>]
-    type PayloadBuilder() =
-        member val Properties: IDictionary<string, obj> = Dictionary()
-
-        abstract member Serialize: unit -> string
-
-        member this.Yield(_) =
-            this
-
-        [<CustomOperation("required")>]
-        member this.Required (_, name: string, value: 'a) =
-            this.Properties.Add(name, value)
-
-            this.Serialize()
-
-        [<CustomOperation("optional")>]
-        member this.Optional (_, name: string, value: 'a option) =
-            if value.IsSome then
-                this.Properties.Add(name, value)
-
-            this.Serialize()
-
-    type JsonBuilder() =
-        inherit PayloadBuilder() with
-            [<CustomOperation("json")>]
-            override this.Serialize() =
-                FsJson.serialize this.Properties
-
-    let json = JsonBuilder()
 
     type RequestBuilder() =
         member val HttpRequestMessage = new HttpRequestMessage()
@@ -155,11 +114,11 @@ module Http =
             this.HttpRequestMessage
 
         [<CustomOperation("payload")>]
-        member this.Payload(_, content: Payload) =
-            match content.Type with
-            | Json ->
-                this.HttpRequestMessage.Content <- new StringContent(content.ToString())
-                this.HttpRequestMessage.Headers.Add("Content-Type", "application/json")
+        member this.Payload(_, payload: Payload) =
+            let content = payload.Content.ToContent()
+
+            this.HttpRequestMessage.Headers.Add("Content-Type", content.Headers.ContentType.MediaType)
+            this.HttpRequestMessage.Content <- content
             
             this.HttpRequestMessage
 

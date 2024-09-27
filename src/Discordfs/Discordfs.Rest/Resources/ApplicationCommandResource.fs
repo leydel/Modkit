@@ -2,7 +2,6 @@
 
 open Discordfs.Rest.Common
 open Discordfs.Types
-open Discordfs.Types.Utils
 open System.Collections.Generic
 open System.Threading.Tasks
 
@@ -18,8 +17,8 @@ type CreateGlobalApplicationCommand (
     ?``type``:                   ApplicationCommandType,
     ?nsfw:                       bool
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             required "name" name
             optional "name_localizations" name_localizations
             optional "description" description
@@ -44,8 +43,8 @@ type EditGlobalApplicationCommand (
     ?``type``:                   ApplicationCommandType,
     ?nsfw:                       bool
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             optional "name" name
             optional "name_localizations" name_localizations
             optional "description" description
@@ -61,9 +60,9 @@ type EditGlobalApplicationCommand (
 type BulkOverwriteGlobalApplicationCommands (
     commands: ApplicationCommand list
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () =
-            FsJson.serialize commands
+    inherit Payload() with
+        override _.Content =
+            JsonListPayload commands
 
     // TODO: Figure out how to correctly define this payload (ApplicationCommand is wrong - e.g. requires ID)
 
@@ -79,8 +78,8 @@ type CreateGuildApplicationCommand (
     ?``type``:                   ApplicationCommandType,
     ?nsfw:                       bool
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             required "name" name
             optional "name_localizations" name_localizations
             optional "description" description
@@ -105,8 +104,8 @@ type EditGuildApplicationCommand (
     ?``type``:                   ApplicationCommandType,
     ?nsfw:                       bool
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             optional "name" name
             optional "name_localizations" name_localizations
             optional "description" description
@@ -122,15 +121,15 @@ type EditGuildApplicationCommand (
 type BulkOverwriteGuildApplicationCommands (
     commands: ApplicationCommand list
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () =
-            FsJson.serialize commands
+    inherit Payload() with
+        override _.Content =
+            JsonListPayload commands
 
 type EditApplicationCommandPermissions (
     permissions: ApplicationCommandPermission list
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             required "permissions" permissions
         }
 
