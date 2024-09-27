@@ -11,8 +11,8 @@ type CreateStageInstance (
     ?send_start_notification:  bool,
     ?guild_scheduled_event_id: string
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             required "channel_id" channel_id
             required "topic" topic
             optional "privacy_level" privacy_level
@@ -24,8 +24,8 @@ type ModifyStageInstance (
     ?topic:         string,
     ?privacy_level: PrivacyLevelType
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             optional "topic" topic
             optional "privacy_level" privacy_level
         }

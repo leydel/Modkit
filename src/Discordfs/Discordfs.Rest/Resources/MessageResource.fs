@@ -18,8 +18,8 @@ type CreateMessage (
     ?enforce_nonce:     bool,
     ?poll:              Poll
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             optional "content" content
             optional "nonce" (match nonce with | Some (MessageNonce.Number n) -> Some n | _ -> None)
             optional "nonce" (match nonce with | Some (MessageNonce.String s) -> Some s | _ -> None)
@@ -43,8 +43,8 @@ type EditMessage (
     // TODO: Add files[n], attachments, payload_json
     // TODO: Check if sticker_ids and poll are meant to not be available here
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             optional "content" content
             optional "embeds" embeds
             optional "flags" flags
@@ -55,8 +55,8 @@ type EditMessage (
 type BulkDeleteMessages (
     messages: string list
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             required "messages" messages
         }
 

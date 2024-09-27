@@ -17,8 +17,8 @@ type EditCurrentApplication (
     ?interactions_endpoint_url:        string,
     ?tags:                             string list
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             optional "custom_install_url" custom_install_url
             optional "description" description
             optional "role_connection_verification_url" role_connection_verification_url

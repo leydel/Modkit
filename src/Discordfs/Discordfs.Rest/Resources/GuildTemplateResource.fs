@@ -8,8 +8,8 @@ type CreateGuildFromTemplate (
     name:  string,
     ?icon: string
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             required "name" name
             optional "icon" icon
         }
@@ -18,8 +18,8 @@ type CreateGuildTemplate (
     name:         string,
     ?description: string
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             required "name" name
             optional "description" description
         }
@@ -28,8 +28,8 @@ type ModifyGuildTemplate (
     ?name:        string,
     ?description: string
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             optional "name" name
             optional "description" description
         }

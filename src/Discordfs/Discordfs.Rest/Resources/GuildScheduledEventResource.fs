@@ -17,8 +17,8 @@ type CreateGuildScheduledEvent (
     ?image:               string,
     ?recurrence_rule:     RecurrenceRule
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             optional "channel_id" channel_id
             optional "entity_metadata" entity_metadata
             required "name" name
@@ -43,8 +43,8 @@ type ModifyGuildScheduledEvent (
     ?image:                string,
     ?recurrence_rule:      RecurrenceRule option
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             optional "channel_id" channel_id
             optional "entity_metadata" entity_metadata
             optional "name" name

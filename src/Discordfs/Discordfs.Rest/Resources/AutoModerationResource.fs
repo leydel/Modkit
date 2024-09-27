@@ -14,8 +14,8 @@ type CreateAutoModerationRule (
     ?exempt_roles: string list,
     ?exempt_channels: string list
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             required "name" name
             required "event_type" event_type
             required "trigger_type" trigger_type
@@ -35,8 +35,8 @@ type ModifyAutoModerationRule (
     ?exempt_roles: string list,
     ?exempt_channels: string list
 ) =
-    inherit Payload(Json) with
-        override _.Serialize () = json {
+    inherit Payload() with
+        override _.Content = json {
             optional "name" name
             optional "event_type" event_type
             optional "trigger_metadata" trigger_metadata
