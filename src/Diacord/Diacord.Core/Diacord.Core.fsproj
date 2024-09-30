@@ -9,7 +9,6 @@
   <ItemGroup>
     <Compile Include="Types\Api.fs" />
     <Compile Include="Types\Diff.fs" />
-    <Compile Include="Types\DiffNode.fs" />
     <Compile Include="Clients\ApiClient.fs" />
     <Compile Include="Structures\DiacordChannel.fs" />
     <Compile Include="Structures\DiacordSticker.fs" />

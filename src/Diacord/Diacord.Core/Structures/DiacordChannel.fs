@@ -5,7 +5,125 @@ open Modkit.Diacord.Core.Types
 open System.Collections.Generic
 open System.Text.Json.Serialization
 
-type DiacordChannel = {
+[<JsonConverter(typeof<DiacordGenericChannelConverter>)>]
+type DiacordGenericChannel =
+    | Category of DiacordCategory
+    | Channel of DiacordChannel
+with
+    static member from (channel: Channel) =
+        match channel.Type with
+        | ChannelType.GUILD_CATEGORY -> DiacordGenericChannel.Category <| DiacordCategory.from channel
+        | _ -> DiacordGenericChannel.Channel <| DiacordChannel.from channel
+
+    static member group (genericChannels: DiacordGenericChannel list) =
+        genericChannels |> List.collect (fun channel ->
+            match channel with
+            | DiacordGenericChannel.Category c ->
+                let channels = genericChannels |> List.collect (fun channel ->
+                    match channel with
+                    | DiacordGenericChannel.Channel c -> [c]
+                    | _ -> []
+                )
+
+                [DiacordGenericChannel.Category <| DiacordCategory.populate channels c]
+            | DiacordGenericChannel.Channel c ->
+                match c.ParentId with
+                | Some _ -> []
+                | None -> [DiacordGenericChannel.Channel c]
+        )
+
+    static member ungroup (genericChannels: DiacordGenericChannel list) =
+        genericChannels |> List.collect (fun channel ->
+            match channel with
+            | DiacordGenericChannel.Category c ->
+                let category = DiacordGenericChannel.Category <| DiacordCategory.unpopulate c
+                let children = List.map DiacordGenericChannel.Channel c.Channels
+                [category] @ children
+            | DiacordGenericChannel.Channel c ->
+                [DiacordGenericChannel.Channel c]
+        )
+
+    static member id (genericChannel: DiacordGenericChannel) =
+        match genericChannel with
+        | DiacordGenericChannel.Category c -> c.DiacordId
+        | DiacordGenericChannel.Channel c -> c.DiacordId
+
+    static member diff (mappings: IDictionary<string, string>) ((a: DiacordGenericChannel option), (b: Channel option)) =
+        match a, b with
+        | Some (DiacordGenericChannel.Category ca), c ->
+            DiacordCategory.diff mappings (Some ca, c)
+        | Some (DiacordGenericChannel.Channel ch), c ->
+            DiacordChannel.diff mappings (Some ch, c)
+        | None, Some c ->
+            match c.Type with
+            | ChannelType.GUILD_CATEGORY -> DiacordCategory.diff mappings (None, Some c)
+            | _ -> DiacordChannel.diff mappings (None, Some c)
+        | None, None ->
+            DiacordChannel.diff mappings (None, None) // Should never occur
+
+and DiacordGenericChannelConverter () =
+    static member Todo: bool = false
+    //inherit JsonConverter<DiacordGenericChannel> () with
+    //    override _.Read (reader, typeToConvert, options) =
+    //        ()
+
+    //    override _.Write (writer, value, options) =
+    //        ()
+
+    // TODO: Implement serializer
+
+and DiacordCategory = {
+    [<JsonPropertyName "diacord_id">] DiacordId: string
+    [<JsonPropertyName "channels">] Channels: DiacordChannel list
+    [<JsonPropertyName "name">] Name: string
+    [<JsonPropertyName "position">] Position: int option
+    // TODO: Add `permission_overwrites`
+    [<JsonPropertyName "nsfw">] Nsfw: bool option
+}
+with
+    static member from (channel: Channel) =
+        match channel.Type with
+        | ChannelType.GUILD_CATEGORY ->
+            let name =
+                match channel.Name with
+                | Some name -> name
+                | None -> failwith "Invalid channel provided to DiacordCategory"
+
+            {
+                DiacordId = channel.Id;
+                Channels = [];
+                Name = name;
+                Position = channel.Position;
+                Nsfw = channel.Nsfw; 
+            }
+        | _ ->
+            failwith "Provided channel to DiacordCategory is not a category"
+
+    static member populate (channels: DiacordChannel list) (category: DiacordCategory) = {
+        DiacordId = category.DiacordId;
+        Channels = channels |> List.filter (fun c -> c.ParentId = Some category.DiacordId);
+        Name = category.Name;
+        Position = category.Position;
+        Nsfw = category.Nsfw; 
+    }
+
+    static member unpopulate (category: DiacordCategory) = {
+        DiacordId = category.DiacordId;
+        Channels = [];
+        Name = category.Name;
+        Position = category.Position;
+        Nsfw = category.Nsfw; 
+    }
+
+    static member diff (mappings: IDictionary<string, string>) ((a: DiacordCategory option), (b: Channel option)) =
+        DiffNode.leaf a b [
+            Diff.from "name" (a >>. _.Name) (b >>= _.Name);
+            Diff.from "position" (a >>= _.Position) (b >>= _.Position);
+            Diff.from "nsfw" (a >>= _.Nsfw) (b >>= _.Nsfw);
+            Diff.nest "channels" (DiffNode.Branch("channels", (a.Value.Channels |> List.map (fun ca -> DiacordChannel.diff mappings (Some ca, b)))))
+        ]
+
+and DiacordChannel = {
     [<JsonPropertyName "diacord_id">] [<JsonRequired>] DiacordId: string
     [<JsonPropertyName "type">] [<JsonRequired>] Type: ChannelType
     [<JsonPropertyName "name">] Name: string option
@@ -27,7 +145,7 @@ type DiacordChannel = {
     [<JsonPropertyName "default_thread_rate_limit_per_user">] DefaultThreadRateLimitPerUser: int option
 }
 with
-    static member from (channel: Channel) = {
+    static member from (channel: Channel): DiacordChannel = {
         DiacordId = channel.Id;
         Type = channel.Type;
         Name = channel.Name;
@@ -49,8 +167,6 @@ with
     }
 
     static member diff (mappings: IDictionary<string, string>) ((a: DiacordChannel option), (b: Channel option)) =
-        // TODO: Add `permission_overwrites`
-
         let parentId =
             match a >>= _.ParentId with
             | None -> None

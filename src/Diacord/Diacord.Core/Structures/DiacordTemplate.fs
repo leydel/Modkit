@@ -7,7 +7,5 @@ type DiacordTemplate = {
     [<JsonPropertyName "roles">] Roles: DiacordRole list option
     [<JsonPropertyName "emojis">] Emojis: DiacordEmoji list option
     [<JsonPropertyName "stickers">] Stickers: DiacordSticker list option
-    [<JsonPropertyName "channels">] Channels: DiacordChannel list option
-
-    // TODO: Figure out way to allow channels to be defined within categories (discriminated union probably)
+    [<JsonPropertyName "channels">] Channels: DiacordGenericChannel list option
 }

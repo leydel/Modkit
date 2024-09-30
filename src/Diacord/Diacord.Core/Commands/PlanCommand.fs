@@ -63,19 +63,19 @@ type PlanCommand (stateProvider: IStateProvider) =
             let templateRoles = template.Roles >>? []
             let templateEmojis = template.Emojis >>? []
             let templateStickers = template.Stickers >>? []
-            let templateChannels = template.Channels >>? []
+            let templateChannels = DiacordGenericChannel.ungroup (template.Channels >>? [])
 
             // Compare templates to state
             let roles = this.map<DiacordRole, Role> _.DiacordId _.Id templateRoles state.Roles strictRoles mappings
             let emojis = this.map<DiacordEmoji, Emoji> _.DiacordId _.Id.Value templateEmojis state.Emojis strictEmojis mappings
             let stickers = this.map<DiacordSticker, Sticker> _.DiacordId _.Id templateStickers state.Stickers strictStickers mappings
-            let channels = this.map<DiacordChannel, Channel> _.DiacordId _.Id templateChannels state.Channels strictChannels mappings
+            let channels = this.map<DiacordGenericChannel, Channel> DiacordGenericChannel.id _.Id templateChannels state.Channels strictChannels mappings
 
             // Create diff tree comparing template to state
             return DiffNode.Root [
                 DiffNode.Branch("roles", roles |> List.map (DiacordRole.diff mappings));
                 DiffNode.Branch("emojis", emojis |> List.map (DiacordEmoji.diff mappings));
                 DiffNode.Branch("stickers", stickers |> List.map (DiacordSticker.diff mappings));
-                DiffNode.Branch("channels", channels |> List.map (DiacordChannel.diff mappings));
+                DiffNode.Branch("channels", channels |> List.map (DiacordGenericChannel.diff mappings));
             ]
         }

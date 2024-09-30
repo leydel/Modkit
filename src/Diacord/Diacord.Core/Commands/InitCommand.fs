@@ -24,7 +24,7 @@ type InitCommand (stateProvider: IStateProvider) =
             let templateRoles = List.map DiacordRole.from state.Roles
             let templateEmojis = List.map DiacordEmoji.from state.Emojis
             let templateStickers = List.map DiacordSticker.from state.Stickers
-            let templateChannels = List.map DiacordChannel.from state.Channels
+            let templateChannels = DiacordGenericChannel.group <| List.map DiacordGenericChannel.from state.Channels
 
             // Generate template settings
             let toTrueOrNone (value: bool) =
@@ -53,7 +53,7 @@ type InitCommand (stateProvider: IStateProvider) =
                 |> List.append (templateRoles |> List.map _.DiacordId)
                 |> List.append (templateEmojis |> List.map _.DiacordId)
                 |> List.append (templateStickers |> List.map _.DiacordId)
-                |> List.append (templateChannels |> List.map _.DiacordId)
+                |> List.append (templateChannels |> List.map DiacordGenericChannel.id)
                 |> List.map (fun id -> (id, id))
                 |> dict
 
