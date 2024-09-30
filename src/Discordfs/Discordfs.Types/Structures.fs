@@ -663,13 +663,32 @@ type Component =
 
 and ComponentConverter () =
     inherit JsonConverter<Component> () with
-        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
-            raise <| NotImplementedException()
-            
-        override _.Write (writer: Utf8JsonWriter, value: Component, options: JsonSerializerOptions) = 
-            raise <| NotImplementedException()
+        override _.Read (reader, typeToConvert, options) =
+            let success, document = JsonDocument.TryParseValue(&reader)
 
-    // TODO: Implement (Consider making a single `Component` with all properties and try to convert to specific in code elsewhere?)
+            if not success then
+                raise (JsonException())
+
+            let componentType = document.RootElement.GetProperty "type" |> _.GetInt32() |> enum<ComponentType>
+            let json = document.RootElement.GetRawText()
+
+            match componentType with
+            | ComponentType.ACTION_ROW -> Component.ActionRow <| FsJson.deserialize<ActionRowComponent> json
+            | ComponentType.BUTTON -> Component.Button <| FsJson.deserialize<ButtonComponent> json
+            | ComponentType.STRING_SELECT
+            | ComponentType.USER_SELECT
+            | ComponentType.ROLE_SELECT
+            | ComponentType.MENTIONABLE_SELECT
+            | ComponentType.CHANNEL_SELECT -> Component.SelectMenu <| FsJson.deserialize<SelectMenuComponent> json
+            | ComponentType.TEXT_INPUT -> Component.TextInput <| FsJson.deserialize<TextInputComponent> json
+            | _ -> failwith "Unexpected ComponentType provided"
+
+        override _.Write (writer, value, options) =
+            match value with
+            | Component.ActionRow a -> FsJson.serialize a |> writer.WriteRawValue
+            | Component.Button b -> FsJson.serialize b |> writer.WriteRawValue
+            | Component.SelectMenu s -> FsJson.serialize s |> writer.WriteRawValue
+            | Component.TextInput t -> FsJson.serialize t |> writer.WriteRawValue
 
 and ActionRowComponent = {
     [<JsonPropertyName "type">] Type: ComponentType
@@ -1136,7 +1155,7 @@ type InteractionCallbackData =
 
 and InteractionCallbackDataConverter () =
     inherit JsonConverter<InteractionCallbackData> () with
-        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
+        override _.Read (reader, typeToConvert, options) = 
             let success, document = JsonDocument.TryParseValue(&reader)
 
             if not success then
@@ -1145,23 +1164,23 @@ and InteractionCallbackDataConverter () =
             // Using required properties only present on single types to determine which since there is no `type`
             // property for interaction callback data types.
 
-            let isAutocomplete, _ = document.RootElement.TryGetProperty "type"
+            let isAutocomplete, _ = document.RootElement.TryGetProperty "choices"
             let isModal, _ = document.RootElement.TryGetProperty "title"
 
+            let json = document.RootElement.GetRawText()
+
             if isAutocomplete then
-                InteractionCallbackData.Autocomplete (document.ToString() |> FsJson.deserialize<InteractionCallbackAutocompleteData>)
+                InteractionCallbackData.Autocomplete (FsJson.deserialize<InteractionCallbackAutocompleteData> json)
             else if isModal then
-                InteractionCallbackData.Modal (document.ToString() |> FsJson.deserialize<InteractionCallbackModalData>)
+                InteractionCallbackData.Modal (FsJson.deserialize<InteractionCallbackModalData> json)
             else
-                InteractionCallbackData.Message (document.ToString() |> FsJson.deserialize<InteractionCallbackMessageData>)
+                InteractionCallbackData.Message (FsJson.deserialize<InteractionCallbackMessageData> json)
             
-        override _.Write (writer: Utf8JsonWriter, value: InteractionCallbackData, options: JsonSerializerOptions) =
+        override _.Write (writer, value, options) =
             match value with
             | InteractionCallbackData.Message m -> FsJson.serialize m |> writer.WriteRawValue
             | InteractionCallbackData.Autocomplete a -> FsJson.serialize a |> writer.WriteRawValue
             | InteractionCallbackData.Modal m -> FsJson.serialize m |> writer.WriteRawValue
-
-        // TODO: Test if this serialization works as intended (write tests for all converters? probably?)
 
 and InteractionCallbackMessageData = {
     [<JsonPropertyName "tts">] Tts: bool option
