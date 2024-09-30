@@ -56,10 +56,12 @@ with
             DiacordChannel.diff mappings (Some ch, c)
         | None, Some c ->
             match c.Type with
-            | ChannelType.GUILD_CATEGORY -> DiacordCategory.diff mappings (None, Some c)
-            | _ -> DiacordChannel.diff mappings (None, Some c)
+            | ChannelType.GUILD_CATEGORY ->
+                DiacordCategory.diff mappings (None, Some c)
+            | _ ->
+                DiacordChannel.diff mappings (None, Some c)
         | None, None ->
-            DiacordChannel.diff mappings (None, None) // Should never occur
+            DiacordChannel.diff mappings (None, None)
 
 and DiacordGenericChannelConverter () =
     static member Todo: bool = false
@@ -116,12 +118,28 @@ with
     }
 
     static member diff (mappings: IDictionary<string, string>) ((a: DiacordCategory option), (b: Channel option)) =
-        DiffNode.leaf a b [
-            Diff.from "name" (a >>. _.Name) (b >>= _.Name);
-            Diff.from "position" (a >>= _.Position) (b >>= _.Position);
-            Diff.from "nsfw" (a >>= _.Nsfw) (b >>= _.Nsfw);
-            Diff.nest "channels" (DiffNode.Branch("channels", (a.Value.Channels |> List.map (fun ca -> DiacordChannel.diff mappings (Some ca, b)))))
-        ]
+        let id =
+            match a, b with
+            | None, None -> failwith "Diff called when no channel or diacord category present"
+            | Some a, None -> a.DiacordId
+            | None, Some b -> b.Id
+            | Some a, Some b -> a.DiacordId
+
+        // TODO: Figure out how this ID should work
+
+        let channels =
+            match a with
+            | Some ca ->
+                match ca.Channels.Length with
+                | 0 -> []
+                | _ -> [List.map (fun ch -> DiacordChannel.diff mappings (Some ch, b)) ca.Channels |> Diff.object "channels"] // TODO: `b` here is meant to be the actual channel not the category
+            | _ -> []
+
+        Diff.object id (channels @ [
+            Diff.value "name" (a >>. _.Name) (b >>= _.Name);
+            Diff.value "position" (a >>= _.Position) (b >>= _.Position);
+            Diff.value "nsfw" (a >>= _.Nsfw) (b >>= _.Nsfw);
+        ])
 
 and DiacordChannel = {
     [<JsonPropertyName "diacord_id">] [<JsonRequired>] DiacordId: string
@@ -145,7 +163,7 @@ and DiacordChannel = {
     [<JsonPropertyName "default_thread_rate_limit_per_user">] DefaultThreadRateLimitPerUser: int option
 }
 with
-    static member from (channel: Channel): DiacordChannel = {
+    static member from (channel: Channel) = {
         DiacordId = channel.Id;
         Type = channel.Type;
         Name = channel.Name;
@@ -167,6 +185,15 @@ with
     }
 
     static member diff (mappings: IDictionary<string, string>) ((a: DiacordChannel option), (b: Channel option)) =
+        let id =
+            match a, b with
+            | None, None -> failwith "Diff called when no channel or diacord channel present"
+            | Some a, None -> a.DiacordId
+            | None, Some b -> b.Id
+            | Some a, Some b -> a.DiacordId
+
+        // TODO: Figure out how this ID should work
+
         let parentId =
             match a >>= _.ParentId with
             | None -> None
@@ -175,22 +202,22 @@ with
                 | false, _ -> None
                 | true, id -> Some id
 
-        DiffNode.leaf a b [
-            Diff.from "type" (a >>. _.Type) (b >>. _.Type);
-            Diff.from "name" (a >>. _.Name) (b >>. _.Name);
-            Diff.from "topic" (a >>= _.Topic) (b >>= _.Topic);
-            Diff.from "bitrate" (a >>= _.Bitrate) (b >>= _.Bitrate);
-            Diff.from "user_limit" (a >>= _.UserLimit) (b >>= _.UserLimit);
-            Diff.from "rate_limit_per_user" (a >>= _.RateLimitPerUser) (b >>= _.RateLimitPerUser);
-            Diff.from "position" (a >>= _.Position) (b >>= _.Position);
-            Diff.from "parent_id" parentId (b >>= _.ParentId);
-            Diff.from "nsfw" (a >>= _.Nsfw) (b >>= _.Nsfw);
-            Diff.from "rtc_region" (a >>= _.RtcRegion) (b >>= _.RtcRegion);
-            Diff.from "video_quality_mode" (a >>= _.VideoQualityMode) (b >>= _.VideoQualityMode);
-            Diff.from "default_auto_archive_duration" (a >>= _.DefaultAutoArchiveDuration) (b >>= _.DefaultAutoArchiveDuration);
-            Diff.from "default_reaction_emoji" (a >>= _.DefaultReactionEmoji) (b >>= _.DefaultReactionEmoji);
-            Diff.from "available_tags" (a >>= _.AvailableTags) (b >>= _.AvailableTags);
-            Diff.from "default_sort_order" (a >>= _.DefaultSortOrder) (b >>= _.DefaultSortOrder);
-            Diff.from "default_forum_layout" (a >>= _.DefaultForumLayout) (b >>= _.DefaultForumLayout);
-            Diff.from "default_thread_rate_limit_per_user" (a >>= _.DefaultThreadRateLimitPerUser) (b >>= _.DefaultThreadRateLimitPerUser);
+        Diff.object id [
+            Diff.value "type" (a >>. _.Type) (b >>. _.Type);
+            Diff.value "name" (a >>. _.Name) (b >>. _.Name);
+            Diff.value "topic" (a >>= _.Topic) (b >>= _.Topic);
+            Diff.value "bitrate" (a >>= _.Bitrate) (b >>= _.Bitrate);
+            Diff.value "user_limit" (a >>= _.UserLimit) (b >>= _.UserLimit);
+            Diff.value "rate_limit_per_user" (a >>= _.RateLimitPerUser) (b >>= _.RateLimitPerUser);
+            Diff.value "position" (a >>= _.Position) (b >>= _.Position);
+            Diff.value "parent_id" parentId (b >>= _.ParentId);
+            Diff.value "nsfw" (a >>= _.Nsfw) (b >>= _.Nsfw);
+            Diff.value "rtc_region" (a >>= _.RtcRegion) (b >>= _.RtcRegion);
+            Diff.value "video_quality_mode" (a >>= _.VideoQualityMode) (b >>= _.VideoQualityMode);
+            Diff.value "default_auto_archive_duration" (a >>= _.DefaultAutoArchiveDuration) (b >>= _.DefaultAutoArchiveDuration);
+            Diff.value "default_reaction_emoji" (a >>= _.DefaultReactionEmoji) (b >>= _.DefaultReactionEmoji);
+            Diff.value "available_tags" (a >>= _.AvailableTags) (b >>= _.AvailableTags);
+            Diff.value "default_sort_order" (a >>= _.DefaultSortOrder) (b >>= _.DefaultSortOrder);
+            Diff.value "default_forum_layout" (a >>= _.DefaultForumLayout) (b >>= _.DefaultForumLayout);
+            Diff.value "default_thread_rate_limit_per_user" (a >>= _.DefaultThreadRateLimitPerUser) (b >>= _.DefaultThreadRateLimitPerUser);
         ]
