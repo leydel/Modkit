@@ -6,6 +6,11 @@ open System.Text.Json.Serialization
 
 #nowarn "49"
 
+type InteractionCallbackResponse = {
+    [<JsonPropertyName "interaction">] Interaction: InteractionCallback
+    [<JsonPropertyName "resource">] Resource: InteractionCallbackResource
+}
+
 type VoiceChannelEffect = {
     [<JsonPropertyName "channel_id">] ChannelId: string
     [<JsonPropertyName "guild_id">] GuildId: string

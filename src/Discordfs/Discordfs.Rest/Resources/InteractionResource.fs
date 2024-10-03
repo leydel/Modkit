@@ -1,207 +1,254 @@
 ﻿namespace Discordfs.Rest.Resources
 
 open Discordfs.Rest.Common
+open Discordfs.Rest.Types
 open Discordfs.Types
-open System.Net.Http
+open System.Collections.Generic
 open System.Threading.Tasks
 
+type CreateInteractionResponse (
+    ``type``: InteractionCallbackType,
+    ?data: InteractionCallbackData,
+    ?files: IDictionary<string, IPayloadBuilder>
+) =
+    inherit Payload() with
+        override _.Content =
+            let payload_json = json {
+                required "type" ``type``
+                optional "data" data
+            }
+
+            match files with
+            | None -> payload_json
+            | Some f -> multipart {
+                part "payload_json" payload_json
+                files f
+            }
+
+type EditOriginalInteractionResponse (
+    ?content: string,
+    ?embeds: Embed list,
+    ?allowed_mentions: AllowedMentions,
+    ?components: Component list,
+    ?attachments: Attachment list,
+    ?poll: Poll,
+    ?files: IDictionary<string, IPayloadBuilder>
+) =
+    inherit Payload() with
+        override _.Content =
+            let payload_json = json {
+                optional "content" content
+                optional "embeds" embeds
+                optional "allowed_mentions" allowed_mentions
+                optional "components" components
+                optional "attachments" attachments
+                optional "poll" poll
+            }
+
+            match files with
+            | None -> payload_json
+            | Some f -> multipart {
+                part "payload_json" payload_json
+                files f
+            }
+
+type CreateFollowUpMessage (
+    ?content: string,
+    ?username: string,
+    ?avatar_url: string,
+    ?tts: bool,
+    ?embeds: Embed list,
+    ?allowed_mentions: AllowedMentions,
+    ?components: Component list,
+    ?attachments: Attachment list,
+    ?flags: int,
+    ?thread_name: string,
+    ?applied_tags: string list,
+    ?poll: Poll,
+    ?files: IDictionary<string, IPayloadBuilder>
+) =
+    inherit Payload() with
+        override _.Content =
+            let payload_json = json {
+                optional "content" content
+                optional "username" username
+                optional "avatar_url" avatar_url
+                optional "tts" tts
+                optional "embeds" embeds
+                optional "allowed_mentions" allowed_mentions
+                optional "components" components
+                optional "attachments" attachments
+                optional "flags" flags
+                optional "thread_name" thread_name
+                optional "applied_tags" applied_tags
+                optional "poll" poll                
+            }
+
+            match files with
+            | None -> payload_json
+            | Some f -> multipart {
+                part "payload_json" payload_json
+                files f
+            }
+
+type EditFollowUpMessage (
+    ?content: string option,
+    ?embeds: Embed list option,
+    ?allowed_mentions: AllowedMentions option,
+    ?components: Component list option,
+    ?attachments: Attachment list option,
+    ?poll: Poll option,
+    ?files: IDictionary<string, IPayloadBuilder>
+) =
+    inherit Payload() with
+        override _.Content =
+            let payload_json = json {
+                optional "content" content
+                optional "embeds" embeds
+                optional "allowed_mentions" allowed_mentions
+                optional "components" components
+                optional "attachments" attachments
+                optional "poll" poll                
+            }
+
+            match files with
+            | None -> payload_json
+            | Some f -> multipart {
+                part "payload_json" payload_json
+                files f
+            }
+            
 type IInteractionResource =
     abstract member CreateInteractionResponse:
-        id: string ->
-        token: string ->
-        ``type``: InteractionType ->
-        data: InteractionCallbackData ->
-        Task<unit>
+        interactionId: string ->
+        interactionToken: string ->
+        withResponse: bool option ->
+        content: CreateInteractionResponse ->
+        Task<InteractionCallbackResponse option>
 
     abstract member GetOriginalInteractionResponse:
-        id: string ->
-        token: string ->
+        interactionId: string ->
+        interactionToken: string ->
         threadId: string option ->
         Task<Message>
 
     abstract member EditOriginalInteractionResponse:
-        id: string ->
-        token: string ->
+        interactionId: string ->
+        interactionToken: string ->
         threadId: string option ->
-        content: string option option ->
-        embeds: Embed list option option ->
-        allowedMentions: AllowedMentions option option ->
-        components: Component list option option ->
-        // TODO: Add `files`, `payload_json`, `attachments` support
-        // TODO: Check what types should be `option`
+        content: EditOriginalInteractionResponse ->
         Task<Message>
 
     abstract member DeleteOriginalInteractionResponse:
-        id: string ->
-        token: string ->
+        interactionId: string ->
+        interactionToken: string ->
         Task<unit>
 
     abstract member CreateFollowUpMessage:
-        id: string ->
-        token: string ->
+        applicationId: string ->
+        interactionToken: string ->
         threadId: string option ->
-        content: string option ->
-        username: string ->
-        avatarUrl: string ->
-        tts: bool ->
-        embeds: Embed list option ->
-        allowedMentions: AllowedMentions option ->
-        components: Component list option ->
-        // TODO: Add `files`, `payload_json`, `attachments` support
-        flags: int ->
-        threadName: string option ->
-        appliedTags: string list option ->
-        poll: Poll option ->
-        // TODO: Check what types should be `option`
-        Task<Message>
+        content: CreateFollowUpMessage ->
+        Task<unit>
 
     abstract member GetFollowUpMessage:
-        id: string ->
-        token: string ->
+        applicationId: string ->
+        interactionToken: string ->
         messageId: string ->
         threadId: string option ->
         Task<Message>
 
     abstract member EditFollowUpMessage:
-        id: string ->
-        token: string ->
+        applicationId: string ->
+        interactionToken: string ->
         messageId: string ->
         threadId: string option ->
-        content: string option option ->
-        embeds: Embed list option option ->
-        allowedMentions: AllowedMentions option option ->
-        components: Component list option option ->
-        // TODO: Add `files`, `payload_json`, `attachments` support
-        // TODO: Check what types should be `option`
+        content: EditFollowUpMessage ->
         Task<Message>
 
     abstract member DeleteFollowUpMessage:
-        id: string ->
-        token: string ->
+        applicationId: string ->
+        interactionToken: string ->
         messageId: string ->
+        threadId: string option -> // TODO: Check if thread_id is supposed to exist (exists in webhook delete but not mentioned in follow-up delete
         Task<unit>
 
-type InteractionResource (httpClientFactory: IHttpClientFactory, token: string) =
+type InteractionResource (httpClientFactory, token) =
     interface IInteractionResource with
-        member _.CreateInteractionResponse
-            id token ``type`` data =
-                Req.create
-                    HttpMethod.Post
-                    Constants.DISCORD_API_URL
-                    $"interactions/{id}/{token}/callback"
-                |> Req.bot token
-                |> Req.json (
-                    Dto()
-                    |> Dto.property "type" ``type``
-                    |> Dto.property "data" data
-                    |> Dto.json
-                )
-                |> Req.send httpClientFactory
-                |> Res.ignore
+        member _.CreateInteractionResponse interactionId interactionToken withResponse content =
+            let req = req {
+                post $"interactions/{interactionId}/{interactionToken}/callback"
+                bot token
+                query "with_response" (withResponse >>. _.ToString())
+                payload content
+            }
+            let task = Http.send httpClientFactory req
+            
+            match withResponse with
+            | Some true -> Task.mapT Http.toJson task
+            | _ -> Task.map (fun _ -> None) task
 
-        member _.GetOriginalInteractionResponse
-            id token threadId =
-                Req.create
-                    HttpMethod.Get
-                    Constants.DISCORD_API_URL
-                    $"webhooks/{id}/{token}/messages/@original"
-                |> Req.bot token
-                |> Req.queryOpt "thread_id" threadId
-                |> Req.send httpClientFactory
-                |> Res.json
+        member _.GetOriginalInteractionResponse interactionId interactionToken threadId =
+            req {
+                get $"webhooks/{interactionId}/{interactionToken}/messages/@original"
+                bot token
+                query "thread_id" threadId
+            }
+            |> Http.send httpClientFactory
+            |> Task.mapT Http.toJson
 
-        member _.EditOriginalInteractionResponse
-            id token threadId content embeds allowedMentions components =
-                Req.create
-                    HttpMethod.Patch
-                    Constants.DISCORD_API_URL
-                    $"webhooks/{id}/{token}/messages/@original"
-                |> Req.bot token
-                |> Req.queryOpt "thread_id" threadId
-                |> Req.json (
-                    Dto()
-                    |> Dto.propertyIf "content" content
-                    |> Dto.propertyIf "embeds" embeds
-                    |> Dto.propertyIf "allowed_mentions" allowedMentions
-                    |> Dto.propertyIf "components" components
-                    |> Dto.json
-                )
-                |> Req.send httpClientFactory
-                |> Res.json
+        member _.EditOriginalInteractionResponse interactionId interactionToken threadId content =
+            req {
+                patch $"webhooks/{interactionId}/{interactionToken}/messages/@original"
+                bot token
+                query "thread_id" threadId
+                payload content
+            }
+            |> Http.send httpClientFactory
+            |> Task.mapT Http.toJson
 
-        member _.DeleteOriginalInteractionResponse
-            id token =
-                Req.create
-                    HttpMethod.Delete
-                    Constants.DISCORD_API_URL
-                    $"webhooks/{id}/{token}/messages/@original"
-                |> Req.bot token
-                |> Req.send httpClientFactory
-                |> Res.ignore
+        member _.DeleteOriginalInteractionResponse interactionId interactionToken =
+            req {
+                delete $"webhooks/{interactionId}/{interactionToken}/messages/@original"
+                bot token
+            }
+            |> Http.send httpClientFactory
+            |> Task.wait
 
-        member _.CreateFollowUpMessage
-            id token threadId content username avatarUrl tts embeds allowedMentions components flags threadName
-            appliedTags poll =
-                Req.create
-                    HttpMethod.Post
-                    Constants.DISCORD_API_URL
-                    $"webhooks/{id}/{token}"
-                |> Req.bot token
-                |> Req.queryOpt "thread_id" threadId
-                |> Req.json (
-                    Dto()
-                    |> Dto.propertyIf "content" content
-                    |> Dto.property "username" username
-                    |> Dto.property "avatar_url" avatarUrl
-                    |> Dto.property "tts" tts
-                    |> Dto.propertyIf "embeds" embeds
-                    |> Dto.propertyIf "allowed_mentions" allowedMentions
-                    |> Dto.propertyIf "components" components
-                    |> Dto.property "flags" flags
-                    |> Dto.propertyIf "thread_name" threadName
-                    |> Dto.propertyIf "applied_tags" appliedTags
-                    |> Dto.propertyIf "poll" poll
-                    |> Dto.json
-                )
-                |> Req.send httpClientFactory
-                |> Res.json
+        member _.CreateFollowUpMessage applicationId interactionToken threadId content =
+            req {
+                post $"webhooks/{applicationId}/{interactionToken}"
+                bot token
+                query "thread_id" threadId
+                payload content
+            }
+            |> Http.send httpClientFactory
+            |> Task.wait
 
-        member _.GetFollowUpMessage
-            id token messageId threadId =
-                Req.create
-                    HttpMethod.Get
-                    Constants.DISCORD_API_URL
-                    $"webhooks/{id}/{token}/messages/{messageId}"
-                |> Req.bot token
-                |> Req.queryOpt "thread_id" threadId
-                |> Req.send httpClientFactory
-                |> Res.json
+        member _.GetFollowUpMessage applicationId interactionToken messageId threadId =
+            req {
+                get $"webhooks/{applicationId}/{interactionToken}/messages/{messageId}"
+                bot token
+                query "thread_id" threadId
+            }
+            |> Http.send httpClientFactory
+            |> Task.mapT Http.toJson
 
-        member _.EditFollowUpMessage
-            id token messageId threadId content embeds allowedMentions components =
-                Req.create
-                    HttpMethod.Patch
-                    Constants.DISCORD_API_URL
-                    $"webhooks/{id}/{token}/messages/{messageId}"
-                |> Req.bot token
-                |> Req.queryOpt "thread_id" threadId
-                |> Req.json (
-                    Dto()
-                    |> Dto.propertyIf "content" content
-                    |> Dto.propertyIf "embeds" embeds
-                    |> Dto.propertyIf "allowed_mentions" allowedMentions
-                    |> Dto.propertyIf "components" components
-                    |> Dto.json
-                )
-                |> Req.send httpClientFactory
-                |> Res.json
+        member _.EditFollowUpMessage applicatoinId interactionToken messageId threadId content =
+            req {
+                patch $"webhooks/{applicatoinId}/{interactionToken}/messages/{messageId}"
+                bot token
+                query "thread_id" threadId
+                payload content
+            }
+            |> Http.send httpClientFactory
+            |> Task.mapT Http.toJson
 
-        member _.DeleteFollowUpMessage
-            id token messageId =
-                Req.create
-                    HttpMethod.Delete
-                    Constants.DISCORD_API_URL
-                    $"webhooks/{id}/{token}/messages/{messageId}"
-                |> Req.bot token
-                |> Req.send httpClientFactory
-                |> Res.ignore
+        member _.DeleteFollowUpMessage applicationId interactionToken threadId messageId =
+            req {
+                delete $"webhooks/{applicationId}/{interactionToken}/messages/{messageId}"
+                bot token
+                query "thread_id" threadId
+            }
+            |> Http.send httpClientFactory
+            |> Task.wait

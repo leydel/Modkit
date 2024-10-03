@@ -49,14 +49,21 @@ module Payload =
             this
 
         [<CustomOperation "part">]
-        member this.Part (_, name: string, content: unit -> IPayloadBuilder) =
-            this.Form.Add(content().ToContent(), name)
+        member this.Part (_, name: string, content: IPayloadBuilder) =
+            this.Form.Add(content.ToContent(), name)
             this
             
         [<CustomOperation "file">]
-        member this.File (_, fileName: string, fileContent: unit -> IPayloadBuilder) =
-            this.Form.Add(fileContent().ToContent(), $"files[{fileCount}]", fileName)
+        member this.File (_, fileName: string, fileContent: IPayloadBuilder) =
+            this.Form.Add(fileContent.ToContent(), $"files[{fileCount}]", fileName)
             fileCount <- fileCount + 1
+            this
+            
+        [<CustomOperation "files">]
+        member this.Files (_, files: IDictionary<string, IPayloadBuilder>) =
+            for fileName, fileContent in Seq.map (|KeyValue|) files do
+                this.Form.Add(fileContent.ToContent(), $"files[{fileCount}]", fileName)
+                fileCount <- fileCount + 1
             this
 
         interface IPayloadBuilder with

@@ -1725,3 +1725,18 @@ type VoiceState = {
     [<JsonPropertyName "suppress">] Suppress: bool
     [<JsonPropertyName "request_to_speak_timestamp">] RequestToSpeakTimestamp: DateTime option
 }
+
+type InteractionCallback = {
+    [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "type">] Type: InteractionType
+    [<JsonPropertyName "activity_instance_id">] ActivityInstanceId: string option
+    [<JsonPropertyName "response_message_id">] ResponseMessageId: string option
+    [<JsonPropertyName "response_message_loading">] ResponseMessageLoading: bool option
+    [<JsonPropertyName "response_message_ephemeral">] ResponseMessageEphemeral: bool option
+}
+
+type InteractionCallbackResource = {
+    [<JsonPropertyName "type">] Type: InteractionCallbackType
+    [<JsonPropertyName "activity_instance">] ActivityInstance: ActivityInstance option
+    [<JsonPropertyName "message">] Message: Message option
+}
