@@ -1113,12 +1113,11 @@ type ApplicationCommand = {
     [<JsonPropertyName "application_id">] ApplicationId: string
     [<JsonPropertyName "guild_id">] GuildId: string option
     [<JsonPropertyName "name">] Name: string
-    [<JsonPropertyName "name_localizations">] NameLocalizations: Dictionary<string, string> option
+    [<JsonPropertyName "name_localizations">] NameLocalizations: IDictionary<string, string> option
     [<JsonPropertyName "description">] Description: string
-    [<JsonPropertyName "description_localizations">] DescriptionLocalizations: Dictionary<string, string> option
+    [<JsonPropertyName "description_localizations">] DescriptionLocalizations: IDictionary<string, string> option
     [<JsonPropertyName "options">] Options: ApplicationCommandOption list option
     [<JsonPropertyName "default_member_permissions">] DefaultMemberPermissions: string option
-    [<JsonPropertyName "dm_permission">] DmPermission: bool option
     [<JsonPropertyName "nsfw">] Nsfw: bool option
     [<JsonPropertyName "integration_types">] IntegrationTypes: ApplicationIntegrationType list option
     [<JsonPropertyName "contexts">] Contexts: InteractionContextType list option

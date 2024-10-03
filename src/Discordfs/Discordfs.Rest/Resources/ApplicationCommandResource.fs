@@ -1,6 +1,7 @@
 ﻿namespace Discordfs.Rest.Resources
 
 open Discordfs.Rest.Common
+open Discordfs.Rest.Types
 open Discordfs.Types
 open System.Collections.Generic
 open System.Threading.Tasks
@@ -12,8 +13,8 @@ type CreateGlobalApplicationCommand (
     ?description_localizations:  IDictionary<string, string> option,
     ?options:                    ApplicationCommandOption list,
     ?default_member_permissions: string option,
-    ?dm_permission:              bool option,
     ?integration_types:          ApplicationIntegrationType list,
+    ?contexts:                   InteractionContextType list,
     ?``type``:                   ApplicationCommandType,
     ?nsfw:                       bool
 ) =
@@ -25,8 +26,8 @@ type CreateGlobalApplicationCommand (
             optional "description_localizations" description_localizations
             optional "options" options
             optional "default_member_permissions" default_member_permissions
-            optional "dm_permission" dm_permission
             optional "integration_types" integration_types
+            optional "contexts" contexts
             optional "type" ``type``
             optional "nsfw" nsfw
         }
@@ -38,9 +39,8 @@ type EditGlobalApplicationCommand (
     ?description_localizations:  IDictionary<string, string> option,
     ?options:                    ApplicationCommandOption list,
     ?default_member_permissions: string option,
-    ?dm_permission:              bool option,
     ?integration_types:          ApplicationIntegrationType list,
-    ?``type``:                   ApplicationCommandType,
+    ?contexts:                   InteractionContextType list,
     ?nsfw:                       bool
 ) =
     inherit Payload() with
@@ -51,20 +51,17 @@ type EditGlobalApplicationCommand (
             optional "description_localizations" description_localizations
             optional "options" options
             optional "default_member_permissions" default_member_permissions
-            optional "dm_permission" dm_permission
             optional "integration_types" integration_types
-            optional "type" ``type``
+            optional "contexts" contexts
             optional "nsfw" nsfw
         }
 
 type BulkOverwriteGlobalApplicationCommands (
-    commands: ApplicationCommand list
+    commands: BulkOverwriteApplicationCommand list // TODO: Confirm this type matches (not documented)
 ) =
     inherit Payload() with
         override _.Content =
             JsonListPayload commands
-
-    // TODO: Figure out how to correctly define this payload (ApplicationCommand is wrong - e.g. requires ID)
 
 type CreateGuildApplicationCommand (
     name:                        string,
@@ -73,8 +70,6 @@ type CreateGuildApplicationCommand (
     ?description_localizations:  IDictionary<string, string> option,
     ?options:                    ApplicationCommandOption list,
     ?default_member_permissions: string option,
-    ?dm_permission:              bool option,
-    ?integration_types:          ApplicationIntegrationType list,
     ?``type``:                   ApplicationCommandType,
     ?nsfw:                       bool
 ) =
@@ -86,8 +81,6 @@ type CreateGuildApplicationCommand (
             optional "description_localizations" description_localizations
             optional "options" options
             optional "default_member_permissions" default_member_permissions
-            optional "dm_permission" dm_permission
-            optional "integration_types" integration_types
             optional "type" ``type``
             optional "nsfw" nsfw
         }
@@ -99,9 +92,6 @@ type EditGuildApplicationCommand (
     ?description_localizations:  IDictionary<string, string> option,
     ?options:                    ApplicationCommandOption list,
     ?default_member_permissions: string option,
-    ?dm_permission:              bool option,
-    ?integration_types:          ApplicationIntegrationType list,
-    ?``type``:                   ApplicationCommandType,
     ?nsfw:                       bool
 ) =
     inherit Payload() with
@@ -112,14 +102,11 @@ type EditGuildApplicationCommand (
             optional "description_localizations" description_localizations
             optional "options" options
             optional "default_member_permissions" default_member_permissions
-            optional "dm_permission" dm_permission
-            optional "integration_types" integration_types
-            optional "type" ``type``
             optional "nsfw" nsfw
         }
 
 type BulkOverwriteGuildApplicationCommands (
-    commands: ApplicationCommand list
+    commands: BulkOverwriteApplicationCommand list
 ) =
     inherit Payload() with
         override _.Content =
@@ -132,8 +119,6 @@ type EditApplicationCommandPermissions (
         override _.Content = json {
             required "permissions" permissions
         }
-
-    // TODO: Figure out how to correctly define this payload (ApplicationCommand is wrong - e.g. requires ID)
 
 type IApplicationCommandResource =
     // https://discord.com/developers/docs/interactions/application-commands#get-global-application-commands
