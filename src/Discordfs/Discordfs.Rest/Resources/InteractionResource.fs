@@ -54,16 +54,12 @@ type EditOriginalInteractionResponse (
 
 type CreateFollowUpMessage (
     ?content: string,
-    ?username: string,
-    ?avatar_url: string,
     ?tts: bool,
     ?embeds: Embed list,
     ?allowed_mentions: AllowedMentions,
     ?components: Component list,
     ?attachments: Attachment list,
     ?flags: int,
-    ?thread_name: string,
-    ?applied_tags: string list,
     ?poll: Poll,
     ?files: IDictionary<string, IPayloadBuilder>
 ) =
@@ -71,16 +67,12 @@ type CreateFollowUpMessage (
         override _.Content =
             let payload_json = json {
                 optional "content" content
-                optional "username" username
-                optional "avatar_url" avatar_url
                 optional "tts" tts
                 optional "embeds" embeds
                 optional "allowed_mentions" allowed_mentions
                 optional "components" components
                 optional "attachments" attachments
                 optional "flags" flags
-                optional "thread_name" thread_name
-                optional "applied_tags" applied_tags
                 optional "poll" poll                
             }
 
@@ -129,13 +121,11 @@ type IInteractionResource =
     abstract member GetOriginalInteractionResponse:
         interactionId: string ->
         interactionToken: string ->
-        threadId: string option ->
         Task<Message>
 
     abstract member EditOriginalInteractionResponse:
         interactionId: string ->
         interactionToken: string ->
-        threadId: string option ->
         content: EditOriginalInteractionResponse ->
         Task<Message>
 
@@ -147,7 +137,6 @@ type IInteractionResource =
     abstract member CreateFollowUpMessage:
         applicationId: string ->
         interactionToken: string ->
-        threadId: string option ->
         content: CreateFollowUpMessage ->
         Task<unit>
 
@@ -155,14 +144,12 @@ type IInteractionResource =
         applicationId: string ->
         interactionToken: string ->
         messageId: string ->
-        threadId: string option ->
         Task<Message>
 
     abstract member EditFollowUpMessage:
         applicationId: string ->
         interactionToken: string ->
         messageId: string ->
-        threadId: string option ->
         content: EditFollowUpMessage ->
         Task<Message>
 
@@ -170,7 +157,6 @@ type IInteractionResource =
         applicationId: string ->
         interactionToken: string ->
         messageId: string ->
-        threadId: string option -> // TODO: Check if thread_id is supposed to exist (exists in webhook delete but not mentioned in follow-up delete
         Task<unit>
 
 type InteractionResource (httpClientFactory, token) =
@@ -188,20 +174,18 @@ type InteractionResource (httpClientFactory, token) =
             | Some true -> Task.mapT Http.toJson task
             | _ -> Task.map (fun _ -> None) task
 
-        member _.GetOriginalInteractionResponse interactionId interactionToken threadId =
+        member _.GetOriginalInteractionResponse interactionId interactionToken =
             req {
                 get $"webhooks/{interactionId}/{interactionToken}/messages/@original"
                 bot token
-                query "thread_id" threadId
             }
             |> Http.send httpClientFactory
             |> Task.mapT Http.toJson
 
-        member _.EditOriginalInteractionResponse interactionId interactionToken threadId content =
+        member _.EditOriginalInteractionResponse interactionId interactionToken content =
             req {
                 patch $"webhooks/{interactionId}/{interactionToken}/messages/@original"
                 bot token
-                query "thread_id" threadId
                 payload content
             }
             |> Http.send httpClientFactory
@@ -215,40 +199,36 @@ type InteractionResource (httpClientFactory, token) =
             |> Http.send httpClientFactory
             |> Task.wait
 
-        member _.CreateFollowUpMessage applicationId interactionToken threadId content =
+        member _.CreateFollowUpMessage applicationId interactionToken content =
             req {
                 post $"webhooks/{applicationId}/{interactionToken}"
                 bot token
-                query "thread_id" threadId
                 payload content
             }
             |> Http.send httpClientFactory
             |> Task.wait
 
-        member _.GetFollowUpMessage applicationId interactionToken messageId threadId =
+        member _.GetFollowUpMessage applicationId interactionToken messageId =
             req {
                 get $"webhooks/{applicationId}/{interactionToken}/messages/{messageId}"
                 bot token
-                query "thread_id" threadId
             }
             |> Http.send httpClientFactory
             |> Task.mapT Http.toJson
 
-        member _.EditFollowUpMessage applicatoinId interactionToken messageId threadId content =
+        member _.EditFollowUpMessage applicatoinId interactionToken messageId content =
             req {
                 patch $"webhooks/{applicatoinId}/{interactionToken}/messages/{messageId}"
                 bot token
-                query "thread_id" threadId
                 payload content
             }
             |> Http.send httpClientFactory
             |> Task.mapT Http.toJson
 
-        member _.DeleteFollowUpMessage applicationId interactionToken threadId messageId =
+        member _.DeleteFollowUpMessage applicationId interactionToken messageId =
             req {
                 delete $"webhooks/{applicationId}/{interactionToken}/messages/{messageId}"
                 bot token
-                query "thread_id" threadId
             }
             |> Http.send httpClientFactory
             |> Task.wait
