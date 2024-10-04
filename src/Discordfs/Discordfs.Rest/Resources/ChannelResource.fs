@@ -7,6 +7,133 @@ open System
 open System.Net.Http
 open System.Threading.Tasks
 
+type ModifyChannel =
+    | GroupDm of ModifyGroupDmChannel
+    | Guild of ModifyGuildChannel
+    | Thread of ModifyThreadChannel
+with
+    member this.Payload =
+        match this with
+        | ModifyChannel.GroupDm groupdm -> groupdm :> Payload
+        | ModifyChannel.Guild guild -> guild :> Payload
+        | ModifyChannel.Thread thread -> thread :> Payload
+
+and ModifyGroupDmChannel(
+    ?name: string,
+    ?icon: string
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "name" name
+            optional "icon" icon
+        }
+
+and ModifyGuildChannel(
+    ?name: string,
+    ?``type``: ChannelType,
+    ?position: int option,
+    ?topic: string option,
+    ?nsfw: bool option,
+    ?rate_limit_per_user: int option,
+    ?bitrate: int option,
+    ?user_limit: int option,
+    ?permission_overwrites: PermissionOverwrite list option,
+    ?parent_id: string option,
+    ?rtc_region: string option,
+    ?video_quality_mode: VideoQualityMode option,
+    ?default_auto_archive_duration: int option,
+    ?flags: int,
+    ?available_tags: ChannelTag list,
+    ?default_reaction_emoji: DefaultReaction option,
+    ?default_thread_rate_limit_per_user: int,
+    ?default_sort_order: ChannelSortOrder option,
+    ?default_forum_layout: ChannelForumLayout
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "name" name
+            optional "type" ``type``
+            optional "position" position
+            optional "topic" topic
+            optional "nsfw" nsfw
+            optional "rate_limit_per_user" rate_limit_per_user
+            optional "bitrate" bitrate
+            optional "user_limit" user_limit
+            optional "permission_overwrites" permission_overwrites
+            optional "parent_id" parent_id
+            optional "rtc_region" rtc_region
+            optional "video_quality_mode" video_quality_mode
+            optional "default_auto_archive_duration" default_auto_archive_duration
+            optional "flags" flags
+            optional "available_tags" available_tags
+            optional "default_reaction_emoji" default_reaction_emoji
+            optional "default_thread_rate_limit_per_user" default_thread_rate_limit_per_user
+            optional "default_sort_order" default_sort_order
+            optional "default_forum_layout" default_forum_layout
+        }
+
+and ModifyThreadChannel (
+    ?name: string,
+    ?archived: bool,
+    ?auto_archive_duration: int,
+    ?locked: bool,
+    ?invitable: bool,
+    ?rate_limit_per_user: int option,
+    ?flags: int,
+    ?applied_tags: string list
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "name" name
+            optional "archived" archived
+            optional "auto_archive_duration" auto_archive_duration
+            optional "locked" locked
+            optional "invitable" invitable
+            optional "rate_limit_per_user" rate_limit_per_user
+            optional "flags" flags
+            optional "applied_tags" applied_tags
+        }
+
+type EditChannelPermissions (
+    ``type``: EditChannelPermissionsType,
+    ?allow: string option,
+    ?deny: string option
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "type" ``type``
+            optional "allow" allow
+            optional "deny" deny
+        }
+
+type CreateChannelInvite (
+    target_type: InviteTargetType,
+    ?max_age: int,
+    ?max_uses: int,
+    ?temporary: bool,
+    ?unique: bool,
+    ?target_user_id: string,
+    ?target_application_id: string
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "max_age" max_age
+            optional "max_uses" max_uses
+            optional "temporary" temporary
+            optional "unique" unique
+            required "target_type" target_type
+            optional "target_user_id" target_user_id
+            optional "target_application_id" target_application_id
+        }
+
+type FollowAnnouncementChannel (
+    webhook_channel_id: string
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "webhook_channel_id" webhook_channel_id
+        }
+
 type IChannelResource =
     // https://discord.com/developers/docs/resources/channel#get-channel
     abstract member GetChannel:
@@ -14,7 +141,11 @@ type IChannelResource =
         Task<Channel>
     
     // https://discord.com/developers/docs/resources/channel#modify-channel
-    // TODO: Implement modify channel endpoint
+    abstract member ModifyChannel:
+        channelId: string ->
+        auditLogReason: string option ->
+        content: ModifyChannel ->
+        Task<Channel>
 
     // https://discord.com/developers/docs/resources/channel#deleteclose-channel
     abstract member DeleteChannel:
@@ -27,9 +158,7 @@ type IChannelResource =
         channelId: string ->
         overwriteId: string ->
         auditLogReason: string option ->
-        allow: string option ->
-        deny: string option ->
-        ``type``: EditChannelPermissionsType ->
+        content: EditChannelPermissions ->
         Task<unit>
 
     // https://discord.com/developers/docs/resources/channel#get-channel-invites
@@ -41,13 +170,7 @@ type IChannelResource =
     abstract member CreateChannelInvite:
         channelId: string ->
         auditLogReason: string option ->
-        maxAge: int option ->
-        maxUses: int option ->
-        temporary: bool option ->
-        unique: bool option ->
-        targetType: InviteTargetType option ->
-        targetUserId: string option ->
-        targetApplicationId: string option ->
+        content: CreateChannelInvite ->
         Task<Invite>
 
     // https://discord.com/developers/docs/resources/channel#delete-channel-permission
@@ -61,7 +184,7 @@ type IChannelResource =
     abstract member FollowAnnouncementChannel:
         channelId: string ->
         auditLogReason: string option ->
-        webhookChannelId: string ->
+        content: FollowAnnouncementChannel ->
         Task<FollowedChannel>
 
     // https://discord.com/developers/docs/resources/channel#trigger-typing-indicator
@@ -181,113 +304,87 @@ type IChannelResource =
 
 type ChannelResource (httpClientFactory: IHttpClientFactory, token: string) =
     interface IChannelResource with
-        member _.GetChannel
-            channelId =
-                Req.create
-                    HttpMethod.Get
-                    Constants.DISCORD_API_URL
-                    $"channels/{channelId}"
-                |> Req.bot token
-                |> Req.send httpClientFactory
-                |> Res.json
+        member _.GetChannel channelId =
+            req {
+                get $"channels/{channelId}"
+                bot token
+            }
+            |> Http.send httpClientFactory
+            |> Task.mapT Http.toJson
 
-        member _.DeleteChannel
-            channelId auditLogReason =
-                Req.create
-                        HttpMethod.Delete
-                        Constants.DISCORD_API_URL
-                        $"channels/{channelId}"
-                    |> Req.bot token
-                    |> Req.audit auditLogReason
-                    |> Req.send httpClientFactory
-                    |> Res.json
+        member _.ModifyChannel channelId auditLogReason content =
+            req {
+                patch $"channels/{channelId}"
+                bot token
+                audit auditLogReason
+                payload (content.Payload)
+            }
+            |> Http.send httpClientFactory
+            |> Task.mapT Http.toJson
 
-        member _.EditChannelPermissions
-            channelId overwriteId auditLogReason allow deny ``type`` =
-                Req.create
-                    HttpMethod.Put
-                    Constants.DISCORD_API_URL
-                    $"channels/{channelId}/permissions/{overwriteId}"
-                |> Req.bot token
-                |> Req.audit auditLogReason
-                |> Req.json (
-                    Dto()
-                    |> Dto.propertyIf "allow" allow
-                    |> Dto.propertyIf "deny" deny
-                    |> Dto.property "type" ``type``
-                    |> Dto.json
-                )
-                |> Req.send httpClientFactory
-                |> Res.ignore
+        member _.DeleteChannel channelId auditLogReason =
+            req {
+                delete $"channels/{channelId}"
+                bot token
+                audit auditLogReason
+            }
+            |> Http.send httpClientFactory
+            |> Task.mapT Http.toJson
 
-        member _.GetChannelInvites
-            channelId =
-                Req.create
-                    HttpMethod.Get
-                    Constants.DISCORD_API_URL
-                    $"channels/{channelId}/invites"
-                |> Req.bot token
-                |> Req.send httpClientFactory
-                |> Res.json
+        member _.EditChannelPermissions channelId overwriteId auditLogReason content =
+            req {
+                put $"channels/{channelId}/permissions/{overwriteId}"
+                bot token
+                audit auditLogReason
+                payload content
+            }
+            |> Http.send httpClientFactory
+            |> Task.wait
 
-        member _.CreateChannelInvite
-            channelId auditLogReason maxAge maxUses temporary unique targetType targetUserId targetApplicationId =
-                Req.create
-                    HttpMethod.Post
-                    Constants.DISCORD_API_URL
-                    $"channels/{channelId}/invites"
-                |> Req.bot token
-                |> Req.audit auditLogReason
-                |> Req.json (
-                    Dto()
-                    |> Dto.propertyIf "max_age" maxAge
-                    |> Dto.propertyIf "max_uses" maxUses
-                    |> Dto.propertyIf "temporary" temporary
-                    |> Dto.propertyIf "unique" unique
-                    |> Dto.propertyIf "target_type" targetType
-                    |> Dto.propertyIf "target_user_id" targetUserId
-                    |> Dto.propertyIf "target_application_id" targetApplicationId
-                    |> Dto.json
-                )
-                |> Req.send httpClientFactory
-                |> Res.json
+        member _.GetChannelInvites channelId =
+            req {
+                get $"channels/{channelId}/invites"
+                bot token
+            }
+            |> Http.send httpClientFactory
+            |> Task.mapT Http.toJson
 
-        member _.DeleteChannelPermission
-            channelId overwriteId auditLogReason =
-                Req.create
-                    HttpMethod.Delete
-                    Constants.DISCORD_API_URL
-                    $"channels/{channelId}/permissions/{overwriteId}"
-                |> Req.bot token
-                |> Req.audit auditLogReason
-                |> Req.send httpClientFactory
-                |> Res.ignore
+        member _.CreateChannelInvite channelId auditLogReason content =
+            req {
+                post $"channels/{channelId}/invites"
+                bot token
+                audit auditLogReason
+                payload content
+            }
+            |> Http.send httpClientFactory
+            |> Task.mapT Http.toJson
 
-        member _.FollowAnnouncementChannel
-            channelId auditLogReason webhookChannelId =
-                Req.create
-                    HttpMethod.Post
-                    Constants.DISCORD_API_URL
-                    $"channels/{channelId}/followers"
-                |> Req.bot token
-                |> Req.audit auditLogReason
-                |> Req.json (
-                    Dto()
-                    |> Dto.property "webhook_channel_id" webhookChannelId
-                    |> Dto.json
-                )
-                |> Req.send httpClientFactory
-                |> Res.json
+        member _.DeleteChannelPermission channelId overwriteId auditLogReason =
+            req {
+                delete $"channels/{channelId}/permissions/{overwriteId}"
+                bot token
+                audit auditLogReason
+            }
+            |> Http.send httpClientFactory
+            |> Task.wait
 
-        member _.TriggerTypingIndicator
-            channelId =
-                Req.create
-                    HttpMethod.Post
-                    Constants.DISCORD_API_URL
-                    $"channels/{channelId}/typing"
-                |> Req.bot token
-                |> Req.send httpClientFactory
-                |> Res.ignore
+        member _.FollowAnnouncementChannel channelId auditLogReason content =
+            req {
+                post $"channels/{channelId}/followers"
+                bot token
+                audit auditLogReason
+                payload content
+            }
+            |> Http.send httpClientFactory
+            |> Task.mapT Http.toJson
+
+        member _.TriggerTypingIndicator channelId =
+            req {
+                post $"channels/{channelId}/typing"
+                bot token
+            }
+            |> Http.send httpClientFactory
+            |> Task.wait
 
         member _.GetPinnedMessages
             channelId =
