@@ -37,59 +37,47 @@ type VoiceChannelEffect = {
     [<JsonPropertyName "sound_volume">] SoundVolume: double option
 }
 
+type ForumAndMediaThreadMessageParams = {
+    [<JsonPropertyName "content">] Content: string option
+    [<JsonPropertyName "embeds">] Embeds: Embed list option
+    [<JsonPropertyName "allowed_mentions">] AllowedMentions: AllowedMentions option
+    [<JsonPropertyName "components">] Components: Component list option
+    [<JsonPropertyName "sticker_ids">] StickerIds: string list option
+    [<JsonPropertyName "attachments">] Attachments: Attachment list option
+    [<JsonPropertyName "flags">] Flags: int option
+}
+
 type ListPublicArchivedThreadsResponse = {
-    [<JsonPropertyName "threads">]
-    Threads: Channel list
-    
-    [<JsonPropertyName "members">]
-    Members: ThreadMember list
-    
-    [<JsonPropertyName "has_more">]
-    HasMore: bool
+    [<JsonPropertyName "threads">] Threads: Channel list
+    [<JsonPropertyName "members">] Members: ThreadMember list
+    [<JsonPropertyName "has_more">] HasMore: bool
 }
 
 type ListPrivateArchivedThreadsResponse = {
-    [<JsonPropertyName "threads">]
-    Threads: Channel list
-    
-    [<JsonPropertyName "members">]
-    Members: ThreadMember list
-    
-    [<JsonPropertyName "has_more">]
-    HasMore: bool
+    [<JsonPropertyName "threads">] Threads: Channel list
+    [<JsonPropertyName "members">] Members: ThreadMember list
+    [<JsonPropertyName "has_more">] HasMore: bool
 }
 
 type ListJoinedPrivateArchivedThreadsResponse = {
-    [<JsonPropertyName "threads">]
-    Threads: Channel list
-    
-    [<JsonPropertyName "members">]
-    Members: ThreadMember list
-    
-    [<JsonPropertyName "has_more">]
-    HasMore: bool
+    [<JsonPropertyName "threads">] Threads: Channel list
+    [<JsonPropertyName "members">] Members: ThreadMember list
+    [<JsonPropertyName "has_more">] HasMore: bool
 }
 
 // https://discord.com/developers/docs/resources/emoji#list-application-emojis
 type ListApplicationEmojisResponse = {
-    [<JsonPropertyName "items">]
-    Items: Emoji list
+    [<JsonPropertyName "items">] Items: Emoji list
 }
 
 type GetGatewayResponse = {
-    [<JsonPropertyName "url">]
-    Url: string
+    [<JsonPropertyName "url">] Url: string
 }
 
 type GetGatewayBotResponse = {
-    [<JsonPropertyName "url">]
-    Url: string
-
-    [<JsonPropertyName "shards">]
-    Shards: int
-
-    [<JsonPropertyName "session_start_limit">]
-    SessionStartLimit: SessionStartLimit
+    [<JsonPropertyName "url">] Url: string
+    [<JsonPropertyName "shards">] Shards: int
+    [<JsonPropertyName "session_start_limit">] SessionStartLimit: SessionStartLimit
 }
 
 // https://discord.com/developers/docs/resources/guild#modify-guild-channel-positions-json-params

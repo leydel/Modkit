@@ -765,25 +765,9 @@ type Channel = {
     [<JsonPropertyName "default_thread_rate_limit_per_user">] DefaultThreadRateLimitPerUser: int option
     [<JsonPropertyName "default_sort_order">] DefaultSortOrder: ChannelSortOrder option
     [<JsonPropertyName "default_forum_layout">] DefaultForumLayout: ChannelForumLayout option
-}
 
-// https://discord.com/developers/docs/resources/guild#guild-widget-object-guild-widget-structure
-type GuildWidget = {
-    [<JsonPropertyName "id">] Id: string
-    [<JsonPropertyName "name">] Name: string
-    [<JsonPropertyName "instant_invite">] InstantInvite: string option
-    [<JsonPropertyName "channels">] Channels: Channel list
-    [<JsonPropertyName "members">] Members: User list
-    [<JsonPropertyName "presence_count">] PresenceCount: int
-}
-
-type ResolvedData = {
-    [<JsonPropertyName "users">] Users: IDictionary<string, User> option
-    [<JsonPropertyName "members">] Members: IDictionary<string, GuildMember> option
-    [<JsonPropertyName "roles">] Roles: IDictionary<string, Role> option
-    [<JsonPropertyName "channels">] Channels: IDictionary<string, Channel> option
-    [<JsonPropertyName "messages">] Messages: IDictionary<string, Message> option
-    [<JsonPropertyName "attachments">] Attachments: IDictionary<string, Attachment> option
+    // TODO: Separate below somehow (used when starting thread in forum/media channel response
+    [<JsonPropertyName "message">] Message: Message option
 }
 
 and Message = {
@@ -820,6 +804,25 @@ and Message = {
     [<JsonPropertyName "resolved">] Resolved: ResolvedData option
     [<JsonPropertyName "poll">] Poll: Poll option
     [<JsonPropertyName "call">] Call: MessageCall option
+}
+
+and ResolvedData = {
+    [<JsonPropertyName "users">] Users: IDictionary<string, User> option
+    [<JsonPropertyName "members">] Members: IDictionary<string, GuildMember> option
+    [<JsonPropertyName "roles">] Roles: IDictionary<string, Role> option
+    [<JsonPropertyName "channels">] Channels: IDictionary<string, Channel> option
+    [<JsonPropertyName "messages">] Messages: IDictionary<string, Message> option
+    [<JsonPropertyName "attachments">] Attachments: IDictionary<string, Attachment> option
+}
+
+// https://discord.com/developers/docs/resources/guild#guild-widget-object-guild-widget-structure
+type GuildWidget = {
+    [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "name">] Name: string
+    [<JsonPropertyName "instant_invite">] InstantInvite: string option
+    [<JsonPropertyName "channels">] Channels: Channel list
+    [<JsonPropertyName "members">] Members: User list
+    [<JsonPropertyName "presence_count">] PresenceCount: int
 }
 
 // https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-entity-metadata
