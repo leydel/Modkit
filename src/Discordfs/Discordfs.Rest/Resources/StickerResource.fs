@@ -5,6 +5,20 @@ open Discordfs.Rest.Types
 open Discordfs.Types
 open System.Threading.Tasks
 
+type CreateGuildSticker (
+    name: string,
+    description: string,
+    tags: string,
+    fileContent: IPayloadBuilder
+) =
+    inherit Payload() with
+        override _.Content = multipart {
+            part "name" (StringPayload name)
+            part "description" (StringPayload description)
+            part "tags" (StringPayload tags)
+            part "file" fileContent
+        }
+
 type ModifyGuildSticker (
     name:        string,
     description: string option,
@@ -40,7 +54,11 @@ type IStickerResource =
         Task<Sticker>
 
     // https://discord.com/developers/docs/resources/sticker#create-guild-sticker
-    // TODO: Implement CreateGuildSticker (requires form payload)
+    abstract member CreateGuildSticker:
+        guildId: string ->
+        auditLogReason: string option ->
+        content: CreateGuildSticker ->
+        Task<Sticker>
 
     // https://discord.com/developers/docs/resources/sticker#modify-guild-sticker
     abstract member ModifyGuildSticker:
@@ -87,6 +105,16 @@ type StickerResource (httpClientFactory, token) =
             req {
                 get $"guilds/{guildId}/stickers/{stickerId}"
                 bot token
+            }
+            |> Http.send httpClientFactory
+            |> Task.mapT Http.toJson
+
+        member _.CreateGuildSticker guildId auditLogReason content =
+            req {
+                post $"guilds/{guildId}/stickers"
+                bot token
+                audit auditLogReason
+                payload content
             }
             |> Http.send httpClientFactory
             |> Task.mapT Http.toJson

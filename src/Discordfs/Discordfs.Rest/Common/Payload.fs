@@ -38,6 +38,11 @@ module Payload =
             member _.ToContent () =
                 new StringContent(FsJson.serialize list, MediaTypeHeaderValue("application/json"))
 
+    type StringPayload(str: string) =
+        interface IPayloadBuilder with
+            member _.ToContent () =
+                new StringContent(str)
+
     // TODO: Create payload types for different file contents
 
     type MultipartPayloadBuilder() =
