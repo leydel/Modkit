@@ -2,8 +2,19 @@
 
 open Discordfs.Rest.Common
 open Discordfs.Types
-open System.Net.Http
 open System.Threading.Tasks
+
+type CreateTestEntitlement (
+    sku_id:     string,
+    owner_id:   string,
+    owner_type: EntitlementOwnerType
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "sku_id" sku_id
+            required "owner_id" owner_id
+            required "owner_type" owner_type
+        }
 
 type IEntitlementResource =
     // https://discord.com/developers/docs/resources/entitlement#list-entitlements
@@ -27,9 +38,7 @@ type IEntitlementResource =
     // https://discord.com/developers/docs/resources/entitlement#create-test-entitlement
     abstract member CreateTestEntitlement:
         applicationId: string ->
-        skuId: string ->
-        ownerId: string ->
-        ownerType: EntitlementOwnerType ->
+        content: CreateTestEntitlement ->
         Task<Entitlement>
 
     // https://discord.com/developers/docs/resources/entitlement#delete-test-entitlement
@@ -38,58 +47,45 @@ type IEntitlementResource =
         entitlementId: string ->
         Task<unit>
 
-type EntitlementResource (httpClientFactory: IHttpClientFactory, token: string) =
+type EntitlementResource (httpClientFactory, token) =
     interface IEntitlementResource with
-        member _.ListEntitlements
-            applicationId userId skuIds before after limit guildId excludeEnded =
-                Req.create
-                    HttpMethod.Get
-                    Constants.DISCORD_API_URL
-                    $"applications/{applicationId}/entitlements"
-                |> Req.bot token
-                |> Req.queryOpt "user_id" userId
-                |> Req.queryOpt "sku_ids" (Option.map (String.concat ",") skuIds)
-                |> Req.queryOpt "before" before
-                |> Req.queryOpt "after" after
-                |> Req.queryOpt "limit" (Option.map (_.ToString()) limit)
-                |> Req.queryOpt "guild_id" guildId
-                |> Req.queryOpt "exclude_ended" (Option.map (_.ToString()) excludeEnded)
-                |> Req.send httpClientFactory
-                |> Res.json
+        member _.ListEntitlements applicationId userId skuIds before after limit guildId excludeEnded =
+            req {
+                get $"applications/{applicationId}/entitlements"
+                bot token
+                query "user_id" userId
+                query "sku_ids" (skuIds >>. String.concat ",")
+                query "before" before
+                query "after" after
+                query "limit" (limit >>. _.ToString())
+                query "guild_id" guildId
+                query "exclude_ended" (excludeEnded >>. _.ToString())
+            }
+            |> Http.send httpClientFactory
+            |> Task.mapT Http.toJson
 
-        member _.ConsumeEntitlement
-            applicationId entitlementId =
-                Req.create
-                    HttpMethod.Post
-                    Constants.DISCORD_API_URL
-                    $"applications/{applicationId}/entitlements/{entitlementId}/consume"
-                |> Req.bot token
-                |> Req.send httpClientFactory
-                |> Res.ignore
+        member _.ConsumeEntitlement applicationId entitlementId =
+            req {
+                post $"applications/{applicationId}/entitlements/{entitlementId}/consume"
+                bot token
+            }
+            |> Http.send httpClientFactory
+            |> Task.wait
 
-        member _.CreateTestEntitlement
-            applicationId skuId ownerId ownerType =
-                Req.create
-                    HttpMethod.Post
-                    Constants.DISCORD_API_URL
-                    $"applications/{applicationId}/entitlements"
-                |> Req.bot token
-                |> Req.json (
-                    Dto()
-                    |> Dto.property "sku_id" skuId
-                    |> Dto.property "owner_id" ownerId
-                    |> Dto.property "owner_type" ownerType
-                    |> Dto.json
-                )
-                |> Req.send httpClientFactory
-                |> Res.json
+        member _.CreateTestEntitlement applicationId content =
+            req {
+                post $"applications/{applicationId}/entitlements"
+                bot token
+                payload content
+            }
+            |> Http.send httpClientFactory
+            |> Task.mapT Http.toJson
 
-        member _.DeleteTestEntitlement
-            applicationId entitlementId =
-                Req.create
-                    HttpMethod.Delete
-                    Constants.DISCORD_API_URL
-                    $"applications/{applicationId}/entitlements/{entitlementId}"
-                |> Req.bot token
-                |> Req.send httpClientFactory
-                |> Res.ignore
+        member _.DeleteTestEntitlement applicationId entitlementId =
+            req {
+                delete $"applications/{applicationId}/entitlements/{entitlementId}"
+                bot token
+            }
+            |> Http.send httpClientFactory
+            |> Task.wait
+            
