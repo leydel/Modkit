@@ -2,6 +2,7 @@
 
 open Discordfs.Rest.Common
 open Discordfs.Types
+open System.Collections.Generic
 open System.Threading.Tasks
 
 type CreateMessage (
@@ -13,44 +14,63 @@ type CreateMessage (
     ?message_reference: MessageReference,
     ?components:        Component list,
     ?sticker_ids:       string list,
-    // TODO: Add files[n], payload_json, attachments
+    ?attachments:       Attachment list,
     ?flags:             int,
     ?enforce_nonce:     bool,
-    ?poll:              Poll
+    ?poll:              Poll,
+    ?files:             IDictionary<string, IPayloadBuilder>
 ) =
     inherit Payload() with
-        override _.Content = json {
-            optional "content" content
-            optional "nonce" (match nonce with | Some (MessageNonce.Number n) -> Some n | _ -> None)
-            optional "nonce" (match nonce with | Some (MessageNonce.String s) -> Some s | _ -> None)
-            optional "tts" tts
-            optional "embeds" embeds
-            optional "allowed_mentions" allow_mentions
-            optional "message_reference" message_reference
-            optional "components" components
-            optional "sticker_ids" sticker_ids
-            optional "flags" flags
-            optional "enforce_nonce" enforce_nonce
-            optional "poll" poll
-        }
+        override _.Content =
+            let payload_json = json {
+                optional "content" content
+                optional "nonce" (match nonce with | Some (MessageNonce.Number n) -> Some n | _ -> None)
+                optional "nonce" (match nonce with | Some (MessageNonce.String s) -> Some s | _ -> None)
+                optional "tts" tts
+                optional "embeds" embeds
+                optional "allowed_mentions" allow_mentions
+                optional "message_reference" message_reference
+                optional "components" components
+                optional "sticker_ids" sticker_ids
+                optional "attachments" attachments
+                optional "flags" flags
+                optional "enforce_nonce" enforce_nonce
+                optional "poll" poll
+            }
+
+            match files with
+            | None -> payload_json
+            | Some f -> multipart {
+                part "payload_json" payload_json
+                files f
+            }
 
 type EditMessage (
     ?content:        string option,
     ?embeds:         Embed list option,
     ?flags:          int option,
     ?allow_mentions: AllowedMentions option,
-    ?components:     Component list option
-    // TODO: Add files[n], attachments, payload_json
-    // TODO: Check if sticker_ids and poll are meant to not be available here
+    ?components:     Component list option,
+    ?attachments:    Attachment list option,
+    ?files:          IDictionary<string, IPayloadBuilder>
 ) =
     inherit Payload() with
-        override _.Content = json {
-            optional "content" content
-            optional "embeds" embeds
-            optional "flags" flags
-            optional "allowed_mentions" allow_mentions
-            optional "components" components
-        }
+        override _.Content =
+            let payload_json = json {
+                optional "content" content
+                optional "embeds" embeds
+                optional "flags" flags
+                optional "allowed_mentions" allow_mentions
+                optional "components" components
+                optional "attachments" attachments
+            }
+
+            match files with
+            | None -> payload_json
+            | Some f -> multipart {
+                part "payload_json" payload_json
+                files f
+            }
 
 type BulkDeleteMessages (
     messages: string list

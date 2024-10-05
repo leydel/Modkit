@@ -41,9 +41,11 @@ module Payload =
     type StringPayload(str: string) =
         interface IPayloadBuilder with
             member _.ToContent () =
-                new StringContent(str)
+                new StringContent(str, MediaTypeHeaderValue("plain/text"))
 
-    // TODO: Create payload types for different file contents
+    type FilePayload(fileContent: string, mimeType: string) =
+            member _.ToContent () =
+                new StringContent(fileContent, MediaTypeHeaderValue(mimeType))
 
     type MultipartPayloadBuilder() =
         let mutable fileCount = 0
