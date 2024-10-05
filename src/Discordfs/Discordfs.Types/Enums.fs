@@ -216,72 +216,79 @@ type GuildFeature =
     | VERIFIED
     | VIP_REGIONS
     | WELCOME_SCREEN_ENABLED
+with
+    override this.ToString () =
+        match this with
+        | GuildFeature.ANIMATED_BANNER -> "ANIMATED_BANNER"
+        | GuildFeature.ANIMATED_ICON -> "ANIMATED_ICON"
+        | GuildFeature.APPLICATION_COMMAND_PERMISSIONS_V2 -> "APPLICATION_COMMAND_PERMISSIONS_V2"
+        | GuildFeature.AUTO_MODERATION -> "AUTO_MODERATION"
+        | GuildFeature.BANNER -> "BANNER"
+        | GuildFeature.COMMUNITY -> "COMMUNITY"
+        | GuildFeature.CREATOR_MONETIZABLE_PROVISIONAL -> "CREATOR_MONETIZABLE_PROVISIONAL"
+        | GuildFeature.CREATOR_STORE_PAGE -> "CREATOR_STORE_PAGE"
+        | GuildFeature.DEVELOPER_SUPPORT_SERVER -> "DEVELOPER_SUPPORT_SERVER"
+        | GuildFeature.DISCOVERABLE -> "DISCOVERABLE"
+        | GuildFeature.FEATURABLE -> "FEATURABLE"
+        | GuildFeature.INVITES_DISABLED -> "INVITES_DISABLED"
+        | GuildFeature.INVITE_SPLASH -> "INVITE_SPLASH"
+        | GuildFeature.MEMBER_VERIFICATION_GATE_ENABLED -> "MEMBER_VERIFICATION_GATE_ENABLED"
+        | GuildFeature.MORE_STICKERS -> "MORE_STICKERS"
+        | GuildFeature.NEWS -> "NEWS"
+        | GuildFeature.PARTNERED -> "PARTNERED"
+        | GuildFeature.PREVIEW_ENABLED -> "PREVIEW_ENABLED"
+        | GuildFeature.RAID_ALERTS_DISABLED -> "RAID_ALERTS_DISABLED"
+        | GuildFeature.ROLE_ICONS -> "ROLE_ICONS"
+        | GuildFeature.ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE -> "ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE"
+        | GuildFeature.ROLE_SUBSCRIPTIONS_ENABLED -> "ROLE_SUBSCRIPTIONS_ENABLED"
+        | GuildFeature.TICKETED_EVENTS_ENABLED -> "TICKETED_EVENTS_ENABLED"
+        | GuildFeature.VANITY_URL -> "VANITY_URL"
+        | GuildFeature.VERIFIED -> "VERIFIED"
+        | GuildFeature.VIP_REGIONS -> "VIP_REGIONS"
+        | GuildFeature.WELCOME_SCREEN_ENABLED -> "WELCOME_SCREEN_ENABLED"
+
+    static member FromString (str: string) =
+        match str with
+        | "ANIMATED_BANNER" -> Some GuildFeature.ANIMATED_BANNER
+        | "ANIMATED_ICON" -> Some GuildFeature.ANIMATED_ICON
+        | "APPLICATION_COMMAND_PERMISSIONS_V2" -> Some GuildFeature.APPLICATION_COMMAND_PERMISSIONS_V2
+        | "AUTO_MODERATION" -> Some GuildFeature.AUTO_MODERATION
+        | "BANNER" -> Some GuildFeature.BANNER
+        | "COMMUNITY" -> Some GuildFeature.COMMUNITY
+        | "CREATOR_MONETIZABLE_PROVISIONAL" -> Some GuildFeature.CREATOR_MONETIZABLE_PROVISIONAL
+        | "CREATOR_STORE_PAGE" -> Some GuildFeature.CREATOR_STORE_PAGE
+        | "DEVELOPER_SUPPORT_SERVER" -> Some GuildFeature.DEVELOPER_SUPPORT_SERVER
+        | "DISCOVERABLE" -> Some GuildFeature.DISCOVERABLE
+        | "FEATURABLE" -> Some GuildFeature.FEATURABLE
+        | "INVITES_DISABLED" -> Some GuildFeature.INVITES_DISABLED
+        | "INVITE_SPLASH" -> Some GuildFeature.INVITE_SPLASH
+        | "MEMBER_VERIFICATION_GATE_ENABLED" -> Some GuildFeature.MEMBER_VERIFICATION_GATE_ENABLED
+        | "MORE_STICKERS" -> Some GuildFeature.MORE_STICKERS
+        | "NEWS" -> Some GuildFeature.NEWS
+        | "PARTNERED" -> Some GuildFeature.PARTNERED
+        | "PREVIEW_ENABLED" -> Some GuildFeature.PREVIEW_ENABLED
+        | "RAID_ALERTS_DISABLED" -> Some GuildFeature.RAID_ALERTS_DISABLED
+        | "ROLE_ICONS" -> Some GuildFeature.ROLE_ICONS
+        | "ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE" -> Some GuildFeature.ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE
+        | "ROLE_SUBSCRIPTIONS_ENABLED" -> Some GuildFeature.ROLE_SUBSCRIPTIONS_ENABLED
+        | "TICKETED_EVENTS_ENABLED" -> Some GuildFeature.TICKETED_EVENTS_ENABLED
+        | "VANITY_URL" -> Some GuildFeature.VANITY_URL
+        | "VERIFIED" -> Some GuildFeature.VERIFIED
+        | "VIP_REGIONS" -> Some GuildFeature.VIP_REGIONS
+        | "WELCOME_SCREEN_ENABLED" -> Some GuildFeature.WELCOME_SCREEN_ENABLED
+        | _ -> None
 
 and GuildFeatureConverter () =
     inherit JsonConverter<GuildFeature> () with
-        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
-            match reader.GetString() with
-            | "ANIMATED_BANNER" -> GuildFeature.ANIMATED_BANNER
-            | "ANIMATED_ICON" -> GuildFeature.ANIMATED_ICON
-            | "APPLICATION_COMMAND_PERMISSIONS_V2" -> GuildFeature.APPLICATION_COMMAND_PERMISSIONS_V2
-            | "AUTO_MODERATION" -> GuildFeature.AUTO_MODERATION
-            | "BANNER" -> GuildFeature.BANNER
-            | "COMMUNITY" -> GuildFeature.COMMUNITY
-            | "CREATOR_MONETIZABLE_PROVISIONAL" -> GuildFeature.CREATOR_MONETIZABLE_PROVISIONAL
-            | "CREATOR_STORE_PAGE" -> GuildFeature.CREATOR_STORE_PAGE
-            | "DEVELOPER_SUPPORT_SERVER" -> GuildFeature.DEVELOPER_SUPPORT_SERVER
-            | "DISCOVERABLE" -> GuildFeature.DISCOVERABLE
-            | "FEATURABLE" -> GuildFeature.FEATURABLE
-            | "INVITES_DISABLED" -> GuildFeature.INVITES_DISABLED
-            | "INVITE_SPLASH" -> GuildFeature.INVITE_SPLASH
-            | "MEMBER_VERIFICATION_GATE_ENABLED" -> GuildFeature.MEMBER_VERIFICATION_GATE_ENABLED
-            | "MORE_STICKERS" -> GuildFeature.MORE_STICKERS
-            | "NEWS" -> GuildFeature.NEWS
-            | "PARTNERED" -> GuildFeature.PARTNERED
-            | "PREVIEW_ENABLED" -> GuildFeature.PREVIEW_ENABLED
-            | "RAID_ALERTS_DISABLED" -> GuildFeature.RAID_ALERTS_DISABLED
-            | "ROLE_ICONS" -> GuildFeature.ROLE_ICONS
-            | "ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE" -> GuildFeature.ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE
-            | "ROLE_SUBSCRIPTIONS_ENABLED" -> GuildFeature.ROLE_SUBSCRIPTIONS_ENABLED
-            | "TICKETED_EVENTS_ENABLED" -> GuildFeature.TICKETED_EVENTS_ENABLED
-            | "VANITY_URL" -> GuildFeature.VANITY_URL
-            | "VERIFIED" -> GuildFeature.VERIFIED
-            | "VIP_REGIONS" -> GuildFeature.VIP_REGIONS
-            | "WELCOME_SCREEN_ENABLED" -> GuildFeature.WELCOME_SCREEN_ENABLED
-            | _ -> failwith "Unexpected GuildFeature type"
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
+            let value = reader.GetString() |> GuildFeature.FromString
+
+            match value with
+            | Some gf -> gf
+            | None -> failwith "Unexpected GuildFeature type"
 
         override _.Write (writer: Utf8JsonWriter, value: GuildFeature, options: JsonSerializerOptions) = 
-            let string =
-                match value with
-                | GuildFeature.ANIMATED_BANNER -> "ANIMATED_BANNER"
-                | GuildFeature.ANIMATED_ICON -> "ANIMATED_ICON"
-                | GuildFeature.APPLICATION_COMMAND_PERMISSIONS_V2 -> "APPLICATION_COMMAND_PERMISSIONS_V2"
-                | GuildFeature.AUTO_MODERATION -> "AUTO_MODERATION"
-                | GuildFeature.BANNER -> "BANNER"
-                | GuildFeature.COMMUNITY -> "COMMUNITY"
-                | GuildFeature.CREATOR_MONETIZABLE_PROVISIONAL -> "CREATOR_MONETIZABLE_PROVISIONAL"
-                | GuildFeature.CREATOR_STORE_PAGE -> "CREATOR_STORE_PAGE"
-                | GuildFeature.DEVELOPER_SUPPORT_SERVER -> "DEVELOPER_SUPPORT_SERVER"
-                | GuildFeature.DISCOVERABLE -> "DISCOVERABLE"
-                | GuildFeature.FEATURABLE -> "FEATURABLE"
-                | GuildFeature.INVITES_DISABLED -> "INVITES_DISABLED"
-                | GuildFeature.INVITE_SPLASH -> "INVITE_SPLASH"
-                | GuildFeature.MEMBER_VERIFICATION_GATE_ENABLED -> "MEMBER_VERIFICATION_GATE_ENABLED"
-                | GuildFeature.MORE_STICKERS -> "MORE_STICKERS"
-                | GuildFeature.NEWS -> "NEWS"
-                | GuildFeature.PARTNERED -> "PARTNERED"
-                | GuildFeature.PREVIEW_ENABLED -> "PREVIEW_ENABLED"
-                | GuildFeature.RAID_ALERTS_DISABLED -> "RAID_ALERTS_DISABLED"
-                | GuildFeature.ROLE_ICONS -> "ROLE_ICONS"
-                | GuildFeature.ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE -> "ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE"
-                | GuildFeature.ROLE_SUBSCRIPTIONS_ENABLED -> "ROLE_SUBSCRIPTIONS_ENABLED"
-                | GuildFeature.TICKETED_EVENTS_ENABLED -> "TICKETED_EVENTS_ENABLED"
-                | GuildFeature.VANITY_URL -> "VANITY_URL"
-                | GuildFeature.VERIFIED -> "VERIFIED"
-                | GuildFeature.VIP_REGIONS -> "VIP_REGIONS"
-                | GuildFeature.WELCOME_SCREEN_ENABLED -> "WELCOME_SCREEN_ENABLED"
-
-            writer.WriteStringValue string
+            writer.WriteStringValue (value.ToString())
 
 // https://discord.com/developers/docs/resources/guild#guild-onboarding-object-onboarding-mode
 type OnboardingMode =
