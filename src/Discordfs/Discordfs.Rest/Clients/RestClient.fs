@@ -26,7 +26,7 @@ type IRestClient =
     abstract member Subscriptions: ISubscriptionResource
     abstract member Users: IUserResource
     abstract member Voice: IVoiceResource
-    // TODO: Webhook
+    abstract member Webhook: IWebhookResource
     abstract member Gateway: IGatewayResource
     abstract member OAuth2: IOAuth2Resource
 
@@ -55,6 +55,6 @@ type RestClient (configuration: IConfiguration, httpClientFactory: IHttpClientFa
         member _.Subscriptions = SubscriptionResource(httpClientFactory, discordBotToken)
         member _.Users = UserResource(httpClientFactory, discordBotToken)
         member _.Voice = VoiceResource(httpClientFactory, discordBotToken)
-        // TODO: Webhook
+        member _.Webhook = WebhookResource(httpClientFactory, discordBotToken)
         member _.Gateway = GatewayResource(httpClientFactory, discordBotToken)
         member _.OAuth2 = OAuth2Resource(httpClientFactory, discordBotToken)
