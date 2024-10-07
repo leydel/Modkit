@@ -4,6 +4,7 @@ open Discordfs.Rest.Common
 open Discordfs.Rest.Types
 open Discordfs.Types
 open System.Collections.Generic
+open System.Net
 open System.Threading.Tasks
 
 type CreateGlobalApplicationCommand (
@@ -31,6 +32,11 @@ type CreateGlobalApplicationCommand (
             optional "type" ``type``
             optional "nsfw" nsfw
         }
+
+type GetGlobalApplicationCommandResponse =
+    | Ok of ApplicationCommand
+    | NotFound
+    | Other of HttpStatusCode
 
 type EditGlobalApplicationCommand (
     ?name:                       string,
@@ -137,7 +143,7 @@ type IApplicationCommandResource =
     abstract member GetGlobalApplicationCommand:
         applicationId: string ->
         commandId: string ->
-        Task<ApplicationCommand>
+        Task<GetGlobalApplicationCommandResponse>
 
     // https://discord.com/developers/docs/interactions/application-commands#edit-global-application-command
     abstract member EditGlobalApplicationCommand:
@@ -249,7 +255,16 @@ type ApplicationCommandResource (httpClientFactory, token) =
                 bot token
             }
             |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK ->
+                    let! data = Http.toJson<ApplicationCommand> res
+                    return GetGlobalApplicationCommandResponse.Ok data
+                | HttpStatusCode.NotFound ->
+                    return GetGlobalApplicationCommandResponse.NotFound
+                | status ->
+                    return GetGlobalApplicationCommandResponse.Other status
+            })
 
         member _.EditGlobalApplicationCommand applicationId commandId content =
             req {
