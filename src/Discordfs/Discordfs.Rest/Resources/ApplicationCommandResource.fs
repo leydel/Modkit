@@ -5,6 +5,7 @@ open Discordfs.Rest.Types
 open Discordfs.Types
 open System.Collections.Generic
 open System.Net
+open System.Net.Http
 open System.Threading.Tasks
 
 type CreateGlobalApplicationCommand (
@@ -368,3 +369,44 @@ type ApplicationCommandResource (httpClientFactory, token) =
             }
             |> Http.send httpClientFactory
             |> Task.mapT Http.toJson
+            
+// ----- BEGIN TESTING STUFF -----
+type RequestContext = {
+    Factory: IHttpClientFactory
+    Token: string
+}
+
+type GetGlobalApplicationCommandResponse2 =
+    | Ok of ApplicationCommand
+    | NotFound
+    | Other of HttpStatusCode
+
+module ApplicationCommands =
+    let GetGlobalApplicationCommand (applicationId: string) (commandId: string) (ctx: RequestContext) =
+        req {
+            get $"applications/{applicationId}/commands/{commandId}"
+            bot ctx.Token
+        }
+        |> Http.send ctx.Factory
+        |> Task.mapT (fun res -> task {
+            match res.StatusCode with
+            | HttpStatusCode.OK ->
+                let! data = Http.toJson<ApplicationCommand> res
+                return GetGlobalApplicationCommandResponse2.Ok data
+            | HttpStatusCode.NotFound ->
+                return GetGlobalApplicationCommandResponse2.NotFound
+            | status ->
+                return GetGlobalApplicationCommandResponse2.Other status
+        })
+
+module Example =
+    let Test (ctx: RequestContext) = task {
+        let! res = ctx |> ApplicationCommands.GetGlobalApplicationCommand "applicationId" "commandId"
+
+        return
+            match res with
+            | Ok ac -> Some ac
+            | NotFound -> None
+            | Other _ -> None
+    }
+// ----- END TESTING STUFF -----
