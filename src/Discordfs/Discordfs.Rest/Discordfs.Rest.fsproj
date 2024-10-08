@@ -11,9 +11,6 @@
     <Compile Include="Common\Task.fs" />
     <Compile Include="Common\Payload.fs" />
     <Compile Include="Common\Http.fs" />
-    <Compile Include="Common\Dto.fs" />
-    <Compile Include="Common\Req.fs" />
-    <Compile Include="Common\Res.fs" />
     <Compile Include="Types\RestTypes.fs" />
     <Compile Include="Resources\InteractionResource.fs" />
     <Compile Include="Resources\ApplicationCommandResource.fs" />

@@ -1,6 +1,5 @@
 ﻿namespace Discordfs.Commands.Structures
 
-open Discordfs.Commands.Types
 open Discordfs.Types
 open System.Collections.Generic
 open System.Threading.Tasks
@@ -50,4 +49,4 @@ type Command () =
 
     abstract member Execute:
         interaction: Interaction ->
-        Task<Result<InteractionCallback, string>>
+        Task<Result<Discordfs.Commands.Types.InteractionCallback, string>>

@@ -1,7 +1,6 @@
 ﻿namespace Discordfs.Commands.Services
 
 open Discordfs.Commands.Structures
-open Discordfs.Commands.Types
 open Discordfs.Types
 open Microsoft.VisualStudio.TestTools.UnitTesting
 open System.Threading.Tasks
@@ -16,7 +15,7 @@ type SampleCommand () =
     )
 
     override _.Execute _ =
-        Task.FromResult <| Ok (InteractionCallback.build(
+        Task.FromResult <| Ok (Discordfs.Commands.Types.InteractionCallback.build(
             Type = InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
             Data = InteractionCallbackMessageData.buildBase(
                 Content = "Hello world"

@@ -1,7 +1,6 @@
 ﻿namespace Discordfs.Commands.Services
 
 open Discordfs.Commands.Structures
-open Discordfs.Commands.Types
 open Discordfs.Types
 open System.Threading.Tasks
 
@@ -10,7 +9,7 @@ type ICommandService =
 
     abstract member Execute:
         interaction: Interaction ->
-        Task<Result<InteractionCallback, string>>
+        Task<Result<Discordfs.Commands.Types.InteractionCallback, string>>
 
 type CommandService (commands: Command list) =
     member _.getCommandName (interaction: Interaction) =

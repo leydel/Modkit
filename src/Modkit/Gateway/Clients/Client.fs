@@ -19,7 +19,7 @@ type Client (
     let discordBotToken = configuration.GetValue<string> "DiscordBotToken"
     let useGateway = configuration.GetValue<bool> "UseGateway"
 
-    member _.Start () = task {
+    member _.StartAsync () = task {
         let intents = 
             int <| (
                     GatewayIntent.GUILDS

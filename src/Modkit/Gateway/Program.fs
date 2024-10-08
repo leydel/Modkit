@@ -29,4 +29,6 @@ let host =
 
 let client = host.Services.GetRequiredService<Client>()
 
-client.Start()
+client.StartAsync()
+|> Async.AwaitTask
+|> Async.RunSynchronously

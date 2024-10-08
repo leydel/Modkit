@@ -1,11 +1,15 @@
-﻿namespace Discordfs.Rest.Common
+﻿namespace Modkit.Diacord.Core.Clients
 
 open Microsoft.VisualStudio.TestTools.UnitTesting
 open RichardSzalay.MockHttp
 open System.Net
 open System.Net.Http
+open System.Text.Json
+open System.Text.Json.Serialization
 open System.Threading.Tasks
 open System.Web
+
+// TODO: Remove Dto, Req, and Res, then delete those tests from here
 
 [<TestClass>]
 type ReqTests () =
@@ -171,4 +175,28 @@ type ReqTests () =
 
         // Assert
         Assert.AreEqual(HttpStatusCode.NoContent, res.StatusCode)
+    }
+
+type Nonce = {
+    [<JsonPropertyName "nonce">] Nonce: int
+}
+
+[<TestClass>]
+type ResTests () =
+    // TODO: Add `json` tests
+    
+    [<TestMethod>]
+    member _.ignore_ReturnsUnit (): Task = task {
+        // Arrange
+        let body = { Nonce = 1 }
+        let httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+        httpResponseMessage.Content <- new StringContent(JsonSerializer.Serialize body)
+
+        let task = Task.FromResult httpResponseMessage
+
+        // Act
+        let! res = Res.ignore task
+
+        // Assert
+        Assert.IsNull res
     }
