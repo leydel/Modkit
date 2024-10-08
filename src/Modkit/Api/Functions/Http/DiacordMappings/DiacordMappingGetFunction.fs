@@ -1,12 +1,12 @@
 ﻿namespace Modkit.Api.Functions
 
-open Discordfs.Types.Utils
 open Microsoft.Azure.Functions.Worker
 open Microsoft.Extensions.Logging
 open Modkit.Api.Actions
 open Modkit.Api.DTOs
 open System.Net
 open System.Net.Http
+open System.Text.Json
 
 type DiacordMappingGetFunction (diacordMappingGetAction: IDiacordMappingGetAction) =
     [<Function(nameof DiacordMappingGetFunction)>]
@@ -25,7 +25,7 @@ type DiacordMappingGetFunction (diacordMappingGetAction: IDiacordMappingGetActio
             let payload = DiacordMappingDto.from mapping
 
             let res = new HttpResponseMessage(HttpStatusCode.OK)
-            res.Content <- new StringContent(FsJson.serialize payload)
+            res.Content <- new StringContent(JsonSerializer.Serialize payload)
             res.Headers.Add("Content-Type", "application/json")
 
             log.LogInformation($"Successfully called diacord mapping get function for guild {guildId}")

@@ -1,6 +1,5 @@
 ﻿namespace Discordfs.Types
 
-open Discordfs.Types.Utils
 open System
 open System.Collections.Generic
 open System.Text.Json
@@ -673,22 +672,22 @@ and ComponentConverter () =
             let json = document.RootElement.GetRawText()
 
             match componentType with
-            | ComponentType.ACTION_ROW -> Component.ActionRow <| FsJson.deserialize<ActionRowComponent> json
-            | ComponentType.BUTTON -> Component.Button <| FsJson.deserialize<ButtonComponent> json
+            | ComponentType.ACTION_ROW -> Component.ActionRow <| JsonSerializer.Deserialize<ActionRowComponent> json
+            | ComponentType.BUTTON -> Component.Button <| JsonSerializer.Deserialize<ButtonComponent> json
             | ComponentType.STRING_SELECT
             | ComponentType.USER_SELECT
             | ComponentType.ROLE_SELECT
             | ComponentType.MENTIONABLE_SELECT
-            | ComponentType.CHANNEL_SELECT -> Component.SelectMenu <| FsJson.deserialize<SelectMenuComponent> json
-            | ComponentType.TEXT_INPUT -> Component.TextInput <| FsJson.deserialize<TextInputComponent> json
+            | ComponentType.CHANNEL_SELECT -> Component.SelectMenu <| JsonSerializer.Deserialize<SelectMenuComponent> json
+            | ComponentType.TEXT_INPUT -> Component.TextInput <| JsonSerializer.Deserialize<TextInputComponent> json
             | _ -> failwith "Unexpected ComponentType provided"
 
         override _.Write (writer, value, options) =
             match value with
-            | Component.ActionRow a -> FsJson.serialize a |> writer.WriteRawValue
-            | Component.Button b -> FsJson.serialize b |> writer.WriteRawValue
-            | Component.SelectMenu s -> FsJson.serialize s |> writer.WriteRawValue
-            | Component.TextInput t -> FsJson.serialize t |> writer.WriteRawValue
+            | Component.ActionRow a -> JsonSerializer.Serialize a |> writer.WriteRawValue
+            | Component.Button b -> JsonSerializer.Serialize b |> writer.WriteRawValue
+            | Component.SelectMenu s -> JsonSerializer.Serialize s |> writer.WriteRawValue
+            | Component.TextInput t -> JsonSerializer.Serialize t |> writer.WriteRawValue
 
 and ActionRowComponent = {
     [<JsonPropertyName "type">] Type: ComponentType
@@ -1172,17 +1171,17 @@ and InteractionCallbackDataConverter () =
             let json = document.RootElement.GetRawText()
 
             if isAutocomplete then
-                InteractionCallbackData.Autocomplete (FsJson.deserialize<InteractionCallbackAutocompleteData> json)
+                InteractionCallbackData.Autocomplete (JsonSerializer.Deserialize<InteractionCallbackAutocompleteData> json)
             else if isModal then
-                InteractionCallbackData.Modal (FsJson.deserialize<InteractionCallbackModalData> json)
+                InteractionCallbackData.Modal (JsonSerializer.Deserialize<InteractionCallbackModalData> json)
             else
-                InteractionCallbackData.Message (FsJson.deserialize<InteractionCallbackMessageData> json)
+                InteractionCallbackData.Message (JsonSerializer.Deserialize<InteractionCallbackMessageData> json)
             
         override _.Write (writer, value, options) =
             match value with
-            | InteractionCallbackData.Message m -> FsJson.serialize m |> writer.WriteRawValue
-            | InteractionCallbackData.Autocomplete a -> FsJson.serialize a |> writer.WriteRawValue
-            | InteractionCallbackData.Modal m -> FsJson.serialize m |> writer.WriteRawValue
+            | InteractionCallbackData.Message m -> JsonSerializer.Serialize m |> writer.WriteRawValue
+            | InteractionCallbackData.Autocomplete a -> JsonSerializer.Serialize a |> writer.WriteRawValue
+            | InteractionCallbackData.Modal m -> JsonSerializer.Serialize m |> writer.WriteRawValue
 
 and InteractionCallbackMessageData = {
     [<JsonPropertyName "tts">] Tts: bool option
@@ -1629,7 +1628,7 @@ type GatewayEventIdentifier = {
 with
     static member getType (json: string) =
         try
-            Some <| FsJson.deserialize<GatewayEventIdentifier> json
+            Some <| JsonSerializer.Deserialize<GatewayEventIdentifier> json
         with
         | _ ->
             None
@@ -1641,7 +1640,7 @@ type GatewaySequencer = {
 with
     static member getSequenceNumber (json: string) =
         try
-            let seq = FsJson.deserialize<GatewaySequencer> json
+            let seq = JsonSerializer.Deserialize<GatewaySequencer> json
             seq.Sequence
         with
         | _ ->
@@ -1668,7 +1667,7 @@ with
     }
 
     static member deserializeF (json: string) =
-        FsJson.deserialize<GatewayEvent<'a>> json
+        JsonSerializer.Deserialize<GatewayEvent<'a>> json
 
     static member deserialize (json: string) =
         try

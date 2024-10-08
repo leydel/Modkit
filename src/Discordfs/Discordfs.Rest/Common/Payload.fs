@@ -1,9 +1,9 @@
 ﻿namespace Discordfs.Rest.Common
 
-open Discordfs.Types.Utils
 open System.Collections.Generic
 open System.Net.Http
 open System.Net.Http.Headers
+open System.Text.Json
 
 [<AutoOpen>]
 module Payload =
@@ -29,14 +29,14 @@ module Payload =
 
         interface IPayloadBuilder with
             member this.ToContent () =
-                new StringContent(FsJson.serialize this.Properties, MediaTypeHeaderValue("application/json"))
+                new StringContent(JsonSerializer.Serialize this.Properties, MediaTypeHeaderValue("application/json"))
 
     let json = JsonPayloadBuilder()
 
     type JsonListPayload<'a>(list: 'a list) =
         interface IPayloadBuilder with
             member _.ToContent () =
-                new StringContent(FsJson.serialize list, MediaTypeHeaderValue("application/json"))
+                new StringContent(JsonSerializer.Serialize list, MediaTypeHeaderValue("application/json"))
 
     type StringPayload(str: string) =
         interface IPayloadBuilder with

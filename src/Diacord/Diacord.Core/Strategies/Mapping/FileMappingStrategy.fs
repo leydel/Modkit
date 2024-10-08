@@ -1,10 +1,10 @@
 ﻿namespace Modkit.Diacord.Core.Strategies
 
-open Discordfs.Types.Utils
 open Microsoft.Extensions.Configuration
 open Modkit.Diacord.Core.Interfaces
 open System.Collections.Generic
 open System.IO
+open System.Text.Json
 
 type FileMappingStrategy (configuration: IConfiguration) =
     let fileMappingStoragePath = configuration.GetValue<string> "FileMappingStoragePath"
@@ -13,7 +13,7 @@ type FileMappingStrategy (configuration: IConfiguration) =
         member _.save mappings = task {
             try
                 File.Create(fileMappingStoragePath) |> ignore
-                do! File.WriteAllTextAsync(fileMappingStoragePath, FsJson.serialize mappings)
+                do! File.WriteAllTextAsync(fileMappingStoragePath, JsonSerializer.Serialize mappings)
 
                 return Ok mappings
             with | _ ->
@@ -23,7 +23,7 @@ type FileMappingStrategy (configuration: IConfiguration) =
         member _.get () = task {
             try
                 let! json = File.ReadAllTextAsync(fileMappingStoragePath)
-                let mappings = FsJson.deserialize<IDictionary<string, string>> json
+                let mappings = JsonSerializer.Deserialize<IDictionary<string, string>> json
 
                 return Ok mappings
             

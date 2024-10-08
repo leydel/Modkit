@@ -6,8 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Utils\Converters.fs" />
-    <Compile Include="Utils\FsJson.fs" />
+    <Compile Include="Converters.fs" />
     <Compile Include="Enums.fs" />
     <Compile Include="Structures.fs" />
   </ItemGroup>

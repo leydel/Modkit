@@ -2,11 +2,11 @@
 
 open Discordfs.Gateway.Types
 open Discordfs.Types
-open Discordfs.Types.Utils
 open System
 open System.IO
 open System.Net.WebSockets
 open System.Text
+open System.Text.Json
 open System.Threading
 open System.Threading.Tasks
 
@@ -38,12 +38,12 @@ type IGatewayActions =
 type GatewayActions (private _ws: ClientWebSocket) =
     member _.write (event: GatewayEvent<'a>) = task {
         Console.WriteLine $"SENDING | Opcode: {event.Opcode}, Event Name: {event.EventName}"
-        Console.WriteLine $"SENDING | {FsJson.serialize event}"
+        Console.WriteLine $"SENDING | {JsonSerializer.Serialize event}"
 
         let cts = new CancellationTokenSource ()
         cts.CancelAfter(TimeSpan.FromSeconds 5)
 
-        let bytes = event |> FsJson.serialize |> Encoding.UTF8.GetBytes
+        let bytes = event |> JsonSerializer.Serialize |> Encoding.UTF8.GetBytes
 
         let size = 4096
 

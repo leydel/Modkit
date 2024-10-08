@@ -1,6 +1,5 @@
 ﻿namespace Modkit.Api.Functions
 
-open Discordfs.Types.Utils
 open Microsoft.Azure.Functions.Worker
 open Microsoft.Extensions.Logging
 open Modkit.Api.Actions
@@ -8,6 +7,7 @@ open Modkit.Api.DTOs
 open System.Collections.Generic
 open System.Net
 open System.Net.Http
+open System.Text.Json
 open System.Text.Json.Serialization
 
 type DiacordMappingPutFunctionPayload = {
@@ -22,7 +22,7 @@ type DiacordMappingPutFunction (diacordMappingPutAction: IDiacordMappingPutActio
         guildId: string
     ) = task {
         let! json = req.Content.ReadAsStringAsync()
-        let body = FsJson.deserialize<DiacordMappingPutFunctionPayload> json
+        let body = JsonSerializer.Deserialize<DiacordMappingPutFunctionPayload> json
 
         let! mapping = diacordMappingPutAction.run guildId body.Mappings
 
@@ -34,7 +34,7 @@ type DiacordMappingPutFunction (diacordMappingPutAction: IDiacordMappingPutActio
             let payload = DiacordMappingDto.from mapping
 
             let res = new HttpResponseMessage(HttpStatusCode.OK)
-            res.Content <- new StringContent(FsJson.serialize payload)
+            res.Content <- new StringContent(JsonSerializer.Serialize payload)
             res.Headers.Add("Content-Type", "application/json")
 
             log.LogInformation($"Successfully called diacord mapping put function for guild {guildId}")

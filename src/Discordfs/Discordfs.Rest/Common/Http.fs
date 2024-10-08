@@ -1,8 +1,8 @@
 ﻿namespace Discordfs.Rest.Common
 
-open Discordfs.Types.Utils
 open System
 open System.Net.Http
+open System.Text.Json
 open System.Web
 
 [<AutoOpen>]
@@ -12,7 +12,7 @@ module Http =
 
     let toJson<'a> (res: HttpResponseMessage) =
         res.Content.ReadAsStringAsync()
-        |> Task.map (fun body -> FsJson.deserialize<'a> body) 
+        |> Task.map (fun body -> JsonSerializer.Deserialize<'a> body) 
 
     let toRaw (res: HttpResponseMessage) =
         res.Content.ReadAsStringAsync()

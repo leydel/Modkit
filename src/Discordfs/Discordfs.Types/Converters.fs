@@ -1,4 +1,4 @@
-﻿namespace Discordfs.Types.Utils
+﻿namespace Discordfs.Types
 
 open System
 open System.Text.Json

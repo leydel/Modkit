@@ -1,7 +1,7 @@
 ﻿namespace Discordfs.Rest.Common
 
-open Discordfs.Types.Utils
 open System.Collections.Generic
+open System.Text.Json
 
 [<System.Obsolete>]
 type Dto () =
@@ -24,4 +24,4 @@ type Dto () =
 
     /// Serialize the DTO into json.
     static member json (dto: Dto) =
-        FsJson.serialize dto.Properties
+        JsonSerializer.Serialize dto.Properties

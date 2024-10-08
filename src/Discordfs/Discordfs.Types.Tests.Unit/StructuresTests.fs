@@ -2,7 +2,6 @@
 
 open Microsoft.VisualStudio.TestTools.UnitTesting
 open Discordfs.Types
-open Discordfs.Types.Utils
 open System.Text.Json
 
 [<TestClass>]
@@ -18,7 +17,7 @@ type StructuresTests () =
         }
 
         // Act
-        let actual = FsJson.deserialize<Component> json
+        let actual = JsonSerializer.Deserialize<Component> json
 
         // Assert
         Assert.AreEqual<Component>(expected, actual)
@@ -39,7 +38,7 @@ type StructuresTests () =
         }
 
         // Act
-        let actual = FsJson.deserialize<Component> json
+        let actual = JsonSerializer.Deserialize<Component> json
 
         // Assert
         Assert.AreEqual<Component>(expected, actual)
@@ -62,7 +61,7 @@ type StructuresTests () =
         }
 
         // Act
-        let actual = FsJson.deserialize<Component> json
+        let actual = JsonSerializer.Deserialize<Component> json
 
         // Assert
         Assert.AreEqual<Component>(expected, actual)
@@ -85,7 +84,7 @@ type StructuresTests () =
         }
 
         // Act
-        let actual = FsJson.deserialize<Component> json
+        let actual = JsonSerializer.Deserialize<Component> json
 
         // Assert
         Assert.AreEqual<Component>(expected, actual)
@@ -96,7 +95,7 @@ type StructuresTests () =
         let json = """{"type":0}"""
 
         // Act
-        let res () = FsJson.deserialize<Component> json |> ignore
+        let res () = JsonSerializer.Deserialize<Component> json |> ignore
 
         // Assert
         Assert.ThrowsException res |> ignore
@@ -107,7 +106,7 @@ type StructuresTests () =
         let json = """{this is in valid json}"""
 
         // Act
-        let res () = FsJson.deserialize<Component> json |> ignore
+        let res () = JsonSerializer.Deserialize<Component> json |> ignore
 
         // Assert
         Assert.ThrowsException<JsonException> res |> ignore
@@ -123,7 +122,7 @@ type StructuresTests () =
         let expected = """{"type":1,"components":[]}"""
 
         // Act
-        let actual = FsJson.serialize actionRow
+        let actual = JsonSerializer.Serialize actionRow
 
         // Assert
         Assert.AreEqual<string>(expected, actual)
@@ -144,7 +143,7 @@ type StructuresTests () =
         let expected = """{"type":2,"style":1,"label":"Label","emoji":null,"custom_id":"custom-id","url":null,"disabled":null}"""
 
         // Act
-        let actual = FsJson.serialize button
+        let actual = JsonSerializer.Serialize button
 
         // Assert
         Assert.AreEqual<string>(expected, actual)
@@ -167,7 +166,7 @@ type StructuresTests () =
         let expected = """{"type":3,"custom_id":"custom-id","options":[],"channel_types":null,"placeholder":null,"default_values":null,"min_values":null,"max_values":null,"disabled":null}"""
         
         // Act
-        let actual = FsJson.serialize selectMenu
+        let actual = JsonSerializer.Serialize selectMenu
 
         // Assert
         Assert.AreEqual<string>(expected, actual)
@@ -190,7 +189,7 @@ type StructuresTests () =
         let expected = """{"type":4,"custom_id":"custom-id","style":1,"label":"Label","min_length":null,"max_length":null,"required":null,"value":null,"placeholder":null}"""
 
         // Act
-        let actual = FsJson.serialize textInput
+        let actual = JsonSerializer.Serialize textInput
 
         // Assert
         Assert.AreEqual<string>(expected, actual)
@@ -205,7 +204,7 @@ type StructuresTests () =
         }
 
         // Act
-        let actual = FsJson.deserialize<InteractionCallbackData> json
+        let actual = JsonSerializer.Deserialize<InteractionCallbackData> json
 
         // Assert
         Assert.AreEqual<InteractionCallbackData>(expected, actual)
@@ -227,7 +226,7 @@ type StructuresTests () =
         }
 
         // Act
-        let actual = FsJson.deserialize<InteractionCallbackData> json
+        let actual = JsonSerializer.Deserialize<InteractionCallbackData> json
 
         // Assert
         Assert.AreEqual<InteractionCallbackData>(expected, actual)
@@ -244,7 +243,7 @@ type StructuresTests () =
         }
 
         // Act
-        let actual = FsJson.deserialize<InteractionCallbackData> json
+        let actual = JsonSerializer.Deserialize<InteractionCallbackData> json
 
         // Assert
         Assert.AreEqual<InteractionCallbackData>(expected, actual)
@@ -255,7 +254,7 @@ type StructuresTests () =
         let json = """{this is in valid json}"""
 
         // Act
-        let res () = FsJson.deserialize<InteractionCallbackData> json |> ignore
+        let res () = JsonSerializer.Deserialize<InteractionCallbackData> json |> ignore
 
         // Assert
         Assert.ThrowsException<JsonException> res |> ignore
@@ -271,7 +270,7 @@ type StructuresTests () =
 
 
         // Act
-        let actual = FsJson.serialize autocomplete
+        let actual = JsonSerializer.Serialize autocomplete
 
         // Assert
         Assert.AreEqual<string>(expected, actual)
@@ -293,7 +292,7 @@ type StructuresTests () =
         let expected = """{"tts":null,"content":"Content","embeds":null,"allowed_mentions":null,"flags":null,"components":null,"attachments":null,"poll":null}"""
 
         // Act
-        let actual = FsJson.serialize message
+        let actual = JsonSerializer.Serialize message
 
         // Assert
         Assert.AreEqual<string>(expected, actual)
@@ -310,7 +309,7 @@ type StructuresTests () =
         let expected = """{"custom_id":"custom-id","title":"Title","components":[]}"""
 
         // Act
-        let actual = FsJson.serialize modal
+        let actual = JsonSerializer.Serialize modal
 
         // Assert
         Assert.AreEqual<string>(expected, actual)

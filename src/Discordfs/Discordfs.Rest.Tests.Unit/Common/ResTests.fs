@@ -1,9 +1,9 @@
 ﻿namespace Discordfs.Rest.Common
 
-open Discordfs.Types.Utils
 open Microsoft.VisualStudio.TestTools.UnitTesting
 open System.Net
 open System.Net.Http
+open System.Text.Json
 open System.Text.Json.Serialization
 open System.Threading.Tasks
 
@@ -20,7 +20,7 @@ type ResTests () =
         // Arrange
         let body = { Nonce = 1 }
         let httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
-        httpResponseMessage.Content <- new StringContent(FsJson.serialize body)
+        httpResponseMessage.Content <- new StringContent(JsonSerializer.Serialize body)
 
         let task = Task.FromResult httpResponseMessage
 

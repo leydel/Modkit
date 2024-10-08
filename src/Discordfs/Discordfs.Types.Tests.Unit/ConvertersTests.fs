@@ -1,7 +1,8 @@
-﻿namespace Discordfs.Types.Utils
+﻿namespace Discordfs.Types
 
 open Microsoft.VisualStudio.TestTools.UnitTesting
 open System
+open System.Text.Json
 open System.Text.Json.Serialization
 
 type UnixEpochRecord = {
@@ -22,7 +23,7 @@ type ConvertersTests () =
         let object = { Timestamp = time; }
 
         // Act
-        let json = FsJson.serialize object
+        let json = JsonSerializer.Serialize object
 
         // Assert
         Assert.IsTrue(json.Contains(expected.ToString()))
@@ -35,7 +36,7 @@ type ConvertersTests () =
         let json = $"""{{"Timestamp":{timestamp}}}"""
 
         // Act
-        let actual = FsJson.deserialize<UnixEpochRecord> json
+        let actual = JsonSerializer.Deserialize<UnixEpochRecord> json
 
         // Assert
         Assert.AreEqual<DateTime>(expected, actual.Timestamp)
@@ -46,7 +47,7 @@ type ConvertersTests () =
         let original = { State = false }
 
         // Act
-        let res () = FsJson.serialize original |> ignore
+        let res () = JsonSerializer.Serialize original |> ignore
 
         // Assert
         Assert.ThrowsException<NotImplementedException> res |> ignore
@@ -57,7 +58,7 @@ type ConvertersTests () =
         let original = { State = true }
 
         // Act
-        let res () = FsJson.serialize original |> ignore
+        let res () = JsonSerializer.Serialize original |> ignore
 
         // Assert
         Assert.ThrowsException<NotImplementedException> res |> ignore
@@ -68,7 +69,7 @@ type ConvertersTests () =
         let original = "{}"
 
         // Act
-        let actual = FsJson.deserialize<NullUndefinedAsBoolRecord> original
+        let actual = JsonSerializer.Deserialize<NullUndefinedAsBoolRecord> original
 
         // Assert
         Assert.IsFalse(actual.State)
@@ -79,7 +80,7 @@ type ConvertersTests () =
         let original = """{"State":null}"""
 
         // Act
-        let actual = FsJson.deserialize<NullUndefinedAsBoolRecord> original
+        let actual = JsonSerializer.Deserialize<NullUndefinedAsBoolRecord> original
 
         // Assert
         Assert.IsTrue(actual.State)
