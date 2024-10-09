@@ -50,3 +50,20 @@ module Gateway =
             GatewayEvent.build(Opcode = GatewayOpcode.PRESENCE_UPDATE, Data = payload) |> JsonSerializer.Serialize
         )
     
+    let shouldReconnect (code: GatewayCloseEventCode) =
+        match code with
+        | GatewayCloseEventCode.UNKNOWN_ERROR -> true
+        | GatewayCloseEventCode.UNKNOWN_OPCODE -> true
+        | GatewayCloseEventCode.DECODE_ERROR -> true
+        | GatewayCloseEventCode.NOT_AUTHENTICATED -> true
+        | GatewayCloseEventCode.AUTHENTICATION_FAILED -> false
+        | GatewayCloseEventCode.ALREADY_AUTHENTICATED -> true
+        | GatewayCloseEventCode.INVALID_SEQ -> true
+        | GatewayCloseEventCode.RATE_LIMITED -> true
+        | GatewayCloseEventCode.SESSION_TIMED_OUT -> true
+        | GatewayCloseEventCode.INVALID_SHARD -> false
+        | GatewayCloseEventCode.SHARDING_REQUIRED -> false
+        | GatewayCloseEventCode.INVALID_API_VERSION -> false
+        | GatewayCloseEventCode.INVALID_INTENTS -> false
+        | GatewayCloseEventCode.DISALLOWED_INTENTS -> false
+        | _ -> false
