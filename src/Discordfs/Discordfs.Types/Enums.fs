@@ -572,12 +572,13 @@ type GatewayOpcode =
     | INVALID_SESSION = 9
     | HELLO = 10
     | HEARTBEAT_ACK = 11
-
+    
+// https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway-gateway-close-event-codes
 type GatewayCloseEventCode =
     | UNKNOWN_ERROR = 4000
     | UNKNOWN_OPCODE = 4001
     | DECODE_ERROR = 4002
-    | NOT_AUTHORIZED = 4003
+    | NOT_AUTHENTICATED = 4003
     | AUTHENTICATION_FAILED = 4004
     | ALREADY_AUTHENTICATED = 4005
     | INVALID_SEQ = 4007
