@@ -27,85 +27,110 @@ type IGatewayClient =
         UpdatePresence ->
         Task<unit>
 
+type GatewayState = {
+    Interval: int option
+    SequenceId: int option
+    LastHeartbeatAcked: bool
+}
+
+type HeartbeatResult =
+    | Ok of GatewayState
+    | MissedAck
+    | Skip
+
 type GatewayClient () =
     let _ws: ClientWebSocket = new ClientWebSocket()
 
-    let handleHeartbeat jitter interval (sequenceId: int option) lastHeartbeatAcked ws = async {
-        let delay =
-            if jitter then int ((float interval) * Random().NextDouble())
-            else interval
+    let handleHeartbeat jitter state ws = async {
+        match state.Interval with
+        | None ->
+            return HeartbeatResult.Skip
+        | Some interval ->
+            let delay =
+                if jitter then int ((float interval) * Random().NextDouble())
+                else interval
 
-        do! Task.Delay delay |> Async.AwaitTask // TODO: FIX
+            do! Task.Delay delay |> Async.AwaitTask
 
-        match lastHeartbeatAcked with
-        | false -> 
-            // TODO: Terminate connection with any close code besides 1000 and 1001, then reconnect and attempt to resume
-            return ()
-        | true ->
-            Gateway.heartbeat sequenceId ws |> ignore
+            match state.LastHeartbeatAcked with
+            | false -> 
+                // TODO: Terminate connection with any close code besides 1000 and 1001, then reconnect and attempt to resume
+                return HeartbeatResult.MissedAck
+            | true ->
+                Gateway.heartbeat state.SequenceId ws |> ignore
+                return HeartbeatResult.Ok { state with LastHeartbeatAcked = false }
 
-        // TODO: Handle graceful disconnect
+            // TODO: Handle graceful disconnect
     }
 
-    let handleLifecycle (identify: Identify) sequenceId ws = async {
+    let handleLifecycle (identify: Identify) (handler: string -> Task<unit>) state ws = async {
         let! res = Gateway.readNext ws |> Async.AwaitTask
 
         match res with
         | GatewayReadResponse.Close close ->
-            return None // TODO: Handle reconnecting
-        | GatewayReadResponse.Message (opcode, eventName, message) ->
+             // TODO: Handle reconnecting
+            return state
+        | GatewayReadResponse.Message (opcode, _, message) ->
             match opcode with
             | GatewayOpcode.HELLO ->
                 let event = GatewayEvent<Hello>.deserializeF message
+                let interval = Some event.Data.HeartbeatInterval
 
                 Gateway.identify identify |> ignore
 
-                // TODO: Start heartbeat
-
-                //heartbeat true event.Data.HeartbeatInterval |> ignore
-
-                return sequenceId
+                return { state with GatewayState.Interval = interval }
             | GatewayOpcode.HEARTBEAT ->
-                Gateway.heartbeat sequenceId |> ignore
+                Gateway.heartbeat state.SequenceId |> ignore
 
                 // TODO: This should reset the above timer to start with this
                             
-                return sequenceId
+                return state
             | GatewayOpcode.HEARTBEAT_ACK ->
-                //lastHeartbeatAcked <- true
-                            
-                return sequenceId
-            | GatewayOpcode.DISPATCH when eventName = Some "ready" ->
-                let event = GatewayEvent<Ready>.deserializeF message
-
-                // TODO: handle ready event
-
-                return sequenceId
+                return { state with LastHeartbeatAcked = true }
             | _ ->
-                // do! handler message
+                do! handler message |> Async.AwaitTask
 
                 match GatewaySequencer.getSequenceNumber message with
-                | None -> return sequenceId
-                | Some s -> return Some s
+                | None -> return state
+                | Some s -> return { state with SequenceId = Some s }
     }
 
     interface IGatewayClient with
         member _.Connect gatewayUrl identify handler = task {
             do! _ws.ConnectAsync(Uri gatewayUrl, CancellationToken.None)
 
-            let rec loop jitter interval sequenceId lastHeartbeatAcked = task {
-                let lifecycleTask = handleLifecycle identify sequenceId _ws |> Async.StartAsTask
-                let heartbeatTask = handleHeartbeat jitter interval sequenceId lastHeartbeatAcked _ws |> Async.StartAsTask
+            let rec loop jitter state = task {
+                use lifecycleCts = new CancellationTokenSource()
+                use heartbeatCts = new CancellationTokenSource()
 
-                let! winner = Task.WhenAny [lifecycleTask :> Task; heartbeatTask :> Task] |> Async.AwaitTask
-                match winner with
-                | w when w = lifecycleTask -> None
-                | w when w = heartbeatTask -> None
+                let lifecycle = async {
+                    let! res = handleLifecycle identify handler state _ws
+                    heartbeatCts.Cancel()
+                    return res
+                }
+
+                let heartbeat = async {
+                    let! res = handleHeartbeat jitter state _ws
+
+                    match res with
+                    | HeartbeatResult.Ok _ -> lifecycleCts.Cancel()
+                    | HeartbeatResult.MissedAck -> () // TODO: Reconnect
+                    | HeartbeatResult.Skip -> ()
+
+                }
+
+                do! Task.WhenAll(
+                    Async.StartAsTask(lifecycle, TaskCreationOptions.None, lifecycleCts.Token) :> Task,
+                    Async.StartAsTask(heartbeat, TaskCreationOptions.None, heartbeatCts.Token) :> Task
+                )
+
+                // TODO: When heartbeat restarts it doesnt continue with remaining interval
+
+                // TODO: Probably rewrite all of this, it's pretty disgusting
+                // If mid-processing one, I think this approach completely cancels it regardless. Bad!
             }
 
-            // TODO: Loop
-
-            return ()
+            return! loop true { Interval = None; SequenceId = None; LastHeartbeatAcked = true }
         }
 
         member _.RequestGuildMembers payload =
