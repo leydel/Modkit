@@ -7,6 +7,19 @@ open System.Text.Json.Serialization
 
 #nowarn "49"
 
+type ErrorResponse = {
+    [<JsonPropertyName "code">] Code: int
+    [<JsonPropertyName "message">] Message: string
+    [<JsonPropertyName "errors">] Errors: IDictionary<string, string>
+}
+
+type RateLimitResponse = {
+    [<JsonPropertyName "message">] Message: string
+    [<JsonPropertyName "retry_after">] RetryAfter: float
+    [<JsonPropertyName "global">] Global: bool
+    [<JsonPropertyName "interaccodetion">] Code: int option
+}
+
 type InteractionCallbackResponse = {
     [<JsonPropertyName "interaction">] Interaction: InteractionCallback
     [<JsonPropertyName "resource">] Resource: InteractionCallbackResource
