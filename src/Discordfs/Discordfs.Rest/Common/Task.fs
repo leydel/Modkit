@@ -16,3 +16,6 @@ module Task =
     let wait t = task {
         do! t :> Task
     }
+
+    let apply f =
+        fun v -> f v |> Task.FromResult
