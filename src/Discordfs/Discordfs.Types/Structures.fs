@@ -1626,9 +1626,12 @@ type GatewayEventIdentifier = {
     [<JsonPropertyName "t">] EventName: string option
 }
 with
-    static member getType (json: string) =
+    static member deserializeF (json: string) =
+        JsonSerializer.Deserialize<GatewayEventIdentifier> json
+
+    static member deserialize (json: string) =
         try
-            Some <| JsonSerializer.Deserialize<GatewayEventIdentifier> json
+            Some <| GatewayEventIdentifier.deserializeF json
         with
         | _ ->
             None

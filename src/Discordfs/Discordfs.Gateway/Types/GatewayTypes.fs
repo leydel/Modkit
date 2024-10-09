@@ -6,6 +6,23 @@ open System.Text.Json.Serialization
 
 #nowarn "49"
 
+// https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway-gateway-close-event-codes
+type GatewayCloseEventCode =
+    | UNKNOWN_ERROR         = 4000
+    | UNKNOWN_OPCODE        = 4001
+    | DECODE_ERROR          = 4002
+    | NOT_AUTHENTICATED     = 4003
+    | AUTHENTICATION_FAILED = 4004
+    | ALREADY_AUTHENTICATED = 4005
+    | INVALID_SEQ           = 4007
+    | RATE_LIMITED          = 4008
+    | SESSION_TIMED_OUT     = 4009
+    | INVALID_SHARD         = 4010
+    | SHARDING_REQUIRED     = 4011
+    | INVALID_API_VERSION   = 4012
+    | INVALID_INTENTS       = 4013
+    | DISALLOWED_INTENTS    = 4014
+
 // https://discord.com/developers/docs/topics/gateway-events#identify-identify-structure
 type Identify = {
     [<JsonPropertyName "token">] Token: string

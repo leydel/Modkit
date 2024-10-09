@@ -1,263 +1,118 @@
 ﻿namespace Discordfs.Gateway.Clients
 
+open Discordfs.Gateway.Modules
 open Discordfs.Gateway.Types
 open Discordfs.Types
 open System
-open System.IO
 open System.Net.WebSockets
-open System.Text
-open System.Text.Json
 open System.Threading
 open System.Threading.Tasks
 
-type IGatewayActions =
-    abstract member Identify:
-        Identify ->
-        Task<Result<unit, string>>
-
-    abstract member Resume:
-        Resume ->
-        Task<Result<unit, string>>
-
-    abstract member Heartbeat:
-        Heartbeat ->
-        Task<Result<unit, string>>
-
-    abstract member RequestGuildMembers:
-        RequestGuildMembers ->
-        Task<Result<unit, string>>
-
-    abstract member UpdateVoiceState:
-        UpdateVoiceState ->
-        Task<Result<unit, string>>
-
-    abstract member UpdatePresence:
-        UpdatePresence ->
-        Task<Result<unit, string>>
-
-type GatewayActions (private _ws: ClientWebSocket) =
-    member _.write (event: GatewayEvent<'a>) = task {
-        Console.WriteLine $"SENDING | Opcode: {event.Opcode}, Event Name: {event.EventName}"
-        Console.WriteLine $"SENDING | {JsonSerializer.Serialize event}"
-
-        let cts = new CancellationTokenSource ()
-        cts.CancelAfter(TimeSpan.FromSeconds 5)
-
-        let bytes = event |> JsonSerializer.Serialize |> Encoding.UTF8.GetBytes
-
-        let size = 4096
-
-        let mutable isEndOfMessage = false
-        let mutable offset = 0
-
-        try
-            while not isEndOfMessage do
-                isEndOfMessage <- offset + size >= bytes.Length
-                let count = Math.Min(size, bytes.Length - offset)
-                let buffer = ArraySegment(bytes, offset, count)
-
-                do! _ws.SendAsync(buffer, WebSocketMessageType.Text, isEndOfMessage, cts.Token)
-
-                offset <- offset + size
-
-            return Ok ()
-        with _ ->
-            return Error "Unexpected error occurred when attempting to write message"
-    }
-
-    interface IGatewayActions with
-        member this.Identify payload = task {
-            let message =
-                GatewayEvent.build(
-                    Opcode = GatewayOpcode.IDENTIFY,
-                    Data = payload
-                )
-            
-            return! this.write message
-        }
-            
-        member this.Resume payload = task {
-            let message =
-                GatewayEvent.build(
-                    Opcode = GatewayOpcode.RESUME,
-                    Data = payload
-                )
-            
-            return! this.write message
-        }
-
-        member this.Heartbeat payload = task {
-            let message =
-                GatewayEvent.build(
-                    Opcode = GatewayOpcode.HEARTBEAT,
-                    Data = payload
-                )
-            
-            return! this.write message
-        }
-
-        member this.RequestGuildMembers payload = task {
-            let message =
-                GatewayEvent.build(
-                    Opcode = GatewayOpcode.REQUEST_GUILD_MEMBERS,
-                    Data = payload
-                )
-            
-            return! this.write message
-        }
-
-        member this.UpdateVoiceState payload = task {
-            let message =
-                GatewayEvent.build(
-                    Opcode = GatewayOpcode.VOICE_STATE_UPDATE,
-                    Data = payload
-                )
-            
-            return! this.write message
-        }
-
-        member this.UpdatePresence payload = task {
-            let message =
-                GatewayEvent.build(
-                    Opcode = GatewayOpcode.PRESENCE_UPDATE,
-                    Data = payload
-                )
-            
-            return! this.write message
-        }
-
 type IGatewayClient =
-    abstract member Actions: IGatewayActions
-
     abstract member Connect:
         gatewayUrl: string ->
         identify: Identify ->
         handler: (string -> Task<unit>) ->
-        Task<Result<unit, string>>
+        Task<unit>
 
-    abstract member Disconnect:
-        unit ->
-        Task<Result<unit, string>>
+    abstract member RequestGuildMembers:
+        RequestGuildMembers ->
+        Task<unit>
+
+    abstract member UpdateVoiceState:
+        UpdateVoiceState ->
+        Task<unit>
+
+    abstract member UpdatePresence:
+        UpdatePresence ->
+        Task<unit>
 
 type GatewayClient () =
     let _ws: ClientWebSocket = new ClientWebSocket()
 
-    let _actions: IGatewayActions = GatewayActions(_ws)
+    let handleHeartbeat jitter interval (sequenceId: int option) lastHeartbeatAcked ws = async {
+        let delay =
+            if jitter then int ((float interval) * Random().NextDouble())
+            else interval
 
-    let mutable lastHeartbeatAcked = true
-    let mutable heartbeatCount = 0
-    let mutable sequenceId: int option = None
-
-    let rec heartbeat (jitter: bool) (interval: int) = task {
-        if jitter then
-            do! int ((float interval) * Random().NextDouble()) |> Task.Delay
-        else
-            do! Task.Delay interval
+        do! Task.Delay delay |> Async.AwaitTask // TODO: FIX
 
         match lastHeartbeatAcked with
-        | false ->
-            return Error "Last gateway heartbeat was not acked"
+        | false -> 
+            // TODO: Terminate connection with any close code besides 1000 and 1001, then reconnect and attempt to resume
+            return ()
         | true ->
-            lastHeartbeatAcked <- false
-            heartbeatCount <- heartbeatCount + 1
-
-            do! _actions.Heartbeat sequenceId :> Task
-            do! Task.Delay interval
-            return! heartbeat false interval
+            Gateway.heartbeat sequenceId ws |> ignore
 
         // TODO: Handle graceful disconnect
     }
 
-    member _.read () = task {
-        use ms = new MemoryStream() 
-        let mutable isEndOfMessage = false
-        let mutable messageType: WebSocketMessageType = WebSocketMessageType.Text
+    let handleLifecycle (identify: Identify) sequenceId ws = async {
+        let! res = Gateway.readNext ws |> Async.AwaitTask
 
-        while not isEndOfMessage do
-            let buffer = Array.zeroCreate<byte> 4096 |> ArraySegment
-            let! res = _ws.ReceiveAsync(buffer, CancellationToken.None)
-            Console.WriteLine $"Close status: {res.CloseStatus}"
-            ms.Write(buffer.Array, buffer.Offset, res.Count)
-            isEndOfMessage <- res.EndOfMessage
-            messageType <- res.MessageType
+        match res with
+        | GatewayReadResponse.Close close ->
+            return None // TODO: Handle reconnecting
+        | GatewayReadResponse.Message (opcode, eventName, message) ->
+            match opcode with
+            | GatewayOpcode.HELLO ->
+                let event = GatewayEvent<Hello>.deserializeF message
 
-        ms.Seek(0, SeekOrigin.Begin) |> ignore
+                Gateway.identify identify |> ignore
 
-        use sr = new StreamReader(ms)
-        let! message = sr.ReadToEndAsync()
-        return (messageType, message)
+                // TODO: Start heartbeat
+
+                //heartbeat true event.Data.HeartbeatInterval |> ignore
+
+                return sequenceId
+            | GatewayOpcode.HEARTBEAT ->
+                Gateway.heartbeat sequenceId |> ignore
+
+                // TODO: This should reset the above timer to start with this
+                            
+                return sequenceId
+            | GatewayOpcode.HEARTBEAT_ACK ->
+                //lastHeartbeatAcked <- true
+                            
+                return sequenceId
+            | GatewayOpcode.DISPATCH when eventName = Some "ready" ->
+                let event = GatewayEvent<Ready>.deserializeF message
+
+                // TODO: handle ready event
+
+                return sequenceId
+            | _ ->
+                // do! handler message
+
+                match GatewaySequencer.getSequenceNumber message with
+                | None -> return sequenceId
+                | Some s -> return Some s
     }
 
     interface IGatewayClient with
-        member val Actions = _actions
+        member _.Connect gatewayUrl identify handler = task {
+            do! _ws.ConnectAsync(Uri gatewayUrl, CancellationToken.None)
 
-        member this.Connect gatewayUrl identify handler = task {
-            try
-                do! _ws.ConnectAsync(Uri gatewayUrl, CancellationToken.None)
+            let rec loop jitter interval sequenceId lastHeartbeatAcked = task {
+                let lifecycleTask = handleLifecycle identify sequenceId _ws |> Async.StartAsTask
+                let heartbeatTask = handleHeartbeat jitter interval sequenceId lastHeartbeatAcked _ws |> Async.StartAsTask
 
-                let rec loop (sequenceId: int option): Task<Result<int option, string>> = task {
-                    Console.WriteLine "Awaiting new message..."
+                let! winner = Task.WhenAny [lifecycleTask :> Task; heartbeatTask :> Task] |> Async.AwaitTask
+                match winner with
+                | w when w = lifecycleTask -> None
+                | w when w = heartbeatTask -> None
+            }
 
-                    let! messageType, message = this.read ()
+            // TODO: Loop
 
-                    Console.WriteLine "Message received!"
-
-                    match messageType with
-                    | WebSocketMessageType.Close ->
-                        Console.WriteLine($"RECEIVED | {message}")
-                        return Error "Gateway connection closed"
-                    | _ ->
-                        match GatewayEventIdentifier.getType message with
-                        | None ->
-                            return Error "Unexpected payload received from gateway"
-                        | Some identifier ->
-                            Console.WriteLine $"RECEIVED | Opcode: {identifier.Opcode}, Event Name: {identifier.EventName}"
-                            Console.WriteLine $"RECEIVED | {message}"
-
-                            match identifier.Opcode with
-                            | GatewayOpcode.HELLO ->
-                                let event = GatewayEvent<Hello>.deserializeF message
-
-                                _actions.Identify identify |> ignore
-                                heartbeat true event.Data.HeartbeatInterval |> ignore
-
-                                return! loop sequenceId
-                            | GatewayOpcode.HEARTBEAT ->
-                                _actions.Heartbeat sequenceId |> ignore
-                            
-                                return! loop sequenceId
-                            | GatewayOpcode.HEARTBEAT_ACK ->
-                                lastHeartbeatAcked <- true
-                            
-                                return! loop sequenceId
-                            | _ ->
-                                do! handler message
-
-                                match GatewaySequencer.getSequenceNumber message with
-                                | None -> return! loop sequenceId
-                                | Some s -> return! loop (Some s)
-                }
-                            
-                let! close = loop None
-
-                match close with
-                | Error message -> Console.WriteLine $"Error occurred: {message}"
-                | Ok sequenceId -> Console.WriteLine $"Closed on sequence ID {sequenceId}"
-
-                // TODO: Handle gateway disconnect and resuming
-
-                return close |> Result.map (fun _ -> ())
-            with
-            | exn ->
-                Console.WriteLine $"Error occurred: {exn}"
-                return Error "Unexpected error occurred with gateway connection"
+            return ()
         }
 
-        member this.Disconnect () = task {
-            try
-                do! _ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None)
-                return Ok ()
-            with
-            | _ -> 
-                return Error "Unexpected error occurred attempting to disconnect from the gateway"
-        }
+        member _.RequestGuildMembers payload =
+            Gateway.requestGuildMembers payload _ws
+
+        member _.UpdateVoiceState payload =
+            Gateway.updateVoiceState payload _ws
+
+        member _.UpdatePresence payload =
+            Gateway.updatePresence payload _ws
