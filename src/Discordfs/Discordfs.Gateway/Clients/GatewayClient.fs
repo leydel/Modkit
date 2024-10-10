@@ -80,11 +80,11 @@ type GatewayClient () =
                     | GatewayReadResponse.Message (opcode, eventName, message) ->
                         match opcode with
                         | GatewayOpcode.HELLO ->
-                            Gateway.identify identify |> ignore
+                            ws |> Gateway.identify identify |> ignore
                             let event = GatewayEvent<Hello>.deserializeF message
                             return! loop { state with Interval = Some event.Data.HeartbeatInterval }
                         | GatewayOpcode.HEARTBEAT ->
-                            Gateway.heartbeat state.SequenceId |> ignore
+                            ws |> Gateway.heartbeat state.SequenceId |> ignore
                             return! loop { state with Heartbeat = freshHeartbeat }
                         | GatewayOpcode.HEARTBEAT_ACK ->
                             return! loop { state with Acked = true }
