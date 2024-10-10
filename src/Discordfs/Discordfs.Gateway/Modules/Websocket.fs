@@ -8,7 +8,7 @@ open System.Threading
 
 type WebsocketReadResponse =
     | Message of string
-    | Close of int
+    | Close of int option
 
 module Websocket =
     let readNext ws = task {
@@ -29,7 +29,6 @@ module Websocket =
                     let status =
                         Nullable.toOption res.CloseStatus
                         |> Option.map int
-                        |> Option.defaultValue 0
 
                     return WebsocketReadResponse.Close status
                 | _ ->

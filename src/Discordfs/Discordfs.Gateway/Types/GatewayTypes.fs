@@ -159,3 +159,6 @@ with
         Timestamp = Timestamp;
         Member = Member;
     }
+
+// https://discord.com/developers/docs/topics/gateway-events#invalid-session
+type InvalidSession = bool
