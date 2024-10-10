@@ -12,6 +12,17 @@ type ConnectionCloseBehaviour =
     | Reconnect
     | Close
 
+type GatewayLoopState = {
+    SequenceId: int option
+    Acked: bool
+    Interval: int option
+    Heartbeat: DateTime option
+    ResumeGatewayUrl: string option
+    Identify: Identify
+    Handler: string -> Task<unit>
+    Websocket: ClientWebSocket
+}
+
 type IGatewayClient =
     abstract member Connect:
         gatewayUrl: string ->
@@ -36,12 +47,14 @@ type GatewayClient () =
 
     interface IGatewayClient with
         member _.Connect gatewayUrl identify handler = task {
-            let rec loop (sequenceId: int option) acked (interval: int option) (heartbeat: DateTime option) identify handler ws = task {
+            let rec loop (state: GatewayLoopState) = task {
+                let ws = state.Websocket
+
                 let now = DateTime.UtcNow
-                let freshInterval = Some (now.AddMilliseconds(interval.Value))
+                let freshHeartbeat = state.Interval |> Option.map (fun i -> now.AddMilliseconds(i))
 
                 let timeout =
-                    match heartbeat with
+                    match state.Heartbeat with
                     | Some h -> Task.Delay (h.Subtract(now))
                     | None -> Task.Delay Timeout.InfiniteTimeSpan
 
@@ -50,12 +63,12 @@ type GatewayClient () =
                 let! winner = Task.WhenAny(timeout, readNext)
 
                 if winner = timeout then
-                    match acked with
+                    match state.Acked with
                     | false ->
                         return ConnectionCloseBehaviour.Reconnect
                     | true ->
-                        ws |> Gateway.heartbeat sequenceId |> ignore
-                        return! loop sequenceId false interval freshInterval identify handler ws
+                        ws |> Gateway.heartbeat state.SequenceId |> ignore
+                        return! loop { state with Acked = false }
                 else
                     let res = readNext.Result
 
@@ -64,29 +77,40 @@ type GatewayClient () =
                         match Gateway.shouldReconnect code with
                         | true -> return ConnectionCloseBehaviour.Reconnect
                         | false -> return ConnectionCloseBehaviour.Close
-                    | GatewayReadResponse.Message (opcode, _, message) ->
+                    | GatewayReadResponse.Message (opcode, eventName, message) ->
                         match opcode with
                         | GatewayOpcode.HELLO ->
-                            let event = GatewayEvent<Hello>.deserializeF message
-                            let helloInterval = Some event.Data.HeartbeatInterval
-
                             Gateway.identify identify |> ignore
-                            return! loop sequenceId acked helloInterval heartbeat identify handler ws
+                            let event = GatewayEvent<Hello>.deserializeF message
+                            return! loop { state with Interval = Some event.Data.HeartbeatInterval }
                         | GatewayOpcode.HEARTBEAT ->
-                            Gateway.heartbeat sequenceId |> ignore
-                            return! loop sequenceId acked interval freshInterval identify handler ws
+                            Gateway.heartbeat state.SequenceId |> ignore
+                            return! loop { state with Heartbeat = freshHeartbeat }
                         | GatewayOpcode.HEARTBEAT_ACK ->
-                            return! loop sequenceId true interval heartbeat identify handler ws
+                            return! loop { state with Acked = true }
+                        | GatewayOpcode.DISPATCH when eventName = Some "READY" ->
+                            let event = GatewayEvent<Ready>.deserializeF message
+                            return! loop { state with ResumeGatewayUrl = Some event.Data.ResumeGatewayUrl }
                         | _ ->
                             handler message |> ignore
 
                             match GatewaySequencer.getSequenceNumber message with
-                            | None -> return! loop sequenceId acked interval heartbeat identify handler ws
-                            | Some s -> return! loop (Some s) acked interval heartbeat identify handler ws
+                            | None -> return! loop state
+                            | Some s -> return! loop { state with SequenceId = Some s }
             }
             
             do! _ws.ConnectAsync(Uri gatewayUrl, CancellationToken.None)
-            let! close = loop None true None None identify handler _ws
+
+            let! close = loop {
+                SequenceId = None;
+                Acked = true;
+                Interval = None;
+                Heartbeat = None;
+                ResumeGatewayUrl = None;
+                Identify = identify;
+                Handler = handler
+                Websocket = _ws
+            }
 
             // TODO: Handle reconnecting/resuming with `close`
 
