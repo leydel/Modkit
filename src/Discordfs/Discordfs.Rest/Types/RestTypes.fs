@@ -20,11 +20,6 @@ type RateLimitResponse = {
     [<JsonPropertyName "interaccodetion">] Code: int option
 }
 
-type InteractionCallbackResponse = {
-    [<JsonPropertyName "interaction">] Interaction: InteractionCallback
-    [<JsonPropertyName "resource">] Resource: InteractionCallbackResource
-}
-
 type BulkOverwriteApplicationCommand = {
     [<JsonPropertyName "id">] Id: string option
     [<JsonPropertyName "name">] Name: string
