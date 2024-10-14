@@ -1,10 +1,10 @@
 ﻿namespace Discordfs.Rest.Resources
 
 open Discordfs.Rest.Common
-open Discordfs.Rest.Types
 open Discordfs.Types
 open System.Collections.Generic
 open System.Net.Http
+open System.Text.Json.Serialization
 
 type CreateInteractionResponsePayload (
     ``type``: InteractionCallbackType,
@@ -25,6 +25,11 @@ type CreateInteractionResponsePayload (
                 files f
             }
 
+type CreateInteractionResponseResponse = {
+    [<JsonPropertyName "interaction">] Interaction: InteractionCallback
+    [<JsonPropertyName "resource">] Resource: InteractionCallbackResource
+}
+
 module Interaction =
     let createInteractionResponse
         (interactionId: string)
@@ -43,7 +48,7 @@ module Interaction =
 
             match withResponse with
             | Some true ->
-                Task.mapT Http.toJson<InteractionCallbackResponse> task
+                Task.mapT Http.toJson<CreateInteractionResponseResponse> task
                 |> Task.map (fun res -> Some res)
             | _ ->
                 Task.map (fun _ -> None) task
