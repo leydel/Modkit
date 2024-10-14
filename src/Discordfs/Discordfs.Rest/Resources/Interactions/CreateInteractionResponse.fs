@@ -1,8 +1,10 @@
 ﻿namespace Discordfs.Rest.Resources
 
 open Discordfs.Rest.Common
+open Discordfs.Rest.Types
 open Discordfs.Types
 open System.Collections.Generic
+open System.Net
 open System.Net.Http
 open System.Text.Json.Serialization
 
@@ -25,10 +27,18 @@ type CreateInteractionResponsePayload (
                 files f
             }
 
-type CreateInteractionResponseResponse = {
+type CreateInteractionResponseOkResponse = {
     [<JsonPropertyName "interaction">] Interaction: InteractionCallback
     [<JsonPropertyName "resource">] Resource: InteractionCallbackResource
 }
+
+type CreateInteractionResponseResponse =
+    | Ok of CreateInteractionResponseOkResponse
+    | NoContent
+    | BadRequest of ErrorResponse
+    | Conflict of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
 
 module Interaction =
     let createInteractionResponse
@@ -38,18 +48,18 @@ module Interaction =
         (content: CreateInteractionResponsePayload)
         botToken
         (httpClient: HttpClient) =
-            let req = req {
+            req {
                 post $"interactions/{interactionId}/{interactionToken}/callback"
                 bot botToken
                 query "with_response" (withResponse >>. _.ToString())
                 payload content
             }
-            let task = httpClient.SendAsync(req)
-
-            match withResponse with
-            | Some true ->
-                Task.mapT Http.toJson<CreateInteractionResponseResponse> task
-                |> Task.map (fun res -> Some res)
-            | _ ->
-                Task.map (fun _ -> None) task
-                
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map CreateInteractionResponseResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NoContent -> return CreateInteractionResponseResponse.NoContent
+                | HttpStatusCode.BadRequest -> return! Task.map CreateInteractionResponseResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map CreateInteractionResponseResponse.TooManyRequests (Http.toJson res)
+                | status -> return CreateInteractionResponseResponse.Other status
+            })

@@ -1,8 +1,10 @@
 ﻿namespace Discordfs.Rest.Resources
 
 open Discordfs.Rest.Common
+open Discordfs.Rest.Types
 open Discordfs.Types
 open System.Collections.Generic
+open System.Net
 open System.Net.Http
 
 type CreateFollowUpMessagePayload (
@@ -36,6 +38,13 @@ type CreateFollowUpMessagePayload (
                 files f
             }
 
+type CreateFollowUpMessageResponse =
+    | NoContent
+    | BadRequest of ErrorResponse
+    | Conflict of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
 module Interaction =
     let createFollowUpMessage
         (applicationId: string)
@@ -49,4 +58,10 @@ module Interaction =
                 payload content
             }
             |> httpClient.SendAsync
-            |> Task.wait
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.NoContent -> return CreateFollowUpMessageResponse.NoContent
+                | HttpStatusCode.BadRequest -> return! Task.map CreateFollowUpMessageResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map CreateFollowUpMessageResponse.TooManyRequests (Http.toJson res)
+                | status -> return CreateFollowUpMessageResponse.Other status
+            })

@@ -1,8 +1,10 @@
 ﻿namespace Discordfs.Rest.Resources
 
 open Discordfs.Rest.Common
+open Discordfs.Rest.Types
 open Discordfs.Types
 open System.Collections.Generic
+open System.Net
 open System.Net.Http
 
 type EditOriginalInteractionResponsePayload (
@@ -32,6 +34,13 @@ type EditOriginalInteractionResponsePayload (
                 files f
             }
 
+type EditOriginalInteractionResponseResponse =
+    | Ok of Message
+    | BadRequest of ErrorResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
 module Interaction =
     let editOriginalInteractionResponse
         (interactionId: string)
@@ -45,4 +54,11 @@ module Interaction =
                 payload content
             }
             |> httpClient.SendAsync
-            |> Task.mapT Http.toJson<Message>
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map EditOriginalInteractionResponseResponse.Ok (Http.toJson res)
+                | HttpStatusCode.BadRequest -> return! Task.map EditOriginalInteractionResponseResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map EditOriginalInteractionResponseResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map EditOriginalInteractionResponseResponse.TooManyRequests (Http.toJson res)
+                | status -> return EditOriginalInteractionResponseResponse.Other status
+            })
