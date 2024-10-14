@@ -21,6 +21,7 @@ module Websocket =
             | false ->
                 return! loop ms ws
             | true ->
+                ms.Seek(0, SeekOrigin.Begin) |> ignore
                 use sr = new StreamReader(ms)
                 let! message = sr.ReadToEndAsync()
 

@@ -78,16 +78,6 @@ type ListApplicationEmojisResponse = {
     [<JsonPropertyName "items">] Items: Emoji list
 }
 
-type GetGatewayResponse = {
-    [<JsonPropertyName "url">] Url: string
-}
-
-type GetGatewayBotResponse = {
-    [<JsonPropertyName "url">] Url: string
-    [<JsonPropertyName "shards">] Shards: int
-    [<JsonPropertyName "session_start_limit">] SessionStartLimit: SessionStartLimit
-}
-
 // https://discord.com/developers/docs/resources/guild#modify-guild-channel-positions-json-params
 type ModifyGuildChannelPosition = {
     [<JsonPropertyName "id">] Id: string

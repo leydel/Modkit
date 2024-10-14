@@ -69,6 +69,7 @@ type GatewayClient () =
                 else
                     match readNext.Result with
                     | GatewayReadResponse.Close code ->
+                        Console.WriteLine(code)
                         match Gateway.shouldReconnect code with
                         | true -> return ConnectionCloseBehaviour.Resume state.ResumeGatewayUrl
                         | false -> return ConnectionCloseBehaviour.Close
@@ -123,7 +124,7 @@ type GatewayClient () =
                             | Some s -> return! loop { state with SequenceId = Some s } resumed identify handler ws
             }
 
-            let rec resume cachedUrl (resumeGatewayUrl: string option) identify handler (ws: ClientWebSocket) = task {
+            let rec resume (cachedUrl: string) (resumeGatewayUrl: string option) identify handler (ws: ClientWebSocket) = task {
                 let gatewayUrl = Uri (Option.defaultValue cachedUrl resumeGatewayUrl)
                 let resumed = resumeGatewayUrl.IsSome
 

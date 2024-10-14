@@ -3,17 +3,20 @@
 open Azure.Messaging.ServiceBus
 open Discordfs.Gateway.Clients
 open Discordfs.Gateway.Types
-open Discordfs.Rest.Clients
+open Discordfs.Rest.Resources
 open Discordfs.Types
 open Modkit.Gateway.Factories
 open Microsoft.Extensions.Configuration
+open System.Net.Http
 open System.Threading.Tasks
 
 type Client (
     configuration: IConfiguration,
-    serviceBusClientFactory: IServiceBusClientFactory,
-    restClient: IRestClient
+    httpClientFactory: IHttpClientFactory,
+    serviceBusClientFactory: IServiceBusClientFactory
 ) =
+    let httpClient = httpClientFactory.CreateClient()
+    
     let serviceBusConnectionString = configuration.GetValue "AzureWebJobsServiceBus"
     let serviceBusQueueName = configuration.GetValue<string> "GatewayQueueName"
     let discordBotToken = configuration.GetValue<string> "DiscordBotToken"
@@ -49,7 +52,7 @@ type Client (
             Token = discordBotToken,
             Intents = intents,
             Properties = ConnectionProperties.build(),
-            Shard = (0, 1),
+            Shard = (0, 1), // TODO: Causing INVALID_SHARD error, probably because this tuple isnt serializing correctly
             Presence = UpdatePresence.build(
                 Status = StatusType.ONLINE,
                 Activities = [
@@ -61,9 +64,6 @@ type Client (
                 ] // TODO: Move to READY event received by API and send presence update back to gateway
             )
         )
-
-        let gatewayClient: IGatewayClient = GatewayClient()
-        let! gateway = restClient.Gateway.GetGateway "10" GatewayEncoding.JSON None
 
         let handler =
             match useGateway with
@@ -77,5 +77,15 @@ type Client (
                     do! sender.SendMessageAsync <| ServiceBusMessage event
                 }
 
-        do! gatewayClient.Connect gateway.Url identify handler :> Task
+        try
+            let gatewayClient: IGatewayClient = GatewayClient()
+
+            let! getGatewayResponse = httpClient |> Gateway.getGateway "10" GatewayEncoding.JSON None
+
+            match getGatewayResponse with
+            | GetGatewayResponse.Ok res -> do! gatewayClient.Connect res.Url identify handler :> Task
+            | _ -> failwith "Failed to get gateway URL"
+        with | exn ->
+            System.Console.WriteLine(exn)
+            System.Console.ReadKey() |> ignore
     }

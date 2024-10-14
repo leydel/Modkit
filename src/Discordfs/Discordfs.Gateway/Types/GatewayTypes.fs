@@ -33,7 +33,7 @@ with
         LargeThreshold = LargeThreshold;
         Shard = Shard;
         Presence = Presence;
-    }
+    }                
 
 // https://discord.com/developers/docs/topics/gateway-events#resume-resume-structure
 and Resume = {
