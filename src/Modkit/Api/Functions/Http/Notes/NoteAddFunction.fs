@@ -21,7 +21,7 @@ type NoteAddFunction (noteAddAction: INoteAddAction) =
         userId: string
     ) = task {
         let! json = req.Content.ReadAsStringAsync()
-        let body = JsonSerializer.Deserialize<NoteAddFunctionPayload> json
+        let body = Json.deserializeF<NoteAddFunctionPayload> json
 
         let! note = noteAddAction.run userId body.Message
 
@@ -33,7 +33,7 @@ type NoteAddFunction (noteAddAction: INoteAddAction) =
             let payload = NoteDto.from note
 
             let res = new HttpResponseMessage(HttpStatusCode.OK)
-            res.Content <- new StringContent(JsonSerializer.Serialize payload)
+            res.Content <- new StringContent(Json.serializeF payload)
             res.Headers.Add("Content-Type", "application/json")
             
             log.LogInformation($"Successfully called note add function for user {userId}")

@@ -12,7 +12,7 @@ module Http =
 
     let toJson<'a> (res: HttpResponseMessage) =
         res.Content.ReadAsStringAsync()
-        |> Task.map (fun body -> JsonSerializer.Deserialize<'a> body) 
+        |> Task.map (fun body -> Json.deserializeF<'a> body) 
 
     let toRaw (res: HttpResponseMessage) =
         res.Content.ReadAsStringAsync()

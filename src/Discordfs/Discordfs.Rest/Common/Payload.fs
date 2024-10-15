@@ -29,14 +29,14 @@ module Payload =
 
         interface IPayloadBuilder with
             member this.ToContent () =
-                new StringContent(JsonSerializer.Serialize this.Properties, MediaTypeHeaderValue("application/json"))
+                new StringContent(Json.serializeF this.Properties, MediaTypeHeaderValue("application/json"))
 
     let json = JsonPayloadBuilder()
 
     type JsonListPayload<'a>(list: 'a list) =
         interface IPayloadBuilder with
             member _.ToContent () =
-                new StringContent(JsonSerializer.Serialize list, MediaTypeHeaderValue("application/json"))
+                new StringContent(Json.serializeF list, MediaTypeHeaderValue("application/json"))
 
     type StringPayload(str: string) =
         interface IPayloadBuilder with

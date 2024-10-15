@@ -31,7 +31,7 @@ type Dto () =
 
     /// Serialize the DTO into json.
     static member json (dto: Dto) =
-        JsonSerializer.Serialize dto.Properties
+        Json.serializeF dto.Properties
 
 module Req =
     let create (method: HttpMethod) (host: string) (endpoint: string) =
@@ -75,7 +75,7 @@ module Res =
     let json<'a> (resTask: Task<HttpResponseMessage>) = task {
         let! res = resTask
         let! body = res.Content.ReadAsStringAsync()
-        return JsonSerializer.Deserialize<'a> body
+        return Json.deserializeF<'a> body
     }
 
     let raw (resTask: Task<HttpResponseMessage>) = task {

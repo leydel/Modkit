@@ -1,6 +1,5 @@
 ﻿open Modkit.Gateway.Clients
 open Modkit.Gateway.Factories
-open Discordfs.Rest.Clients
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
@@ -21,7 +20,6 @@ let host =
             services
                 .AddHttpClient()
                 .AddSingleton<IServiceBusClientFactory, ServiceBusClientFactory>()
-                .AddTransient<IRestClient, RestClient>()
                 .AddTransient<Client>()
             |> ignore
         )

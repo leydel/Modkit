@@ -19,7 +19,7 @@ type NoteListFunction (noteListAction: INoteListAction) =
         let payload = List.map NoteDto.from notes
 
         let res = new HttpResponseMessage(HttpStatusCode.OK)
-        res.Content <- new StringContent(JsonSerializer.Serialize payload)
+        res.Content <- new StringContent(Json.serializeF payload)
         res.Headers.Add("Content-Type", "application/json")
 
         log.LogInformation($"Successfully called note list function for user {userId}")

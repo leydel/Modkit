@@ -23,7 +23,7 @@ type ConvertersTests () =
         let object = { Timestamp = time; }
 
         // Act
-        let json = JsonSerializer.Serialize object
+        let json = Json.serializeF object
 
         // Assert
         Assert.IsTrue(json.Contains(expected.ToString()))
@@ -36,7 +36,7 @@ type ConvertersTests () =
         let json = $"""{{"Timestamp":{timestamp}}}"""
 
         // Act
-        let actual = JsonSerializer.Deserialize<UnixEpochRecord> json
+        let actual = Json.deserializeF<UnixEpochRecord> json
 
         // Assert
         Assert.AreEqual<DateTime>(expected, actual.Timestamp)
@@ -47,7 +47,7 @@ type ConvertersTests () =
         let original = { State = false }
 
         // Act
-        let res () = JsonSerializer.Serialize original |> ignore
+        let res () = Json.serializeF original |> ignore
 
         // Assert
         Assert.ThrowsException<NotImplementedException> res |> ignore
@@ -58,7 +58,7 @@ type ConvertersTests () =
         let original = { State = true }
 
         // Act
-        let res () = JsonSerializer.Serialize original |> ignore
+        let res () = Json.serializeF original |> ignore
 
         // Assert
         Assert.ThrowsException<NotImplementedException> res |> ignore
@@ -69,7 +69,7 @@ type ConvertersTests () =
         let original = "{}"
 
         // Act
-        let actual = JsonSerializer.Deserialize<NullUndefinedAsBoolRecord> original
+        let actual = Json.deserializeF<NullUndefinedAsBoolRecord> original
 
         // Assert
         Assert.IsFalse(actual.State)
@@ -80,7 +80,7 @@ type ConvertersTests () =
         let original = """{"State":null}"""
 
         // Act
-        let actual = JsonSerializer.Deserialize<NullUndefinedAsBoolRecord> original
+        let actual = Json.deserializeF<NullUndefinedAsBoolRecord> original
 
         // Assert
         Assert.IsTrue(actual.State)

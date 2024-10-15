@@ -26,7 +26,7 @@ type NoteGetFunction (noteGetAction: INoteGetAction) =
             let payload = NoteDto.from note
 
             let res = new HttpResponseMessage(HttpStatusCode.OK)
-            res.Content <- new StringContent(JsonSerializer.Serialize payload)
+            res.Content <- new StringContent(Json.serializeF payload)
             res.Headers.Add("Content-Type", "application/json")
 
             log.LogInformation($"Successfully called note get function for user {userId} and note {noteId}")

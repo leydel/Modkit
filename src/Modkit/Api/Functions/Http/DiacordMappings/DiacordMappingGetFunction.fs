@@ -25,7 +25,7 @@ type DiacordMappingGetFunction (diacordMappingGetAction: IDiacordMappingGetActio
             let payload = DiacordMappingDto.from mapping
 
             let res = new HttpResponseMessage(HttpStatusCode.OK)
-            res.Content <- new StringContent(JsonSerializer.Serialize payload)
+            res.Content <- new StringContent(Json.serializeF payload)
             res.Headers.Add("Content-Type", "application/json")
 
             log.LogInformation($"Successfully called diacord mapping get function for guild {guildId}")

@@ -1,8 +1,29 @@
-﻿namespace Discordfs.Types
+﻿namespace System.Text.Json
 
 open System
 open System.Text.Json
 open System.Text.Json.Serialization
+
+module Json =
+    let private options =
+        JsonFSharpOptions()
+            .WithUnionUnwrapFieldlessTags()
+            .WithSkippableOptionFields(SkippableOptionFields.Always, deserializeNullAsNone = true)
+            .ToJsonSerializerOptions()
+    
+    let serializeF (value: 'a) =
+        JsonSerializer.Serialize(value, options)
+
+    let serialize (value: 'a) =
+        try serializeF value |> Some
+        with | _ -> None
+
+    let deserializeF<'a> (json: string) =
+        JsonSerializer.Deserialize<'a>(json, options)
+
+    let deserialize<'a> (json: string) =
+        try deserializeF json |> Some
+        with | _ -> None
 
 module Converters =
     type UnixEpoch () =
@@ -24,4 +45,3 @@ module Converters =
             override _.Write (writer, value, options) =
                 raise (NotImplementedException())
                 // writer.WriteNullValue() works for true, but false already has the property name written...
-                

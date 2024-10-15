@@ -190,7 +190,7 @@ type ResTests () =
         // Arrange
         let body = { Nonce = 1 }
         let httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
-        httpResponseMessage.Content <- new StringContent(JsonSerializer.Serialize body)
+        httpResponseMessage.Content <- new StringContent(Json.serializeF body)
 
         let task = Task.FromResult httpResponseMessage
 

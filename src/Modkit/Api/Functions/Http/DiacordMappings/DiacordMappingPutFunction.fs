@@ -22,7 +22,7 @@ type DiacordMappingPutFunction (diacordMappingPutAction: IDiacordMappingPutActio
         guildId: string
     ) = task {
         let! json = req.Content.ReadAsStringAsync()
-        let body = JsonSerializer.Deserialize<DiacordMappingPutFunctionPayload> json
+        let body = Json.deserializeF<DiacordMappingPutFunctionPayload> json
 
         let! mapping = diacordMappingPutAction.run guildId body.Mappings
 
@@ -34,7 +34,7 @@ type DiacordMappingPutFunction (diacordMappingPutAction: IDiacordMappingPutActio
             let payload = DiacordMappingDto.from mapping
 
             let res = new HttpResponseMessage(HttpStatusCode.OK)
-            res.Content <- new StringContent(JsonSerializer.Serialize payload)
+            res.Content <- new StringContent(Json.serializeF payload)
             res.Headers.Add("Content-Type", "application/json")
 
             log.LogInformation($"Successfully called diacord mapping put function for guild {guildId}")

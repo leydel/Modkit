@@ -5,6 +5,7 @@ open Discordfs.Gateway.Types
 open Discordfs.Types
 open System
 open System.Net.WebSockets
+open System.Text.Json
 open System.Threading
 open System.Threading.Tasks
 
@@ -69,15 +70,18 @@ type GatewayClient () =
                 else
                     match readNext.Result with
                     | GatewayReadResponse.Close code ->
-                        Console.WriteLine(code)
+                        Console.WriteLine($"Close code: {code}")
+
                         match Gateway.shouldReconnect code with
                         | true -> return ConnectionCloseBehaviour.Resume state.ResumeGatewayUrl
                         | false -> return ConnectionCloseBehaviour.Close
 
                     | GatewayReadResponse.Message (opcode, eventName, message) ->
+                        Console.WriteLine($"Message: {opcode} {eventName} {message}")
+
                         match opcode, eventName with
                         | GatewayOpcode.HELLO, _ ->
-                            let event = GatewayEvent<Hello>.deserializeF message
+                            let event = Json.deserializeF<GatewayEvent<Hello>> message
 
                             match resumed, state.SessionId, state.SequenceId with
                             | true, Some ses, Some seq -> Gateway.resume (Resume.build(identify.Token, ses, seq))
@@ -96,7 +100,8 @@ type GatewayClient () =
                             return! loop { state with HeartbeatAcked = true } resumed identify handler ws
 
                         | GatewayOpcode.DISPATCH, Some "READY" ->
-                            let event = GatewayEvent<Ready>.deserializeF message
+                            let event = Json.deserializeF<GatewayEvent<Ready>> message
+                            
                             let resumeGatewayUrl = Some event.Data.ResumeGatewayUrl
                             let sessionId = Some event.Data.SessionId
 
@@ -110,7 +115,7 @@ type GatewayClient () =
                             return ConnectionCloseBehaviour.Resume state.ResumeGatewayUrl
 
                         | GatewayOpcode.INVALID_SESSION, _ ->
-                            let event = GatewayEvent<InvalidSession>.deserializeF message
+                            let event = Json.deserializeF<GatewayEvent<InvalidSession>> message
 
                             match event.Data with
                             | true -> return! loop state resumed identify handler ws
@@ -124,11 +129,12 @@ type GatewayClient () =
                             | Some s -> return! loop { state with SequenceId = Some s } resumed identify handler ws
             }
 
-            let rec resume (cachedUrl: string) (resumeGatewayUrl: string option) identify handler (ws: ClientWebSocket) = task {
+            let rec resume (cachedUrl: string) (resumeGatewayUrl: string option) identify handler = task {
                 let gatewayUrl = Uri (Option.defaultValue cachedUrl resumeGatewayUrl)
                 let resumed = resumeGatewayUrl.IsSome
 
-                do! ws.ConnectAsync(gatewayUrl, CancellationToken.None)
+                _ws <- new ClientWebSocket()
+                do! _ws.ConnectAsync(gatewayUrl, CancellationToken.None)
 
                 let initialState = {
                     SequenceId = None;
@@ -139,23 +145,25 @@ type GatewayClient () =
                     SessionId = None;
                 }
 
-                let! close = loop initialState resumed identify handler ws
+                let! close = loop initialState resumed identify handler _ws
+
+                Console.WriteLine($"Loop broken: {close}")
 
                 match close with
                 | ConnectionCloseBehaviour.Resume (Some resumeGatewayUrl) ->
-                    do! ws.CloseAsync(WebSocketCloseStatus.Empty, "Resuming", CancellationToken.None)
-                    return! resume cachedUrl (Some resumeGatewayUrl) identify handler ws
+                    do! _ws.CloseAsync(WebSocketCloseStatus.Empty, "Resuming", CancellationToken.None)
+                    return! resume cachedUrl (Some resumeGatewayUrl) identify handler
 
                 | ConnectionCloseBehaviour.Resume None
                 | ConnectionCloseBehaviour.Reconnect ->
-                    do! ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Reconnecting", CancellationToken.None)
-                    return! resume cachedUrl None identify handler ws
+                    do! _ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Reconnecting", CancellationToken.None)
+                    return! resume cachedUrl None identify handler
 
                 | ConnectionCloseBehaviour.Close ->
-                    do! ws.CloseAsync(WebSocketCloseStatus.InternalServerError, "Closing", CancellationToken.None)
+                    do! _ws.CloseAsync(WebSocketCloseStatus.InternalServerError, "Closing", CancellationToken.None)
             }
 
-            do! resume gatewayUrl None identify handler _ws
+            do! resume gatewayUrl None identify handler
         }
 
         member _.RequestGuildMembers payload =

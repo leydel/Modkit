@@ -13,7 +13,7 @@ type FileMappingStrategy (configuration: IConfiguration) =
         member _.save mappings = task {
             try
                 File.Create(fileMappingStoragePath) |> ignore
-                do! File.WriteAllTextAsync(fileMappingStoragePath, JsonSerializer.Serialize mappings)
+                do! File.WriteAllTextAsync(fileMappingStoragePath, Json.serializeF mappings)
 
                 return Ok mappings
             with | _ ->
@@ -23,7 +23,7 @@ type FileMappingStrategy (configuration: IConfiguration) =
         member _.get () = task {
             try
                 let! json = File.ReadAllTextAsync(fileMappingStoragePath)
-                let mappings = JsonSerializer.Deserialize<IDictionary<string, string>> json
+                let mappings = Json.deserializeF<IDictionary<string, string>> json
 
                 return Ok mappings
             

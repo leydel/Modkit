@@ -672,22 +672,22 @@ and ComponentConverter () =
             let json = document.RootElement.GetRawText()
 
             match componentType with
-            | ComponentType.ACTION_ROW -> Component.ActionRow <| JsonSerializer.Deserialize<ActionRowComponent> json
-            | ComponentType.BUTTON -> Component.Button <| JsonSerializer.Deserialize<ButtonComponent> json
+            | ComponentType.ACTION_ROW -> Component.ActionRow <| Json.deserializeF<ActionRowComponent> json
+            | ComponentType.BUTTON -> Component.Button <| Json.deserializeF<ButtonComponent> json
             | ComponentType.STRING_SELECT
             | ComponentType.USER_SELECT
             | ComponentType.ROLE_SELECT
             | ComponentType.MENTIONABLE_SELECT
-            | ComponentType.CHANNEL_SELECT -> Component.SelectMenu <| JsonSerializer.Deserialize<SelectMenuComponent> json
-            | ComponentType.TEXT_INPUT -> Component.TextInput <| JsonSerializer.Deserialize<TextInputComponent> json
+            | ComponentType.CHANNEL_SELECT -> Component.SelectMenu <| Json.deserializeF<SelectMenuComponent> json
+            | ComponentType.TEXT_INPUT -> Component.TextInput <| Json.deserializeF<TextInputComponent> json
             | _ -> failwith "Unexpected ComponentType provided"
 
         override _.Write (writer, value, options) =
             match value with
-            | Component.ActionRow a -> JsonSerializer.Serialize a |> writer.WriteRawValue
-            | Component.Button b -> JsonSerializer.Serialize b |> writer.WriteRawValue
-            | Component.SelectMenu s -> JsonSerializer.Serialize s |> writer.WriteRawValue
-            | Component.TextInput t -> JsonSerializer.Serialize t |> writer.WriteRawValue
+            | Component.ActionRow a -> Json.serializeF a |> writer.WriteRawValue
+            | Component.Button b -> Json.serializeF b |> writer.WriteRawValue
+            | Component.SelectMenu s -> Json.serializeF s |> writer.WriteRawValue
+            | Component.TextInput t -> Json.serializeF t |> writer.WriteRawValue
 
 and ActionRowComponent = {
     [<JsonPropertyName "type">] Type: ComponentType
@@ -1171,17 +1171,17 @@ and InteractionCallbackDataConverter () =
             let json = document.RootElement.GetRawText()
 
             if isAutocomplete then
-                InteractionCallbackData.Autocomplete (JsonSerializer.Deserialize<InteractionCallbackAutocompleteData> json)
+                InteractionCallbackData.Autocomplete (Json.deserializeF<InteractionCallbackAutocompleteData> json)
             else if isModal then
-                InteractionCallbackData.Modal (JsonSerializer.Deserialize<InteractionCallbackModalData> json)
+                InteractionCallbackData.Modal (Json.deserializeF<InteractionCallbackModalData> json)
             else
-                InteractionCallbackData.Message (JsonSerializer.Deserialize<InteractionCallbackMessageData> json)
+                InteractionCallbackData.Message (Json.deserializeF<InteractionCallbackMessageData> json)
             
         override _.Write (writer, value, options) =
             match value with
-            | InteractionCallbackData.Message m -> JsonSerializer.Serialize m |> writer.WriteRawValue
-            | InteractionCallbackData.Autocomplete a -> JsonSerializer.Serialize a |> writer.WriteRawValue
-            | InteractionCallbackData.Modal m -> JsonSerializer.Serialize m |> writer.WriteRawValue
+            | InteractionCallbackData.Message m -> Json.serializeF m |> writer.WriteRawValue
+            | InteractionCallbackData.Autocomplete a -> Json.serializeF a |> writer.WriteRawValue
+            | InteractionCallbackData.Modal m -> Json.serializeF m |> writer.WriteRawValue
 
 and InteractionCallbackMessageData = {
     [<JsonPropertyName "tts">] Tts: bool option
@@ -1625,16 +1625,6 @@ type GatewayEventIdentifier = {
     [<JsonPropertyName "op">] Opcode: GatewayOpcode
     [<JsonPropertyName "t">] EventName: string option
 }
-with
-    static member deserializeF (json: string) =
-        JsonSerializer.Deserialize<GatewayEventIdentifier> json
-
-    static member deserialize (json: string) =
-        try
-            Some <| GatewayEventIdentifier.deserializeF json
-        with
-        | _ ->
-            None
 
 // https://discord.com/developers/docs/topics/gateway-events#payload-structure
 type GatewaySequencer = {
@@ -1643,7 +1633,7 @@ type GatewaySequencer = {
 with
     static member getSequenceNumber (json: string) =
         try
-            let seq = JsonSerializer.Deserialize<GatewaySequencer> json
+            let seq = Json.deserializeF<GatewaySequencer> json
             seq.Sequence
         with
         | _ ->
@@ -1668,16 +1658,6 @@ with
         Sequence = Sequence;
         EventName = EventName;
     }
-
-    static member deserializeF (json: string) =
-        JsonSerializer.Deserialize<GatewayEvent<'a>> json
-
-    static member deserialize (json: string) =
-        try
-            Some <| GatewayEvent<'a>.deserializeF json
-        with
-        | _ ->
-            None
 
 // https://discord.com/developers/docs/resources/sku#sku-object-sku-structure
 type Sku = {

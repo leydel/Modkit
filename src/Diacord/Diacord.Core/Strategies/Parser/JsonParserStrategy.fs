@@ -8,6 +8,6 @@ type JsonParserStrategy () =
     interface IParserStrategy with
         member _.Parse raw =
             try
-                Ok <| JsonSerializer.Deserialize<DiacordTemplate> raw
+                Ok <| Json.deserializeF<DiacordTemplate> raw
             with | _ ->
                 Error "Failed to parse JSON"
