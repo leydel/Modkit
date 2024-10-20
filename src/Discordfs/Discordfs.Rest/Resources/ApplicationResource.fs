@@ -65,7 +65,7 @@ module Application =
                 match res.StatusCode with
                 | HttpStatusCode.OK -> return! Task.map GetCurrentApplicationResponse.Ok (Http.toJson res)
                 | HttpStatusCode.NotFound -> return! Task.map GetCurrentApplicationResponse.NotFound (Http.toJson res)
-                | HttpStatusCode.TooManyRequests -> return! Task.map GetCurrentApplicationResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetCurrentApplicationResponse.TooManyRequests (Http.toJson res)
                 | status -> return GetCurrentApplicationResponse.Other status
             })
 
@@ -102,7 +102,6 @@ module Application =
                 match res.StatusCode with
                 | HttpStatusCode.OK -> return! Task.map GetApplicationActivityInstanceResponse.Ok (Http.toJson res)
                 | HttpStatusCode.NotFound -> return! Task.map GetApplicationActivityInstanceResponse.NotFound (Http.toJson res)
-                | HttpStatusCode.TooManyRequests -> return! Task.map GetApplicationActivityInstanceResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetApplicationActivityInstanceResponse.TooManyRequests (Http.toJson res)
                 | status -> return GetApplicationActivityInstanceResponse.Other status
             })
-            
