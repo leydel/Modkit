@@ -1,11 +1,19 @@
 ﻿namespace Discordfs.Rest.Resources
 
 open Discordfs.Rest.Common
+open Discordfs.Rest.Types
 open Discordfs.Types
 open System.Collections.Generic
-open System.Threading.Tasks
+open System.Net
+open System.Net.Http
 
-type EditCurrentApplication (
+type GetCurrentApplicationResponse =
+    | Ok of Application
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type EditCurrentApplicationPayload (
     ?custom_install_url:               string,
     ?description:                      string,
     ?role_connection_verification_url: string,
@@ -31,46 +39,70 @@ type EditCurrentApplication (
             optional "tags" tags
         }
 
-type IApplicationResource =
-    // https://discord.com/developers/docs/resources/application#get-current-application
-    abstract member GetCurrentApplication:
-        unit ->
-        Task<Application>
+type EditCurrentApplicationResponse =
+    | Ok of Application
+    | BadRequest of ErrorResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
 
-    // https://discord.com/developers/docs/resources/application#edit-current-application
-    abstract member EditCurrentApplication:
-        content: EditCurrentApplication ->
-        Task<Application>
+type GetApplicationActivityInstanceResponse =
+    | Ok of ActivityInstance
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
 
-    // https://discord.com/developers/docs/resources/application#get-application-activity-instance
-    abstract member GetApplicationActivityInstance:
-        applicationId: string ->
-        instanceId: string ->
-        Task<ActivityInstance>
-
-type ApplicationResource (httpClientFactory, token) =
-    interface IApplicationResource with
-        member _.GetCurrentApplication () =
+module Application =
+    let getCurrentApplication
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get "applications/@me"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetCurrentApplicationResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map GetCurrentApplicationResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetCurrentApplicationResponse.NotFound (Http.toJson res)
+                | status -> return GetCurrentApplicationResponse.Other status
+            })
 
-        member _.EditCurrentApplication content =
+    let editCurrentApplication
+        (content: EditCurrentApplicationPayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 patch "applications/@me"
-                bot token
+                bot botToken
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map EditCurrentApplicationResponse.Ok (Http.toJson res)
+                | HttpStatusCode.BadRequest -> return! Task.map EditCurrentApplicationResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map EditCurrentApplicationResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map EditCurrentApplicationResponse.TooManyRequests (Http.toJson res)
+                | status -> return EditCurrentApplicationResponse.Other status
+            })
 
-        member _.GetApplicationActivityInstance applicationId instanceId =
+    let getApplicationActivityInstance
+        (applicationId: string)
+        (instanceId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 patch $"applications/{applicationId}/activity-instances/{instanceId}"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetApplicationActivityInstanceResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map GetApplicationActivityInstanceResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetApplicationActivityInstanceResponse.NotFound (Http.toJson res)
+                | status -> return GetApplicationActivityInstanceResponse.Other status
+            })
+            
