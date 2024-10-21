@@ -1,18 +1,26 @@
 ﻿namespace Discordfs.Rest.Resources
 
 open Discordfs.Rest.Common
+open Discordfs.Rest.Types
 open Discordfs.Types
-open System.Threading.Tasks
+open System.Net
+open System.Net.Http
 
-type CreateAutoModerationRule (
-    name: string,
-    event_type: AutoModerationEventType,
-    trigger_type: AutoModerationTriggerType,
-    actions: AutoModerationAction list,
+type GetAutoModerationRuleResponse =
+    | Ok              of AutoModerationRule
+    | NotFound        of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other           of HttpStatusCode
+
+type CreateAutoModerationRulePayload (
+    name:              string,
+    event_type:        AutoModerationEventType,
+    trigger_type:      AutoModerationTriggerType,
+    actions:           AutoModerationAction list,
     ?trigger_metadata: AutoModerationTriggerMetadata,
-    ?enabled: bool,
-    ?exempt_roles: string list,
-    ?exempt_channels: string list
+    ?enabled:          bool,
+    ?exempt_roles:     string list,
+    ?exempt_channels:  string list
 ) =
     inherit Payload() with
         override _.Content = json {
@@ -26,14 +34,23 @@ type CreateAutoModerationRule (
             optional "exempt_channels" exempt_channels
         }
 
-type ModifyAutoModerationRule (
-    ?name: string,
-    ?event_type: AutoModerationEventType,
+type CreateAutoModerationRuleResponse =
+    | Ok              of AutoModerationRule
+    | Created         of AutoModerationRule
+    | BadRequest      of ErrorResponse
+    | NotFound        of ErrorResponse
+    | Conflict        of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other           of HttpStatusCode
+
+type ModifyAutoModerationRulePayload (
+    ?name:             string,
+    ?event_type:       AutoModerationEventType,
     ?trigger_metadata: AutoModerationTriggerMetadata,
-    ?actions: AutoModerationAction list,
-    ?enabled: bool,
-    ?exempt_roles: string list,
-    ?exempt_channels: string list
+    ?actions:          AutoModerationAction list,
+    ?enabled:          bool,
+    ?exempt_roles:     string list,
+    ?exempt_channels:  string list
 ) =
     inherit Payload() with
         override _.Content = json {
@@ -46,70 +63,101 @@ type ModifyAutoModerationRule (
             optional "exempt_channels" exempt_channels
         }
 
-type IAutoModerationResource =
-    // https://discord.com/developers/docs/resources/auto-moderation#get-auto-moderation-rule
-    abstract member GetAutoModerationRule:
-        guildId: string ->
-        autoModerationRuleId: string ->
-        Task<AutoModerationRule>
+type ModifyAutoModerationRuleResponse =
+    | Ok              of AutoModerationRule
+    | BadRequest      of ErrorResponse
+    | NotFound        of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other           of HttpStatusCode
 
-    // https://discord.com/developers/docs/resources/auto-moderation#create-auto-moderation-rule
-    abstract member CreateAutoModerationRule:
-        guildId: string ->
-        auditLogReason: string option ->
-        content: CreateAutoModerationRule ->
-        Task<AutoModerationRule>
+type DeleteAutoModerationRuleResponse =
+    | NoContent
+    | NotFound        of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other           of HttpStatusCode
 
-    // https://discord.com/developers/docs/resources/auto-moderation#modify-auto-moderation-rule
-    abstract member ModifyAutoModerationRule:
-        guildId: string ->
-        autoModerationRuleId: string ->
-        auditLogReason: string option ->
-        content: ModifyAutoModerationRule ->
-        Task<AutoModerationRule>
-
-    // https://discord.com/developers/docs/resources/auto-moderation#delete-auto-moderation-rule
-    abstract member DeleteAutoModerationRule:
-        guildId: string ->
-        autoModerationRuleId: string ->
-        auditLogReason: string option ->
-        Task<unit>
-
-type AutoModerationResource (httpClientFactory, token) =
-    interface IAutoModerationResource with
-        member _.GetAutoModerationRule guildId autoModerationRuleId =
+module AutoModeration =
+    let getAutoModerationRule
+        (guildId: string)
+        (autoModerationRuleId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/auto-moderation/rules/{autoModerationRuleId}"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetAutoModerationRuleResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map GetAutoModerationRuleResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetAutoModerationRuleResponse.TooManyRequests (Http.toJson res)
+                | status -> return GetAutoModerationRuleResponse.Other status
+            })
 
-        member _.CreateAutoModerationRule guildId auditLogReason content =
+    let createAutoModerationRule
+        (guildId: string)
+        (auditLogReason: string option)
+        (content: CreateAutoModerationRulePayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 post $"guilds/{guildId}/auto-moderation/rules"
-                bot token
+                bot botToken
                 audit auditLogReason
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map CreateAutoModerationRuleResponse.Ok (Http.toJson res)
+                | HttpStatusCode.Created -> return! Task.map CreateAutoModerationRuleResponse.Created (Http.toJson res)
+                | HttpStatusCode.BadRequest -> return! Task.map CreateAutoModerationRuleResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map CreateAutoModerationRuleResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.Conflict -> return! Task.map CreateAutoModerationRuleResponse.Conflict (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map CreateAutoModerationRuleResponse.TooManyRequests (Http.toJson res)
+                | status -> return CreateAutoModerationRuleResponse.Other status
+            })
 
-        member _.ModifyAutoModerationRule guildId autoModerationRuleId auditLogReason content =
+    let modifyAutoModerationRule
+        (guildId: string)
+        (autoModerationRuleId: string)
+        (auditLogReason: string option)
+        (content: CreateAutoModerationRulePayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 patch $"guilds/{guildId}/auto-moderation/rules/{autoModerationRuleId}"
-                bot token
+                bot botToken
                 audit auditLogReason
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map ModifyAutoModerationRuleResponse.Ok (Http.toJson res)
+                | HttpStatusCode.BadRequest -> return! Task.map ModifyAutoModerationRuleResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map ModifyAutoModerationRuleResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map ModifyAutoModerationRuleResponse.TooManyRequests (Http.toJson res)
+                | status -> return ModifyAutoModerationRuleResponse.Other status
+            })
 
-        member _.DeleteAutoModerationRule guildId autoModerationRuleId auditLogReason =
+    let deleteAutoModerationRule
+        (guildId: string)
+        (autoModerationRuleId: string)
+        (auditLogReason: string option)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 delete $"guilds/{guildId}/auto-moderation/rules/{autoModerationRuleId}"
-                bot token
+                bot botToken
                 audit auditLogReason
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.NoContent -> return DeleteAutoModerationRuleResponse.NoContent
+                | HttpStatusCode.NotFound -> return! Task.map DeleteAutoModerationRuleResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map DeleteAutoModerationRuleResponse.TooManyRequests (Http.toJson res)
+                | status -> return DeleteAutoModerationRuleResponse.Other status
+            })
