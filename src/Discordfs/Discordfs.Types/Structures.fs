@@ -128,6 +128,7 @@ type GuildMember = {
     [<JsonPropertyName "user">] User: User option
     [<JsonPropertyName "nick">] Nick: string option
     [<JsonPropertyName "avatar">] Avatar: string option
+    [<JsonPropertyName "banner">] Banner: string option
     [<JsonPropertyName "roles">] Roles: string list
     [<JsonPropertyName "joined_at">] JoinedAt: DateTime option
     [<JsonPropertyName "premium_since">] PremiumSince: DateTime option
