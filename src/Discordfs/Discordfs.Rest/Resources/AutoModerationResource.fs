@@ -39,7 +39,6 @@ type CreateAutoModerationRuleResponse =
     | Created         of AutoModerationRule
     | BadRequest      of ErrorResponse
     | NotFound        of ErrorResponse
-    | Conflict        of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other           of HttpStatusCode
 
@@ -114,7 +113,6 @@ module AutoModeration =
                 | HttpStatusCode.Created -> return! Task.map CreateAutoModerationRuleResponse.Created (Http.toJson res)
                 | HttpStatusCode.BadRequest -> return! Task.map CreateAutoModerationRuleResponse.BadRequest (Http.toJson res)
                 | HttpStatusCode.NotFound -> return! Task.map CreateAutoModerationRuleResponse.NotFound (Http.toJson res)
-                | HttpStatusCode.Conflict -> return! Task.map CreateAutoModerationRuleResponse.Conflict (Http.toJson res)
                 | HttpStatusCode.TooManyRequests -> return! Task.map CreateAutoModerationRuleResponse.TooManyRequests (Http.toJson res)
                 | status -> return CreateAutoModerationRuleResponse.Other status
             })

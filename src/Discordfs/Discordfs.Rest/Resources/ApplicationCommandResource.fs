@@ -43,7 +43,6 @@ type CreateGlobalApplicationCommandResponse =
     | Ok of ApplicationCommand
     | Created of ApplicationCommand
     | BadRequest of ErrorResponse
-    | Conflict of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
 
@@ -134,7 +133,6 @@ type CreateGuildApplicationCommandResponse =
     | Ok of ApplicationCommand
     | Created of ApplicationCommand
     | BadRequest of ErrorResponse
-    | Conflict of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
 
@@ -252,7 +250,6 @@ module ApplicationCommand =
                 | HttpStatusCode.OK -> return! Task.map CreateGlobalApplicationCommandResponse.Ok (Http.toJson res)
                 | HttpStatusCode.Created -> return! Task.map CreateGlobalApplicationCommandResponse.Created (Http.toJson res)
                 | HttpStatusCode.BadRequest -> return! Task.map CreateGlobalApplicationCommandResponse.BadRequest (Http.toJson res)
-                | HttpStatusCode.Conflict -> return! Task.map CreateGlobalApplicationCommandResponse.Conflict (Http.toJson res)
                 | HttpStatusCode.TooManyRequests -> return! Task.map CreateGlobalApplicationCommandResponse.TooManyRequests (Http.toJson res)
                 | status -> return CreateGlobalApplicationCommandResponse.Other status
             })
@@ -370,7 +367,6 @@ module ApplicationCommand =
                 | HttpStatusCode.OK -> return! Task.map CreateGuildApplicationCommandResponse.Ok (Http.toJson res)
                 | HttpStatusCode.Created -> return! Task.map CreateGuildApplicationCommandResponse.Created (Http.toJson res)
                 | HttpStatusCode.BadRequest -> return! Task.map CreateGuildApplicationCommandResponse.BadRequest (Http.toJson res)
-                | HttpStatusCode.Conflict -> return! Task.map CreateGuildApplicationCommandResponse.Conflict (Http.toJson res)
                 | HttpStatusCode.TooManyRequests -> return! Task.map CreateGuildApplicationCommandResponse.TooManyRequests (Http.toJson res)
                 | status -> return CreateGuildApplicationCommandResponse.Other status
             })

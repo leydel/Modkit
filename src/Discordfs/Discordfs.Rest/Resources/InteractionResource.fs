@@ -36,7 +36,6 @@ type CreateInteractionResponseResponse =
     | Ok of CreateInteractionResponseOkResponse
     | NoContent
     | BadRequest of ErrorResponse
-    | Conflict of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
 
@@ -120,7 +119,6 @@ type CreateFollowUpMessagePayload (
 type CreateFollowUpMessageResponse =
     | NoContent
     | BadRequest of ErrorResponse
-    | Conflict of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
 
