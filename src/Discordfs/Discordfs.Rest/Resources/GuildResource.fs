@@ -4,9 +4,11 @@ open Discordfs.Rest.Common
 open Discordfs.Rest.Types
 open Discordfs.Types
 open System
-open System.Threading.Tasks
+open System.Net
+open System.Net.Http
+open System.Text.Json.Serialization
 
-type CreateGuild(
+type CreateGuildPayload(
     name:                           string,
     ?icon:                          string,
     ?verification_level:            GuildVerificationLevel,
@@ -34,7 +36,25 @@ type CreateGuild(
             optional "system_channel_flags" system_channel_flags
         }
 
-type ModifyGuild(
+type CreateGuildResponse =
+    | Created of Guild
+    | BadRequest of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type GetGuildResponse =
+    | Ok of Guild
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type GetGuildPreviewResponse =
+    | Ok of GuildPreview
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type ModifyGuildPayload(
     ?name:                          string,
     ?verification_level:            GuildVerificationLevel option,
     ?default_message_notifications: GuildMessageNotificationLevel option,
@@ -80,7 +100,26 @@ type ModifyGuild(
             optional "safety_alerts_channel_id" safety_alerts_channel_id
         }
 
-type CreateGuildChannel(
+type ModifyGuildResponse =
+    | Ok of Guild
+    | BadRequest of ErrorResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type DeleteGuildResponse =
+    | NoContent
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type GetGuildChannelsResponse =
+    | Ok of Channel list
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type CreateGuildChannelPayload(
     name:                                string,
     ?``type``:                           ChannelType option,
     ?topic:                              string option,
@@ -122,14 +161,63 @@ type CreateGuildChannel(
             optional "default_thread_rate_limit_per_user" default_thread_rate_limit_per_user
         }
 
-type ModifyGuildChannelPositions(
+type CreateGuildChannelResponse =
+    | Created of Channel
+    | BadRequest of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type ModifyGuildChannelPosition = {
+    [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "position">] Position: int option
+    [<JsonPropertyName "lock_permissions">] LockPermissions: bool option
+    [<JsonPropertyName "parent_id">] ParentId: string option
+}
+
+type ModifyGuildChannelPositionsPayload(
     positions: ModifyGuildChannelPosition list
 ) =
     inherit Payload() with
         override _.Content =
             JsonListPayload positions
 
-type AddGuildMember(
+type ModifyGuildChannelPositionsResponse =
+    | NoContent
+    | BadRequest of ErrorResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type ListActiveGuildThreadsOkResponse = {
+    [<JsonPropertyName "threads">] Threads: Channel list
+    [<JsonPropertyName "members">] Members: GuildMember list
+}
+
+type ListActiveGuildThreadsResponse =
+    | Ok of ListActiveGuildThreadsOkResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type GetGuildMemberResponse =
+    | Ok of GuildMember
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type ListGuildMembersResponse =
+    | Ok of GuildMember list
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type SearchGuildMembersResponse =
+    | Ok of GuildMember list
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type AddGuildMemberPayload(
     access_token: string,
     ?nick:        string,
     ?roles:       string list,
@@ -145,7 +233,15 @@ type AddGuildMember(
             optional "deaf" deaf
         }
 
-type ModifyGuildMember(
+type AddGuildMemberResponse =
+    | Created of GuildMember
+    | NoContent
+    | BadRequest of ErrorResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+    
+type ModifyGuildMemberPayload(
     ?nick:                         string option,
     ?roles:                        string list option,
     ?mute:                         bool option,
@@ -165,7 +261,15 @@ type ModifyGuildMember(
             optional "flags" flags
         }
 
-type ModifyCurrentMember(
+type ModifyGuildMemberResponse =
+    | Ok of GuildMember
+    | NoContent
+    | BadRequest of ErrorResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type ModifyCurrentMemberPayload(
     ?nick: string option
 ) =
     inherit Payload() with
@@ -173,7 +277,45 @@ type ModifyCurrentMember(
             optional "nick" nick
         }
 
-type CreateGuildBan(
+type ModifyCurrentMemberResponse =
+    | Ok of GuildMember
+    | NoContent
+    | BadRequest of ErrorResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type AddGuildMemberRoleResponse =
+    | NoContent
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type RemoveGuildMemberRoleResponse =
+    | NoContent
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type RemoveGuildMemberResponse =
+    | NoContent
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type GetGuildBansResponse =
+    | Ok of GuildBan list
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type GetGuildBanResponse =
+    | Ok of GuildBan
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type CreateGuildBanPayload(
     ?delete_message_days:    int,
     ?delete_message_seconds: int
 ) =
@@ -183,7 +325,20 @@ type CreateGuildBan(
             optional "delete_message_seconds" delete_message_seconds
         }
 
-type BulkGuildBan(
+type CreateGuildBanResponse =
+    | NoContent
+    | BadRequest of ErrorResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type RemoveGuildBanResponse =
+    | NoContent
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type BulkGuildBanPayload(
     user_ids:                string list,
     ?delete_message_seconds: int
 ) =
@@ -193,7 +348,31 @@ type BulkGuildBan(
             optional "delete_message_seconds" delete_message_seconds
         }
 
-type CreateGuildRole(
+type BulkGuildBanOkResponse = {
+    [<JsonPropertyName "banned_users">] BannedUsers: string list
+    [<JsonPropertyName "failed_users">] FailedUsers: string list
+}
+
+type BulkGuildBanResponse =
+    | Ok of BulkGuildBanOkResponse
+    | BadRequest of ErrorResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type GetGuildRolesResponse =
+    | Ok of Role list
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type GetGuildRoleResponse =
+    | Ok of Role
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+    
+type CreateGuildRolePayload(
     ?name:          string,
     ?permissions:   string,
     ?color:         int,
@@ -213,14 +392,33 @@ type CreateGuildRole(
             optional "mentionable" mentionable
         }
 
-type ModifyGuildRolePositions(
+type CreateGuildRoleResponse =
+    | Ok of Role
+    | BadRequest of ErrorResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type ModifyGuildRolePosition = {
+    [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "position">] Position: int option
+}
+
+type ModifyGuildRolePositionsPayload(
     positions: ModifyGuildRolePosition list
 ) =
     inherit Payload() with
         override _.Content =
             JsonListPayload positions
 
-type ModifyGuildRole(
+type ModifyGuildRolePositionsResposne =
+    | Ok of Role list
+    | BadRequest of ErrorResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type ModifyGuildRolePayload(
     ?name:          string option,
     ?permissions:   string option,
     ?color:         int option,
@@ -240,7 +438,14 @@ type ModifyGuildRole(
             optional "mentionable" mentionable
         }
 
-type ModifyGuildMfaLevel(
+type ModifyGuildRoleResponse =
+    | Ok of Role
+    | BadRequest of ErrorResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type ModifyGuildMfaLevelPayload(
     level: GuildMfaLevel
 ) =
     inherit Payload() with
@@ -248,7 +453,30 @@ type ModifyGuildMfaLevel(
             required "level" level
         }
 
-type BeginGuildPrune(
+type ModifyGuildMfaLevelResponse =
+    | Ok of GuildMfaLevel
+    | BadRequest of ErrorResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type DeleteGuildRoleResponse =
+    | NoContent
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type GetGuildPruneCountOkResponse = {
+    [<JsonPropertyName "pruned">] Pruned: int
+}
+
+type GetGuildPruneCountResponse =
+    | Ok of GetGuildPruneCountOkResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type BeginGuildPrunePayload(
     ?days: int,
     ?compute_prune_count: bool,
     ?include_roles: string list,
@@ -262,7 +490,48 @@ type BeginGuildPrune(
             optional "reason" reason
         }
 
-type ModifyGuildWidget(
+type BeginGuildPruneOkResponse = {
+    [<JsonPropertyName "pruned">] Pruned: int option
+}
+
+type BeginGuildPruneResponse =
+    | Ok of BeginGuildPruneOkResponse
+    | BadRequest of ErrorResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type GetGuildVoiceRegionsResponse =
+    | Ok of VoiceRegion list
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type GetGuildInvitesResponse =
+    | Ok of InviteWithMetadata list
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type GetGuildIntegrationsResponse =
+    | Ok of GuildIntegration list
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type DeleteGuildIntegrationResponse =
+    | NoContent
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type GetGuildWidgetSettingsResponse =
+    | Ok of GuildWidgetSettings
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type ModifyGuildWidgetPayload(
     ?enabled:    bool,
     ?channel_id: string option
 ) =
@@ -272,7 +541,42 @@ type ModifyGuildWidget(
             optional "channel_id" channel_id
         }
 
-type ModifyGuildWelcomeScreen(
+type ModifyGuildWidgetResponse =
+    | Ok of GuildWidgetSettings
+    | BadRequest of ErrorResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type GetGuildWidgetResponse =
+    | Ok of GuildWidget
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type GetGuildVanityUrlOkResponse = {
+    [<JsonPropertyName "code">] Code: string option
+    [<JsonPropertyName "uses">] Uses: int
+}
+
+type GetGuildVanityUrlResponse =
+    | Ok of GetGuildVanityUrlOkResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type GetGuildWidgetImageResponse =
+    | Ok of string
+    | NotFound of ErrorResponse
+    | Other of HttpStatusCode
+
+type GetGuildWelcomeScreenResponse =
+    | Ok of WelcomeScreen
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type ModifyGuildWelcomeScreenPayload(
     ?enabled:          bool option,
     ?welcome_channels: WelcomeScreenChannel list option,
     ?description:      string option
@@ -284,7 +588,20 @@ type ModifyGuildWelcomeScreen(
             optional "description" description
         }
 
-type ModifyGuildOnboarding(
+type ModifyGuildWelcomeScreenResponse =
+    | Ok of WelcomeScreen
+    | BadRequest of ErrorResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type GetGuildOnboardingResponse =
+    | Ok of GuildOnboarding
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type ModifyGuildOnboardingPayload(
     prompts:             GuildOnboardingPrompt list,
     default_channel_ids: string list,
     enabled:             bool,
@@ -298,701 +615,902 @@ type ModifyGuildOnboarding(
             required "mode" mode
         }
 
-type IGuildResource =
-    // https://discord.com/developers/docs/resources/guild#create-guild
-    abstract member CreateGuild:
-        content: CreateGuild ->
-        Task<Guild>
+type ModifyGuildOnboardingResponse =
+    | Ok of GuildOnboarding
+    | BadRequest of ErrorResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
 
-    // https://discord.com/developers/docs/resources/guild#get-guild
-    abstract member GetGuild:
-        guildId: string ->
-        withCounts: bool option ->
-        Task<Guild>
-
-    // https://discord.com/developers/docs/resources/guild#get-guild-preview
-    abstract member GetGuildPreview:
-        guildId: string ->
-        Task<GuildPreview>
-
-    // https://discord.com/developers/docs/resources/guild#modify-guild
-    abstract member ModifyGuild:
-        guildId: string ->
-        auditLogReason: string option ->
-        content: ModifyGuild ->
-        Task<Guild>
-
-    // https://discord.com/developers/docs/resources/guild#delete-guild
-    abstract member DeleteGuild:
-        guildId: string ->
-        Task<unit>
-
-    // https://discord.com/developers/docs/resources/guild#get-guild-channels
-    abstract member GetGuildChannels:
-        guildId: string ->
-        Task<Channel list>
-
-    // https://discord.com/developers/docs/resources/guild#create-guild-channel
-    abstract member CreateGuildChannel:
-        guildId: string ->
-        auditLogReason: string option ->
-        content: CreateGuildChannel ->
-        Task<Channel>
-
-    // https://discord.com/developers/docs/resources/guild#modify-guild-channel-positions
-    abstract member ModifyGuildChannelPositions:
-        guildId: string ->
-        content: ModifyGuildChannelPositions ->
-        Task<unit>
-
-    // https://discord.com/developers/docs/resources/guild#list-active-guild-threads
-    abstract member ListActiveGuildThreads:
-        guildId: string ->
-        Task<ListActiveGuildThreadsResponse>
-
-    // https://discord.com/developers/docs/resources/guild#get-guild-member
-    abstract member GetGuildMember:
-        guildId: string ->
-        userId: string ->
-        Task<GuildMember>
-
-    // https://discord.com/developers/docs/resources/guild#list-guild-members
-    abstract member ListGuildMembers:
-        guildId: string ->
-        limit: int option ->
-        after: string option ->
-        Task<GuildMember list>
-
-    // https://discord.com/developers/docs/resources/guild#search-guild-members
-    abstract member SearchGuildMembers:
-        guildId: string ->
-        query: string ->
-        limit: int option ->
-        Task<GuildMember list>
-
-    // https://discord.com/developers/docs/resources/guild#add-guild-member
-    abstract member AddGuildMember:
-        guildId: string ->
-        userId: string ->
-        content: AddGuildMember ->
-        Task<GuildMember>
-
-    // https://discord.com/developers/docs/resources/guild#modify-guild-member
-    abstract member ModifyGuildMember:
-        guildId: string ->
-        userId: string ->
-        auditLogReason: string option ->
-        content: ModifyGuildMember ->
-        Task<GuildMember>
-
-    // https://discord.com/developers/docs/resources/guild#modify-current-member
-    abstract member ModifyCurrentMember:
-        guildId: string ->
-        auditLogReason: string option ->
-        content: ModifyCurrentMember ->
-        Task<GuildMember>
-
-    // https://discord.com/developers/docs/resources/guild#add-guild-member-role
-    abstract member AddGuildMemberRole:
-        guildId: string ->
-        userId: string ->
-        roleId: string ->
-        auditLogReason: string option ->
-        Task<unit>
-
-    // https://discord.com/developers/docs/resources/guild#remove-guild-member-role
-    abstract member RemoveGuildMemberRole:
-        guildId: string ->
-        userId: string ->
-        roleId: string ->
-        auditLogReason: string option ->
-        Task<unit>
-        
-    // https://discord.com/developers/docs/resources/guild#remove-guild-member
-    abstract member RemoveGuildMember:
-        guildId: string ->
-        userId: string ->
-        auditLogReason: string option ->
-        Task<unit>
-
-    // https://discord.com/developers/docs/resources/guild#get-guild-bans
-    abstract member GetGuildBans:
-        guildId: string ->
-        limit: int option ->
-        before: string option ->
-        after: string option ->
-        Task<GuildBan list>
-
-    // https://discord.com/developers/docs/resources/guild#get-guild-ban
-    abstract member GetGuildBan:
-        guildId: string ->
-        userId: string ->
-        Task<GuildBan>
-
-    // https://discord.com/developers/docs/resources/guild#create-guild-ban
-    abstract member CreateGuildBan:
-        guildId: string ->
-        userId: string ->
-        auditLogReason: string option ->
-        content: CreateGuildBan ->
-        Task<unit>
-
-    // https://discord.com/developers/docs/resources/guild#remove-guild-ban
-    abstract member RemoveGuildBan:
-        guildId: string ->
-        userId: string ->
-        auditLogReason: string option ->
-        Task<unit>
-
-    // https://discord.com/developers/docs/resources/guild#bulk-guild-ban
-    abstract member BulkGuildBan:
-        guildId: string ->
-        auditLogReason: string option ->
-        content: BulkGuildBan ->
-        Task<BulkGuildBanResponse>
-
-    // https://discord.com/developers/docs/resources/guild#get-guild-roles
-    abstract member GetGuildRoles:
-        guildId: string ->
-        Task<Role list>
-
-    // https://discord.com/developers/docs/resources/guild#get-guild-role
-    abstract member GetGuildRole:
-        guildId: string ->
-        roleId: string ->
-        Task<Role>
-
-    // https://discord.com/developers/docs/resources/guild#create-guild-role
-    abstract member CreateGuildRole:
-        guildId: string ->
-        auditLogReason: string option ->
-        content: CreateGuildRole ->
-        Task<Role>
-
-    // https://discord.com/developers/docs/resources/guild#modify-guild-role-positions
-    abstract member ModifyGuildRolePositions:
-        guildId: string ->
-        auditLogReason: string option ->
-        content: ModifyGuildRolePositions ->
-        Task<Role list>
-
-    // https://discord.com/developers/docs/resources/guild#modify-guild-role
-    abstract member ModifyGuildRole:
-        guildId: string ->
-        roleId: string ->
-        auditLogReason: string option ->
-        content: ModifyGuildRole ->
-        Task<Role>
-
-    // https://discord.com/developers/docs/resources/guild#modify-guild-mfa-level
-    abstract member ModifyGuildMfaLevel:
-        guildId: string ->
-        auditLogReason: string option ->
-        content: ModifyGuildMfaLevel ->
-        Task<GuildMfaLevel>
-
-    // https://discord.com/developers/docs/resources/guild#delete-guild-role
-    abstract member DeleteGuildRole:
-        guildId: string ->
-        roleId: string ->
-        auditLogReason: string option ->
-        Task<unit>
-
-    // https://discord.com/developers/docs/resources/guild#get-guild-prune-count
-    abstract member GetGuildPruneCount:
-        guildId: string ->
-        days: int option ->
-        includeRoles: string list option ->
-        Task<GetGuildPruneCountResponse>
-
-    // https://discord.com/developers/docs/resources/guild#begin-guild-prune
-    abstract member BeginGuildPrune:
-        guildId: string ->
-        auditLogReason: string option ->
-        content: BeginGuildPrune ->
-        Task<BeginGuildPruneResponse>
-
-    // https://discord.com/developers/docs/resources/guild#get-guild-voice-regions
-    abstract member GetGuildVoiceRegions:
-        guildId: string ->
-        Task<VoiceRegion list>
-
-    // https://discord.com/developers/docs/resources/guild#get-guild-invites
-    abstract member GetGuildInvites:
-        guildId: string ->
-        Task<InviteWithMetadata list>
-
-    // https://discord.com/developers/docs/resources/guild#get-guild-integrations
-    abstract member GetGuildIntegrations:
-        guildId: string ->
-        Task<GuildIntegration list>
-
-    // https://discord.com/developers/docs/resources/guild#delete-guild-integration
-    abstract member DeleteGuildIntegration:
-        guildId: string ->
-        integrationId: string ->
-        auditLogReason: string option ->
-        Task<unit>
-
-    // https://discord.com/developers/docs/resources/guild#get-guild-widget-settings
-    abstract member GetGuildWidgetSettings:
-        guildId: string ->
-        Task<GuildWidgetSettings>
-
-    // https://discord.com/developers/docs/resources/guild#modify-guild-widget
-    abstract member ModifyGuildWidget:
-        guildId: string ->
-        auditLogReason: string option ->
-        content: ModifyGuildWidget ->
-        Task<GuildWidgetSettings>
-
-    // https://discord.com/developers/docs/resources/guild#get-guild-widget
-    abstract member GetGuildWidget:
-        guildId: string ->
-        Task<GuildWidget>
-
-    // https://discord.com/developers/docs/resources/guild#get-guild-vanity-url
-    abstract member GetGuildVanityUrl:
-        guildId: string ->
-        Task<GetGuildVanityUrlResponse>
-
-    // https://discord.com/developers/docs/resources/guild#get-guild-widget-image
-    abstract member GetGuildWidgetImage:
-        guildId: string ->
-        style: GuildWidgetStyle option ->
-        Task<string>
-
-    // https://discord.com/developers/docs/resources/guild#get-guild-welcome-screen
-    abstract member GetGuildWelcomeScreen:
-        guildId: string ->
-        Task<WelcomeScreen>
-
-    // https://discord.com/developers/docs/resources/guild#modify-guild-welcome-screen
-    abstract member ModifyGuildWelcomeScreen:
-        guildId: string ->
-        auditLogReason: string option ->
-        content: ModifyGuildWelcomeScreen ->
-        Task<WelcomeScreen>
-
-    // https://discord.com/developers/docs/resources/guild#get-guild-onboarding
-    abstract member GetGuildOnboarding:
-        guildId: string ->
-        Task<GuildOnboarding>
-
-    // https://discord.com/developers/docs/resources/guild#modify-guild-onboarding
-    abstract member ModifyGuildOnboarding:
-        guildId: string ->
-        auditLogReason: string option ->
-        content: ModifyGuildOnboarding ->
-        Task<GuildOnboarding>
-
-type GuildResource (httpClientFactory, token) =
-    interface IGuildResource with
-        member _.CreateGuild content =
+module Guild =
+    let createGuild
+        (content: CreateGuildPayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 post "guilds"
-                bot token
+                bot botToken
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.Created -> return! Task.map CreateGuildResponse.Created (Http.toJson res)
+                | HttpStatusCode.BadRequest -> return! Task.map CreateGuildResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map CreateGuildResponse.TooManyRequests (Http.toJson res)
+                | status -> return CreateGuildResponse.Other status
+            })
 
-        member _.GetGuild guildId withCounts =
+    let getGuild
+        (guildId: string)
+        (withCounts: bool option)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}"
-                bot token
+                bot botToken
                 query "with_counts" (withCounts >>. _.ToString())
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetGuildResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map GetGuildResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetGuildResponse.TooManyRequests (Http.toJson res)
+                | status -> return GetGuildResponse.Other status
+            })
 
-        member _.GetGuildPreview guildId =
+    let getGuildPreview
+        (guildId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/preview"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetGuildPreviewResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map GetGuildPreviewResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetGuildPreviewResponse.TooManyRequests (Http.toJson res)
+                | status -> return GetGuildPreviewResponse.Other status
+            })
 
-        member _.ModifyGuild guildId auditLogReason content =
+    let modifyGuild
+        (guildId: string)
+        (auditLogReason: string option)
+        (content: ModifyGuildPayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 patch $"guilds/{guildId}"
-                bot token
+                bot botToken
                 audit auditLogReason
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.Created -> return! Task.map ModifyGuildResponse.Ok (Http.toJson res)
+                | HttpStatusCode.BadRequest -> return! Task.map ModifyGuildResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map ModifyGuildResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map ModifyGuildResponse.TooManyRequests (Http.toJson res)
+                | status -> return ModifyGuildResponse.Other status
+            })
 
-        member _.DeleteGuild guildId =
+    let deleteGuild
+        (guildId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 delete $"guilds/{guildId}"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.Created -> return DeleteGuildResponse.NoContent
+                | HttpStatusCode.NotFound -> return! Task.map DeleteGuildResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map DeleteGuildResponse.TooManyRequests (Http.toJson res)
+                | status -> return DeleteGuildResponse.Other status
+            })
 
-        member _.GetGuildChannels guildId =
+    let getGuildChannels
+        (guildId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/channels"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetGuildChannelsResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map GetGuildChannelsResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetGuildChannelsResponse.TooManyRequests (Http.toJson res)
+                | status -> return GetGuildChannelsResponse.Other status
+            })
 
-        member _.CreateGuildChannel guildId auditLogReason content =
+    let createGuildChannel
+        (guildId: string)
+        (auditLogReason: string option)
+        (content: CreateGuildChannelPayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 post $"guilds/{guildId}/channels"
-                bot token
+                bot botToken
                 audit auditLogReason
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.Created -> return! Task.map CreateGuildChannelResponse.Created (Http.toJson res)
+                | HttpStatusCode.BadRequest -> return! Task.map CreateGuildChannelResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map CreateGuildChannelResponse.TooManyRequests (Http.toJson res)
+                | status -> return CreateGuildChannelResponse.Other status
+            })
 
-        member _.ModifyGuildChannelPositions guildId content =
+    let modifyGuildChannelPositions
+        (guildId: string)
+        (content: ModifyGuildChannelPositionsPayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 patch $"guilds/{guildId}/channels"
-                bot token
+                bot botToken
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.wait
-            
-        member _.ListActiveGuildThreads guildId =
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.Created -> return ModifyGuildChannelPositionsResponse.NoContent
+                | HttpStatusCode.BadRequest -> return! Task.map ModifyGuildChannelPositionsResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map ModifyGuildChannelPositionsResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map ModifyGuildChannelPositionsResponse.TooManyRequests (Http.toJson res)
+                | status -> return ModifyGuildChannelPositionsResponse.Other status
+            })
+
+    let listActiveGuildThreads
+        (guildId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/threads/active"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map ListActiveGuildThreadsResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map ListActiveGuildThreadsResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map ListActiveGuildThreadsResponse.TooManyRequests (Http.toJson res)
+                | status -> return ListActiveGuildThreadsResponse.Other status
+            })
 
-        member _.GetGuildMember guildId userId =
+    let getGuildMember
+        (guildId: string)
+        (userId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/members/{userId}"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetGuildMemberResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map GetGuildMemberResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetGuildMemberResponse.TooManyRequests (Http.toJson res)
+                | status -> return GetGuildMemberResponse.Other status
+            })
 
-        member _.ListGuildMembers guildId limit after =
+    let listGuildMembers
+        (guildId: string)
+        (limit: int option)
+        (after: string option)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/members"
-                bot token
+                bot botToken
                 query "limit" (limit >>. _.ToString())
                 query "after" (after >>. _.ToString())
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map ListGuildMembersResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map ListGuildMembersResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map ListGuildMembersResponse.TooManyRequests (Http.toJson res)
+                | status -> return ListGuildMembersResponse.Other status
+            })
 
-        member _.SearchGuildMembers guildId queryProp limit =
+    let searchGuildMembers
+        (guildId: string)
+        (q: string) // query (cannot name same due to req ce)
+        (limit: int option)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/members/search"
-                bot token
-                query "query" queryProp
+                bot botToken
+                query "query" q
                 query "limit" (limit >>. _.ToString())
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
-                
-        member _.AddGuildMember guildId userId content =
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map SearchGuildMembersResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map SearchGuildMembersResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map SearchGuildMembersResponse.TooManyRequests (Http.toJson res)
+                | status -> return SearchGuildMembersResponse.Other status
+            })
+
+    let addGuildMember
+        (guildId: string)
+        (userId: string)
+        (content: AddGuildMemberPayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 put $"guilds/{guildId}/members/{userId}"
-                bot token
+                bot botToken
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.Created -> return! Task.map AddGuildMemberResponse.Created (Http.toJson res)
+                | HttpStatusCode.NoContent -> return AddGuildMemberResponse.NoContent
+                | HttpStatusCode.BadRequest -> return! Task.map AddGuildMemberResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map AddGuildMemberResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map AddGuildMemberResponse.TooManyRequests (Http.toJson res)
+                | status -> return AddGuildMemberResponse.Other status
+            })
 
-        member _.ModifyGuildMember guildId userId auditLogReason content =
+    let modifyGuildMember
+        (guildId: string)
+        (userId: string)
+        (auditLogReason: string option)
+        (content: ModifyGuildMemberPayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 patch $"guilds/{guildId}/members/{userId}"
-                bot token
+                bot botToken
                 audit auditLogReason
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map ModifyGuildMemberResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NoContent -> return ModifyGuildMemberResponse.NoContent
+                | HttpStatusCode.BadRequest -> return! Task.map ModifyGuildMemberResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map ModifyGuildMemberResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map ModifyGuildMemberResponse.TooManyRequests (Http.toJson res)
+                | status -> return ModifyGuildMemberResponse.Other status
+            })
 
-        member _.ModifyCurrentMember guildId auditLogReason content =
+    let modifyCurrentMember
+        (guildId: string)
+        (auditLogReason: string option)
+        (content: ModifyCurrentMemberPayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 patch $"guilds/{guildId}/members/@me"
-                bot token
+                bot botToken
                 audit auditLogReason
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
-
-        member _.AddGuildMemberRole guildId userId roleId auditLogReason =
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map ModifyCurrentMemberResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NoContent -> return ModifyCurrentMemberResponse.NoContent
+                | HttpStatusCode.BadRequest -> return! Task.map ModifyCurrentMemberResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map ModifyCurrentMemberResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map ModifyCurrentMemberResponse.TooManyRequests (Http.toJson res)
+                | status -> return ModifyCurrentMemberResponse.Other status
+            })
+        
+    let addGuildMemberRole
+        (guildId: string)
+        (userId: string)
+        (roleId: string)
+        (auditLogReason: string option)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 put $"guilds/{guildId}/members/{userId}/roles/{roleId}"
-                bot token
+                bot botToken
                 audit auditLogReason
             }
-            |> Http.send httpClientFactory
-            |> Task.wait
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.NoContent -> return AddGuildMemberRoleResponse.NoContent
+                | HttpStatusCode.NotFound -> return! Task.map AddGuildMemberRoleResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map AddGuildMemberRoleResponse.TooManyRequests (Http.toJson res)
+                | status -> return AddGuildMemberRoleResponse.Other status
+            })
 
-        member _.RemoveGuildMemberRole guildId userId roleId auditLogReason =
+    let removeGuildMemberRole
+        (guildId: string)
+        (userId: string)
+        (roleId: string)
+        (auditLogReason: string option)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 delete $"guilds/{guildId}/members/{userId}/roles/{roleId}"
-                bot token
+                bot botToken
                 audit auditLogReason
             }
-            |> Http.send httpClientFactory
-            |> Task.wait 
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.NoContent -> return RemoveGuildMemberRoleResponse.NoContent
+                | HttpStatusCode.NotFound -> return! Task.map RemoveGuildMemberRoleResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map RemoveGuildMemberRoleResponse.TooManyRequests (Http.toJson res)
+                | status -> return RemoveGuildMemberRoleResponse.Other status
+            })
 
-        member _.RemoveGuildMember guildId userId auditLogReason =
+    let removeGuildMember
+        (guildId: string)
+        (userId: string)
+        (auditLogReason: string option)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 delete $"guilds/{guildId}/members/{userId}"
-                bot token
+                bot botToken
                 audit auditLogReason
             }
-            |> Http.send httpClientFactory
-            |> Task.wait
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.NoContent -> return RemoveGuildMemberResponse.NoContent
+                | HttpStatusCode.NotFound -> return! Task.map RemoveGuildMemberResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map RemoveGuildMemberResponse.TooManyRequests (Http.toJson res)
+                | status -> return RemoveGuildMemberResponse.Other status
+            })
 
-        member _.GetGuildBans guildId limit before after =
+    let getGuildBans
+        (guildId: string)
+        (limit: int option)
+        (before: string option)
+        (after: string option)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/bans"
-                bot token
+                bot botToken
                 query "limit" (limit >>. _.ToString())
                 query "before" before
                 query "after" after
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetGuildBansResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map GetGuildBansResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetGuildBansResponse.TooManyRequests (Http.toJson res)
+                | status -> return GetGuildBansResponse.Other status
+            })
 
-        member _.GetGuildBan guildId userId =
+    let getGuildBan
+        (guildId: string)
+        (userId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/bans/{userId}"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetGuildBanResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map GetGuildBanResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetGuildBanResponse.TooManyRequests (Http.toJson res)
+                | status -> return GetGuildBanResponse.Other status
+            })
 
-        member _.CreateGuildBan guildId userId auditLogReason content =
+    let createGuildBan
+        (guildId: string)
+        (userId: string)
+        (auditLogReason: string option)
+        (content: CreateGuildBanPayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 put $"guilds/{guildId}/bans/{userId}"
-                bot token
+                bot botToken
                 audit auditLogReason
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.wait
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.NoContent -> return CreateGuildBanResponse.NoContent
+                | HttpStatusCode.BadRequest -> return! Task.map CreateGuildBanResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map CreateGuildBanResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map CreateGuildBanResponse.TooManyRequests (Http.toJson res)
+                | status -> return CreateGuildBanResponse.Other status
+            })
 
-        member _.RemoveGuildBan guildId userId auditLogReason =
+    let removeGuildBan
+        (guildId: string)
+        (userId: string)
+        (auditLogReason: string option)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 delete $"guilds/{guildId}/bans/{userId}"
-                bot token
+                bot botToken
                 audit auditLogReason
             }
-            |> Http.send httpClientFactory
-            |> Task.wait
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.NoContent -> return RemoveGuildBanResponse.NoContent
+                | HttpStatusCode.NotFound -> return! Task.map RemoveGuildBanResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map RemoveGuildBanResponse.TooManyRequests (Http.toJson res)
+                | status -> return RemoveGuildBanResponse.Other status
+            })
 
-        member _.BulkGuildBan guildId auditLogReason content =
+    let buildGuildBan
+        (guildId: string)
+        (auditLogReason: string option)
+        (content: BulkGuildBanPayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 post $"guilds/{guildId}/bulk-ban"
-                bot token
+                bot botToken
                 audit auditLogReason
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map BulkGuildBanResponse.Ok (Http.toJson res)
+                | HttpStatusCode.BadRequest -> return! Task.map BulkGuildBanResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map BulkGuildBanResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map BulkGuildBanResponse.TooManyRequests (Http.toJson res)
+                | status -> return BulkGuildBanResponse.Other status
+            })
 
-        member _.GetGuildRoles guildId =
+    let getGuildRoles
+        (guildId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/roles"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetGuildRolesResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map GetGuildRolesResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetGuildRolesResponse.TooManyRequests (Http.toJson res)
+                | status -> return GetGuildRolesResponse.Other status
+            })
 
-        member _.GetGuildRole guildId roleId =
+    let getGuildRole
+        (guildId: string)
+        (roleId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/roles/{roleId}"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetGuildRoleResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map GetGuildRoleResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetGuildRoleResponse.TooManyRequests (Http.toJson res)
+                | status -> return GetGuildRoleResponse.Other status
+            })
 
-        member _.CreateGuildRole guildId auditLogReason content =
+    let createGuildRole
+        (guildId: string)
+        (auditLogReason: string option)
+        (content: CreateGuildRolePayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 post $"guilds/{guildId}/roles"
-                bot token
+                bot botToken
                 audit auditLogReason
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map CreateGuildRoleResponse.Ok (Http.toJson res)
+                | HttpStatusCode.BadRequest -> return! Task.map CreateGuildRoleResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map CreateGuildRoleResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map CreateGuildRoleResponse.TooManyRequests (Http.toJson res)
+                | status -> return CreateGuildRoleResponse.Other status
+            })
 
-        member _.ModifyGuildRolePositions guildId auditLogReason content =
+    let modifyGuildRolePositions
+        (guildId: string)
+        (auditLogReason: string option)
+        (content: ModifyGuildRolePositionsPayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 patch $"guilds/{guildId}/channels"
-                bot token
+                bot botToken
                 audit auditLogReason
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
-            
-        member _.ModifyGuildRole guildId roleId auditLogReason content =
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map ModifyGuildRolePositionsResposne.Ok (Http.toJson res)
+                | HttpStatusCode.BadRequest -> return! Task.map ModifyGuildRolePositionsResposne.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map ModifyGuildRolePositionsResposne.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map ModifyGuildRolePositionsResposne.TooManyRequests (Http.toJson res)
+                | status -> return ModifyGuildRolePositionsResposne.Other status
+            })
+
+    let modifyGuildRole
+        (guildId: string)
+        (roleId: string)
+        (auditLogReason: string option)
+        (content: ModifyGuildRolePayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 patch $"guilds/{guildId}/roles/{roleId}"
-                bot token
+                bot botToken
                 audit auditLogReason
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map ModifyGuildRoleResponse.Ok (Http.toJson res)
+                | HttpStatusCode.BadRequest -> return! Task.map ModifyGuildRoleResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map ModifyGuildRoleResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map ModifyGuildRoleResponse.TooManyRequests (Http.toJson res)
+                | status -> return ModifyGuildRoleResponse.Other status
+            })
 
-        member _.ModifyGuildMfaLevel guildId auditLogReason content =
+    let modifyGuildMfaLevel
+        (guildId: string)
+        (auditLogReason: string option)
+        (content: ModifyGuildMfaLevelPayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 post $"guilds/{guildId}/mfa"
-                bot token
+                bot botToken
                 audit auditLogReason
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map ModifyGuildMfaLevelResponse.Ok (Http.toJson res)
+                | HttpStatusCode.BadRequest -> return! Task.map ModifyGuildMfaLevelResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map ModifyGuildMfaLevelResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map ModifyGuildMfaLevelResponse.TooManyRequests (Http.toJson res)
+                | status -> return ModifyGuildMfaLevelResponse.Other status
+            })
 
-        member _.DeleteGuildRole guildId roleId auditLogReason =
+    let deleteGuildRole
+        (guildId: string)
+        (roleId: string)
+        (auditLogReason: string option)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 delete $"guilds/{guildId}/roles/{roleId}"
-                bot token
+                bot botToken
                 audit auditLogReason
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.NoContent -> return DeleteGuildRoleResponse.NoContent
+                | HttpStatusCode.NotFound -> return! Task.map DeleteGuildRoleResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map DeleteGuildRoleResponse.TooManyRequests (Http.toJson res)
+                | status -> return DeleteGuildRoleResponse.Other status
+            })
 
-        member _.GetGuildPruneCount guildId days includeRoles =
+    let getGuildPruneCount
+        (guildId: string)
+        (days: int option)
+        (includeRoles: string list option)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/prune"
-                bot token
+                bot botToken
                 query "days" (days >>. _.ToString())
                 query "include_roles" (includeRoles >>. String.concat ",")
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetGuildPruneCountResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map GetGuildPruneCountResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetGuildPruneCountResponse.TooManyRequests (Http.toJson res)
+                | status -> return GetGuildPruneCountResponse.Other status
+            })
 
-        member _.BeginGuildPrune guildId auditLogReason content =
+    let beginGuildPrune
+        (guildId: string)
+        (auditLogReason: string option)
+        (content: BeginGuildPrunePayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 post $"guilds/{guildId}/prune"
-                bot token
+                bot botToken
                 audit auditLogReason
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map BeginGuildPruneResponse.Ok (Http.toJson res)
+                | HttpStatusCode.BadRequest -> return! Task.map BeginGuildPruneResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map BeginGuildPruneResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map BeginGuildPruneResponse.TooManyRequests (Http.toJson res)
+                | status -> return BeginGuildPruneResponse.Other status
+            })
 
-        member _.GetGuildVoiceRegions guildId =
+    let getGuildVoiceRegions
+        (guildId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/regions"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetGuildVoiceRegionsResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map GetGuildVoiceRegionsResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetGuildVoiceRegionsResponse.TooManyRequests (Http.toJson res)
+                | status -> return GetGuildVoiceRegionsResponse.Other status
+            })
 
-        member _.GetGuildInvites guildId =
+    let getGuildInvites
+        (guildId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/invites"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetGuildInvitesResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map GetGuildInvitesResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetGuildInvitesResponse.TooManyRequests (Http.toJson res)
+                | status -> return GetGuildInvitesResponse.Other status
+            })
 
-        member _.GetGuildIntegrations guildId =
+    let getGuildIntegrations
+        (guildId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/integrations"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetGuildIntegrationsResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map GetGuildIntegrationsResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetGuildIntegrationsResponse.TooManyRequests (Http.toJson res)
+                | status -> return GetGuildIntegrationsResponse.Other status
+            })
 
-        member _.DeleteGuildIntegration guildId integrationId auditLogReason =
+    let deleteGuildIntegration
+        (guildId: string)
+        (integrationId: string)
+        (auditLogReason: string option)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 delete $"guilds/{guildId}/integrations/{integrationId}"
-                bot token
+                bot botToken
                 audit auditLogReason
             }
-            |> Http.send httpClientFactory
-            |> Task.wait
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.NoContent -> return DeleteGuildIntegrationResponse.NoContent
+                | HttpStatusCode.NotFound -> return! Task.map DeleteGuildIntegrationResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map DeleteGuildIntegrationResponse.TooManyRequests (Http.toJson res)
+                | status -> return DeleteGuildIntegrationResponse.Other status
+            })
 
-        member _.GetGuildWidgetSettings guildId =
+    let getGuildWidgetSettings
+        (guildId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/widget"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetGuildWidgetSettingsResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map GetGuildWidgetSettingsResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetGuildWidgetSettingsResponse.TooManyRequests (Http.toJson res)
+                | status -> return GetGuildWidgetSettingsResponse.Other status
+            })
 
-        member _.ModifyGuildWidget guildId auditLogReason content =
+    let modifyGuildWidget
+        (guildId: string)
+        (auditLogReason: string option)
+        (content: ModifyGuildWidgetPayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 patch $"guilds/{guildId}/widget"
-                bot token
+                bot botToken
                 audit auditLogReason
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map ModifyGuildWidgetResponse.Ok (Http.toJson res)
+                | HttpStatusCode.BadRequest -> return! Task.map ModifyGuildWidgetResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map ModifyGuildWidgetResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map ModifyGuildWidgetResponse.TooManyRequests (Http.toJson res)
+                | status -> return ModifyGuildWidgetResponse.Other status
+            })
 
-        member _.GetGuildWidget guildId =
+    let getGuildWidget
+        (guildId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/widget.json"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetGuildWidgetResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map GetGuildWidgetResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetGuildWidgetResponse.TooManyRequests (Http.toJson res)
+                | status -> return GetGuildWidgetResponse.Other status
+            })
 
-        member _.GetGuildVanityUrl guildId =
+    let getGuildVanityUrl
+        (guildId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/vanity-url"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetGuildVanityUrlResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map GetGuildVanityUrlResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetGuildVanityUrlResponse.TooManyRequests (Http.toJson res)
+                | status -> return GetGuildVanityUrlResponse.Other status
+            })
 
-        member _.GetGuildWidgetImage guildId style =
+    let getGuildWidgetImage
+        (guildId: string)
+        (style: GuildWidgetStyle option)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/widget.png"
-                bot token
+                bot botToken
                 query "style" (style >>. _.ToString())
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toRaw
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetGuildWidgetImageResponse.Ok (Http.toRaw res)
+                | HttpStatusCode.NotFound -> return! Task.map GetGuildWidgetImageResponse.NotFound (Http.toJson res)
+                | status -> return GetGuildWidgetImageResponse.Other status
+            })
 
-        member _.GetGuildWelcomeScreen guildId =
+    let getGuildWelcomeScreen
+        (guildId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/welcome-screen"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetGuildWelcomeScreenResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map GetGuildWelcomeScreenResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetGuildWelcomeScreenResponse.TooManyRequests (Http.toJson res)
+                | status -> return GetGuildWelcomeScreenResponse.Other status
+            })
 
-        member _.ModifyGuildWelcomeScreen guildId auditLogReason content =
+    let modifyGuildWelcomeScreen
+        (guildId: string)
+        (auditLogReason: string option)
+        (content: ModifyGuildWelcomeScreenPayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 patch $"guilds/{guildId}/welcome-screen"
-                bot token
+                bot botToken
                 audit auditLogReason
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map ModifyGuildWelcomeScreenResponse.Ok (Http.toJson res)
+                | HttpStatusCode.BadRequest -> return! Task.map ModifyGuildWelcomeScreenResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map ModifyGuildWelcomeScreenResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map ModifyGuildWelcomeScreenResponse.TooManyRequests (Http.toJson res)
+                | status -> return ModifyGuildWelcomeScreenResponse.Other status
+            })
 
-        member _.GetGuildOnboarding guildId =
+    let getGuildOnboarding
+        (guildId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/onboarding"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetGuildOnboardingResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map GetGuildOnboardingResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetGuildOnboardingResponse.TooManyRequests (Http.toJson res)
+                | status -> return GetGuildOnboardingResponse.Other status
+            })
 
-        member _.ModifyGuildOnboarding guildId auditLogReason content =
+    let modifyGuildOnboarding
+        (guildId: string)
+        (auditLogReason: string option)
+        (content: ModifyGuildOnboardingPayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 put $"guilds/{guildId}/onboarding"
-                bot token
+                bot botToken
                 audit auditLogReason
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
-        
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map ModifyGuildOnboardingResponse.Ok (Http.toJson res)
+                | HttpStatusCode.BadRequest -> return! Task.map ModifyGuildOnboardingResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map ModifyGuildOnboardingResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map ModifyGuildOnboardingResponse.TooManyRequests (Http.toJson res)
+                | status -> return ModifyGuildOnboardingResponse.Other status
+            })

@@ -78,48 +78,6 @@ type ListApplicationEmojisResponse = {
     [<JsonPropertyName "items">] Items: Emoji list
 }
 
-// https://discord.com/developers/docs/resources/guild#modify-guild-channel-positions-json-params
-type ModifyGuildChannelPosition = {
-    [<JsonPropertyName "id">] Id: string
-    [<JsonPropertyName "position">] Position: int option
-    [<JsonPropertyName "lock_permissions">] LockPermissions: bool option
-    [<JsonPropertyName "parent_id">] ParentId: string option
-}
-
-// https://discord.com/developers/docs/resources/guild#list-active-guild-threads-response-body
-type ListActiveGuildThreadsResponse = {
-    [<JsonPropertyName "threads">] Threads: Channel list
-    [<JsonPropertyName "members">] Members: GuildMember list
-}
-
-// https://discord.com/developers/docs/resources/guild#bulk-guild-ban-bulk-ban-response
-type BulkGuildBanResponse = {
-    [<JsonPropertyName "banned_users">] BannedUsers: string list
-    [<JsonPropertyName "failed_users">] FailedUsers: string list
-}
-
-// https://discord.com/developers/docs/resources/guild#modify-guild-role-positions-json-params
-type ModifyGuildRolePosition = {
-    [<JsonPropertyName "id">] Id: string
-    [<JsonPropertyName "position">] Position: int option
-}
-
-// https://discord.com/developers/docs/resources/guild#get-guild-prune-count
-type GetGuildPruneCountResponse = {
-    [<JsonPropertyName "pruned">] Pruned: int
-}
-
-// https://discord.com/developers/docs/resources/guild#begin-guild-prune
-type BeginGuildPruneResponse = {
-    [<JsonPropertyName "pruned">] Pruned: int option
-}
-
-// https://discord.com/developers/docs/resources/guild#get-guild-vanity-url
-type GetGuildVanityUrlResponse = {
-    [<JsonPropertyName "code">] Code: string option
-    [<JsonPropertyName "uses">] Uses: int
-}
-
 // https://discord.com/developers/docs/resources/poll#get-answer-voters-response-body
 type GetAnswerVotersResponse = {
     [<JsonPropertyName "users">] Users: User list
