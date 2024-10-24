@@ -20,6 +20,8 @@ type RateLimitResponse = {
     [<JsonPropertyName "interaccodetion">] Code: int option
 }
 
+// TODO: Move remaining payloads below into resources as refactored into modules
+
 type BulkOverwriteApplicationCommand = {
     [<JsonPropertyName "id">] Id: string option
     [<JsonPropertyName "name">] Name: string
@@ -43,34 +45,6 @@ type VoiceChannelEffect = {
     [<JsonPropertyName "animation_id">] AnimationId: int option
     [<JsonPropertyName "sound_id">] SoundId: SoundboardSoundId option
     [<JsonPropertyName "sound_volume">] SoundVolume: double option
-}
-
-type ForumAndMediaThreadMessageParams = {
-    [<JsonPropertyName "content">] Content: string option
-    [<JsonPropertyName "embeds">] Embeds: Embed list option
-    [<JsonPropertyName "allowed_mentions">] AllowedMentions: AllowedMentions option
-    [<JsonPropertyName "components">] Components: Component list option
-    [<JsonPropertyName "sticker_ids">] StickerIds: string list option
-    [<JsonPropertyName "attachments">] Attachments: Attachment list option
-    [<JsonPropertyName "flags">] Flags: int option
-}
-
-type ListPublicArchivedThreadsResponse = {
-    [<JsonPropertyName "threads">] Threads: Channel list
-    [<JsonPropertyName "members">] Members: ThreadMember list
-    [<JsonPropertyName "has_more">] HasMore: bool
-}
-
-type ListPrivateArchivedThreadsResponse = {
-    [<JsonPropertyName "threads">] Threads: Channel list
-    [<JsonPropertyName "members">] Members: ThreadMember list
-    [<JsonPropertyName "has_more">] HasMore: bool
-}
-
-type ListJoinedPrivateArchivedThreadsResponse = {
-    [<JsonPropertyName "threads">] Threads: Channel list
-    [<JsonPropertyName "members">] Members: ThreadMember list
-    [<JsonPropertyName "has_more">] HasMore: bool
 }
 
 // https://discord.com/developers/docs/resources/emoji#list-application-emojis
