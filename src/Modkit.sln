@@ -47,8 +47,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{5A8884C2
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "DiscordApiSwagger", "Tools\DiscordApiSwagger\DiscordApiSwagger.fsproj", "{30DF573F-A458-411D-89FB-C1B42B02C85E}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Discordfs.Rest.Tests.Integration", "Discordfs\Discordfs.Rest.Tests.Integration\Discordfs.Rest.Tests.Integration.fsproj", "{30D9F2BE-468B-4A07-8E2E-8C68ED219D63}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -115,10 +113,6 @@ Global
 		{30DF573F-A458-411D-89FB-C1B42B02C85E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30DF573F-A458-411D-89FB-C1B42B02C85E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30DF573F-A458-411D-89FB-C1B42B02C85E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{30D9F2BE-468B-4A07-8E2E-8C68ED219D63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{30D9F2BE-468B-4A07-8E2E-8C68ED219D63}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{30D9F2BE-468B-4A07-8E2E-8C68ED219D63}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{30D9F2BE-468B-4A07-8E2E-8C68ED219D63}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -142,7 +136,6 @@ Global
 		{398569AF-870C-4086-B214-1DA42F15D9AC} = {AFA43FEE-9202-4BC3-BD28-FBABD2672E8A}
 		{EBDB02ED-810C-42FA-8846-A8A0E69D2E07} = {AFA43FEE-9202-4BC3-BD28-FBABD2672E8A}
 		{30DF573F-A458-411D-89FB-C1B42B02C85E} = {5A8884C2-D7E1-4CAF-A47E-A8FC532A0BE6}
-		{30D9F2BE-468B-4A07-8E2E-8C68ED219D63} = {FEBEEC81-5761-48E1-B8B9-E4E83E4A7F1F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8FBB409A-BF16-45C1-A1A9-963CC88FA6B4}
