@@ -1,40 +1,62 @@
 ﻿namespace Discordfs.Rest.Resources
 
 open Discordfs.Rest.Common
+open Discordfs.Rest.Types
 open Discordfs.Types
-open System.Threading.Tasks
+open System.Net
+open System.Net.Http
 
-type IInviteResource =
-    abstract member GetInvite:
-        inviteCode: string ->
-        withCounts: bool option ->
-        withExpiration: bool option ->
-        guildScheduledEventId: string option ->
-        Task<Invite>
+type GetInviteResponse =
+    | Ok of Invite
+    | NotFound
+    | TooManyRequests of ErrorResponse
+    | Other of HttpStatusCode
 
-    abstract member DeleteInvite:
-        inviteCode: string ->
-        auditLogReason: string option ->
-        Task<Invite>
+type DeleteInviteResponse =
+    | Ok of Invite
+    | NotFound
+    | TooManyRequests of ErrorResponse
+    | Other of HttpStatusCode
 
-type InviteResource (httpClientFactory, token) =
-    interface IInviteResource with
-        member _.GetInvite inviteCode withCounts withExpiration guildScheduledEventId =
+module Invite =
+    let getInvite
+        (inviteCode: string)
+        (withCounts: bool option)
+        (withExpiration: bool option)
+        (guildScheduledEventId: string option)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"invites/{inviteCode}"
-                bot token
+                bot botToken
                 query "with_counts" (withCounts >>. _.ToString())
                 query "with_expiration" (withExpiration >>. _.ToString())
                 query "guild_scheduled_event_id" guildScheduledEventId
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
-
-        member _.DeleteInvite inviteCode auditLogReason =
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetInviteResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return GetInviteResponse.NotFound
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetInviteResponse.TooManyRequests (Http.toJson res)
+                | status -> return GetInviteResponse.Other status
+            })
+            
+    let deleteInvite
+        (inviteCode: string)
+        (auditLogReason: string option)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 delete $"invites/{inviteCode}"
-                bot token
+                bot botToken
                 audit auditLogReason
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map DeleteInviteResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return DeleteInviteResponse.NotFound
+                | HttpStatusCode.TooManyRequests -> return! Task.map DeleteInviteResponse.TooManyRequests (Http.toJson res)
+                | status -> return DeleteInviteResponse.Other status
+            })
