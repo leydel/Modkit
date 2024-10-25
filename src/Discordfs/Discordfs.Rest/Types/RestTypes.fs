@@ -52,11 +52,6 @@ type ListApplicationEmojisResponse = {
     [<JsonPropertyName "items">] Items: Emoji list
 }
 
-// https://discord.com/developers/docs/resources/poll#get-answer-voters-response-body
-type GetAnswerVotersResponse = {
-    [<JsonPropertyName "users">] Users: User list
-}
-
 // https://discord.com/developers/docs/resources/sticker#list-sticker-packs-response-structure
 type ListStickerPacksResponse = {
     [<JsonPropertyName "sticker_packs">] StickerPacks: StickerPack list
