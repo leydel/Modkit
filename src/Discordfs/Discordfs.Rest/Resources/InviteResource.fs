@@ -8,13 +8,13 @@ open System.Net.Http
 
 type GetInviteResponse =
     | Ok of Invite
-    | NotFound
+    | NotFound of ErrorResponse
     | TooManyRequests of ErrorResponse
     | Other of HttpStatusCode
 
 type DeleteInviteResponse =
     | Ok of Invite
-    | NotFound
+    | NotFound of ErrorResponse
     | TooManyRequests of ErrorResponse
     | Other of HttpStatusCode
 
@@ -37,7 +37,7 @@ module Invite =
             |> Task.mapT (fun res -> task {
                 match res.StatusCode with
                 | HttpStatusCode.OK -> return! Task.map GetInviteResponse.Ok (Http.toJson res)
-                | HttpStatusCode.NotFound -> return GetInviteResponse.NotFound
+                | HttpStatusCode.NotFound -> return! Task.map GetInviteResponse.NotFound (Http.toJson res)
                 | HttpStatusCode.TooManyRequests -> return! Task.map GetInviteResponse.TooManyRequests (Http.toJson res)
                 | status -> return GetInviteResponse.Other status
             })
@@ -56,7 +56,7 @@ module Invite =
             |> Task.mapT (fun res -> task {
                 match res.StatusCode with
                 | HttpStatusCode.OK -> return! Task.map DeleteInviteResponse.Ok (Http.toJson res)
-                | HttpStatusCode.NotFound -> return DeleteInviteResponse.NotFound
+                | HttpStatusCode.NotFound -> return! Task.map DeleteInviteResponse.NotFound (Http.toJson res)
                 | HttpStatusCode.TooManyRequests -> return! Task.map DeleteInviteResponse.TooManyRequests (Http.toJson res)
                 | status -> return DeleteInviteResponse.Other status
             })
