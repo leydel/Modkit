@@ -1,7 +1,7 @@
 ﻿namespace Modkit.Diacord.Core.Providers
 
-open Discordfs.Rest.Clients
 open Modkit.Diacord.Core.Structures
+open System.Net.Http
 open System.Threading.Tasks
 
 type IStateProvider =
@@ -9,18 +9,27 @@ type IStateProvider =
         guildId: string ->
         Task<DiacordState>
 
-type StateProvider (restClient: IRestClient) =
+type StateProvider (httpClientFactory: IHttpClientFactory, discordBotToken: string) =
     interface IStateProvider with
         member _.get guildId = task {
-            let! roles = restClient.Guilds.GetGuildRoles guildId
-            let! emojis = restClient.Emojis.ListGuildEmojis guildId
-            let! stickers = restClient.Stickers.ListGuildStickers guildId
-            let! channels = restClient.Guilds.GetGuildChannels guildId
+            //let! roles = restClient.Guilds.GetGuildRoles guildId
+            //let! emojis = restClient.Emojis.ListGuildEmojis guildId
+            //let! stickers = restClient.Stickers.ListGuildStickers guildId
+            //let! channels = restClient.Guilds.GetGuildChannels guildId
+            //
+            //return {
+            //    Roles = roles;
+            //    Emojis = emojis;
+            //    Stickers = stickers;
+            //    Channels = channels;
+            //}
 
             return {
-                Roles = roles;
-                Emojis = emojis;
-                Stickers = stickers;
-                Channels = channels;
+                Roles = [];
+                Emojis = [];
+                Stickers = [];
+                Channels = [];
             }
+
+            // TODO: Once above resource modules are created, rewrite this using them and in a functional style
         }

@@ -3,7 +3,6 @@
 open Discordfs.Rest.Common
 open Discordfs.Types
 open System
-open System.Net.Http
 open System.Threading.Tasks
 
 type ModifyCurrentUserVoiceState (
@@ -58,7 +57,7 @@ type IVoiceResource =
         content: ModifyUserVoiceState ->
         Task<unit>
 
-type VoiceResource (httpClientFactory: IHttpClientFactory, token: string) =
+type VoiceResource (httpClientFactory, token) =
     interface IVoiceResource with
         member _.ListVoiceRegions () =
             req {

@@ -8,9 +8,14 @@ open System.Net
 open System.Net.Http
 open System.Text.Json.Serialization
 
+type CreateInteractionResponseData =
+    | Message of MessageInteractionCallback
+    | Autocomplete of AutocompleteInteractionCallback
+    | Modal of ModalInteractionCallback
+
 type CreateInteractionResponsePayload (
     ``type``: InteractionCallbackType,
-    ?data: InteractionCallbackData,
+    ?data: CreateInteractionResponseData,
     ?files: IDictionary<string, IPayloadBuilder>
 ) =
     inherit Payload() with

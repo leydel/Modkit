@@ -3,12 +3,17 @@
 open System
 open System.Net.Http
 open System.Text.Json
+open System.Threading.Tasks
 open System.Web
 
 [<AutoOpen>]
 module Http =
-    let send (httpClientFactory: IHttpClientFactory) (req: HttpRequestMessage) =
-        httpClientFactory.CreateClient().SendAsync req
+    //let send (httpClientFactory: IHttpClientFactory) (req: HttpRequestMessage) =
+    //    httpClientFactory.CreateClient().SendAsync req
+    let send (httpClientFactory) (req: HttpRequestMessage) =
+        Task.FromResult <| new HttpResponseMessage()
+
+    // TODO: Remove all remaining uses of Http.send then delete this (only keeping to prevent build failures)
 
     let toJson<'a> (res: HttpResponseMessage) =
         res.Content.ReadAsStringAsync()

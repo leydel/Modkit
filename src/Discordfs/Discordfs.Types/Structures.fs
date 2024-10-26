@@ -662,33 +662,34 @@ type Component =
     | TextInput of TextInputComponent
 
 and ComponentConverter () =
-    inherit JsonConverter<Component> () with
-        override _.Read (reader, typeToConvert, options) =
-            let success, document = JsonDocument.TryParseValue(&reader)
+    inherit JsonConverter<Component> ()
 
-            if not success then
-                raise (JsonException())
+    override _.Read (reader, typeToConvert, options) =
+        let success, document = JsonDocument.TryParseValue(&reader)
 
-            let componentType = document.RootElement.GetProperty "type" |> _.GetInt32() |> enum<ComponentType>
-            let json = document.RootElement.GetRawText()
+        if not success then
+            raise (JsonException())
 
-            match componentType with
-            | ComponentType.ACTION_ROW -> Component.ActionRow <| Json.deserializeF<ActionRowComponent> json
-            | ComponentType.BUTTON -> Component.Button <| Json.deserializeF<ButtonComponent> json
-            | ComponentType.STRING_SELECT
-            | ComponentType.USER_SELECT
-            | ComponentType.ROLE_SELECT
-            | ComponentType.MENTIONABLE_SELECT
-            | ComponentType.CHANNEL_SELECT -> Component.SelectMenu <| Json.deserializeF<SelectMenuComponent> json
-            | ComponentType.TEXT_INPUT -> Component.TextInput <| Json.deserializeF<TextInputComponent> json
-            | _ -> failwith "Unexpected ComponentType provided"
+        let componentType = document.RootElement.GetProperty "type" |> _.GetInt32() |> enum<ComponentType>
+        let json = document.RootElement.GetRawText()
 
-        override _.Write (writer, value, options) =
-            match value with
-            | Component.ActionRow a -> Json.serializeF a |> writer.WriteRawValue
-            | Component.Button b -> Json.serializeF b |> writer.WriteRawValue
-            | Component.SelectMenu s -> Json.serializeF s |> writer.WriteRawValue
-            | Component.TextInput t -> Json.serializeF t |> writer.WriteRawValue
+        match componentType with
+        | ComponentType.ACTION_ROW -> Component.ActionRow <| Json.deserializeF<ActionRowComponent> json
+        | ComponentType.BUTTON -> Component.Button <| Json.deserializeF<ButtonComponent> json
+        | ComponentType.STRING_SELECT
+        | ComponentType.USER_SELECT
+        | ComponentType.ROLE_SELECT
+        | ComponentType.MENTIONABLE_SELECT
+        | ComponentType.CHANNEL_SELECT -> Component.SelectMenu <| Json.deserializeF<SelectMenuComponent> json
+        | ComponentType.TEXT_INPUT -> Component.TextInput <| Json.deserializeF<TextInputComponent> json
+        | _ -> failwith "Unexpected ComponentType provided"
+
+    override _.Write (writer, value, options) =
+        match value with
+        | Component.ActionRow a -> Json.serializeF a |> writer.WriteRawValue
+        | Component.Button b -> Json.serializeF b |> writer.WriteRawValue
+        | Component.SelectMenu s -> Json.serializeF s |> writer.WriteRawValue
+        | Component.TextInput t -> Json.serializeF t |> writer.WriteRawValue
 
 and ActionRowComponent = {
     [<JsonPropertyName "type">] Type: ComponentType
@@ -1596,3 +1597,80 @@ type InteractionCallbackResource = {
     [<JsonPropertyName "activity_instance">] ActivityInstance: ActivityInstance option
     [<JsonPropertyName "message">] Message: Message option
 }
+
+// https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-interaction-response-structure
+type InteractionResponsePayload<'a> = {
+    [<JsonPropertyName "type">] Type: InteractionCallbackType
+    [<JsonPropertyName "data">] Data: 'a
+}
+
+// https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-messages
+type MessageInteractionCallback = {
+    [<JsonPropertyName "tts">] Tts: bool option
+    [<JsonPropertyName "content">] Content: string option
+    [<JsonPropertyName "embeds">] Embeds: Embed list option
+    [<JsonPropertyName "allowed_mentions">] AllowedMentions: AllowedMentions option
+    [<JsonPropertyName "flags">] Flags: int option
+    [<JsonPropertyName "components">] Components: Component list option
+    [<JsonPropertyName "attachments">] Attachments: Attachment list option
+    [<JsonPropertyName "poll">] Poll: Poll option
+}
+
+// https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-autocomplete
+type AutocompleteInteractionCallback = {
+    [<JsonPropertyName "choices">] Choices: ApplicationCommandOptionChoice list
+}
+
+// https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-modal
+type ModalInteractionCallback = {
+    [<JsonPropertyName "custom_id">] CustomId: string
+    [<JsonPropertyName "title">] Title: string
+    [<JsonPropertyName "components">] Components: Component list
+}
+
+[<JsonConverter(typeof<InteractionResponseConverter>)>]
+type InteractionResponse =
+    | Pong of InteractionResponsePayload<Empty>
+    | ChannelMessageWithSource of InteractionResponsePayload<MessageInteractionCallback>
+    | DeferredChannelMessageWithSource of InteractionResponsePayload<Empty>
+    | DeferredUpdateMessage of InteractionResponsePayload<Empty>
+    | UpdateMessage of InteractionResponsePayload<MessageInteractionCallback>
+    | ApplicationCommandAutocompleteResult of InteractionResponsePayload<AutocompleteInteractionCallback>
+    | Modal of InteractionResponsePayload<ModalInteractionCallback>
+    | LaunchActivity of InteractionResponsePayload<Empty>
+
+and InteractionResponseConverter () =
+    inherit JsonConverter<InteractionResponse> ()
+
+    override __.Read (reader, typeToConvert, options) =
+        let success, document = JsonDocument.TryParseValue(&reader)
+        if not success then raise (JsonException())
+
+        let interactionCallbackType =
+            document.RootElement.GetProperty "type"
+            |> _.GetInt32()
+            |> enum<InteractionCallbackType>
+
+        let json = document.RootElement.GetRawText()
+
+        match interactionCallbackType with
+        | InteractionCallbackType.PONG -> Pong <| Json.deserializeF json
+        | InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE -> ChannelMessageWithSource <| Json.deserializeF json
+        | InteractionCallbackType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE -> DeferredChannelMessageWithSource <| Json.deserializeF json
+        | InteractionCallbackType.DEFERRED_UPDATE_MESSAGE -> DeferredUpdateMessage <| Json.deserializeF json
+        | InteractionCallbackType.UPDATE_MESSAGE -> UpdateMessage <| Json.deserializeF json
+        | InteractionCallbackType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT -> ApplicationCommandAutocompleteResult <| Json.deserializeF json
+        | InteractionCallbackType.MODAL -> Modal <| Json.deserializeF json
+        | InteractionCallbackType.LAUNCH_ACTIVITY -> LaunchActivity <| Json.deserializeF json
+        | _ -> failwith "Unexpected InteractionCallbackType provided"
+                
+    override __.Write (writer, value, options) =
+        match value with
+        | Pong p -> Json.serializeF p |> writer.WriteRawValue
+        | ChannelMessageWithSource c -> Json.serializeF c |> writer.WriteRawValue
+        | DeferredChannelMessageWithSource d -> Json.serializeF d |> writer.WriteRawValue
+        | DeferredUpdateMessage d -> Json.serializeF d |> writer.WriteRawValue
+        | UpdateMessage u -> Json.serializeF u |> writer.WriteRawValue
+        | ApplicationCommandAutocompleteResult a -> Json.serializeF a |> writer.WriteRawValue
+        | Modal m -> Json.serializeF m |> writer.WriteRawValue
+        | LaunchActivity l -> Json.serializeF l |> writer.WriteRawValue

@@ -45,3 +45,6 @@ module Converters =
             override _.Write (writer, value, options) =
                 raise (NotImplementedException())
                 // writer.WriteNullValue() works for true, but false already has the property name written...
+
+/// Used to represent a non-existent value for when used in a generic for JSON serialization.
+type Empty = obj option
