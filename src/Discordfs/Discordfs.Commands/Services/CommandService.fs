@@ -2,6 +2,7 @@
 
 open Discordfs.Commands.Structures
 open Discordfs.Types
+open Discordfs.Webhook.Payloads
 open System.Threading.Tasks
 
 type ICommandService =
@@ -9,7 +10,7 @@ type ICommandService =
 
     abstract member Execute:
         interaction: Interaction ->
-        Task<Result<Discordfs.Commands.Types.InteractionCallback, string>>
+        Task<Result<InteractionResponse, string>>
 
 type CommandService (commands: Command list) =
     member _.getCommandName (interaction: Interaction) =

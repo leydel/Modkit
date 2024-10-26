@@ -6,7 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Common\Empty.fs" />
+    <Compile Include="Types\InteractionTypes.fs" />
     <Compile Include="Types\WebhookEventTypes.fs" />
+    <Compile Include="Payloads\InteractionResponse.fs" />
     <Compile Include="Payloads\WebhookEvent.fs" />
     <Compile Include="Modules\Ed25519.fs" />
   </ItemGroup>

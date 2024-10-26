@@ -38,7 +38,7 @@ type WebhookEventPayload<'a> = {
     [<JsonPropertyName "version">] Version: int
     [<JsonPropertyName "application_id">] ApplicationId: string
     [<JsonPropertyName "type">] Type: WebhookType
-    [<JsonPropertyName "event">] Event: WebhookEventBody<'a>
+    [<JsonPropertyName "event">] Event: 'a
 }
 
 // https://discord.com/developers/docs/events/webhook-events#application-authorized-application-authorized-structure

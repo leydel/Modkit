@@ -6,11 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Types\CommandTypes.fs" />
     <Compile Include="Structures\Command.fs" />
     <Compile Include="Patterns\Options.fs" />
     <Compile Include="Services\CommandService.fs" />
-    <Compile Include="Services\Ed25519SigningService.fs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,11 +16,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Discordfs.Types\Discordfs.Types.fsproj" />
+    <ProjectReference Include="..\Discordfs.Webhook\Discordfs.Webhook.fsproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="8.0.400" />
+    <PackageReference Update="FSharp.Core" Version="8.0.401" />
   </ItemGroup>
 
 </Project>

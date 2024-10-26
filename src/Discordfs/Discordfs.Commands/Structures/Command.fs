@@ -1,6 +1,7 @@
 ﻿namespace Discordfs.Commands.Structures
 
 open Discordfs.Types
+open Discordfs.Webhook.Payloads
 open System.Collections.Generic
 open System.Threading.Tasks
 
@@ -49,4 +50,6 @@ type Command () =
 
     abstract member Execute:
         interaction: Interaction ->
-        Task<Result<Discordfs.Commands.Types.InteractionCallback, string>>
+        Task<Result<InteractionResponse, string>>
+
+// TODO: Probably delete and rewrite all this in a functional way
