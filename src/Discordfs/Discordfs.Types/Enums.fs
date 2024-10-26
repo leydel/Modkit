@@ -1175,3 +1175,24 @@ and ConnectionServiceTypeConverter () =
 type ConnectionVisibilityType =
     | NONE = 0
     | EVERYONE = 1
+
+// https://discord.com/developers/docs/events/webhook-events#webhook-types
+type WebhookPayloadType =
+    | PING = 0
+    | EVENT = 1
+
+// https://discord.com/developers/docs/events/webhook-events#event-types
+type WebhookEventType =
+    | APPLICATION_AUTHORIZED
+    | ENTITLEMENT_CREATE
+with
+    override this.ToString () =
+        match this with
+        | WebhookEventType.APPLICATION_AUTHORIZED -> "APPLICATION_AUTHORIZED"
+        | WebhookEventType.ENTITLEMENT_CREATE -> "ENTITLEMENT_CREATE"
+
+    static member FromString (str: string) =
+        match str with
+        | "APPLICATION_AUTHORIZED" -> Some WebhookEventType.APPLICATION_AUTHORIZED
+        | "ENTITLEMENT_CREATE" -> Some WebhookEventType.ENTITLEMENT_CREATE
+        | _ -> None

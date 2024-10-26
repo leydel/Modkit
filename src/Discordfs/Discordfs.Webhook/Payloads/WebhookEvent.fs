@@ -1,6 +1,6 @@
 ﻿namespace Discordfs.Webhook.Payloads
 
-open Discordfs.Webhook.Types
+open Discordfs.Types
 open System.Text.Json
 open System.Text.Json.Serialization
 
@@ -20,7 +20,7 @@ and WebhookEventConverter () =
         let webhookType =
             document.RootElement.GetProperty "type"
             |> _.GetInt32()
-            |> enum<WebhookType>
+            |> enum<WebhookPayloadType>
 
         let webhookEventType =
             try
@@ -34,10 +34,10 @@ and WebhookEventConverter () =
         let json = document.RootElement.GetRawText()
 
         match webhookType, webhookEventType with
-        | WebhookType.PING, _ -> Ping <| Json.deserializeF json
-        | WebhookType.EVENT, Some ENTITLEMENT_CREATE -> EntitlementCreate <| Json.deserializeF json
-        | WebhookType.EVENT, Some APPLICATION_AUTHORIZED -> ApplicationAuthorized <| Json.deserializeF json
-        | _ -> failwith "Unexpected WebhookType and/or WebhookEventType provided"
+        | WebhookPayloadType.PING, _ -> Ping <| Json.deserializeF json
+        | WebhookPayloadType.EVENT, Some ENTITLEMENT_CREATE -> EntitlementCreate <| Json.deserializeF json
+        | WebhookPayloadType.EVENT, Some APPLICATION_AUTHORIZED -> ApplicationAuthorized <| Json.deserializeF json
+        | _ -> failwith "Unexpected WebhookPayloadType and/or WebhookEventType provided"
                 
     override __.Write (writer, value, options) =
         match value with

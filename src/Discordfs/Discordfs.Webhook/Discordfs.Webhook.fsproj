@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Types\WebhookEventTypes.fs" />
     <Compile Include="Payloads\WebhookEvent.fs" />
     <Compile Include="Modules\Ed25519.fs" />
   </ItemGroup>

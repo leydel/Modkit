@@ -665,6 +665,7 @@ and ComponentConverter () =
     inherit JsonConverter<Component> ()
 
     override _.Read (reader, typeToConvert, options) =
+        Console.WriteLine("reading...")
         let success, document = JsonDocument.TryParseValue(&reader)
 
         if not success then
@@ -685,6 +686,7 @@ and ComponentConverter () =
         | _ -> failwith "Unexpected ComponentType provided"
 
     override _.Write (writer, value, options) =
+        Console.WriteLine("writing...")
         match value with
         | Component.ActionRow a -> Json.serializeF a |> writer.WriteRawValue
         | Component.Button b -> Json.serializeF b |> writer.WriteRawValue

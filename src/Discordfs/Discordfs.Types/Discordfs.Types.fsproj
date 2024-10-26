@@ -9,6 +9,8 @@
     <Compile Include="Json.fs" />
     <Compile Include="Enums.fs" />
     <Compile Include="Structures.fs" />
+    <Compile Include="GatewayEvents.fs" />
+    <Compile Include="WebhookEvents.fs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,5 @@
 ﻿namespace Discordfs.Gateway.Modules
 
-open Discordfs.Gateway.Types
 open Discordfs.Types
 open System.Text.Json
 
