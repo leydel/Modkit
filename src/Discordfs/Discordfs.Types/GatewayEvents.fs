@@ -1,6 +1,7 @@
 ﻿namespace Discordfs.Types
 
 open System
+open System.Text.Json
 open System.Text.Json.Serialization
 
 #nowarn "49"
@@ -161,3 +162,84 @@ with
 
 // https://discord.com/developers/docs/topics/gateway-events#invalid-session
 type InvalidSession = bool
+
+// https://discord.com/developers/docs/events/gateway-events#application-command-permissions-update
+type ApplicationCommandPermissionsUpdate = ApplicationCommandPermission
+
+// https://discord.com/developers/docs/events/gateway-events#auto-moderation-rule-create
+type AutoModerationRuleCreate = AutoModerationRule
+
+// https://discord.com/developers/docs/events/gateway-events#auto-moderation-rule-update
+type AutoModerationRuleUpdate = AutoModerationRule
+
+// https://discord.com/developers/docs/events/gateway-events#auto-moderation-rule-delete
+type AutoModerationRuleDelete = AutoModerationRule
+
+// https://discord.com/developers/docs/events/gateway-events#auto-moderation-action-execution-auto-moderation-action-execution-event-fields
+type AutoModerationActionExecution = {
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "action">] Action: AutoModerationAction
+    [<JsonPropertyName "rule_id">] RuleId: string
+    [<JsonPropertyName "rule_trigger_type">] RuleTriggerType: AutoModerationTriggerType
+    [<JsonPropertyName "user_id">] UserId: string
+    [<JsonPropertyName "channel_id">] ChannelId: string option
+    [<JsonPropertyName "message_id">] MessageId: string option
+    [<JsonPropertyName "alert_system_message_id">] AlertSystemMessageId: string option
+    [<JsonPropertyName "content">] Content: string // TODO: Consider making option, as doesn't exist if missing message content intent
+    [<JsonPropertyName "matched_keyword">] MatchedKeyword: string option
+    [<JsonPropertyName "matched_content">] MatchedContent: string option
+}
+
+// https://discord.com/developers/docs/events/gateway-events#channel-create
+type ChannelCreate = Channel
+
+// https://discord.com/developers/docs/events/gateway-events#channel-update
+type ChannelUpdate = Channel
+
+// https://discord.com/developers/docs/events/gateway-events#channel-delete
+type ChannelDelete = Channel
+
+// https://discord.com/developers/docs/events/gateway-events#thread-create
+type ThreadCreate = Channel
+
+// TODO: Can contain `newly_created` or thread member (?) in above
+
+// https://discord.com/developers/docs/events/gateway-events#thread-update
+type ThreadUpdate = Channel
+
+// https://discord.com/developers/docs/events/gateway-events#thread-delete
+type ThreadDelete = {
+    [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "parent_id">] ParentId: string
+    [<JsonPropertyName "type">] Type: ChannelType
+}
+
+// https://discord.com/developers/docs/events/gateway-events#thread-list-sync-thread-list-sync-event-fields
+type ThreadListSync = {
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "channel_ids">] ChannelIds: string list option
+    [<JsonPropertyName "threads">] Threads: Channel list
+    [<JsonPropertyName "members">] Members: ThreadMember list
+}
+
+// https://discord.com/developers/docs/events/gateway-events#thread-member-update
+type ThreadMemberUpdate = ThreadMember
+
+// TODO: Also contains `guild_id` field in above
+
+// https://discord.com/developers/docs/events/gateway-events#thread-members-update
+type ThreadMembersUpdate = {
+    [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "member_count">] MemberCount: int
+    [<JsonPropertyName "added_members">] AddedMembers: ThreadMember list option
+    [<JsonPropertyName "removed_member_ids">] RemovedMemberIds: string list option
+}
+
+// https://discord.com/developers/docs/events/gateway-events#channel-pins-update-channel-pins-update-event-fields
+type ChannelPinsUpdate = {
+    [<JsonPropertyName "guild_id">] GuildId: string option
+    [<JsonPropertyName "channel_id">] ChannelIds: string
+    [<JsonPropertyName "last_pin_timestamp">] [<JsonConverter(typeof<Converters.UnixEpoch>)>] LastPinTimestamp: DateTime option
+}

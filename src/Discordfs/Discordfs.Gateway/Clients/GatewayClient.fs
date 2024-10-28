@@ -73,7 +73,7 @@ type GatewayClient () =
                         | true -> return ConnectionCloseBehaviour.Resume state.ResumeGatewayUrl
                         | false -> return ConnectionCloseBehaviour.Close
 
-                    | Ok (GatewayReceiveEvent.Hello event) ->
+                    | Ok (GatewayReceiveEvent.HELLO event) ->
                         match resumed, state.SessionId, state.SequenceId with
                         | true, Some ses, Some seq -> Gateway.resume (Resume.build(identify.Token, ses, seq))
                         | _ -> Gateway.identify identify
@@ -82,28 +82,28 @@ type GatewayClient () =
                         let newState = { state with Interval = Some event.Data.HeartbeatInterval }
                         return! loop newState resumed identify handler ws
 
-                    | Ok (GatewayReceiveEvent.Heartbeat _) ->
+                    | Ok (GatewayReceiveEvent.HEARTBEAT _) ->
                         ws |> Gateway.heartbeat state.SequenceId |> ignore
 
                         return! loop { state with Heartbeat = freshHeartbeat } resumed identify handler ws
 
-                    | Ok (GatewayReceiveEvent.HeartbeatAck _) ->
+                    | Ok (GatewayReceiveEvent.HEARTBEAT_ACK _) ->
                         return! loop { state with HeartbeatAcked = true } resumed identify handler ws
 
-                    | Ok (GatewayReceiveEvent.Ready event) ->
+                    | Ok (GatewayReceiveEvent.READY event) ->
                         let resumeGatewayUrl = Some event.Data.ResumeGatewayUrl
                         let sessionId = Some event.Data.SessionId
 
                         let newState = { state with ResumeGatewayUrl = resumeGatewayUrl; SessionId = sessionId }
                         return! loop newState resumed identify handler ws
 
-                    | Ok (GatewayReceiveEvent.Resumed _) ->
+                    | Ok (GatewayReceiveEvent.RESUMED _) ->
                         return! loop state resumed identify handler ws
 
-                    | Ok (GatewayReceiveEvent.Reconnect _) ->
+                    | Ok (GatewayReceiveEvent.RECONNECT _) ->
                         return ConnectionCloseBehaviour.Resume state.ResumeGatewayUrl
 
-                    | Ok (GatewayReceiveEvent.InvalidSession event) ->
+                    | Ok (GatewayReceiveEvent.INVALID_SESSION event) ->
                         match event.Data with
                         | true -> return! loop state resumed identify handler ws
                         | false -> return ConnectionCloseBehaviour.Reconnect
