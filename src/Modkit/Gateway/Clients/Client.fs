@@ -2,11 +2,13 @@
 
 open Azure.Messaging.ServiceBus
 open Discordfs.Gateway.Clients
+open Discordfs.Gateway.Payloads
 open Discordfs.Rest.Resources
 open Discordfs.Types
 open Modkit.Gateway.Factories
 open Microsoft.Extensions.Configuration
 open System.Net.Http
+open System.Text.Json
 open System.Threading.Tasks
 
 type Client (
@@ -72,8 +74,9 @@ type Client (
                 let client = serviceBusClientFactory.CreateClient serviceBusConnectionString
                 let sender = client.CreateSender serviceBusQueueName
 
-                fun (event: string) -> task {
-                    do! sender.SendMessageAsync <| ServiceBusMessage event
+                fun (event: GatewayReceiveEvent) -> task {
+                    let json = Json.serializeF event
+                    do! sender.SendMessageAsync <| ServiceBusMessage json
                 }
 
         try

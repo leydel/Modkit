@@ -1496,26 +1496,7 @@ with
         ConnectionProperties.build(operatingSystem)
 
 // https://discord.com/developers/docs/topics/gateway-events#payload-structure
-type GatewayEventIdentifier = {
-    [<JsonPropertyName "op">] Opcode: GatewayOpcode
-    [<JsonPropertyName "t">] EventName: string option
-}
-
-// https://discord.com/developers/docs/topics/gateway-events#payload-structure
-type GatewaySequencer = {
-    [<JsonPropertyName "s">] Sequence: int option
-}
-with
-    static member getSequenceNumber (json: string) =
-        try
-            let seq = Json.deserializeF<GatewaySequencer> json
-            seq.Sequence
-        with
-        | _ ->
-            None
-
-// https://discord.com/developers/docs/topics/gateway-events#payload-structure
-type GatewayEvent<'a> = {
+type GatewayEventPayload<'a> = {
     [<JsonPropertyName "op">] Opcode: GatewayOpcode
     [<JsonPropertyName "d">] Data: 'a
     [<JsonPropertyName "s">] Sequence: int option

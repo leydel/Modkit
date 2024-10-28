@@ -1,10 +1,10 @@
 ﻿namespace Discordfs.Gateway.Clients
 
 open Discordfs.Gateway.Modules
+open Discordfs.Gateway.Payloads
 open Discordfs.Types
 open System
 open System.Net.WebSockets
-open System.Text.Json
 open System.Threading
 open System.Threading.Tasks
 
@@ -26,7 +26,7 @@ type IGatewayClient =
     abstract member Connect:
         gatewayUrl: string ->
         identify: Identify ->
-        handler: (string -> Task<unit>) ->
+        handler: (GatewayReceiveEvent -> Task<unit>) ->
         Task<unit>
 
     abstract member RequestGuildMembers:
@@ -68,64 +68,52 @@ type GatewayClient () =
                         return! loop { state with HeartbeatAcked = false } resumed identify handler ws
                 else
                     match readNext.Result with
-                    | GatewayReadResponse.Close code ->
-                        Console.WriteLine($"Close code: {code}")
-
+                    | Error code ->
                         match Gateway.shouldReconnect code with
                         | true -> return ConnectionCloseBehaviour.Resume state.ResumeGatewayUrl
                         | false -> return ConnectionCloseBehaviour.Close
 
-                    | GatewayReadResponse.Message (opcode, eventName, message) ->
-                        Console.WriteLine($"Message: {opcode} {eventName} {message}")
+                    | Ok (GatewayReceiveEvent.Hello event) ->
+                        match resumed, state.SessionId, state.SequenceId with
+                        | true, Some ses, Some seq -> Gateway.resume (Resume.build(identify.Token, ses, seq))
+                        | _ -> Gateway.identify identify
+                        <| ws |> ignore
 
-                        match opcode, eventName with
-                        | GatewayOpcode.HELLO, _ ->
-                            let event = Json.deserializeF<GatewayEvent<Hello>> message
+                        let newState = { state with Interval = Some event.Data.HeartbeatInterval }
+                        return! loop newState resumed identify handler ws
 
-                            match resumed, state.SessionId, state.SequenceId with
-                            | true, Some ses, Some seq -> Gateway.resume (Resume.build(identify.Token, ses, seq))
-                            | _ -> Gateway.identify identify
-                            <| ws |> ignore
+                    | Ok (GatewayReceiveEvent.Heartbeat _) ->
+                        ws |> Gateway.heartbeat state.SequenceId |> ignore
 
-                            let newState = { state with Interval = Some event.Data.HeartbeatInterval }
-                            return! loop newState resumed identify handler ws
+                        return! loop { state with Heartbeat = freshHeartbeat } resumed identify handler ws
 
-                        | GatewayOpcode.HEARTBEAT, _ ->
-                            ws |> Gateway.heartbeat state.SequenceId |> ignore
+                    | Ok (GatewayReceiveEvent.HeartbeatAck _) ->
+                        return! loop { state with HeartbeatAcked = true } resumed identify handler ws
 
-                            return! loop { state with Heartbeat = freshHeartbeat } resumed identify handler ws
+                    | Ok (GatewayReceiveEvent.Ready event) ->
+                        let resumeGatewayUrl = Some event.Data.ResumeGatewayUrl
+                        let sessionId = Some event.Data.SessionId
 
-                        | GatewayOpcode.HEARTBEAT_ACK, _ ->
-                            return! loop { state with HeartbeatAcked = true } resumed identify handler ws
+                        let newState = { state with ResumeGatewayUrl = resumeGatewayUrl; SessionId = sessionId }
+                        return! loop newState resumed identify handler ws
 
-                        | GatewayOpcode.DISPATCH, Some "READY" ->
-                            let event = Json.deserializeF<GatewayEvent<Ready>> message
-                            
-                            let resumeGatewayUrl = Some event.Data.ResumeGatewayUrl
-                            let sessionId = Some event.Data.SessionId
+                    | Ok (GatewayReceiveEvent.Resumed _) ->
+                        return! loop state resumed identify handler ws
 
-                            let newState = { state with ResumeGatewayUrl = resumeGatewayUrl; SessionId = sessionId }
-                            return! loop newState resumed identify handler ws
+                    | Ok (GatewayReceiveEvent.Reconnect _) ->
+                        return ConnectionCloseBehaviour.Resume state.ResumeGatewayUrl
 
-                        | GatewayOpcode.DISPATCH, Some "RESUMED" ->
-                            return! loop state resumed identify handler ws
+                    | Ok (GatewayReceiveEvent.InvalidSession event) ->
+                        match event.Data with
+                        | true -> return! loop state resumed identify handler ws
+                        | false -> return ConnectionCloseBehaviour.Reconnect
 
-                        | GatewayOpcode.RECONNECT, _ ->
-                            return ConnectionCloseBehaviour.Resume state.ResumeGatewayUrl
+                    | Ok event ->
+                        handler event |> ignore
 
-                        | GatewayOpcode.INVALID_SESSION, _ ->
-                            let event = Json.deserializeF<GatewayEvent<InvalidSession>> message
-
-                            match event.Data with
-                            | true -> return! loop state resumed identify handler ws
-                            | false -> return ConnectionCloseBehaviour.Reconnect
-
-                        | _ ->
-                            handler message |> ignore
-
-                            match GatewaySequencer.getSequenceNumber message with
-                            | None -> return! loop state resumed identify handler ws
-                            | Some s -> return! loop { state with SequenceId = Some s } resumed identify handler ws
+                        match GatewayReceiveEvent.getSequenceNumber event with
+                        | None -> return! loop state resumed identify handler ws
+                        | Some s -> return! loop { state with SequenceId = Some s } resumed identify handler ws
             }
 
             let rec resume (cachedUrl: string) (resumeGatewayUrl: string option) identify handler = task {

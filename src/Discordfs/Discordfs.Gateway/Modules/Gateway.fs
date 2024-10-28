@@ -1,52 +1,46 @@
 ﻿namespace Discordfs.Gateway.Modules
 
+open Discordfs.Gateway.Payloads
 open Discordfs.Types
 open System.Text.Json
-
-type GatewayReadResponse =
-    | Message of Opcode: GatewayOpcode * EventName: string option * Message: string
-    | Close of GatewayCloseEventCode option
 
 module Gateway =
     let readNext ws = task {
         let! res = Websocket.readNext ws
 
         match res with
-        | WebsocketReadResponse.Close code ->
-            return GatewayReadResponse.Close (Option.map enum<GatewayCloseEventCode> code)
-        | WebsocketReadResponse.Message message ->
-            let identifier = Json.deserializeF<GatewayEventIdentifier> message
-            return GatewayReadResponse.Message (identifier.Opcode, identifier.EventName, message)
+        | WebsocketReadResponse.Close code -> return Error (Option.map enum<GatewayCloseEventCode> code)
+        | WebsocketReadResponse.Message message -> return Ok (Json.deserializeF<GatewayReceiveEvent> message)
     }
 
     let identify (payload: Identify) ws =
         ws |> Websocket.write (
-            GatewayEvent.build(Opcode = GatewayOpcode.IDENTIFY, Data = payload) |> Json.serializeF
+            GatewayEventPayload.build(Opcode = GatewayOpcode.IDENTIFY, Data = payload) |> Json.serializeF
         )
         
     let resume (payload: Resume) ws =
         ws |> Websocket.write (
-            GatewayEvent.build(Opcode = GatewayOpcode.RESUME, Data = payload) |> Json.serializeF
+            GatewayEventPayload.build(Opcode = GatewayOpcode.RESUME, Data = payload) |> Json.serializeF
         )
 
     let heartbeat (payload: Heartbeat) ws =
         ws |> Websocket.write (
-            GatewayEvent.build(Opcode = GatewayOpcode.HEARTBEAT, Data = payload) |> Json.serializeF
+            GatewayEventPayload.build(Opcode = GatewayOpcode.HEARTBEAT, Data = payload) |> Json.serializeF
         )
 
     let requestGuildMembers (payload: RequestGuildMembers) ws =
         ws |> Websocket.write (
-            GatewayEvent.build(Opcode = GatewayOpcode.REQUEST_GUILD_MEMBERS, Data = payload) |> Json.serializeF
+            GatewayEventPayload.build(Opcode = GatewayOpcode.REQUEST_GUILD_MEMBERS, Data = payload) |> Json.serializeF
         )
 
     let updateVoiceState (payload: UpdateVoiceState) ws =
         ws |> Websocket.write (
-            GatewayEvent.build(Opcode = GatewayOpcode.VOICE_STATE_UPDATE, Data = payload) |> Json.serializeF
+            GatewayEventPayload.build(Opcode = GatewayOpcode.VOICE_STATE_UPDATE, Data = payload) |> Json.serializeF
         )
 
     let updatePresence (payload: UpdatePresence) ws =
         ws |> Websocket.write (
-            GatewayEvent.build(Opcode = GatewayOpcode.PRESENCE_UPDATE, Data = payload) |> Json.serializeF
+            GatewayEventPayload.build(Opcode = GatewayOpcode.PRESENCE_UPDATE, Data = payload) |> Json.serializeF
         )
     
     let shouldReconnect (code: GatewayCloseEventCode option) =
