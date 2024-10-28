@@ -3,9 +3,22 @@
 open Discordfs.Rest.Common
 open Discordfs.Rest.Types
 open Discordfs.Types
-open System.Threading.Tasks
+open System.Net
+open System.Net.Http
 
-type CreateGuildEmoji(
+type ListGuildEmojisResponse =
+    | Ok of Emoji list
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type GetGuildEmojiResponse =
+    | Ok of Emoji
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type CreateGuildEmojiPayload(
     name:  string,
     image: string,
     roles: string
@@ -17,7 +30,14 @@ type CreateGuildEmoji(
             required "roles" roles
         }
 
-type ModifyGuildEmoji(
+type CreateGuildEmojiResponse =
+    | Created of Emoji
+    | BadRequest of ErrorResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type ModifyGuildEmojiPayload(
     ?name:  string,
     ?roles: string option
 ) =
@@ -27,7 +47,32 @@ type ModifyGuildEmoji(
             optional "roles" roles
         }
 
-type CreateApplicationEmoji(
+type ModifyGuildEmojiResponse =
+    | Ok of Emoji
+    | BadRequest of ErrorResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type DeleteGuildEmojiResponse =
+    | NoContent
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type ListApplicationEmojisResponse =
+    | Ok of Emoji list
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type GetApplicationEmojiResponse =
+    | Ok of Emoji
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type CreateApplicationEmojiPayload(
     name:  string,
     image: string
 ) =
@@ -37,7 +82,14 @@ type CreateApplicationEmoji(
             required "image" image
         }
 
-type ModifyApplicationEmoji(
+type CreateApplicationEmojiResponse =
+    | Created of Emoji
+    | BadRequest of ErrorResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
+
+type ModifyApplicationEmojiPayload(
     name: string
 ) =
     inherit Payload() with
@@ -45,155 +97,210 @@ type ModifyApplicationEmoji(
             required "name" name
         }
 
-type IEmojiResource =
-    // https://discord.com/developers/docs/resources/emoji#list-guild-emojis
-    abstract member ListGuildEmojis:
-        guildId: string ->
-        Task<Emoji list>
+type ModifyApplicationEmojiResponse =
+    | Ok of Emoji
+    | BadRequest of ErrorResponse
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
 
-    // https://discord.com/developers/docs/resources/emoji#get-guild-emoji
-    abstract member GetGuildEmoji:
-        guildId: string ->
-        emojiId: string ->
-        Task<Emoji>
+type DeleteApplicationEmojiResponse =
+    | NoContent
+    | NotFound of ErrorResponse
+    | TooManyRequests of RateLimitResponse
+    | Other of HttpStatusCode
 
-    // https://discord.com/developers/docs/resources/emoji#create-guild-emoji
-    abstract member CreateGuildEmoji:
-        guildId: string ->
-        auditLogReason: string option ->
-        content: CreateGuildEmoji ->
-        Task<Emoji>
-
-    // https://discord.com/developers/docs/resources/emoji#modify-guild-emoji
-    abstract member ModifyGuildEmoji:
-        guildId: string ->
-        emojiId: string ->
-        auditLogReason: string option ->
-        content: ModifyGuildEmoji ->
-        Task<Emoji>
-
-    // https://discord.com/developers/docs/resources/emoji#delete-guild-emoji
-    abstract member DeleteGuildEmoji:
-        guildId: string ->
-        emojiId: string ->
-        auditLogReason: string option ->
-        Task<unit>
-
-    // https://discord.com/developers/docs/resources/emoji#list-application-emojis
-    abstract member ListApplicationEmojis:
-        applicationId: string ->
-        Task<ListApplicationEmojisResponse>
-
-    // https://discord.com/developers/docs/resources/emoji#get-application-emoji
-    abstract member GetApplicationEmoji:
-        applicationId: string ->
-        emojiId: string ->
-        Task<Emoji>
-
-    // https://discord.com/developers/docs/resources/emoji#create-application-emoji
-    abstract member CreateApplicationEmoji:
-        applicationId: string ->
-        content: CreateApplicationEmoji ->
-        Task<Emoji>
-
-    // https://discord.com/developers/docs/resources/emoji#modify-application-emoji
-    abstract member ModifyApplicationEmoji:
-        applicationId: string ->
-        emojiId: string ->
-        content: ModifyApplicationEmoji ->
-        Task<Emoji>
-
-    // https://discord.com/developers/docs/resources/emoji#delete-application-emoji
-    abstract member DeleteApplicationEmoji:
-        applicationId: string ->
-        emojiId: string ->
-        Task<unit>
-
-type EmojiResource (httpClientFactory, token) =
-    interface IEmojiResource with
-        member _.ListGuildEmojis guildId =
+module Emoji =
+    let listGuildEmojis
+        (guildId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/emojis"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map ListGuildEmojisResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map ListGuildEmojisResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map ListGuildEmojisResponse.TooManyRequests (Http.toJson res)
+                | status -> return ListGuildEmojisResponse.Other status
+            })
 
-        member _.GetGuildEmoji guildId emojiId =
+    let getGuildEmoji
+        (guildId: string)
+        (emojiId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"guilds/{guildId}/emojis/{emojiId}"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetGuildEmojiResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map GetGuildEmojiResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetGuildEmojiResponse.TooManyRequests (Http.toJson res)
+                | status -> return GetGuildEmojiResponse.Other status
+            })
 
-        member _.CreateGuildEmoji guildId auditLogReason content =
+    let createGuildEmoji
+        (guildId: string)
+        (auditLogReason: string option)
+        (content: CreateGuildEmojiPayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 post $"guilds/{guildId}/emojis"
-                bot token
+                bot botToken
                 audit auditLogReason
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
-
-        member _.ModifyGuildEmoji guildId emojiId auditLogReason content =
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.Created -> return! Task.map CreateGuildEmojiResponse.Created (Http.toJson res)
+                | HttpStatusCode.BadRequest -> return! Task.map CreateGuildEmojiResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map CreateGuildEmojiResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map CreateGuildEmojiResponse.TooManyRequests (Http.toJson res)
+                | status -> return CreateGuildEmojiResponse.Other status
+            })
+        
+    let modifyGuildEmoji
+        (guildId: string)
+        (emojiId: string)
+        (auditLogReason: string option)
+        (content: ModifyGuildEmojiPayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 patch $"guilds/{guildId}/emojis/{emojiId}"
-                bot token
+                bot botToken
                 audit auditLogReason
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map ModifyGuildEmojiResponse.Ok (Http.toJson res)
+                | HttpStatusCode.BadRequest -> return! Task.map ModifyGuildEmojiResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map ModifyGuildEmojiResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map ModifyGuildEmojiResponse.TooManyRequests (Http.toJson res)
+                | status -> return ModifyGuildEmojiResponse.Other status
+            })
 
-        member _.DeleteGuildEmoji guildId emojiId auditLogReason =
+    let deleteGuildEmoji
+        (guildId: string)
+        (emojiId: string)
+        (auditLogReason: string option)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 delete $"guilds/{guildId}/emojis/{emojiId}"
-                bot token
+                bot botToken
                 audit auditLogReason
             }
-            |> Http.send httpClientFactory
-            |> Task.wait
-
-        member _.ListApplicationEmojis applicationId =
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.NoContent -> return DeleteGuildEmojiResponse.NoContent
+                | HttpStatusCode.NotFound -> return! Task.map DeleteGuildEmojiResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map DeleteGuildEmojiResponse.TooManyRequests (Http.toJson res)
+                | status -> return DeleteGuildEmojiResponse.Other status
+            })
+        
+    let listApplicationEmojis
+        (applicationId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"applications/{applicationId}/emojis"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map ListApplicationEmojisResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map ListApplicationEmojisResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map ListApplicationEmojisResponse.TooManyRequests (Http.toJson res)
+                | status -> return ListApplicationEmojisResponse.Other status
+            })
 
-        member _.GetApplicationEmoji applicationId emojiId =
+    let getApplicationEmoji
+        (applicationId: string)
+        (emojiId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 get $"applications/{applicationId}/emojis/{emojiId}"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map GetApplicationEmojiResponse.Ok (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map GetApplicationEmojiResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map GetApplicationEmojiResponse.TooManyRequests (Http.toJson res)
+                | status -> return GetApplicationEmojiResponse.Other status
+            })
 
-        member _.CreateApplicationEmoji applicationId content =
+    let createApplicationEmoji
+        (applicationId: string)
+        (content: CreateApplicationEmojiPayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 post $"applications/{applicationId}/emojis"
-                bot token
+                bot botToken
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
-
-        member _.ModifyApplicationEmoji applicationId emojiId content =
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.Created -> return! Task.map CreateApplicationEmojiResponse.Created (Http.toJson res)
+                | HttpStatusCode.BadRequest -> return! Task.map CreateApplicationEmojiResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map CreateApplicationEmojiResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map CreateApplicationEmojiResponse.TooManyRequests (Http.toJson res)
+                | status -> return CreateApplicationEmojiResponse.Other status
+            })
+        
+    let modifyApplicationEmoji
+        (applicationId: string)
+        (emojiId: string)
+        (content: ModifyApplicationEmojiPayload)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 patch $"applications/{applicationId}/emojis/{emojiId}"
-                bot token
+                bot botToken
                 payload content
             }
-            |> Http.send httpClientFactory
-            |> Task.mapT Http.toJson
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.OK -> return! Task.map ModifyApplicationEmojiResponse.Ok (Http.toJson res)
+                | HttpStatusCode.BadRequest -> return! Task.map ModifyApplicationEmojiResponse.BadRequest (Http.toJson res)
+                | HttpStatusCode.NotFound -> return! Task.map ModifyApplicationEmojiResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map ModifyApplicationEmojiResponse.TooManyRequests (Http.toJson res)
+                | status -> return ModifyApplicationEmojiResponse.Other status
+            })
 
-        member _.DeleteApplicationEmoji applicationId emojiId =
+    let deleteApplicationEmoji
+        (applicationId: string)
+        (emojiId: string)
+        botToken
+        (httpClient: HttpClient) =
             req {
                 delete $"applications/{applicationId}/emojis/{emojiId}"
-                bot token
+                bot botToken
             }
-            |> Http.send httpClientFactory
-            |> Task.wait
+            |> httpClient.SendAsync
+            |> Task.mapT (fun res -> task {
+                match res.StatusCode with
+                | HttpStatusCode.NoContent -> return DeleteApplicationEmojiResponse.NoContent
+                | HttpStatusCode.NotFound -> return! Task.map DeleteApplicationEmojiResponse.NotFound (Http.toJson res)
+                | HttpStatusCode.TooManyRequests -> return! Task.map DeleteApplicationEmojiResponse.TooManyRequests (Http.toJson res)
+                | status -> return DeleteApplicationEmojiResponse.Other status
+            })
