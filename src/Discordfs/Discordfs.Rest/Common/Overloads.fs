@@ -1,6 +1,8 @@
 ﻿[<AutoOpen>]
 module Overloads
 
-let (>>=) v f = Option.bind f v
-let (>>.) v f = Option.map f v
-let (>>?) o v = Option.defaultValue v o
+let inline (>>=) v f = Option.bind f v
+let inline (>>.) v f = Option.map f v
+let inline (>>?) o v = Option.defaultValue v o
+
+let inline (||>) (a, b) f = f a b
