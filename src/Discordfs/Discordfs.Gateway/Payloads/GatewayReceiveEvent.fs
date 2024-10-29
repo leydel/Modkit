@@ -6,9 +6,9 @@ open System.Text.Json.Serialization
 
 [<JsonConverter(typeof<GatewayReceiveEventConverter>)>]
 type GatewayReceiveEvent =
-    | HELLO                                  of GatewayEventPayload<Hello>
     | HEARTBEAT                              of GatewayEventPayload<Empty>
     | HEARTBEAT_ACK                          of GatewayEventPayload<Empty>
+    | HELLO                                  of GatewayEventPayload<Hello>
     | READY                                  of GatewayEventPayload<Ready>
     | RESUMED                                of GatewayEventPayload<Empty>
     | RECONNECT                              of GatewayEventPayload<Empty>
@@ -25,6 +25,14 @@ type GatewayReceiveEvent =
     | THREAD_UPDATE                          of GatewayEventPayload<ChannelUpdate>
     | THREAD_DELETE                          of GatewayEventPayload<ThreadDelete>
     | THREAD_LIST_SYNC                       of GatewayEventPayload<ThreadListSync>
+    | ENTITLEMENT_CREATE                     of GatewayEventPayload<EntitlementCreate>
+    | ENTITLEMENT_UPDATE                     of GatewayEventPayload<EntitlementUpdate>
+    | ENTITLEMENT_DELETE                     of GatewayEventPayload<EntitlementDelete>
+    | GUILD_CREATE                           of GatewayEventPayload<GuildCreate>
+    | GUILD_UPDATE                           of GatewayEventPayload<GuildUpdate>
+    | GUILD_DELETE                           of GatewayEventPayload<GuildDelete>
+    | GUILD_BAN_ADD                          of GatewayEventPayload<GuildBanAdd>
+    | GUILD_BAN_REMOVE                       of GatewayEventPayload<GuildBanRemove>
 with
     static member getSequenceNumber (event: GatewayReceiveEvent) =
         let json = Json.serializeF event
@@ -52,14 +60,13 @@ and GatewayReceiveEventConverter () =
             match document.RootElement.TryGetProperty "t" with
             | true, t -> Some (t.GetRawText())
             | _ -> None
-            
 
         let json = document.RootElement.GetRawText()
 
         match opcode, eventName with
-        | GatewayOpcode.HELLO, None -> HELLO <| Json.deserializeF json
         | GatewayOpcode.HEARTBEAT, None -> HEARTBEAT <| Json.deserializeF json
         | GatewayOpcode.HEARTBEAT_ACK, None -> HEARTBEAT_ACK <| Json.deserializeF json
+        | GatewayOpcode.HELLO, None -> HELLO <| Json.deserializeF json
         | GatewayOpcode.DISPATCH, Some (nameof READY) -> READY <| Json.deserializeF json
         | GatewayOpcode.DISPATCH, Some (nameof RESUMED) -> RESUMED <| Json.deserializeF json
         | GatewayOpcode.RECONNECT, None -> RECONNECT <| Json.deserializeF json
@@ -76,13 +83,21 @@ and GatewayReceiveEventConverter () =
         | GatewayOpcode.DISPATCH, Some (nameof THREAD_UPDATE) -> THREAD_UPDATE <| Json.deserializeF json
         | GatewayOpcode.DISPATCH, Some (nameof THREAD_DELETE) -> THREAD_DELETE <| Json.deserializeF json
         | GatewayOpcode.DISPATCH, Some (nameof THREAD_LIST_SYNC) -> THREAD_LIST_SYNC <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof ENTITLEMENT_CREATE) -> ENTITLEMENT_CREATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof ENTITLEMENT_UPDATE) -> ENTITLEMENT_UPDATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof ENTITLEMENT_DELETE) -> ENTITLEMENT_DELETE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_CREATE) -> GUILD_CREATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_UPDATE) -> GUILD_UPDATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_DELETE) -> GUILD_DELETE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_BAN_ADD) -> GUILD_BAN_ADD <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_BAN_REMOVE) -> GUILD_BAN_REMOVE <| Json.deserializeF json
         | _ -> failwith "Unexpected GatewayOpcode and/or EventName provided" // TODO: Handle gracefully so bot doesnt crash on unfamiliar events
                 
     override __.Write (writer, value, options) =
         match value with
-        | HELLO h -> Json.serializeF h |> writer.WriteRawValue
         | HEARTBEAT h -> Json.serializeF h |> writer.WriteRawValue
         | HEARTBEAT_ACK h -> Json.serializeF h |> writer.WriteRawValue
+        | HELLO h -> Json.serializeF h |> writer.WriteRawValue
         | READY r -> Json.serializeF r |> writer.WriteRawValue
         | RESUMED r -> Json.serializeF r |> writer.WriteRawValue
         | RECONNECT r -> Json.serializeF r |> writer.WriteRawValue
@@ -99,3 +114,11 @@ and GatewayReceiveEventConverter () =
         | THREAD_UPDATE t -> Json.serializeF t |> writer.WriteRawValue
         | THREAD_DELETE t -> Json.serializeF t |> writer.WriteRawValue
         | THREAD_LIST_SYNC t -> Json.serializeF t |> writer.WriteRawValue
+        | ENTITLEMENT_CREATE e -> Json.serializeF e |> writer.WriteRawValue
+        | ENTITLEMENT_UPDATE e -> Json.serializeF e |> writer.WriteRawValue
+        | ENTITLEMENT_DELETE e -> Json.serializeF e |> writer.WriteRawValue
+        | GUILD_CREATE g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_UPDATE g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_DELETE g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_BAN_ADD g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_BAN_REMOVE g -> Json.serializeF g |> writer.WriteRawValue

@@ -243,3 +243,71 @@ type ChannelPinsUpdate = {
     [<JsonPropertyName "channel_id">] ChannelIds: string
     [<JsonPropertyName "last_pin_timestamp">] [<JsonConverter(typeof<Converters.UnixEpoch>)>] LastPinTimestamp: DateTime option
 }
+
+// https://discord.com/developers/docs/events/gateway-events#entitlement-create
+type EntitlementCreate = Entitlement
+
+// https://discord.com/developers/docs/events/gateway-events#entitlement-update
+type EntitlementUpdate = Entitlement
+
+// https://discord.com/developers/docs/events/gateway-events#entitlement-delete
+type EntitlementDelete = Entitlement
+
+// https://discord.com/developers/docs/events/gateway-events#guild-create
+[<JsonConverter(typeof<GuildCreateConverter>)>]
+type GuildCreate =
+    | AvailableGuild of Guild
+    | UnavailableGuild of UnavailableGuild
+
+// TODO: AvailableGuild contains many additional properties: https://discord.com/developers/docs/events/gateway-events#guild-create-guild-create-extra-fields
+
+and GuildCreateConverter () =
+    inherit JsonConverter<GuildCreate> ()
+
+    override _.Read (reader, typeToConvert, options) =
+        let success, document = JsonDocument.TryParseValue &reader
+        if not success then raise (JsonException())
+
+        let available =
+            match document.RootElement.TryGetProperty "name" with
+            | exists, _ -> exists
+
+        let json = document.RootElement.GetRawText()
+
+        match available with
+        | true -> AvailableGuild <| Json.deserializeF json
+        | false -> UnavailableGuild <| Json.deserializeF json
+
+    override _.Write (writer, value, options) =
+        match value with
+        | AvailableGuild a -> Json.serializeF a |> writer.WriteRawValue
+        | UnavailableGuild u -> Json.serializeF u |> writer.WriteRawValue
+
+// https://discord.com/developers/docs/events/gateway-events#guild-update
+type GuildUpdate = Guild
+
+// https://discord.com/developers/docs/events/gateway-events#guild-delete
+type GuildDelete = UnavailableGuild
+
+// TODO: `unavailable` field is not net if bot removed from guild in above
+
+// https://discord.com/developers/docs/events/gateway-events#guild-audit-log-entry-create
+type GuildAuditLogEntryCreate = AuditLogEntry
+
+// TODO: Also contains `guild_id` field in above
+
+// https://discord.com/developers/docs/events/gateway-events#guild-ban-add
+type GuildBanAdd = {
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "user">] user: User
+}
+
+// https://discord.com/developers/docs/events/gateway-events#guild-ban-remove
+type GuildBanRemove = {
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "user">] user: User
+}
+
+// IDEA: Serializing additional properties could be done through a custom converter which creates an object containing
+//       the main object in one property and the additional metadata in another. This could also be done to things like
+//       InviteWithMetdata!!!
