@@ -7,13 +7,13 @@ open System.Text.Json.Serialization
 #nowarn "49"
 
 // https://discord.com/developers/docs/topics/gateway-events#identify-identify-structure
-type Identify = {
+type IdentifySendEvent = {
     [<JsonPropertyName "token">] Token: string
     [<JsonPropertyName "properties">] Properties: ConnectionProperties
     [<JsonPropertyName "compress">] Compress: bool option
     [<JsonPropertyName "large_threshold">] LargeThreshold: int option
     [<JsonPropertyName "shard">] Shard: (int * int) option
-    [<JsonPropertyName "presence">] Presence: UpdatePresence option
+    [<JsonPropertyName "presence">] Presence: UpdatePresenceSendEvent option
     [<JsonPropertyName "intents">] Intents: int
 }
 with
@@ -24,7 +24,7 @@ with
         ?Compress: bool,
         ?LargeThreshold: int,
         ?Shard: int * int,
-        ?Presence: UpdatePresence
+        ?Presence: UpdatePresenceSendEvent
     ) = {
         Token = Token;
         Intents = Intents;
@@ -36,7 +36,7 @@ with
     }                
 
 // https://discord.com/developers/docs/topics/gateway-events#resume-resume-structure
-and Resume = {
+and ResumeSendEvent = {
     [<JsonPropertyName "token">] Token: string
     [<JsonPropertyName "session_id">] SessionId: string
     [<JsonPropertyName "seq">] Sequence: int
@@ -53,10 +53,10 @@ with
     }
 
 // https://discord.com/developers/docs/topics/gateway-events#heartbeat-example-heartbeat
-and Heartbeat = int option
+and HeartbeatSendEvent = int option
 
 // https://discord.com/developers/docs/topics/gateway-events#request-guild-members-request-guild-members-structure
-and RequestGuildMembers = {
+and RequestGuildMembersSendEvent = {
     [<JsonPropertyName "guild_id">] GuildId: string
     [<JsonPropertyName "query">] Query: string option
     [<JsonPropertyName "limit">] Limit: int
@@ -82,7 +82,7 @@ with
     }
 
 // https://discord.com/developers/docs/topics/gateway-events#update-voice-state-gateway-voice-state-update-structure
-and UpdateVoiceState = {
+and UpdateVoiceStateSendEvent = {
     [<JsonPropertyName "guild_id">] GuildId: string
     [<JsonPropertyName "channel_id">] ChannelId: string option
     [<JsonPropertyName "self_mute">] SelfMute: bool
@@ -101,8 +101,19 @@ with
         SelfDeaf = SelfDeaf;
     }
 
+// https://discord.com/developers/docs/events/gateway-events#request-soundboard-sounds
+and RequestSoundboardSoundsSendEvent = {
+    [<JsonPropertyName "guild_ids">] GuildIds: string list 
+}
+with
+    static member build(
+        GuildIds: string list
+    ) = {
+        GuildIds = GuildIds;
+    }
+
 // https://discord.com/developers/docs/topics/gateway-events#update-presence-gateway-presence-update-structure
-and UpdatePresence = {
+and UpdatePresenceSendEvent = {
     [<JsonPropertyName "since">] Since: int option
     [<JsonPropertyName "activities">] Activities: Activity list
     [<JsonPropertyName "status">] Status: StatusType
@@ -121,13 +132,19 @@ with
         Afk = Option.defaultValue false Afk;
     }
 
+// https://discord.com/developers/docs/events/gateway#connection-lifecycle
+type HeartbeatReceiveEvent = Empty
+
+// https://discord.com/developers/docs/events/gateway#connection-lifecycle
+type HeartbeatAckReceiveEvent = Empty
+
 // https://discord.com/developers/docs/topics/gateway#hello-event-example-hello-event
-type Hello = {
+type HelloReceiveEvent = {
     [<JsonPropertyName "heartbeat_interval">] HeartbeatInterval: int
 }
 
 // https://discord.com/developers/docs/topics/gateway-events#ready-ready-event-fields
-type Ready = {
+type ReadyReceiveEvent = {
     [<JsonPropertyName "v">] Version: int
     [<JsonPropertyName "user">] User: User
     [<JsonPropertyName "guilds">] Guilds: UnavailableGuild list
@@ -137,46 +154,29 @@ type Ready = {
     [<JsonPropertyName "application">] Application: PartialApplication
 }
 
-// https://discord.com/developers/docs/topics/gateway-events#typing-start-typing-start-event-fields
-type TypingStart = {
-    [<JsonPropertyName "channel_id">] ChannelId: string
-    [<JsonPropertyName "guild_id">] GuildId: string option
-    [<JsonPropertyName "user_id">] UserId: string
-    [<JsonPropertyName "timestamp">] Timestamp: DateTime
-    [<JsonPropertyName "member">] Member: GuildMember
-}
-with
-    static member build(
-        ChannelId: string,
-        UserId: string,
-        Timestamp: DateTime,
-        Member: GuildMember,
-        ?GuildId: string
-    ) = {
-        ChannelId = ChannelId;
-        GuildId = GuildId;
-        UserId = UserId;
-        Timestamp = Timestamp;
-        Member = Member;
-    }
+// https://discord.com/developers/docs/events/gateway-events#resumed
+type ResumedReceiveEvent = Empty
+
+// https://discord.com/developers/docs/events/gateway-events#reconnect
+type ReconnectReceiveEvent = Empty
 
 // https://discord.com/developers/docs/topics/gateway-events#invalid-session
-type InvalidSession = bool
+type InvalidSessionReceiveEvent = bool
 
 // https://discord.com/developers/docs/events/gateway-events#application-command-permissions-update
-type ApplicationCommandPermissionsUpdate = ApplicationCommandPermission
+type ApplicationCommandPermissionsUpdateReceiveEvent = ApplicationCommandPermission
 
 // https://discord.com/developers/docs/events/gateway-events#auto-moderation-rule-create
-type AutoModerationRuleCreate = AutoModerationRule
+type AutoModerationRuleCreateReceiveEvent = AutoModerationRule
 
 // https://discord.com/developers/docs/events/gateway-events#auto-moderation-rule-update
-type AutoModerationRuleUpdate = AutoModerationRule
+type AutoModerationRuleUpdateReceiveEvent = AutoModerationRule
 
 // https://discord.com/developers/docs/events/gateway-events#auto-moderation-rule-delete
-type AutoModerationRuleDelete = AutoModerationRule
+type AutoModerationRuleDeleteReceiveEvent = AutoModerationRule
 
 // https://discord.com/developers/docs/events/gateway-events#auto-moderation-action-execution-auto-moderation-action-execution-event-fields
-type AutoModerationActionExecution = {
+type AutoModerationActionExecutionReceiveEvent = {
     [<JsonPropertyName "guild_id">] GuildId: string
     [<JsonPropertyName "action">] Action: AutoModerationAction
     [<JsonPropertyName "rule_id">] RuleId: string
@@ -191,24 +191,24 @@ type AutoModerationActionExecution = {
 }
 
 // https://discord.com/developers/docs/events/gateway-events#channel-create
-type ChannelCreate = Channel
+type ChannelCreateReceiveEvent = Channel
 
 // https://discord.com/developers/docs/events/gateway-events#channel-update
-type ChannelUpdate = Channel
+type ChannelUpdateReceiveEvent = Channel
 
 // https://discord.com/developers/docs/events/gateway-events#channel-delete
-type ChannelDelete = Channel
+type ChannelDeleteReceiveEvent = Channel
 
 // https://discord.com/developers/docs/events/gateway-events#thread-create
-type ThreadCreate = Channel
+type ThreadCreateReceiveEvent = Channel
 
 // TODO: Can contain `newly_created` or thread member (?) in above
 
 // https://discord.com/developers/docs/events/gateway-events#thread-update
-type ThreadUpdate = Channel
+type ThreadUpdateReceiveEvent = Channel
 
 // https://discord.com/developers/docs/events/gateway-events#thread-delete
-type ThreadDelete = {
+type ThreadDeleteReceiveEvent = {
     [<JsonPropertyName "id">] Id: string
     [<JsonPropertyName "guild_id">] GuildId: string
     [<JsonPropertyName "parent_id">] ParentId: string
@@ -216,7 +216,7 @@ type ThreadDelete = {
 }
 
 // https://discord.com/developers/docs/events/gateway-events#thread-list-sync-thread-list-sync-event-fields
-type ThreadListSync = {
+type ThreadListSyncReceiveEvent = {
     [<JsonPropertyName "guild_id">] GuildId: string
     [<JsonPropertyName "channel_ids">] ChannelIds: string list option
     [<JsonPropertyName "threads">] Threads: Channel list
@@ -224,12 +224,12 @@ type ThreadListSync = {
 }
 
 // https://discord.com/developers/docs/events/gateway-events#thread-member-update
-type ThreadMemberUpdate = ThreadMember
+type ThreadMemberUpdateReceiveEvent = ThreadMember
 
 // TODO: Also contains `guild_id` field in above
 
 // https://discord.com/developers/docs/events/gateway-events#thread-members-update
-type ThreadMembersUpdate = {
+type ThreadMembersUpdateReceiveEvent = {
     [<JsonPropertyName "id">] Id: string
     [<JsonPropertyName "guild_id">] GuildId: string
     [<JsonPropertyName "member_count">] MemberCount: int
@@ -238,31 +238,31 @@ type ThreadMembersUpdate = {
 }
 
 // https://discord.com/developers/docs/events/gateway-events#channel-pins-update-channel-pins-update-event-fields
-type ChannelPinsUpdate = {
+type ChannelPinsUpdateReceiveEvent = {
     [<JsonPropertyName "guild_id">] GuildId: string option
     [<JsonPropertyName "channel_id">] ChannelIds: string
     [<JsonPropertyName "last_pin_timestamp">] [<JsonConverter(typeof<Converters.UnixEpoch>)>] LastPinTimestamp: DateTime option
 }
 
 // https://discord.com/developers/docs/events/gateway-events#entitlement-create
-type EntitlementCreate = Entitlement
+type EntitlementCreateReceiveEvent = Entitlement
 
 // https://discord.com/developers/docs/events/gateway-events#entitlement-update
-type EntitlementUpdate = Entitlement
+type EntitlementUpdateReceiveEvent = Entitlement
 
 // https://discord.com/developers/docs/events/gateway-events#entitlement-delete
-type EntitlementDelete = Entitlement
+type EntitlementDeleteReceiveEvent = Entitlement
 
 // https://discord.com/developers/docs/events/gateway-events#guild-create
 [<JsonConverter(typeof<GuildCreateConverter>)>]
-type GuildCreate =
+type GuildCreateReceiveEvent =
     | AvailableGuild of Guild
     | UnavailableGuild of UnavailableGuild
 
 // TODO: AvailableGuild contains many additional properties: https://discord.com/developers/docs/events/gateway-events#guild-create-guild-create-extra-fields
 
 and GuildCreateConverter () =
-    inherit JsonConverter<GuildCreate> ()
+    inherit JsonConverter<GuildCreateReceiveEvent> ()
 
     override _.Read (reader, typeToConvert, options) =
         let success, document = JsonDocument.TryParseValue &reader
@@ -284,26 +284,26 @@ and GuildCreateConverter () =
         | UnavailableGuild u -> Json.serializeF u |> writer.WriteRawValue
 
 // https://discord.com/developers/docs/events/gateway-events#guild-update
-type GuildUpdate = Guild
+type GuildUpdateReceiveEvent = Guild
 
 // https://discord.com/developers/docs/events/gateway-events#guild-delete
-type GuildDelete = UnavailableGuild
+type GuildDeleteReceiveEvent = UnavailableGuild
 
 // TODO: `unavailable` field is not net if bot removed from guild in above
 
 // https://discord.com/developers/docs/events/gateway-events#guild-audit-log-entry-create
-type GuildAuditLogEntryCreate = AuditLogEntry
+type GuildAuditLogEntryCreateReceiveEvent = AuditLogEntry
 
 // TODO: Also contains `guild_id` field in above
 
 // https://discord.com/developers/docs/events/gateway-events#guild-ban-add
-type GuildBanAdd = {
+type GuildBanAddReceiveEvent = {
     [<JsonPropertyName "guild_id">] GuildId: string
     [<JsonPropertyName "user">] user: User
 }
 
 // https://discord.com/developers/docs/events/gateway-events#guild-ban-remove
-type GuildBanRemove = {
+type GuildBanRemoveReceiveEvent = {
     [<JsonPropertyName "guild_id">] GuildId: string
     [<JsonPropertyName "user">] user: User
 }
@@ -311,3 +311,26 @@ type GuildBanRemove = {
 // IDEA: Serializing additional properties could be done through a custom converter which creates an object containing
 //       the main object in one property and the additional metadata in another. This could also be done to things like
 //       InviteWithMetdata!!!
+
+// https://discord.com/developers/docs/topics/gateway-events#typing-start-typing-start-event-fields
+type TypingStartReceiveEvent = {
+    [<JsonPropertyName "channel_id">] ChannelId: string
+    [<JsonPropertyName "guild_id">] GuildId: string option
+    [<JsonPropertyName "user_id">] UserId: string
+    [<JsonPropertyName "timestamp">] Timestamp: DateTime
+    [<JsonPropertyName "member">] Member: GuildMember
+}
+with
+    static member build(
+        ChannelId: string,
+        UserId: string,
+        Timestamp: DateTime,
+        Member: GuildMember,
+        ?GuildId: string
+    ) = {
+        ChannelId = ChannelId;
+        GuildId = GuildId;
+        UserId = UserId;
+        Timestamp = Timestamp;
+        Member = Member;
+    }

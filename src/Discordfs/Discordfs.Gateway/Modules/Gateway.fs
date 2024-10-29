@@ -13,32 +13,37 @@ module Gateway =
         | WebsocketReadResponse.Message message -> return Ok (Json.deserializeF<GatewayReceiveEvent> message)
     }
 
-    let identify (payload: Identify) ws =
+    let identify (payload: IdentifySendEvent) ws =
         ws |> Websocket.write (
             GatewayEventPayload.build(Opcode = GatewayOpcode.IDENTIFY, Data = payload) |> Json.serializeF
         )
         
-    let resume (payload: Resume) ws =
+    let resume (payload: ResumeSendEvent) ws =
         ws |> Websocket.write (
             GatewayEventPayload.build(Opcode = GatewayOpcode.RESUME, Data = payload) |> Json.serializeF
         )
 
-    let heartbeat (payload: Heartbeat) ws =
+    let heartbeat (payload: HeartbeatSendEvent) ws =
         ws |> Websocket.write (
             GatewayEventPayload.build(Opcode = GatewayOpcode.HEARTBEAT, Data = payload) |> Json.serializeF
         )
 
-    let requestGuildMembers (payload: RequestGuildMembers) ws =
+    let requestGuildMembers (payload: RequestGuildMembersSendEvent) ws =
         ws |> Websocket.write (
             GatewayEventPayload.build(Opcode = GatewayOpcode.REQUEST_GUILD_MEMBERS, Data = payload) |> Json.serializeF
         )
 
-    let updateVoiceState (payload: UpdateVoiceState) ws =
+    let requestSoundboardSounds (payload: RequestSoundboardSoundsSendEvent) ws =
+        ws |> Websocket.write (
+            GatewayEventPayload.build(Opcode = GatewayOpcode.REQUEST_SOUNDBOARD_SOUNDS, Data = payload) |> Json.serializeF
+        )
+
+    let updateVoiceState (payload: UpdateVoiceStateSendEvent) ws =
         ws |> Websocket.write (
             GatewayEventPayload.build(Opcode = GatewayOpcode.VOICE_STATE_UPDATE, Data = payload) |> Json.serializeF
         )
 
-    let updatePresence (payload: UpdatePresence) ws =
+    let updatePresence (payload: UpdatePresenceSendEvent) ws =
         ws |> Websocket.write (
             GatewayEventPayload.build(Opcode = GatewayOpcode.PRESENCE_UPDATE, Data = payload) |> Json.serializeF
         )

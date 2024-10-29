@@ -49,12 +49,12 @@ type Client (
                 ||| GatewayIntent.DIRECT_MESSAGE_POLLS
             )
 
-        let identify = Identify.build(
+        let identify = IdentifySendEvent.build(
             Token = discordBotToken,
             Intents = intents,
             Properties = ConnectionProperties.build(),
             Shard = (0, 1), // TODO: Causing INVALID_SHARD error, probably because this tuple isnt serializing correctly
-            Presence = UpdatePresence.build(
+            Presence = UpdatePresenceSendEvent.build(
                 Status = StatusType.ONLINE,
                 Activities = [
                     Activity.build(

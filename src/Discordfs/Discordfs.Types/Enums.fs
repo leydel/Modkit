@@ -572,6 +572,7 @@ type GatewayOpcode =
     | INVALID_SESSION = 9
     | HELLO = 10
     | HEARTBEAT_ACK = 11
+    | REQUEST_SOUNDBOARD_SOUNDS = 31
     
 // https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway-gateway-close-event-codes
 type GatewayCloseEventCode =

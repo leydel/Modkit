@@ -25,20 +25,24 @@ type GatewayLoopState = {
 type IGatewayClient =
     abstract member Connect:
         gatewayUrl: string ->
-        identify: Identify ->
+        identify: IdentifySendEvent ->
         handler: (GatewayReceiveEvent -> Task<unit>) ->
         Task<unit>
 
     abstract member RequestGuildMembers:
-        RequestGuildMembers ->
+        RequestGuildMembersSendEvent ->
+        Task<unit>
+
+    abstract member RequestSoundboardSounds:
+        RequestSoundboardSoundsSendEvent ->
         Task<unit>
 
     abstract member UpdateVoiceState:
-        UpdateVoiceState ->
+        UpdateVoiceStateSendEvent ->
         Task<unit>
 
     abstract member UpdatePresence:
-        UpdatePresence ->
+        UpdatePresenceSendEvent ->
         Task<unit>
 
 type GatewayClient () =
@@ -46,7 +50,7 @@ type GatewayClient () =
 
     interface IGatewayClient with
         member _.Connect gatewayUrl identify handler = task {
-            let rec loop (state: GatewayLoopState) resumed (identify: Identify) handler ws = task {
+            let rec loop (state: GatewayLoopState) resumed (identify: IdentifySendEvent) handler ws = task {
                 let now = DateTime.UtcNow
                 let freshHeartbeat = state.Interval |> Option.map (fun i -> now.AddMilliseconds(i))
 
@@ -75,7 +79,7 @@ type GatewayClient () =
 
                     | Ok (GatewayReceiveEvent.HELLO event) ->
                         match resumed, state.SessionId, state.SequenceId with
-                        | true, Some ses, Some seq -> Gateway.resume (Resume.build(identify.Token, ses, seq))
+                        | true, Some ses, Some seq -> Gateway.resume (ResumeSendEvent.build(identify.Token, ses, seq))
                         | _ -> Gateway.identify identify
                         <| ws |> ignore
 
@@ -155,6 +159,9 @@ type GatewayClient () =
 
         member _.RequestGuildMembers payload =
             Gateway.requestGuildMembers payload _ws
+
+        member _.RequestSoundboardSounds payload =
+            Gateway.requestSoundboardSounds payload _ws
 
         member _.UpdateVoiceState payload =
             Gateway.updateVoiceState payload _ws

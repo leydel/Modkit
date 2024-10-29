@@ -6,43 +6,33 @@ open System.Text.Json.Serialization
 
 [<JsonConverter(typeof<GatewayReceiveEventConverter>)>]
 type GatewayReceiveEvent =
-    | HEARTBEAT                              of GatewayEventPayload<Empty>
-    | HEARTBEAT_ACK                          of GatewayEventPayload<Empty>
-    | HELLO                                  of GatewayEventPayload<Hello>
-    | READY                                  of GatewayEventPayload<Ready>
-    | RESUMED                                of GatewayEventPayload<Empty>
-    | RECONNECT                              of GatewayEventPayload<Empty>
-    | INVALID_SESSION                        of GatewayEventPayload<InvalidSession>
-    | APPLICATION_COMMAND_PERMISSIONS_UPDATE of GatewayEventPayload<ApplicationCommandPermissionsUpdate>
-    | AUTO_MODERATION_RULE_CREATE            of GatewayEventPayload<AutoModerationRuleCreate>
-    | AUTO_MODERATION_RULE_UPDATE            of GatewayEventPayload<AutoModerationRuleUpdate>
-    | AUTO_MODERATION_RULE_DELETE            of GatewayEventPayload<AutoModerationRuleDelete>
-    | AUTO_MODERATION_ACTION_EXECUTION       of GatewayEventPayload<AutoModerationActionExecution>
-    | CHANNEL_CREATE                         of GatewayEventPayload<ChannelCreate>
-    | CHANNEL_UPDATE                         of GatewayEventPayload<ChannelUpdate>
-    | CHANNEL_DELETE                         of GatewayEventPayload<ChannelDelete>
-    | THREAD_CREATE                          of GatewayEventPayload<ChannelCreate> 
-    | THREAD_UPDATE                          of GatewayEventPayload<ChannelUpdate>
-    | THREAD_DELETE                          of GatewayEventPayload<ThreadDelete>
-    | THREAD_LIST_SYNC                       of GatewayEventPayload<ThreadListSync>
-    | ENTITLEMENT_CREATE                     of GatewayEventPayload<EntitlementCreate>
-    | ENTITLEMENT_UPDATE                     of GatewayEventPayload<EntitlementUpdate>
-    | ENTITLEMENT_DELETE                     of GatewayEventPayload<EntitlementDelete>
-    | GUILD_CREATE                           of GatewayEventPayload<GuildCreate>
-    | GUILD_UPDATE                           of GatewayEventPayload<GuildUpdate>
-    | GUILD_DELETE                           of GatewayEventPayload<GuildDelete>
-    | GUILD_BAN_ADD                          of GatewayEventPayload<GuildBanAdd>
-    | GUILD_BAN_REMOVE                       of GatewayEventPayload<GuildBanRemove>
-with
-    static member getSequenceNumber (event: GatewayReceiveEvent) =
-        let json = Json.serializeF event
-        let document = JsonDocument.Parse json
-
-        match document.RootElement.TryGetProperty "s" with
-        | true, t -> Some (t.GetInt32())
-        | _ -> None
-
-        // TODO: Figure out way to calculate this without serializing and parsing (?)
+    | HEARTBEAT                              of GatewayEventPayload<HeartbeatReceiveEvent>
+    | HEARTBEAT_ACK                          of GatewayEventPayload<HeartbeatAckReceiveEvent>
+    | HELLO                                  of GatewayEventPayload<HelloReceiveEvent>
+    | READY                                  of GatewayEventPayload<ReadyReceiveEvent>
+    | RESUMED                                of GatewayEventPayload<ReadyReceiveEvent>
+    | RECONNECT                              of GatewayEventPayload<ReconnectReceiveEvent>
+    | INVALID_SESSION                        of GatewayEventPayload<InvalidSessionReceiveEvent>
+    | APPLICATION_COMMAND_PERMISSIONS_UPDATE of GatewayEventPayload<ApplicationCommandPermissionsUpdateReceiveEvent>
+    | AUTO_MODERATION_RULE_CREATE            of GatewayEventPayload<AutoModerationRuleCreateReceiveEvent>
+    | AUTO_MODERATION_RULE_UPDATE            of GatewayEventPayload<AutoModerationRuleUpdateReceiveEvent>
+    | AUTO_MODERATION_RULE_DELETE            of GatewayEventPayload<AutoModerationRuleDeleteReceiveEvent>
+    | AUTO_MODERATION_ACTION_EXECUTION       of GatewayEventPayload<AutoModerationActionExecutionReceiveEvent>
+    | CHANNEL_CREATE                         of GatewayEventPayload<ChannelCreateReceiveEvent>
+    | CHANNEL_UPDATE                         of GatewayEventPayload<ChannelUpdateReceiveEvent>
+    | CHANNEL_DELETE                         of GatewayEventPayload<ChannelDeleteReceiveEvent>
+    | THREAD_CREATE                          of GatewayEventPayload<ChannelCreateReceiveEvent>
+    | THREAD_UPDATE                          of GatewayEventPayload<ChannelUpdateReceiveEvent>
+    | THREAD_DELETE                          of GatewayEventPayload<ThreadDeleteReceiveEvent>
+    | THREAD_LIST_SYNC                       of GatewayEventPayload<ThreadListSyncReceiveEvent>
+    | ENTITLEMENT_CREATE                     of GatewayEventPayload<EntitlementCreateReceiveEvent>
+    | ENTITLEMENT_UPDATE                     of GatewayEventPayload<EntitlementUpdateReceiveEvent>
+    | ENTITLEMENT_DELETE                     of GatewayEventPayload<EntitlementDeleteReceiveEvent>
+    | GUILD_CREATE                           of GatewayEventPayload<GuildCreateReceiveEvent>
+    | GUILD_UPDATE                           of GatewayEventPayload<GuildUpdateReceiveEvent>
+    | GUILD_DELETE                           of GatewayEventPayload<GuildDeleteReceiveEvent>
+    | GUILD_BAN_ADD                          of GatewayEventPayload<GuildBanAddReceiveEvent>
+    | GUILD_BAN_REMOVE                       of GatewayEventPayload<GuildBanRemoveReceiveEvent>
 
 and GatewayReceiveEventConverter () =
     inherit JsonConverter<GatewayReceiveEvent> ()
@@ -122,3 +112,14 @@ and GatewayReceiveEventConverter () =
         | GUILD_DELETE g -> Json.serializeF g |> writer.WriteRawValue
         | GUILD_BAN_ADD g -> Json.serializeF g |> writer.WriteRawValue
         | GUILD_BAN_REMOVE g -> Json.serializeF g |> writer.WriteRawValue
+
+module GatewayReceiveEvent =
+    let getSequenceNumber (event: GatewayReceiveEvent) =
+        let json = Json.serializeF event
+        let document = JsonDocument.Parse json
+
+        match document.RootElement.TryGetProperty "s" with
+        | true, t -> Some (t.GetInt32())
+        | _ -> None
+
+        // TODO: Figure out way to calculate this without serializing and parsing (?)

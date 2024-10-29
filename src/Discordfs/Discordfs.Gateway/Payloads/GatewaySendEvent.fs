@@ -6,12 +6,13 @@ open System.Text.Json.Serialization
 
 [<JsonConverter(typeof<GatewaySendEventConverter>)>]
 type GatewaySendEvent =
-    | Identify of GatewayEventPayload<Identify>
-    | Resume of GatewayEventPayload<Resume>
-    | Heartbeat of GatewayEventPayload<Heartbeat>
-    | RequestGuildMembers of GatewayEventPayload<RequestGuildMembers>
-    | UpdateVoiceState of GatewayEventPayload<UpdateVoiceState>
-    | UpdatePresence of GatewayEventPayload<UpdatePresence>
+    | IDENTIFY                  of GatewayEventPayload<IdentifySendEvent>
+    | RESUME                    of GatewayEventPayload<ResumeSendEvent>
+    | HEARTBEAT                 of GatewayEventPayload<HeartbeatSendEvent>
+    | REQUEST_GUILD_MEMBERS     of GatewayEventPayload<RequestGuildMembersSendEvent>
+    | REQUEST_SOUNDBOARD_SOUNDS of GatewayEventPayload<RequestSoundboardSoundsSendEvent>
+    | UPDATE_VOICE_STATE        of GatewayEventPayload<UpdateVoiceStateSendEvent>
+    | UPDATE_PRESENCE           of GatewayEventPayload<UpdatePresenceSendEvent>
 
 and GatewaySendEventConverter () =
     inherit JsonConverter<GatewaySendEvent> ()
@@ -28,21 +29,23 @@ and GatewaySendEventConverter () =
         let json = document.RootElement.GetRawText()
 
         match opcode with
-        | GatewayOpcode.IDENTIFY -> Identify <| Json.deserializeF json
-        | GatewayOpcode.RESUME -> Resume <| Json.deserializeF json
-        | GatewayOpcode.HEARTBEAT -> Heartbeat <| Json.deserializeF json
-        | GatewayOpcode.REQUEST_GUILD_MEMBERS -> RequestGuildMembers <| Json.deserializeF json
-        | GatewayOpcode.VOICE_STATE_UPDATE -> UpdateVoiceState <| Json.deserializeF json
-        | GatewayOpcode.PRESENCE_UPDATE -> UpdatePresence <| Json.deserializeF json
+        | GatewayOpcode.IDENTIFY -> IDENTIFY <| Json.deserializeF json
+        | GatewayOpcode.RESUME -> RESUME <| Json.deserializeF json
+        | GatewayOpcode.HEARTBEAT -> HEARTBEAT <| Json.deserializeF json
+        | GatewayOpcode.REQUEST_GUILD_MEMBERS -> REQUEST_GUILD_MEMBERS <| Json.deserializeF json
+        | GatewayOpcode.REQUEST_SOUNDBOARD_SOUNDS -> REQUEST_SOUNDBOARD_SOUNDS <| Json.deserializeF json
+        | GatewayOpcode.VOICE_STATE_UPDATE -> UPDATE_VOICE_STATE <| Json.deserializeF json
+        | GatewayOpcode.PRESENCE_UPDATE -> UPDATE_PRESENCE <| Json.deserializeF json
         | _ -> failwith "Unexpected GatewayOpcode provided"
                 
     override __.Write (writer, value, options) =
         match value with
-        | Identify i -> Json.serializeF i |> writer.WriteRawValue
-        | Resume r -> Json.serializeF r |> writer.WriteRawValue
-        | Heartbeat h -> Json.serializeF h |> writer.WriteRawValue
-        | RequestGuildMembers r -> Json.serializeF r |> writer.WriteRawValue
-        | UpdateVoiceState u -> Json.serializeF u |> writer.WriteRawValue
-        | UpdatePresence u -> Json.serializeF u |> writer.WriteRawValue
+        | IDENTIFY i -> Json.serializeF i |> writer.WriteRawValue
+        | RESUME r -> Json.serializeF r |> writer.WriteRawValue
+        | HEARTBEAT h -> Json.serializeF h |> writer.WriteRawValue
+        | REQUEST_GUILD_MEMBERS r -> Json.serializeF r |> writer.WriteRawValue
+        | REQUEST_SOUNDBOARD_SOUNDS r -> Json.serializeF r |> writer.WriteRawValue
+        | UPDATE_VOICE_STATE u -> Json.serializeF u |> writer.WriteRawValue
+        | UPDATE_PRESENCE u -> Json.serializeF u |> writer.WriteRawValue
 
 // TODO: Determine if this is needed (seems like possibly not, if not used in a while, feel free to delete)
