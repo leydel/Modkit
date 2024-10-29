@@ -324,7 +324,7 @@ and GuildCreateReceiveEventAvailableGuildExtraFields = {
     [<JsonPropertyName "presences">] Presences: UpdatePresenceSendEvent list // TODO: Partial
     [<JsonPropertyName "stage_instances">] StageInstances: StageInstance list
     [<JsonPropertyName "guild_scheduled_events">] GuildScheduledEvents: GuildScheduledEvent list
-    // TODO: Add `soundboard_sounds` (requires soundboard resource being implemented)
+    [<JsonPropertyName "soundboard_sounds">] SoundboardSounds: SoundboardSound list
 }
 
 and GuildCreateReceiveEventAvailableGuildConverter () =
@@ -426,6 +426,9 @@ type GuildBanRemoveReceiveEvent = {
     [<JsonPropertyName "guild_id">] GuildId: string
     [<JsonPropertyName "user">] user: User
 }
+
+// https://discord.com/developers/docs/events/gateway-events#guild-emojis-update
+// TODO: From here
 
 // https://discord.com/developers/docs/topics/gateway-events#typing-start-typing-start-event-fields
 type TypingStartReceiveEvent = {

@@ -28,6 +28,7 @@
     <Compile Include="Resources\PollResource.fs" />
     <Compile Include="Resources\RoleConnectionResource.fs" />
     <Compile Include="Resources\SkuResource.fs" />
+    <Compile Include="Resources\SoundboardResource.fs" />
     <Compile Include="Resources\StageInstanceResource.fs" />
     <Compile Include="Resources\StickerResource.fs" />
     <Compile Include="Resources\SubscriptionResource.fs" />
