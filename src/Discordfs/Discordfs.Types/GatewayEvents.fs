@@ -185,7 +185,7 @@ type AutoModerationActionExecutionReceiveEvent = {
     [<JsonPropertyName "channel_id">] ChannelId: string option
     [<JsonPropertyName "message_id">] MessageId: string option
     [<JsonPropertyName "alert_system_message_id">] AlertSystemMessageId: string option
-    [<JsonPropertyName "content">] Content: string // TODO: Consider making option, as doesn't exist if missing message content intent
+    [<JsonPropertyName "content">] Content: string option
     [<JsonPropertyName "matched_keyword">] MatchedKeyword: string option
     [<JsonPropertyName "matched_content">] MatchedContent: string option
 }
@@ -200,9 +200,36 @@ type ChannelUpdateReceiveEvent = Channel
 type ChannelDeleteReceiveEvent = Channel
 
 // https://discord.com/developers/docs/events/gateway-events#thread-create
-type ThreadCreateReceiveEvent = Channel
+[<JsonConverter(typeof<ThreadCreateReceiveEventConverter>)>]
+type ThreadCreateReceiveEvent = {
+    Channel: Channel
+    ExtraFields: ThreadCreateReceiveEventExtraFields
+}
 
-// TODO: Can contain `newly_created` or thread member (?) in above
+and ThreadCreateReceiveEventExtraFields = {
+    [<JsonPropertyName "newly_created">] NewlyCreated: bool option
+    [<JsonPropertyName "thread_member">] ThreadMember: ThreadMember option
+}
+
+and ThreadCreateReceiveEventConverter () =
+    inherit JsonConverter<ThreadCreateReceiveEvent> ()
+
+    override _.Read (reader, typeToConvert, options) =
+        let success, document = JsonDocument.TryParseValue &reader
+        if not success then raise (JsonException())
+
+        let json = document.RootElement.GetRawText()
+
+        {
+            Channel = Json.deserializeF json;
+            ExtraFields = Json.deserializeF json;
+        }
+
+    override _.Write (writer, value, options) =
+        let channel = Json.serializeF value.Channel
+        let extraFields = Json.serializeF value.ExtraFields
+
+        writer.WriteRawValue (Json.merge channel extraFields)
 
 // https://discord.com/developers/docs/events/gateway-events#thread-update
 type ThreadUpdateReceiveEvent = Channel
@@ -224,9 +251,35 @@ type ThreadListSyncReceiveEvent = {
 }
 
 // https://discord.com/developers/docs/events/gateway-events#thread-member-update
-type ThreadMemberUpdateReceiveEvent = ThreadMember
+[<JsonConverter(typeof<ThreadMemberUpdateEventConverter>)>]
+type ThreadMemberUpdateReceiveEvent = {
+    ThreadMember: ThreadMember
+    ExtraFields: ThreadMemberUpdateEventExtraFields
+}
 
-// TODO: Also contains `guild_id` field in above
+and ThreadMemberUpdateEventExtraFields = {
+    [<JsonPropertyName "guild_id">] GuildId: string
+}
+
+and ThreadMemberUpdateEventConverter () =
+    inherit JsonConverter<ThreadMemberUpdateReceiveEvent> ()
+
+    override _.Read (reader, typeToConvert, options) =
+        let success, document = JsonDocument.TryParseValue &reader
+        if not success then raise (JsonException())
+
+        let json = document.RootElement.GetRawText()
+
+        {
+            ThreadMember = Json.deserializeF json;
+            ExtraFields = Json.deserializeF json;
+        }
+
+    override _.Write (writer, value, options) =
+        let threadMember = Json.serializeF value.ThreadMember
+        let extraFields = Json.serializeF value.ExtraFields
+
+        writer.WriteRawValue (Json.merge threadMember extraFields)
 
 // https://discord.com/developers/docs/events/gateway-events#thread-members-update
 type ThreadMembersUpdateReceiveEvent = {
@@ -253,13 +306,52 @@ type EntitlementUpdateReceiveEvent = Entitlement
 // https://discord.com/developers/docs/events/gateway-events#entitlement-delete
 type EntitlementDeleteReceiveEvent = Entitlement
 
+[<JsonConverter(typeof<GuildCreateReceiveEventAvailableGuildConverter>)>]
+type GuildCreateReceiveEventAvailableGuild = {
+    Guild: Guild
+    ExtraFields: GuildCreateReceiveEventAvailableGuildExtraFields
+}
+
+and GuildCreateReceiveEventAvailableGuildExtraFields = {
+    [<JsonPropertyName "joined_at">] [<JsonConverter(typeof<Converters.UnixEpoch>)>] JoinedAt: DateTime
+    [<JsonPropertyName "large">] Large: bool
+    [<JsonPropertyName "unavailable">] Unavailable: bool
+    [<JsonPropertyName "member_count">] MemberCount: int
+    [<JsonPropertyName "voice_states">] VoiceStates: VoiceState list // TODO: Partial (removes guild_id)
+    [<JsonPropertyName "members">] Members: GuildMember list
+    [<JsonPropertyName "channels">] Channels: Channel list
+    [<JsonPropertyName "threads">] Threads: Channel list
+    [<JsonPropertyName "presences">] Presences: UpdatePresenceSendEvent list // TODO: Partial
+    [<JsonPropertyName "stage_instances">] StageInstances: StageInstance list
+    [<JsonPropertyName "guild_scheduled_events">] GuildScheduledEvents: GuildScheduledEvent list
+    // TODO: Add `soundboard_sounds` (requires soundboard resource being implemented)
+}
+
+and GuildCreateReceiveEventAvailableGuildConverter () =
+    inherit JsonConverter<GuildCreateReceiveEventAvailableGuild> ()
+
+    override _.Read (reader, typeToConvert, options) =
+        let success, document = JsonDocument.TryParseValue &reader
+        if not success then raise (JsonException())
+
+        let json = document.RootElement.GetRawText()
+
+        {
+            Guild = Json.deserializeF json;
+            ExtraFields = Json.deserializeF json;
+        }
+
+    override _.Write (writer, value, options) =
+        let guild = Json.serializeF value.Guild
+        let extraFields = Json.serializeF value.ExtraFields
+
+        writer.WriteRawValue (Json.merge guild extraFields)
+
 // https://discord.com/developers/docs/events/gateway-events#guild-create
 [<JsonConverter(typeof<GuildCreateConverter>)>]
 type GuildCreateReceiveEvent =
-    | AvailableGuild of Guild
+    | AvailableGuild of GuildCreateReceiveEventAvailableGuild
     | UnavailableGuild of UnavailableGuild
-
-// TODO: AvailableGuild contains many additional properties: https://discord.com/developers/docs/events/gateway-events#guild-create-guild-create-extra-fields
 
 and GuildCreateConverter () =
     inherit JsonConverter<GuildCreateReceiveEvent> ()
@@ -287,14 +379,41 @@ and GuildCreateConverter () =
 type GuildUpdateReceiveEvent = Guild
 
 // https://discord.com/developers/docs/events/gateway-events#guild-delete
-type GuildDeleteReceiveEvent = UnavailableGuild
-
-// TODO: `unavailable` field is not net if bot removed from guild in above
+type GuildDeleteReceiveEvent = {
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "unavailable">] Unavailable: bool option
+}
 
 // https://discord.com/developers/docs/events/gateway-events#guild-audit-log-entry-create
-type GuildAuditLogEntryCreateReceiveEvent = AuditLogEntry
+[<JsonConverter(typeof<GuildAuditLogEntryCreateReceiveEventConverter>)>]
+type GuildAuditLogEntryCreateReceiveEvent = {
+    AuditLogEntry: AuditLogEntry
+    ExtraFields: GuildAuditLogEntryCreateReceiveEventExtraFields
+}
 
-// TODO: Also contains `guild_id` field in above
+and GuildAuditLogEntryCreateReceiveEventExtraFields = {
+    [<JsonPropertyName "guild_id">] GuildId: string
+}
+
+and GuildAuditLogEntryCreateReceiveEventConverter () =
+    inherit JsonConverter<GuildAuditLogEntryCreateReceiveEvent> ()
+
+    override _.Read (reader, typeToConvert, options) =
+        let success, document = JsonDocument.TryParseValue &reader
+        if not success then raise (JsonException())
+
+        let json = document.RootElement.GetRawText()
+
+        {
+            AuditLogEntry = Json.deserializeF json;
+            ExtraFields = Json.deserializeF json;
+        }
+
+    override _.Write (writer, value, options) =
+        let auditLogEntry = Json.serializeF value.AuditLogEntry
+        let extraFields = Json.serializeF value.ExtraFields
+
+        writer.WriteRawValue (Json.merge auditLogEntry extraFields)
 
 // https://discord.com/developers/docs/events/gateway-events#guild-ban-add
 type GuildBanAddReceiveEvent = {
@@ -307,10 +426,6 @@ type GuildBanRemoveReceiveEvent = {
     [<JsonPropertyName "guild_id">] GuildId: string
     [<JsonPropertyName "user">] user: User
 }
-
-// IDEA: Serializing additional properties could be done through a custom converter which creates an object containing
-//       the main object in one property and the additional metadata in another. This could also be done to things like
-//       InviteWithMetdata!!!
 
 // https://discord.com/developers/docs/topics/gateway-events#typing-start-typing-start-event-fields
 type TypingStartReceiveEvent = {

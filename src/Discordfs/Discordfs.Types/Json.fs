@@ -2,6 +2,7 @@
 
 open System
 open System.Text.Json
+open System.Text.Json.Nodes
 open System.Text.Json.Serialization
 
 module Json =
@@ -24,6 +25,17 @@ module Json =
     let deserialize<'a> (json: string) =
         try deserializeF json |> Some
         with | _ -> None
+
+    let merge (json1: string) (json2: string) =
+        let obj1 = JsonNode.Parse(json1).AsObject()
+        let obj2 = JsonNode.Parse(json2).AsObject()
+
+        let res = obj1.DeepClone()
+
+        for prop in obj2 do
+            res[prop.Key] <- prop.Value.DeepClone()
+
+        res.ToJsonString()
 
 module Converters =
     type UnixEpoch () =

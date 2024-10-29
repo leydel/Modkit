@@ -33,6 +33,7 @@ type GatewayReceiveEvent =
     | GUILD_DELETE                           of GatewayEventPayload<GuildDeleteReceiveEvent>
     | GUILD_BAN_ADD                          of GatewayEventPayload<GuildBanAddReceiveEvent>
     | GUILD_BAN_REMOVE                       of GatewayEventPayload<GuildBanRemoveReceiveEvent>
+    | TYPING_START                           of GatewayEventPayload<TypingStartReceiveEvent>
 
 and GatewayReceiveEventConverter () =
     inherit JsonConverter<GatewayReceiveEvent> ()
@@ -81,6 +82,7 @@ and GatewayReceiveEventConverter () =
         | GatewayOpcode.DISPATCH, Some (nameof GUILD_DELETE) -> GUILD_DELETE <| Json.deserializeF json
         | GatewayOpcode.DISPATCH, Some (nameof GUILD_BAN_ADD) -> GUILD_BAN_ADD <| Json.deserializeF json
         | GatewayOpcode.DISPATCH, Some (nameof GUILD_BAN_REMOVE) -> GUILD_BAN_REMOVE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof TYPING_START) -> TYPING_START <| Json.deserializeF json
         | _ -> failwith "Unexpected GatewayOpcode and/or EventName provided" // TODO: Handle gracefully so bot doesnt crash on unfamiliar events
                 
     override __.Write (writer, value, options) =
@@ -112,6 +114,7 @@ and GatewayReceiveEventConverter () =
         | GUILD_DELETE g -> Json.serializeF g |> writer.WriteRawValue
         | GUILD_BAN_ADD g -> Json.serializeF g |> writer.WriteRawValue
         | GUILD_BAN_REMOVE g -> Json.serializeF g |> writer.WriteRawValue
+        | TYPING_START t -> Json.serializeF t |> writer.WriteRawValue
 
 module GatewayReceiveEvent =
     let getSequenceNumber (event: GatewayReceiveEvent) =
