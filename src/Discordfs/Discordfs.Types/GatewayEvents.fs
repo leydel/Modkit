@@ -575,6 +575,98 @@ type GuildSoundboardSoundsReceiveEvent = {
     [<JsonPropertyName "guild_id">] GuildId: string
 }
 
+// https://discord.com/developers/docs/events/gateway-events#integration-create
+[<JsonConverter(typeof<IntegrationCreateReceiveEventConverter>)>]
+type IntegrationCreateReceiveEvent = {
+    Integration: GuildIntegration
+    ExtraFields: IntegrationCreateReceiveEventExtraFields
+}
+
+and IntegrationCreateReceiveEventExtraFields = {
+    [<JsonPropertyName "guild_id">] GuildId: string
+}
+
+and IntegrationCreateReceiveEventConverter () =
+    inherit JsonConverter<IntegrationCreateReceiveEvent> ()
+
+    override _.Read (reader, typeToConvert, options) =
+        let success, document = JsonDocument.TryParseValue &reader
+        if not success then raise (JsonException())
+
+        let json = document.RootElement.GetRawText()
+
+        {
+            Integration = Json.deserializeF json;
+            ExtraFields = Json.deserializeF json;
+        }
+
+    override _.Write (writer, value, options) =
+        let integration = Json.serializeF value.Integration
+        let extraFields = Json.serializeF value.ExtraFields
+
+        writer.WriteRawValue (Json.merge integration extraFields)
+
+// https://discord.com/developers/docs/events/gateway-events#integration-update
+[<JsonConverter(typeof<IntegrationUpdateReceiveEventConverter>)>]
+type IntegrationUpdateReceiveEvent = {
+    Integration: GuildIntegration
+    ExtraFields: IntegrationUpdateReceiveEventExtraFields
+}
+
+and IntegrationUpdateReceiveEventExtraFields = {
+    [<JsonPropertyName "guild_id">] GuildId: string
+}
+
+and IntegrationUpdateReceiveEventConverter () =
+    inherit JsonConverter<IntegrationUpdateReceiveEvent> ()
+
+    override _.Read (reader, typeToConvert, options) =
+        let success, document = JsonDocument.TryParseValue &reader
+        if not success then raise (JsonException())
+
+        let json = document.RootElement.GetRawText()
+
+        {
+            Integration = Json.deserializeF json;
+            ExtraFields = Json.deserializeF json;
+        }
+
+    override _.Write (writer, value, options) =
+        let integration = Json.serializeF value.Integration
+        let extraFields = Json.serializeF value.ExtraFields
+
+        writer.WriteRawValue (Json.merge integration extraFields)
+
+// https://discord.com/developers/docs/events/gateway-events#integration-delete
+type IntegrationDeleteReceiveEvent = {
+    [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "application_id">] ApplicationId: string
+}
+
+// https://discord.com/developers/docs/events/gateway-events#invite-create
+type InviteCreateReceiveEvent = {
+    [<JsonPropertyName "channel_id">] ChannelId: string
+    [<JsonPropertyName "code">] Code: string
+    [<JsonPropertyName "created_at">] CreatedAt: DateTime
+    [<JsonPropertyName "guild_id">] GuildId: string option
+    [<JsonPropertyName "inviter">] Inviter: User option
+    [<JsonPropertyName "max_age">] MaxAge: int
+    [<JsonPropertyName "max_uses">] MaxUses: int
+    [<JsonPropertyName "target_type">] TargetType: InviteTargetType option
+    [<JsonPropertyName "target_user">] TargetUser: User option
+    [<JsonPropertyName "target_application">] TargetApplication: PartialApplication option
+    [<JsonPropertyName "temporary">] Temporary: bool
+    [<JsonPropertyName "uses">] Uses: int
+}
+
+// https://discord.com/developers/docs/events/gateway-events#invite-delete
+type InviteDeleteReceiveEvent = {
+    [<JsonPropertyName "channel_id">] ChannelId: string
+    [<JsonPropertyName "guild_id">] GuildId: string option
+    [<JsonPropertyName "code">] Code: string
+}
+
 // https://discord.com/developers/docs/topics/gateway-events#typing-start-typing-start-event-fields
 type TypingStartReceiveEvent = {
     [<JsonPropertyName "channel_id">] ChannelId: string

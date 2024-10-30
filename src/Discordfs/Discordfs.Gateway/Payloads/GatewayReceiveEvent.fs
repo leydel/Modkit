@@ -53,6 +53,11 @@ type GatewayReceiveEvent =
     | GUILD_SOUNDBOARD_SOUND_DELETE          of GatewayEventPayload<GuildSoundboardSoundDeleteReceiveEvent>
     | GUILD_SOUNDBOARD_SOUNDS_UPDATE         of GatewayEventPayload<GuildSoundboardSoundsUpdateReceiveEvent>
     | GUILD_SOUNDBOARD_SOUNDS                of GatewayEventPayload<GuildSoundboardSoundsReceiveEvent>
+    | INTEGRATION_CREATE                     of GatewayEventPayload<IntegrationCreateReceiveEvent>
+    | INTEGRATION_UPDATE                     of GatewayEventPayload<IntegrationUpdateReceiveEvent>
+    | INTEGRATION_DELETE                     of GatewayEventPayload<IntegrationDeleteReceiveEvent>
+    | INVITE_CREATE                          of GatewayEventPayload<InviteCreateReceiveEvent>
+    | INVITE_DELETE                          of GatewayEventPayload<InviteDeleteReceiveEvent>
     | TYPING_START                           of GatewayEventPayload<TypingStartReceiveEvent>
 
 and GatewayReceiveEventConverter () =
@@ -122,6 +127,11 @@ and GatewayReceiveEventConverter () =
         | GatewayOpcode.DISPATCH, Some (nameof GUILD_SOUNDBOARD_SOUND_DELETE) -> GUILD_SOUNDBOARD_SOUND_DELETE <| Json.deserializeF json
         | GatewayOpcode.DISPATCH, Some (nameof GUILD_SOUNDBOARD_SOUNDS_UPDATE) -> GUILD_SOUNDBOARD_SOUNDS_UPDATE <| Json.deserializeF json
         | GatewayOpcode.DISPATCH, Some (nameof GUILD_SOUNDBOARD_SOUNDS) -> GUILD_SOUNDBOARD_SOUNDS <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof INTEGRATION_CREATE) -> INTEGRATION_CREATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof INTEGRATION_UPDATE) -> INTEGRATION_UPDATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof INTEGRATION_DELETE) -> INTEGRATION_DELETE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof INVITE_CREATE) -> INVITE_CREATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof INVITE_DELETE) -> INVITE_DELETE <| Json.deserializeF json
         | GatewayOpcode.DISPATCH, Some (nameof TYPING_START) -> TYPING_START <| Json.deserializeF json
         | _ -> failwith "Unexpected GatewayOpcode and/or EventName provided" // TODO: Handle gracefully so bot doesnt crash on unfamiliar events
                 
@@ -174,6 +184,11 @@ and GatewayReceiveEventConverter () =
         | GUILD_SOUNDBOARD_SOUND_DELETE g -> Json.serializeF g |> writer.WriteRawValue
         | GUILD_SOUNDBOARD_SOUNDS_UPDATE g -> Json.serializeF g |> writer.WriteRawValue
         | GUILD_SOUNDBOARD_SOUNDS g -> Json.serializeF g |> writer.WriteRawValue
+        | INTEGRATION_CREATE i -> Json.serializeF i |> writer.WriteRawValue
+        | INTEGRATION_UPDATE i -> Json.serializeF i |> writer.WriteRawValue
+        | INTEGRATION_DELETE i -> Json.serializeF i |> writer.WriteRawValue
+        | INVITE_CREATE i -> Json.serializeF i |> writer.WriteRawValue
+        | INVITE_DELETE i -> Json.serializeF i |> writer.WriteRawValue
         | TYPING_START t -> Json.serializeF t |> writer.WriteRawValue
 
 module GatewayReceiveEvent =
