@@ -43,6 +43,16 @@ type GatewayReceiveEvent =
     | GUILD_ROLE_CREATE                      of GatewayEventPayload<GuildRoleCreateReceiveEvent>
     | GUILD_ROLE_UPDATE                      of GatewayEventPayload<GuildRoleUpdateReceiveEvent>
     | GUILD_ROLE_DELETE                      of GatewayEventPayload<GuildRoleDeleteReceiveEvent>
+    | GUILD_SCHEDULED_EVENT_CREATE           of GatewayEventPayload<GuildScheduledEventCreateReceiveEvent>
+    | GUILD_SCHEDULED_EVENT_UPDATE           of GatewayEventPayload<GuildScheduledEventUpdateReceiveEvent>
+    | GUILD_SCHEDULED_EVENT_DELETE           of GatewayEventPayload<GuildScheduledEventDeleteReceiveEvent>
+    | GUILD_SCHEDULED_EVENT_USER_ADD         of GatewayEventPayload<GuildScheduledEventUserAddReceiveEvent>
+    | GUILD_SCHEDULED_EVENT_USER_REMOVE      of GatewayEventPayload<GuildScheduledEventUserRemoveReceiveEvent>
+    | GUILD_SOUNDBOARD_SOUND_CREATE          of GatewayEventPayload<GuildSoundboardSoundCreateReceiveEvent>
+    | GUILD_SOUNDBOARD_SOUND_UPDATE          of GatewayEventPayload<GuildSoundboardSoundUpdateReceiveEvent>
+    | GUILD_SOUNDBOARD_SOUND_DELETE          of GatewayEventPayload<GuildSoundboardSoundDeleteReceiveEvent>
+    | GUILD_SOUNDBOARD_SOUNDS_UPDATE         of GatewayEventPayload<GuildSoundboardSoundsUpdateReceiveEvent>
+    | GUILD_SOUNDBOARD_SOUNDS                of GatewayEventPayload<GuildSoundboardSoundsReceiveEvent>
     | TYPING_START                           of GatewayEventPayload<TypingStartReceiveEvent>
 
 and GatewayReceiveEventConverter () =
@@ -102,6 +112,16 @@ and GatewayReceiveEventConverter () =
         | GatewayOpcode.DISPATCH, Some (nameof GUILD_ROLE_CREATE) -> GUILD_ROLE_CREATE <| Json.deserializeF json
         | GatewayOpcode.DISPATCH, Some (nameof GUILD_ROLE_UPDATE) -> GUILD_ROLE_UPDATE <| Json.deserializeF json
         | GatewayOpcode.DISPATCH, Some (nameof GUILD_ROLE_DELETE) -> GUILD_ROLE_DELETE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_SCHEDULED_EVENT_CREATE) -> GUILD_SCHEDULED_EVENT_CREATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_SCHEDULED_EVENT_UPDATE) -> GUILD_SCHEDULED_EVENT_UPDATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_SCHEDULED_EVENT_DELETE) -> GUILD_SCHEDULED_EVENT_DELETE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_SCHEDULED_EVENT_USER_ADD) -> GUILD_SCHEDULED_EVENT_USER_ADD <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_SCHEDULED_EVENT_USER_REMOVE) -> GUILD_SCHEDULED_EVENT_USER_REMOVE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_SOUNDBOARD_SOUND_CREATE) -> GUILD_SOUNDBOARD_SOUND_CREATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_SOUNDBOARD_SOUND_UPDATE) -> GUILD_SOUNDBOARD_SOUND_UPDATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_SOUNDBOARD_SOUND_DELETE) -> GUILD_SOUNDBOARD_SOUND_DELETE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_SOUNDBOARD_SOUNDS_UPDATE) -> GUILD_SOUNDBOARD_SOUNDS_UPDATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_SOUNDBOARD_SOUNDS) -> GUILD_SOUNDBOARD_SOUNDS <| Json.deserializeF json
         | GatewayOpcode.DISPATCH, Some (nameof TYPING_START) -> TYPING_START <| Json.deserializeF json
         | _ -> failwith "Unexpected GatewayOpcode and/or EventName provided" // TODO: Handle gracefully so bot doesnt crash on unfamiliar events
                 
@@ -144,6 +164,16 @@ and GatewayReceiveEventConverter () =
         | GUILD_ROLE_CREATE g -> Json.serializeF g |> writer.WriteRawValue
         | GUILD_ROLE_UPDATE g -> Json.serializeF g |> writer.WriteRawValue
         | GUILD_ROLE_DELETE g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_SCHEDULED_EVENT_CREATE g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_SCHEDULED_EVENT_UPDATE g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_SCHEDULED_EVENT_DELETE g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_SCHEDULED_EVENT_USER_ADD g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_SCHEDULED_EVENT_USER_REMOVE g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_SOUNDBOARD_SOUND_CREATE g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_SOUNDBOARD_SOUND_UPDATE g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_SOUNDBOARD_SOUND_DELETE g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_SOUNDBOARD_SOUNDS_UPDATE g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_SOUNDBOARD_SOUNDS g -> Json.serializeF g |> writer.WriteRawValue
         | TYPING_START t -> Json.serializeF t |> writer.WriteRawValue
 
 module GatewayReceiveEvent =

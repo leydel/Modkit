@@ -528,6 +528,53 @@ type GuildRoleDeleteReceiveEvent = {
     [<JsonPropertyName "role_id">] RoleId: string
 }
 
+// https://discord.com/developers/docs/events/gateway-events#guild-scheduled-event-create
+type GuildScheduledEventCreateReceiveEvent = GuildScheduledEvent
+
+// https://discord.com/developers/docs/events/gateway-events#guild-scheduled-event-update
+type GuildScheduledEventUpdateReceiveEvent = GuildScheduledEvent
+
+// https://discord.com/developers/docs/events/gateway-events#guild-scheduled-event-delete
+type GuildScheduledEventDeleteReceiveEvent = GuildScheduledEvent
+
+// https://discord.com/developers/docs/events/gateway-events#guild-scheduled-event-user-add
+type GuildScheduledEventUserAddReceiveEvent = {
+    [<JsonPropertyName "guild_scheduled_event_id">] GuildScheduledEventId: string
+    [<JsonPropertyName "user_id">] UserId: string
+    [<JsonPropertyName "guild_id">] GuildId: string
+}
+
+// https://discord.com/developers/docs/events/gateway-events#guild-scheduled-event-user-remove
+type GuildScheduledEventUserRemoveReceiveEvent = {
+    [<JsonPropertyName "guild_scheduled_event_id">] GuildScheduledEventId: string
+    [<JsonPropertyName "user_id">] UserId: string
+    [<JsonPropertyName "guild_id">] GuildId: string
+}
+
+// https://discord.com/developers/docs/events/gateway-events#guild-soundboard-sound-create
+type GuildSoundboardSoundCreateReceiveEvent = SoundboardSound
+
+// https://discord.com/developers/docs/events/gateway-events#guild-soundboard-sound-update
+type GuildSoundboardSoundUpdateReceiveEvent = SoundboardSound
+
+// https://discord.com/developers/docs/events/gateway-events#guild-soundboard-sound-delete
+type GuildSoundboardSoundDeleteReceiveEvent = {
+    [<JsonPropertyName "sound_id">] SoundId: string
+    [<JsonPropertyName "guild_id">] GuildId: string
+}
+
+// https://discord.com/developers/docs/events/gateway-events#guild-soundboard-sounds-update
+type GuildSoundboardSoundsUpdateReceiveEvent = {
+    [<JsonPropertyName "soundboard_sounds">] SoundboardSounds: SoundboardSound list
+    [<JsonPropertyName "guild_id">] GuildId: string
+}
+
+// https://discord.com/developers/docs/events/gateway-events#soundboard-sounds
+type GuildSoundboardSoundsReceiveEvent = {
+    [<JsonPropertyName "soundboard_sounds">] SoundboardSounds: SoundboardSound list
+    [<JsonPropertyName "guild_id">] GuildId: string
+}
+
 // https://discord.com/developers/docs/topics/gateway-events#typing-start-typing-start-event-fields
 type TypingStartReceiveEvent = {
     [<JsonPropertyName "channel_id">] ChannelId: string
