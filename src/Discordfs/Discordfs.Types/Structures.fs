@@ -1239,6 +1239,12 @@ with
         Buttons = Buttons;
     }
 
+type ClientStatus = {
+    [<JsonPropertyName "desktop">] Desktop: string option
+    [<JsonPropertyName "mobile">] Mobile: string option
+    [<JsonPropertyName "web">] Web: string option
+}
+
 type ApplicationRoleConnectionMetadata = {
     [<JsonPropertyName "type">] Type: ApplicationRoleConnectionMetadataType
     [<JsonPropertyName "key">] Key: string

@@ -58,7 +58,17 @@ type GatewayReceiveEvent =
     | INTEGRATION_DELETE                     of GatewayEventPayload<IntegrationDeleteReceiveEvent>
     | INVITE_CREATE                          of GatewayEventPayload<InviteCreateReceiveEvent>
     | INVITE_DELETE                          of GatewayEventPayload<InviteDeleteReceiveEvent>
+    | MESSAGE_CREATE                         of GatewayEventPayload<MessageCreateReceiveEvent>
+    | MESSAGE_UPDATE                         of GatewayEventPayload<MessageUpdateReceiveEvent>
+    | MESSAGE_DELETE                         of GatewayEventPayload<MessageDeleteReceiveEvent>
+    | MESSAGE_DELETE_BULK                    of GatewayEventPayload<MessageDeleteBulkReceiveEvent>
+    | MESSAGE_REACTION_ADD                   of GatewayEventPayload<MessageReactionAddReceiveEvent>
+    | MESSAGE_REACTION_REMOVE                of GatewayEventPayload<MessageReactionRemoveReceiveEvent>
+    | MESSAGE_REACTION_REMOVE_ALL            of GatewayEventPayload<MessageReactionRemoveAllReceiveEvent>
+    | MESSAGE_REACTION_REMOVE_EMOJI          of GatewayEventPayload<MessageReactionRemoveEmojiReceiveEvent>
+    | PRESENCE_UPDATE                        of GatewayEventPayload<PresenceUpdateReceiveEvent>
     | TYPING_START                           of GatewayEventPayload<TypingStartReceiveEvent>
+    | USER_UPDATE                            of GatewayEventPayload<UserUpdateReceiveEvent>
 
 and GatewayReceiveEventConverter () =
     inherit JsonConverter<GatewayReceiveEvent> ()
@@ -132,7 +142,17 @@ and GatewayReceiveEventConverter () =
         | GatewayOpcode.DISPATCH, Some (nameof INTEGRATION_DELETE) -> INTEGRATION_DELETE <| Json.deserializeF json
         | GatewayOpcode.DISPATCH, Some (nameof INVITE_CREATE) -> INVITE_CREATE <| Json.deserializeF json
         | GatewayOpcode.DISPATCH, Some (nameof INVITE_DELETE) -> INVITE_DELETE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof MESSAGE_CREATE) -> MESSAGE_CREATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof MESSAGE_UPDATE) -> MESSAGE_UPDATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof MESSAGE_DELETE) -> MESSAGE_DELETE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof MESSAGE_DELETE_BULK) -> MESSAGE_DELETE_BULK <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof MESSAGE_REACTION_ADD) -> MESSAGE_REACTION_ADD <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof MESSAGE_REACTION_REMOVE) -> MESSAGE_REACTION_REMOVE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof MESSAGE_REACTION_REMOVE_ALL) -> MESSAGE_REACTION_REMOVE_ALL <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof MESSAGE_REACTION_REMOVE_EMOJI) -> MESSAGE_REACTION_REMOVE_EMOJI <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof PRESENCE_UPDATE) -> PRESENCE_UPDATE <| Json.deserializeF json
         | GatewayOpcode.DISPATCH, Some (nameof TYPING_START) -> TYPING_START <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof USER_UPDATE) -> USER_UPDATE <| Json.deserializeF json
         | _ -> failwith "Unexpected GatewayOpcode and/or EventName provided" // TODO: Handle gracefully so bot doesnt crash on unfamiliar events
                 
     override __.Write (writer, value, options) =
@@ -189,7 +209,17 @@ and GatewayReceiveEventConverter () =
         | INTEGRATION_DELETE i -> Json.serializeF i |> writer.WriteRawValue
         | INVITE_CREATE i -> Json.serializeF i |> writer.WriteRawValue
         | INVITE_DELETE i -> Json.serializeF i |> writer.WriteRawValue
+        | MESSAGE_CREATE m -> Json.serializeF m |> writer.WriteRawValue
+        | MESSAGE_UPDATE m -> Json.serializeF m |> writer.WriteRawValue
+        | MESSAGE_DELETE m -> Json.serializeF m |> writer.WriteRawValue
+        | MESSAGE_DELETE_BULK m -> Json.serializeF m |> writer.WriteRawValue
+        | MESSAGE_REACTION_ADD m -> Json.serializeF m |> writer.WriteRawValue
+        | MESSAGE_REACTION_REMOVE m -> Json.serializeF m |> writer.WriteRawValue
+        | MESSAGE_REACTION_REMOVE_ALL m -> Json.serializeF m |> writer.WriteRawValue
+        | MESSAGE_REACTION_REMOVE_EMOJI m -> Json.serializeF m |> writer.WriteRawValue
+        | PRESENCE_UPDATE p -> Json.serializeF p |> writer.WriteRawValue
         | TYPING_START t -> Json.serializeF t |> writer.WriteRawValue
+        | USER_UPDATE u -> Json.serializeF u |> writer.WriteRawValue
 
 module GatewayReceiveEvent =
     let getSequenceNumber (event: GatewayReceiveEvent) =

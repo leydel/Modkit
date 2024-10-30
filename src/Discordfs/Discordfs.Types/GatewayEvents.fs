@@ -667,6 +667,197 @@ type InviteDeleteReceiveEvent = {
     [<JsonPropertyName "code">] Code: string
 }
 
+[<JsonConverter(typeof<MessageCreateReceiveEventExtraFieldsMentionConverter>)>]
+type MessageCreateReceiveEventExtraFieldsMention = {
+    User: User
+    ExtraFields: MessageCreateReceiveEventExtraFieldsMentionExtraFields
+}
+
+and MessageCreateReceiveEventExtraFieldsMentionExtraFields = {
+    [<JsonPropertyName "member">] Member: GuildMember option // TODO: Partial
+}
+
+and MessageCreateReceiveEventExtraFieldsMentionConverter () =
+    inherit JsonConverter<MessageCreateReceiveEventExtraFieldsMention> ()
+
+    override _.Read (reader, typeToConvert, options) =
+        let success, document = JsonDocument.TryParseValue &reader
+        if not success then raise (JsonException())
+
+        let json = document.RootElement.GetRawText()
+
+        {
+            User = Json.deserializeF json;
+            ExtraFields = Json.deserializeF json;
+        }
+
+    override _.Write (writer, value, options) =
+        let user = Json.serializeF value.User
+        let extraFields = Json.serializeF value.ExtraFields
+
+        writer.WriteRawValue (Json.merge user extraFields)
+
+// https://discord.com/developers/docs/events/gateway-events#message-create
+[<JsonConverter(typeof<MessageCreateReceiveEventConverter>)>]
+type MessageCreateReceiveEvent = {
+    Message: Message
+    ExtraFields: MessageCreateReceiveEventExtraFields
+}
+
+and MessageCreateReceiveEventExtraFields = {
+    [<JsonPropertyName "guild_id">] GuildId: string option
+    [<JsonPropertyName "member">] Member: GuildMember option // TODO: Partial
+    [<JsonPropertyName "mentions">] Mentions: MessageCreateReceiveEventExtraFieldsMention list
+}
+
+and MessageCreateReceiveEventConverter () =
+    inherit JsonConverter<MessageCreateReceiveEvent> ()
+
+    override _.Read (reader, typeToConvert, options) =
+        let success, document = JsonDocument.TryParseValue &reader
+        if not success then raise (JsonException())
+
+        let json = document.RootElement.GetRawText()
+
+        {
+            Message = Json.deserializeF json;
+            ExtraFields = Json.deserializeF json;
+        }
+
+    override _.Write (writer, value, options) =
+        let message = Json.serializeF value.Message
+        let extraFields = Json.serializeF value.ExtraFields
+
+        writer.WriteRawValue (Json.merge message extraFields)
+
+[<JsonConverter(typeof<MessageUpdateReceiveEventExtraFieldsMentionConverter>)>]
+type MessageUpdateReceiveEventExtraFieldsMention = {
+    User: User
+    ExtraFields: MessageUpdateReceiveEventExtraFieldsMentionExtraFields
+}
+
+and MessageUpdateReceiveEventExtraFieldsMentionExtraFields = {
+    [<JsonPropertyName "member">] Member: GuildMember option // TODO: Partial
+}
+
+and MessageUpdateReceiveEventExtraFieldsMentionConverter () =
+    inherit JsonConverter<MessageUpdateReceiveEventExtraFieldsMention> ()
+
+    override _.Read (reader, typeToConvert, options) =
+        let success, document = JsonDocument.TryParseValue &reader
+        if not success then raise (JsonException())
+
+        let json = document.RootElement.GetRawText()
+
+        {
+            User = Json.deserializeF json;
+            ExtraFields = Json.deserializeF json;
+        }
+
+    override _.Write (writer, value, options) =
+        let user = Json.serializeF value.User
+        let extraFields = Json.serializeF value.ExtraFields
+
+        writer.WriteRawValue (Json.merge user extraFields)
+
+// https://discord.com/developers/docs/events/gateway-events#message-update
+[<JsonConverter(typeof<MessageUpdateReceiveEventConverter>)>]
+type MessageUpdateReceiveEvent = {
+    Message: Message
+    ExtraFields: MessageUpdateReceiveEventExtraFields
+}
+
+and MessageUpdateReceiveEventExtraFields = {
+    [<JsonPropertyName "guild_id">] GuildId: string option
+    [<JsonPropertyName "member">] Member: GuildMember option // TODO: Partial
+    [<JsonPropertyName "mentions">] Mentions: MessageUpdateReceiveEventExtraFieldsMention list
+}
+
+and MessageUpdateReceiveEventConverter () =
+    inherit JsonConverter<MessageUpdateReceiveEvent> ()
+
+    override _.Read (reader, typeToConvert, options) =
+        let success, document = JsonDocument.TryParseValue &reader
+        if not success then raise (JsonException())
+
+        let json = document.RootElement.GetRawText()
+
+        {
+            Message = Json.deserializeF json;
+            ExtraFields = Json.deserializeF json;
+        }
+
+    override _.Write (writer, value, options) =
+        let message = Json.serializeF value.Message
+        let extraFields = Json.serializeF value.ExtraFields
+
+        writer.WriteRawValue (Json.merge message extraFields)
+
+// https://discord.com/developers/docs/events/gateway-events#message-delete
+type MessageDeleteReceiveEvent = {
+    [<JsonPropertyName "ids">] Ids: string list
+    [<JsonPropertyName "channel_id">] ChannelId: string
+    [<JsonPropertyName "guild_id">] GuildId: string option
+}
+
+// https://discord.com/developers/docs/events/gateway-events#message-delete-bulk
+type MessageDeleteBulkReceiveEvent = {
+    [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "channel_id">] ChannelId: string
+    [<JsonPropertyName "guild_id">] GuildId: string option
+}
+
+// https://discord.com/developers/docs/events/gateway-events#message-reaction-add
+type MessageReactionAddReceiveEvent = {
+    [<JsonPropertyName "user_id">] UserId: string
+    [<JsonPropertyName "channel_id">] ChannelId: string
+    [<JsonPropertyName "message_id">] MessageId: string
+    [<JsonPropertyName "guild_id">] GuildId: string option
+    [<JsonPropertyName "member">] Member: GuildMember option
+    [<JsonPropertyName "emoji">] Emoji: Emoji // TODO: Partial
+    [<JsonPropertyName "message_author_id">] MessageAuthorId: string option
+    [<JsonPropertyName "burst">] Burst: bool
+    [<JsonPropertyName "burst_colors">] BurstColors: string list
+    [<JsonPropertyName "type">] Type: ReactionType
+}
+
+// https://discord.com/developers/docs/events/gateway-events#message-reaction-remove
+type MessageReactionRemoveReceiveEvent = {
+    [<JsonPropertyName "user_id">] UserId: string
+    [<JsonPropertyName "channel_id">] ChannelId: string
+    [<JsonPropertyName "message_id">] MessageId: string
+    [<JsonPropertyName "guild_id">] GuildId: string option
+    [<JsonPropertyName "emoji">] Emoji: Emoji // TODO: Partial
+    [<JsonPropertyName "burst">] Burst: bool
+    [<JsonPropertyName "type">] Type: ReactionType
+}
+
+// https://discord.com/developers/docs/events/gateway-events#message-reaction-remove-all
+type MessageReactionRemoveAllReceiveEvent = {
+    [<JsonPropertyName "channel_id">] ChannelId: string
+    [<JsonPropertyName "message_id">] MessageId: string
+    [<JsonPropertyName "guild_id">] GuildId: string option
+}
+
+// https://discord.com/developers/docs/events/gateway-events#message-reaction-remove-emoji
+type MessageReactionRemoveEmojiReceiveEvent = {
+    [<JsonPropertyName "channel_id">] ChannelId: string
+    [<JsonPropertyName "message_id">] MessageId: string
+    [<JsonPropertyName "guild_id">] GuildId: string option
+    [<JsonPropertyName "emoji">] Emoji: Emoji // TODO: Partial
+}
+
+// https://discord.com/developers/docs/events/gateway-events#presence-update
+type PresenceUpdateReceiveEvent = {
+    [<JsonPropertyName "user">] User: User option // TODO: Partial
+    [<JsonPropertyName "guild_id">] GuildId: string option
+    [<JsonPropertyName "status">] Status: StatusType option
+    [<JsonPropertyName "activities">] Activities: Activity list option
+    [<JsonPropertyName "client_status">] ClientStatus: ClientStatus option
+}
+
+// TODO: Double check that above should all be optional. Reads like it, but should check an existing lib to confirm
+
 // https://discord.com/developers/docs/topics/gateway-events#typing-start-typing-start-event-fields
 type TypingStartReceiveEvent = {
     [<JsonPropertyName "channel_id">] ChannelId: string
@@ -675,3 +866,6 @@ type TypingStartReceiveEvent = {
     [<JsonPropertyName "timestamp">] Timestamp: DateTime
     [<JsonPropertyName "member">] Member: GuildMember
 }
+
+// https://discord.com/developers/docs/events/gateway-events#user-update
+type UserUpdateReceiveEvent = User
