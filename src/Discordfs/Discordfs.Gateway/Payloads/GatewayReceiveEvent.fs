@@ -33,6 +33,16 @@ type GatewayReceiveEvent =
     | GUILD_DELETE                           of GatewayEventPayload<GuildDeleteReceiveEvent>
     | GUILD_BAN_ADD                          of GatewayEventPayload<GuildBanAddReceiveEvent>
     | GUILD_BAN_REMOVE                       of GatewayEventPayload<GuildBanRemoveReceiveEvent>
+    | GUILD_EMOJIS_UPDATE                    of GatewayEventPayload<GuildEmojisUpdateReceiveEvent>
+    | GUILD_STICKERS_UPDATE                  of GatewayEventPayload<GuildStickersUpdateReceiveEvent>
+    | GUILD_INTEGRATIONS_UPDATE              of GatewayEventPayload<GuildIntegrationsUpdateReceiveEvent>
+    | GUILD_MEMBER_ADD                       of GatewayEventPayload<GuildMemberAddReceiveEvent>
+    | GUILD_MEMBER_REMOVE                    of GatewayEventPayload<GuildMemberRemoveReceiveEvent>
+    | GUILD_MEMBER_UPDATE                    of GatewayEventPayload<GuildMemberUpdateReceiveEvent>
+    | GUILD_MEMBERS_CHUNK                    of GatewayEventPayload<GuildMembersChunkReceiveEvent>
+    | GUILD_ROLE_CREATE                      of GatewayEventPayload<GuildRoleCreateReceiveEvent>
+    | GUILD_ROLE_UPDATE                      of GatewayEventPayload<GuildRoleUpdateReceiveEvent>
+    | GUILD_ROLE_DELETE                      of GatewayEventPayload<GuildRoleDeleteReceiveEvent>
     | TYPING_START                           of GatewayEventPayload<TypingStartReceiveEvent>
 
 and GatewayReceiveEventConverter () =
@@ -82,6 +92,16 @@ and GatewayReceiveEventConverter () =
         | GatewayOpcode.DISPATCH, Some (nameof GUILD_DELETE) -> GUILD_DELETE <| Json.deserializeF json
         | GatewayOpcode.DISPATCH, Some (nameof GUILD_BAN_ADD) -> GUILD_BAN_ADD <| Json.deserializeF json
         | GatewayOpcode.DISPATCH, Some (nameof GUILD_BAN_REMOVE) -> GUILD_BAN_REMOVE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_EMOJIS_UPDATE) -> GUILD_EMOJIS_UPDATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_STICKERS_UPDATE) -> GUILD_STICKERS_UPDATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_INTEGRATIONS_UPDATE) -> GUILD_INTEGRATIONS_UPDATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_MEMBER_ADD) -> GUILD_MEMBER_ADD <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_MEMBER_REMOVE) -> GUILD_MEMBER_REMOVE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_MEMBER_UPDATE) -> GUILD_MEMBER_UPDATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_MEMBERS_CHUNK) -> GUILD_MEMBERS_CHUNK <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_ROLE_CREATE) -> GUILD_ROLE_CREATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_ROLE_UPDATE) -> GUILD_ROLE_UPDATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof GUILD_ROLE_DELETE) -> GUILD_ROLE_DELETE <| Json.deserializeF json
         | GatewayOpcode.DISPATCH, Some (nameof TYPING_START) -> TYPING_START <| Json.deserializeF json
         | _ -> failwith "Unexpected GatewayOpcode and/or EventName provided" // TODO: Handle gracefully so bot doesnt crash on unfamiliar events
                 
@@ -114,6 +134,16 @@ and GatewayReceiveEventConverter () =
         | GUILD_DELETE g -> Json.serializeF g |> writer.WriteRawValue
         | GUILD_BAN_ADD g -> Json.serializeF g |> writer.WriteRawValue
         | GUILD_BAN_REMOVE g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_EMOJIS_UPDATE g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_STICKERS_UPDATE g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_INTEGRATIONS_UPDATE g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_MEMBER_ADD g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_MEMBER_REMOVE g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_MEMBER_UPDATE g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_MEMBERS_CHUNK g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_ROLE_CREATE g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_ROLE_UPDATE g -> Json.serializeF g |> writer.WriteRawValue
+        | GUILD_ROLE_DELETE g -> Json.serializeF g |> writer.WriteRawValue
         | TYPING_START t -> Json.serializeF t |> writer.WriteRawValue
 
 module GatewayReceiveEvent =

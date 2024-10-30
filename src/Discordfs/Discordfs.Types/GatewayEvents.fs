@@ -428,7 +428,105 @@ type GuildBanRemoveReceiveEvent = {
 }
 
 // https://discord.com/developers/docs/events/gateway-events#guild-emojis-update
-// TODO: From here
+type GuildEmojisUpdateReceiveEvent = {
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "emojis">] Emojis: Emoji list
+}
+
+// https://discord.com/developers/docs/events/gateway-events#guild-stickers-update
+type GuildStickersUpdateReceiveEvent = {
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "stickers">] Stickers: Sticker list
+}
+
+// https://discord.com/developers/docs/events/gateway-events#guild-integrations-update
+type GuildIntegrationsUpdateReceiveEvent = {
+    [<JsonPropertyName "guild_id">] GuildId: string
+}
+
+// https://discord.com/developers/docs/events/gateway-events#guild-member-add
+[<JsonConverter(typeof<GuildMemberAddReceiveEventConverter>)>]
+type GuildMemberAddReceiveEvent = {
+    GuildMember: GuildMember
+    ExtraFields: GuildMemberAddReceiveEventExtraFields
+}
+
+and GuildMemberAddReceiveEventExtraFields = {
+    [<JsonPropertyName "guild_id">] GuildId: string
+}
+
+and GuildMemberAddReceiveEventConverter () =
+    inherit JsonConverter<GuildMemberAddReceiveEvent> ()
+
+    override _.Read (reader, typeToConvert, options) =
+        let success, document = JsonDocument.TryParseValue &reader
+        if not success then raise (JsonException())
+
+        let json = document.RootElement.GetRawText()
+
+        {
+            GuildMember = Json.deserializeF json;
+            ExtraFields = Json.deserializeF json;
+        }
+
+    override _.Write (writer, value, options) =
+        let guildMember = Json.serializeF value.GuildMember
+        let extraFields = Json.serializeF value.ExtraFields
+
+        writer.WriteRawValue (Json.merge guildMember extraFields)
+
+// https://discord.com/developers/docs/events/gateway-events#guild-member-remove
+type GuildMemberRemoveReceiveEvent = {
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "user">] User: User
+}
+
+// https://discord.com/developers/docs/events/gateway-events#guild-member-update
+type GuildMemberUpdateReceiveEvent = {
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "roles">] Roles: string list
+    [<JsonPropertyName "user">] User: User
+    [<JsonPropertyName "nick">] Nick: string option
+    [<JsonPropertyName "avatar">] Avatar: string option
+    [<JsonPropertyName "banner">] Banner: string option
+    [<JsonPropertyName "joined_at">] JoinedAt: DateTime
+    [<JsonPropertyName "premium_since">] PremiumSince: DateTime option
+    [<JsonPropertyName "deaf">] Deaf: bool option
+    [<JsonPropertyName "mute">] Mute: bool option
+    [<JsonPropertyName "pending">] Pending: bool option
+    [<JsonPropertyName "communication_disabled_until">] CommunicationDisabledUntil: DateTime option
+    [<JsonPropertyName "flags">] Flags: int option
+    [<JsonPropertyName "avatar_decoration_data">] AvatarDecorationData: AvatarDecorationData option
+}
+
+// https://discord.com/developers/docs/events/gateway-events#guild-members-chunk
+type GuildMembersChunkReceiveEvent = {
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "members">] Members: GuildMember list
+    [<JsonPropertyName "chunk_index">] ChunkIndex: int
+    [<JsonPropertyName "chunk_count">] ChunkCount: int
+    [<JsonPropertyName "not_found">] NotFound: string list option
+    [<JsonPropertyName "presences">] Presences: UpdatePresenceSendEvent list option
+    [<JsonPropertyName "nonce">] Nonce: string option
+}
+
+// https://discord.com/developers/docs/events/gateway-events#guild-role-create
+type GuildRoleCreateReceiveEvent = {
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "role">] Role: Role
+}
+
+// https://discord.com/developers/docs/events/gateway-events#guild-role-update
+type GuildRoleUpdateReceiveEvent = {
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "role">] Role: Role
+}
+
+// https://discord.com/developers/docs/events/gateway-events#guild-role-delete
+type GuildRoleDeleteReceiveEvent = {
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "role_id">] RoleId: string
+}
 
 // https://discord.com/developers/docs/topics/gateway-events#typing-start-typing-start-event-fields
 type TypingStartReceiveEvent = {
@@ -438,17 +536,3 @@ type TypingStartReceiveEvent = {
     [<JsonPropertyName "timestamp">] Timestamp: DateTime
     [<JsonPropertyName "member">] Member: GuildMember
 }
-with
-    static member build(
-        ChannelId: string,
-        UserId: string,
-        Timestamp: DateTime,
-        Member: GuildMember,
-        ?GuildId: string
-    ) = {
-        ChannelId = ChannelId;
-        GuildId = GuildId;
-        UserId = UserId;
-        Timestamp = Timestamp;
-        Member = Member;
-    }
