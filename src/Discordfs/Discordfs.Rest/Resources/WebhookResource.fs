@@ -45,7 +45,7 @@ type ExecuteWebhook (
     ?embeds: Embed list,
     ?allowed_mentions: AllowedMentions,
     ?components: Component list,
-    ?attachments: Attachment list, // TODO: Partial (with filename and description)
+    ?attachments: PartialAttachment list,
     ?flags: int,
     ?thread_name: string,
     ?applied_tags: string list,
@@ -81,7 +81,7 @@ type EditWebhookMessage (
     ?embeds: Embed list option,
     ?allowed_mentions: AllowedMentions option,
     ?components: Component list option,
-    ?attachments: Attachment list option, // TODO: Partial (with filename and description)
+    ?attachments: PartialAttachment list option,
     ?poll: Poll option,
     ?files: IDictionary<string, IPayloadBuilder>
 ) =

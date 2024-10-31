@@ -45,7 +45,7 @@ and ModifyGuildChannelPayload(
     ?rate_limit_per_user:                int option,
     ?bitrate:                            int option,
     ?user_limit:                         int option,
-    ?permission_overwrites:              PermissionOverwrite list option, // TODO: Partial
+    ?permission_overwrites:              PartialPermissionOverwrite list option,
     ?parent_id:                          string option,
     ?rtc_region:                         string option,
     ?video_quality_mode:                 VideoQualityMode option,
@@ -284,7 +284,7 @@ type ForumAndMediaThreadMessageParams = {
     [<JsonPropertyName "allowed_mentions">] AllowedMentions: AllowedMentions option
     [<JsonPropertyName "components">] Components: Component list option
     [<JsonPropertyName "sticker_ids">] StickerIds: string list option
-    [<JsonPropertyName "attachments">] Attachments: Attachment list option // TODO: Partial (filename, description)
+    [<JsonPropertyName "attachments">] Attachments: PartialAttachment list option
     [<JsonPropertyName "flags">] Flags: int option
 }
 

@@ -73,7 +73,7 @@ type IUserResource =
         after: string option ->
         limit: int option ->
         withCounts: bool option ->
-        Task<Guild list> // TODO: Partial
+        Task<PartialGuild list>
 
     // TODO: Add option for this to be either oauth2 or bot token (and check swagger for other similar endpoints)
 

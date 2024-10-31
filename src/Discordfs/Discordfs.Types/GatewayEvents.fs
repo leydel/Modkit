@@ -132,6 +132,13 @@ with
         Afk = Option.defaultValue false Afk;
     }
 
+and PartialUpdatePresenceSendEvent = {
+    [<JsonPropertyName "since">] Since: int option
+    [<JsonPropertyName "activities">] Activities: Activity list option
+    [<JsonPropertyName "status">] Status: StatusType option
+    [<JsonPropertyName "afk">] Afk: bool option
+}
+
 // https://discord.com/developers/docs/events/gateway#connection-lifecycle
 type HeartbeatReceiveEvent = Empty
 
@@ -317,11 +324,11 @@ and GuildCreateReceiveEventAvailableGuildExtraFields = {
     [<JsonPropertyName "large">] Large: bool
     [<JsonPropertyName "unavailable">] Unavailable: bool
     [<JsonPropertyName "member_count">] MemberCount: int
-    [<JsonPropertyName "voice_states">] VoiceStates: VoiceState list // TODO: Partial (removes guild_id)
+    [<JsonPropertyName "voice_states">] VoiceStates: PartialVoiceState list
     [<JsonPropertyName "members">] Members: GuildMember list
     [<JsonPropertyName "channels">] Channels: Channel list
     [<JsonPropertyName "threads">] Threads: Channel list
-    [<JsonPropertyName "presences">] Presences: UpdatePresenceSendEvent list // TODO: Partial
+    [<JsonPropertyName "presences">] Presences: PartialUpdatePresenceSendEvent list
     [<JsonPropertyName "stage_instances">] StageInstances: StageInstance list
     [<JsonPropertyName "guild_scheduled_events">] GuildScheduledEvents: GuildScheduledEvent list
     [<JsonPropertyName "soundboard_sounds">] SoundboardSounds: SoundboardSound list
@@ -674,7 +681,7 @@ type MessageCreateReceiveEventExtraFieldsMention = {
 }
 
 and MessageCreateReceiveEventExtraFieldsMentionExtraFields = {
-    [<JsonPropertyName "member">] Member: GuildMember option // TODO: Partial
+    [<JsonPropertyName "member">] Member: PartialGuildMember option
 }
 
 and MessageCreateReceiveEventExtraFieldsMentionConverter () =
@@ -706,7 +713,7 @@ type MessageCreateReceiveEvent = {
 
 and MessageCreateReceiveEventExtraFields = {
     [<JsonPropertyName "guild_id">] GuildId: string option
-    [<JsonPropertyName "member">] Member: GuildMember option // TODO: Partial
+    [<JsonPropertyName "member">] Member: PartialGuildMember option
     [<JsonPropertyName "mentions">] Mentions: MessageCreateReceiveEventExtraFieldsMention list
 }
 
@@ -737,7 +744,7 @@ type MessageUpdateReceiveEventExtraFieldsMention = {
 }
 
 and MessageUpdateReceiveEventExtraFieldsMentionExtraFields = {
-    [<JsonPropertyName "member">] Member: GuildMember option // TODO: Partial
+    [<JsonPropertyName "member">] Member: PartialGuildMember option
 }
 
 and MessageUpdateReceiveEventExtraFieldsMentionConverter () =
@@ -769,7 +776,7 @@ type MessageUpdateReceiveEvent = {
 
 and MessageUpdateReceiveEventExtraFields = {
     [<JsonPropertyName "guild_id">] GuildId: string option
-    [<JsonPropertyName "member">] Member: GuildMember option // TODO: Partial
+    [<JsonPropertyName "member">] Member: PartialGuildMember option
     [<JsonPropertyName "mentions">] Mentions: MessageUpdateReceiveEventExtraFieldsMention list
 }
 
@@ -814,7 +821,7 @@ type MessageReactionAddReceiveEvent = {
     [<JsonPropertyName "message_id">] MessageId: string
     [<JsonPropertyName "guild_id">] GuildId: string option
     [<JsonPropertyName "member">] Member: GuildMember option
-    [<JsonPropertyName "emoji">] Emoji: Emoji // TODO: Partial
+    [<JsonPropertyName "emoji">] Emoji: PartialEmoji
     [<JsonPropertyName "message_author_id">] MessageAuthorId: string option
     [<JsonPropertyName "burst">] Burst: bool
     [<JsonPropertyName "burst_colors">] BurstColors: string list
@@ -827,7 +834,7 @@ type MessageReactionRemoveReceiveEvent = {
     [<JsonPropertyName "channel_id">] ChannelId: string
     [<JsonPropertyName "message_id">] MessageId: string
     [<JsonPropertyName "guild_id">] GuildId: string option
-    [<JsonPropertyName "emoji">] Emoji: Emoji // TODO: Partial
+    [<JsonPropertyName "emoji">] Emoji: PartialEmoji
     [<JsonPropertyName "burst">] Burst: bool
     [<JsonPropertyName "type">] Type: ReactionType
 }
@@ -844,12 +851,12 @@ type MessageReactionRemoveEmojiReceiveEvent = {
     [<JsonPropertyName "channel_id">] ChannelId: string
     [<JsonPropertyName "message_id">] MessageId: string
     [<JsonPropertyName "guild_id">] GuildId: string option
-    [<JsonPropertyName "emoji">] Emoji: Emoji // TODO: Partial
+    [<JsonPropertyName "emoji">] Emoji: PartialEmoji
 }
 
 // https://discord.com/developers/docs/events/gateway-events#presence-update
 type PresenceUpdateReceiveEvent = {
-    [<JsonPropertyName "user">] User: User option // TODO: Partial
+    [<JsonPropertyName "user">] User: PartialUser option
     [<JsonPropertyName "guild_id">] GuildId: string option
     [<JsonPropertyName "status">] Status: StatusType option
     [<JsonPropertyName "activities">] Activities: Activity list option

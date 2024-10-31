@@ -15,7 +15,7 @@ type CreateGuildPayload(
     ?default_message_notifications: GuildMessageNotificationLevel,
     ?explicit_content_filter:       GuildExplicitContentFilterLevel,
     ?roles:                         Role list,
-    ?channels:                      Channel list, // TODO: Partial (e.g. name, type)
+    ?channels:                      PartialChannel list,
     ?afk_channel_id:                string,
     ?afk_timeout:                   int,
     ?system_channel_id:             string,
@@ -127,7 +127,7 @@ type CreateGuildChannelPayload(
     ?user_limit:                         int option,
     ?rate_limit_per_user:                int option,
     ?position:                           int option,
-    ?permission_overwrites:              PermissionOverwrite list option, // TODO: Partial (allow/deny can be omitted)
+    ?permission_overwrites:              PartialPermissionOverwrite list option,
     ?parent_id:                          string option,
     ?nsfw:                               bool option,
     ?rtc_region:                         string option,
@@ -558,8 +558,6 @@ type GetGuildVanityUrlOkResponse = {
     [<JsonPropertyName "code">] Code: string option
     [<JsonPropertyName "uses">] Uses: int
 }
-
-// TODO: Partial invite object (code, uses), maybe change above to partial type, or just keep as is
 
 type GetGuildVanityUrlResponse =
     | Ok of GetGuildVanityUrlOkResponse

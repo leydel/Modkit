@@ -39,7 +39,7 @@ type IEntitlementResource =
     abstract member CreateTestEntitlement:
         applicationId: string ->
         content: CreateTestEntitlement ->
-        Task<Entitlement> // TODO: Partial (does not contain subscription_id, starts_at, ends_at)
+        Task<Entitlement>
 
     // https://discord.com/developers/docs/resources/entitlement#delete-test-entitlement
     abstract member DeleteTestEntitlement:
