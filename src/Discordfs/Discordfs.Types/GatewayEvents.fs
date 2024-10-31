@@ -856,14 +856,12 @@ type MessageReactionRemoveEmojiReceiveEvent = {
 
 // https://discord.com/developers/docs/events/gateway-events#presence-update
 type PresenceUpdateReceiveEvent = {
-    [<JsonPropertyName "user">] User: PartialUser option
-    [<JsonPropertyName "guild_id">] GuildId: string option
+    [<JsonPropertyName "user">] User: PartialUser
+    [<JsonPropertyName "guild_id">] GuildId: string
     [<JsonPropertyName "status">] Status: StatusType option
     [<JsonPropertyName "activities">] Activities: Activity list option
     [<JsonPropertyName "client_status">] ClientStatus: ClientStatus option
 }
-
-// TODO: Double check that above should all be optional. Reads like it, but should check an existing lib to confirm
 
 // https://discord.com/developers/docs/topics/gateway-events#typing-start-typing-start-event-fields
 type TypingStartReceiveEvent = {

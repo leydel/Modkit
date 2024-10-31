@@ -229,8 +229,6 @@ type StickerItem = {
     [<JsonPropertyName "format_type">] FormatType: StickerFormatType
 }
 
-// TODO: This is apparently a minimal partial sticker... Double check this is appropriate to keep as is
-
 // https://discord.com/developers/docs/resources/sticker#sticker-pack-object
 type StickerPack = {
     [<JsonPropertyName "id">] Id: string
