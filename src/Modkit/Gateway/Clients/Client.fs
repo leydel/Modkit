@@ -90,4 +90,25 @@ type Client (
         with | exn ->
             System.Console.WriteLine(exn)
             System.Console.ReadKey() |> ignore
+
+        do! _.ReceiveMessagesAsync()
+    }
+
+    member _.ReceiveMessagesAsync () = task {
+        let client = serviceBusClientFactory.CreateClient serviceBusConnectionString
+        let processor = client.CreateProcessor(serviceBusQueueName, ServiceBusProcessorOptions())
+
+        processor.ProcessMessageAsync.Add(fun args -> task {
+            let message = args.Message
+            let body = message.Body.ToString()
+            // Implement the logic to process the received messages here
+            printfn "Received message: %s" body
+            do! args.CompleteMessageAsync(message)
+        })
+
+        processor.ProcessErrorAsync.Add(fun args -> task {
+            printfn "Error processing message: %s" args.Exception.Message
+        })
+
+        do! processor.StartProcessingAsync()
     }

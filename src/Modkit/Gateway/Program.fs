@@ -30,3 +30,7 @@ let client = host.Services.GetRequiredService<Client>()
 client.StartAsync()
 |> Async.AwaitTask
 |> Async.RunSynchronously
+
+client.ReceiveMessagesAsync()
+|> Async.AwaitTask
+|> Async.RunSynchronously
