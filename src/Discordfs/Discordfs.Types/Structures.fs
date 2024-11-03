@@ -62,6 +62,22 @@ type Attachment = {
     [<JsonPropertyName "flags">] Flags: int option
 }
 
+type PartialAttachment = {
+    [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "filename">] Filename: string option
+    [<JsonPropertyName "description">] Description: string option
+    [<JsonPropertyName "content_type">] ContentType: string option
+    [<JsonPropertyName "size">] Size: int option
+    [<JsonPropertyName "url">] Url: string option
+    [<JsonPropertyName "proxy_url">] ProxyUrl: string option
+    [<JsonPropertyName "height">] Height: int option
+    [<JsonPropertyName "width">] Width: int option
+    [<JsonPropertyName "ephemeral">] Ephemeral: bool option
+    [<JsonPropertyName "duration_secs">] DurationSecs: float option
+    [<JsonPropertyName "waveform">] Waveform: string option
+    [<JsonPropertyName "flags">] Flags: int option
+}
+
 type RoleTags = {
     [<JsonPropertyName "bot_id">] BotId: string option
     [<JsonPropertyName "integration_id">] IntegrationId: string option
@@ -124,6 +140,26 @@ type User = {
     [<JsonPropertyName "avatar_decoration_data">] AvatarDecorationData: AvatarDecorationData option
 }
 
+type PartialUser = {
+    [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "username">] Username: string option
+    [<JsonPropertyName "discriminator">] Discriminator: string option
+    [<JsonPropertyName "global_name">] GlobalName: string option
+    [<JsonPropertyName "avatar">] Avatar: string option
+    [<JsonPropertyName "bot">] Bot: bool option
+    [<JsonPropertyName "system">] System: bool option
+    [<JsonPropertyName "mfa_enabled">] MfaEnabled: bool option
+    [<JsonPropertyName "banner">] Banner: string option
+    [<JsonPropertyName "accent_color">] AccentColor: int option
+    [<JsonPropertyName "locale">] Locale: string option
+    [<JsonPropertyName "verified">] Verified: bool option
+    [<JsonPropertyName "email">] Email: string option
+    [<JsonPropertyName "flags">] Flags: int option
+    [<JsonPropertyName "premium_type">] PremiumType: UserPremiumType option
+    [<JsonPropertyName "public_flags">] PublicFlags: int option
+    [<JsonPropertyName "avatar_decoration_data">] AvatarDecorationData: AvatarDecorationData option
+}
+
 type GuildMember = {
     [<JsonPropertyName "user">] User: User option
     [<JsonPropertyName "nick">] Nick: string option
@@ -141,6 +177,23 @@ type GuildMember = {
     [<JsonPropertyName "avatar_decoration_metadata">] AvatarDecorationData: AvatarDecorationData option
 }
 
+type PartialGuildMember = {
+    [<JsonPropertyName "user">] User: User option
+    [<JsonPropertyName "nick">] Nick: string option
+    [<JsonPropertyName "avatar">] Avatar: string option
+    [<JsonPropertyName "banner">] Banner: string option
+    [<JsonPropertyName "roles">] Roles: string list option
+    [<JsonPropertyName "joined_at">] JoinedAt: DateTime option
+    [<JsonPropertyName "premium_since">] PremiumSince: DateTime option
+    [<JsonPropertyName "deaf">] Deaf: bool option
+    [<JsonPropertyName "mute">] Mute: bool option
+    [<JsonPropertyName "flags">] Flags: int option
+    [<JsonPropertyName "pending">] Pending: bool option
+    [<JsonPropertyName "permissions">] Permissions: string option
+    [<JsonPropertyName "communication_disabled_until">] CommunicationDisabledUntil: DateTime option
+    [<JsonPropertyName "avatar_decoration_metadata">] AvatarDecorationData: AvatarDecorationData option
+}
+
 type Emoji = {
     [<JsonPropertyName "id">] Id: string option
     [<JsonPropertyName "name">] Name: string option
@@ -151,6 +204,8 @@ type Emoji = {
     [<JsonPropertyName "animated">] Animated: bool option
     [<JsonPropertyName "available">] Available: bool option
 }
+
+type PartialEmoji = Emoji // All emoji properties are already optional
 
 // https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-structure
 type Sticker = {
@@ -231,6 +286,51 @@ type Guild = {
     [<JsonPropertyName "safety_alerts_channel_id">] SafetyAlertsChannelId: string option
 }
 
+type PartialGuild = {
+    [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "name">] Name: string option
+    [<JsonPropertyName "icon">] Icon: string option
+    [<JsonPropertyName "icon_hash">] IconHash: string option
+    [<JsonPropertyName "splash">] Splash: string option
+    [<JsonPropertyName "discovery_splash">] DiscoverySplash: string option
+    [<JsonPropertyName "owner">] Owner: bool option
+    [<JsonPropertyName "owner_id">] OwnerId: string option
+    [<JsonPropertyName "permissions">] Permissions: string option
+    [<JsonPropertyName "afk_channel_id">] AfkChannelId: string option
+    [<JsonPropertyName "afk_timeout">] AfkTimeout: int option
+    [<JsonPropertyName "widget_enabled">] WidgetEnabled: bool option
+    [<JsonPropertyName "widget_channel_id">] WidgetChannelId: string option
+    [<JsonPropertyName "verification_level">] VerificationLevel: GuildVerificationLevel option
+    [<JsonPropertyName "default_message_notifications">] DefaultMessageNotifications: GuildMessageNotificationLevel option
+    [<JsonPropertyName "explicit_content_filter">] ExplicitContentFilter: GuildExplicitContentFilterLevel option
+    [<JsonPropertyName "roles">] Roles: Role list option
+    [<JsonPropertyName "emojis">] Emojis: Emoji list option
+    [<JsonPropertyName "features">] Features: GuildFeature list option
+    [<JsonPropertyName "mfa_level">] MfaLevel: GuildMfaLevel option
+    [<JsonPropertyName "application_id">] ApplicationId: string option
+    [<JsonPropertyName "system_channel_id">] SystemChannelId: string option
+    [<JsonPropertyName "system_channel_flags">] SystemChannelFlags: int option
+    [<JsonPropertyName "rules_channel_id">] RulesChannelId: string option
+    [<JsonPropertyName "max_presences">] MaxPresences: int option
+    [<JsonPropertyName "max_members">] MaxMembers: int option
+    [<JsonPropertyName "vanity_url_code">] VanityUrlCode: string option
+    [<JsonPropertyName "description">] Description: string option
+    [<JsonPropertyName "banner">] Banner: string option
+    [<JsonPropertyName "premium_tier">] PremiumTier: GuildPremiumTier option
+    [<JsonPropertyName "premium_subscription_count">] PremiumSubscriptionCount: int option
+    [<JsonPropertyName "preferred_locale">] PreferredLocale: string option
+    [<JsonPropertyName "public_updates_channel_id">] PublicUpdatesChannelId: string option
+    [<JsonPropertyName "max_video_channel_users">] MaxVideoChannelUsers: int option
+    [<JsonPropertyName "max_stage_video_channel_users">] MaxStageVideoChannelUsers: int option
+    [<JsonPropertyName "approximate_member_count">] ApproximateMemberCount: int option
+    [<JsonPropertyName "approximate_presence_count">] ApproximatePresenceCount: int option
+    [<JsonPropertyName "welcome_screen">] WelcomeScreen: WelcomeScreen option
+    [<JsonPropertyName "nsfw_level">] NsfwLevel: GuildNsfwLevel option
+    [<JsonPropertyName "stickers">] Stickers: Sticker list option
+    [<JsonPropertyName "premium_progress_bar_enabled">] PremiumProgressBarEnabled: bool option
+    [<JsonPropertyName "safety_alerts_channel_id">] SafetyAlertsChannelId: string option
+}
+
 type UnavailableGuild = {
     [<JsonPropertyName "id">] Id: string
     [<JsonPropertyName "unavailable">] Unavailable: bool
@@ -302,6 +402,13 @@ type PermissionOverwrite = {
     [<JsonPropertyName "type">] Type: PermissionOverwriteType
     [<JsonPropertyName "allow">] Allow: string
     [<JsonPropertyName "deny">] Deny: string
+}
+
+type PartialPermissionOverwrite = {
+    [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "type">] Type: PermissionOverwriteType
+    [<JsonPropertyName "allow">] Allow: string option
+    [<JsonPropertyName "deny">] Deny: string option
 }
 
 type ThreadMetadata = {
@@ -506,7 +613,7 @@ type Reaction = {
     [<JsonPropertyName "count_details">] CountDetails: ReactionCountDetails
     [<JsonPropertyName "me">] Me: bool
     [<JsonPropertyName "me_burst">] MeBurst: bool
-    [<JsonPropertyName "emoji">] Emoji: Emoji
+    [<JsonPropertyName "emoji">] Emoji: PartialEmoji
     [<JsonPropertyName "burst_colors">] BurstColors: int list
 }
 
@@ -547,14 +654,14 @@ type Application = {
     [<JsonPropertyName "rpc_origins">] RpcOrigins: string list option
     [<JsonPropertyName "bot_public">] BotPublic: bool
     [<JsonPropertyName "bot_require_code_grant">] BotRequireCodeGrant: bool
-    [<JsonPropertyName "bot">] Bot: User option
+    [<JsonPropertyName "bot">] Bot: PartialUser option
     [<JsonPropertyName "terms_of_Service_url">] TermsOfServiceUrl: string option
     [<JsonPropertyName "privacy_policy_url">] PrivacyPolicyUrl: string option
-    [<JsonPropertyName "owner">] Owner: User option
+    [<JsonPropertyName "owner">] Owner: PartialUser option
     [<JsonPropertyName "verify_key">] VerifyKey: string
     [<JsonPropertyName "team">] Team: Team option
     [<JsonPropertyName "guild_id">] GuildId: string option
-    [<JsonPropertyName "guild">] Guild: Guild option
+    [<JsonPropertyName "guild">] Guild: PartialGuild option
     [<JsonPropertyName "primary_sku_id">] PrimarySkuId: string option
     [<JsonPropertyName "slug">] Slug: string option
     [<JsonPropertyName "cover_image">] CoverImage: string option
@@ -571,7 +678,32 @@ type Application = {
 
 type PartialApplication = {
     [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "name">] Name: string option
+    [<JsonPropertyName "icon">] Icon: string option
+    [<JsonPropertyName "description">] Description: string option
+    [<JsonPropertyName "rpc_origins">] RpcOrigins: string list option
+    [<JsonPropertyName "bot_public">] BotPublic: bool option
+    [<JsonPropertyName "bot_require_code_grant">] BotRequireCodeGrant: bool option
+    [<JsonPropertyName "bot">] Bot: PartialUser option
+    [<JsonPropertyName "terms_of_Service_url">] TermsOfServiceUrl: string option
+    [<JsonPropertyName "privacy_policy_url">] PrivacyPolicyUrl: string option
+    [<JsonPropertyName "owner">] Owner: PartialUser option
+    [<JsonPropertyName "verify_key">] VerifyKey: string option
+    [<JsonPropertyName "team">] Team: Team option
+    [<JsonPropertyName "guild_id">] GuildId: string option
+    [<JsonPropertyName "guild">] Guild: PartialGuild option
+    [<JsonPropertyName "primary_sku_id">] PrimarySkuId: string option
+    [<JsonPropertyName "slug">] Slug: string option
+    [<JsonPropertyName "cover_image">] CoverImage: string option
     [<JsonPropertyName "flags">] Flags: int option
+    [<JsonPropertyName "approximate_guild_count">] ApproximateGuildCount: int option
+    [<JsonPropertyName "redirect_uris">] RedirectUris: string list option
+    [<JsonPropertyName "interactions_endpoint_url">] InteractionsEndpointUrl: string option
+    [<JsonPropertyName "role_connections_verification_url">] RoleConnectionsVerificationUrl: string option
+    [<JsonPropertyName "tags">] Tags: string list option
+    [<JsonPropertyName "install_params">] InstallParams: OAuth2InstallParams option
+    [<JsonPropertyName "integration_types_config">] IntegrationTypesConfig: Map<ApplicationIntegrationType, ApplicationIntegrationTypeConfiguration> option
+    [<JsonPropertyName "custom_install_url">] CustomInstallUrl: string option
 }
 
 type MessageReference = {
@@ -596,7 +728,7 @@ type MessageInteraction = {
     [<JsonPropertyName "type">] Type: InteractionType
     [<JsonPropertyName "name">] Name: string
     [<JsonPropertyName "user">] User: User
-    [<JsonPropertyName "member">] Member: GuildMember option
+    [<JsonPropertyName "member">] Member: PartialGuildMember option
 }
 
 type RoleSubscriptionData = {
@@ -608,7 +740,7 @@ type RoleSubscriptionData = {
 
 type PollMedia = {
     [<JsonPropertyName "text">] Text: string option
-    [<JsonPropertyName "emoji">] Emoji: Emoji option
+    [<JsonPropertyName "emoji">] Emoji: PartialEmoji option
 }
 
 type PollAnswer = {
@@ -773,11 +905,49 @@ type Channel = {
     [<JsonPropertyName "message">] Message: Message option
 }
 
+type PartialChannel = {
+    [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "type">] Type: ChannelType option
+    [<JsonPropertyName "guild_id">] GuildId: string option
+    [<JsonPropertyName "position">] Position: int option
+    [<JsonPropertyName "permission_overwrites">] PermissionOverwrites: PermissionOverwrite list option
+    [<JsonPropertyName "name">] Name: string option
+    [<JsonPropertyName "topic">] Topic: string option
+    [<JsonPropertyName "nsfw">] Nsfw: bool option
+    [<JsonPropertyName "last_message_id">] LastMessageId: string option
+    [<JsonPropertyName "bitrate">] Bitrate: int option
+    [<JsonPropertyName "user_limit">] UserLimit: int option
+    [<JsonPropertyName "rate_limit_per_user">] RateLimitPerUser: int option
+    [<JsonPropertyName "recipients">] Recipients: User list option
+    [<JsonPropertyName "icon">] Icon: string option
+    [<JsonPropertyName "owner_id">] OwnerId: string option
+    [<JsonPropertyName "application_id">] ApplicationId: string option
+    [<JsonPropertyName "managed">] Managed: bool option
+    [<JsonPropertyName "parent_id">] ParentId: string option
+    [<JsonPropertyName "last_pin_timestamp">] LastPinTimestamp: DateTime option
+    [<JsonPropertyName "rtc_region">] RtcRegion: string option
+    [<JsonPropertyName "video_quality_mode">] VideoQualityMode: VideoQualityMode option
+    [<JsonPropertyName "message_count">] MessageCount: int option
+    [<JsonPropertyName "member_count">] MemberCount: int option
+    [<JsonPropertyName "thread_metadata">] ThreadMetadata: ThreadMetadata option
+    [<JsonPropertyName "member">] Member: ThreadMember option
+    [<JsonPropertyName "default_auto_archive_duration">] DefaultAutoArchiveDuration: AutoArchiveDurationType option
+    [<JsonPropertyName "permissions">] Permissions: string option
+    [<JsonPropertyName "flags">] Flags: int option
+    [<JsonPropertyName "total_messages_sent">] TotalMessagesSent: int option
+    [<JsonPropertyName "available_tags">] AvailableTags: ChannelTag list option
+    [<JsonPropertyName "applied_tags">] AppliedTags: int list option
+    [<JsonPropertyName "default_reaction_emoji">] DefaultReactionEmoji: DefaultReaction option
+    [<JsonPropertyName "default_thread_rate_limit_per_user">] DefaultThreadRateLimitPerUser: int option
+    [<JsonPropertyName "default_sort_order">] DefaultSortOrder: ChannelSortOrder option
+    [<JsonPropertyName "default_forum_layout">] DefaultForumLayout: ChannelForumLayout option
+}
+
 and Message = {
     [<JsonPropertyName "id">] Id: string
     [<JsonPropertyName "channel_id">] ChannelId: string
     [<JsonPropertyName "author">] Author: User
-    [<JsonPropertyName "content">] Content: string
+    [<JsonPropertyName "content">] Content: string option
     [<JsonPropertyName "timestamp">] Timestamp: DateTime
     [<JsonPropertyName "edited_timestamp">] EditedTimestamp: DateTime option
     [<JsonPropertyName "tts">] Tts: bool
@@ -793,15 +963,53 @@ and Message = {
     [<JsonPropertyName "webhook_id">] WebhookId: string option
     [<JsonPropertyName "type">] Type: MessageType
     [<JsonPropertyName "activity">] Activity: MessageActivity option
-    [<JsonPropertyName "application">] Application: Application option
+    [<JsonPropertyName "application">] Application: PartialApplication option
     [<JsonPropertyName "message_reference">] MessageReference: MessageReference option
+    // TODO: Add message snapshots
     [<JsonPropertyName "flags">] Flags: int
     [<JsonPropertyName "referenced_message">] ReferencedMessage: Message option
     [<JsonPropertyName "interaction_metadata">] InteractionMetadata: MessageInteractionMetadata option
     [<JsonPropertyName "interaction">] Interaction: MessageInteraction option
     [<JsonPropertyName "thread">] Thread: Channel option
     [<JsonPropertyName "components">] Components: Component list option
-    [<JsonPropertyName "sticker_items">] StickerItems: Sticker list option
+    [<JsonPropertyName "sticker_items">] StickerItems: StickerItem list option
+    [<JsonPropertyName "position">] Position: int option
+    [<JsonPropertyName "role_subscription_data">] RoleSubscriptionData: RoleSubscriptionData option
+    [<JsonPropertyName "resolved">] Resolved: ResolvedData option
+    [<JsonPropertyName "poll">] Poll: Poll option
+    [<JsonPropertyName "call">] Call: MessageCall option
+}
+
+and PartialMessage = {
+    [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "channel_id">] ChannelId: string option
+    [<JsonPropertyName "author">] Author: User option
+    [<JsonPropertyName "content">] Content: string option
+    [<JsonPropertyName "timestamp">] Timestamp: DateTime option
+    [<JsonPropertyName "edited_timestamp">] EditedTimestamp: DateTime option
+    [<JsonPropertyName "tts">] Tts: bool option
+    [<JsonPropertyName "mention_everyone">] MentionEveryone: bool option
+    [<JsonPropertyName "mentions">] Mentions: User list option
+    [<JsonPropertyName "mention_roles">] MentionRoles: string list option
+    [<JsonPropertyName "mention_channels">] MentionChannels: ChannelMention list option
+    [<JsonPropertyName "attachments">] Attachments: Attachment list option
+    [<JsonPropertyName "embeds">] Embeds: Embed list option
+    [<JsonPropertyName "reactions">] Reactions: Reaction list option
+    [<JsonPropertyName "nonce">] Nonce: MessageNonce option
+    [<JsonPropertyName "pinned">] Pinned: bool option
+    [<JsonPropertyName "webhook_id">] WebhookId: string option
+    [<JsonPropertyName "type">] Type: MessageType option
+    [<JsonPropertyName "activity">] Activity: MessageActivity option
+    [<JsonPropertyName "application">] Application: PartialApplication option
+    [<JsonPropertyName "message_reference">] MessageReference: MessageReference option
+    // TODO: Add message snapshots
+    [<JsonPropertyName "flags">] Flags: int option
+    [<JsonPropertyName "referenced_message">] ReferencedMessage: Message option
+    [<JsonPropertyName "interaction_metadata">] InteractionMetadata: MessageInteractionMetadata option
+    [<JsonPropertyName "interaction">] Interaction: MessageInteraction option
+    [<JsonPropertyName "thread">] Thread: Channel option
+    [<JsonPropertyName "components">] Components: Component list option
+    [<JsonPropertyName "sticker_items">] StickerItems: StickerItem list option
     [<JsonPropertyName "position">] Position: int option
     [<JsonPropertyName "role_subscription_data">] RoleSubscriptionData: RoleSubscriptionData option
     [<JsonPropertyName "resolved">] Resolved: ResolvedData option
@@ -811,10 +1019,10 @@ and Message = {
 
 and ResolvedData = {
     [<JsonPropertyName "users">] Users: IDictionary<string, User> option
-    [<JsonPropertyName "members">] Members: IDictionary<string, GuildMember> option
+    [<JsonPropertyName "members">] Members: IDictionary<string, PartialGuildMember> option
     [<JsonPropertyName "roles">] Roles: IDictionary<string, Role> option
-    [<JsonPropertyName "channels">] Channels: IDictionary<string, Channel> option
-    [<JsonPropertyName "messages">] Messages: IDictionary<string, Message> option
+    [<JsonPropertyName "channels">] Channels: IDictionary<string, PartialChannel> option
+    [<JsonPropertyName "messages">] Messages: IDictionary<string, PartialMessage> option
     [<JsonPropertyName "attachments">] Attachments: IDictionary<string, Attachment> option
 }
 
@@ -823,8 +1031,8 @@ type GuildWidget = {
     [<JsonPropertyName "id">] Id: string
     [<JsonPropertyName "name">] Name: string
     [<JsonPropertyName "instant_invite">] InstantInvite: string option
-    [<JsonPropertyName "channels">] Channels: Channel list
-    [<JsonPropertyName "members">] Members: User list
+    [<JsonPropertyName "channels">] Channels: PartialChannel list
+    [<JsonPropertyName "members">] Members: PartialUser list
     [<JsonPropertyName "presence_count">] PresenceCount: int
 }
 
@@ -893,7 +1101,7 @@ type GuildTemplate = {
     [<JsonPropertyName "created_at">] CreatedAt: DateTime
     [<JsonPropertyName "updated_at">] UpdatedAt: DateTime
     [<JsonPropertyName "source_guild_id">] SourceGuildId: string
-    [<JsonPropertyName "serialized_source_guild">] SerializedSourceGuild: Guild
+    [<JsonPropertyName "serialized_source_guild">] SerializedSourceGuild: PartialGuild
     [<JsonPropertyName "is_dirty">] IsDirty: bool option
 }
 
@@ -901,11 +1109,11 @@ type Invite = {
     [<JsonPropertyName "type">] Type: InviteType
     [<JsonPropertyName "code">] Code: string
     [<JsonPropertyName "guild">] Guild: Guild option
-    [<JsonPropertyName "channel">] Channel: Channel option
-    [<JsonPropertyName "inviter">] Inviter: User option
+    [<JsonPropertyName "channel">] Channel: PartialChannel option
+    [<JsonPropertyName "inviter">] Inviter: PartialUser option
     [<JsonPropertyName "target_type">] TargetType: InviteTargetType option
     [<JsonPropertyName "target_user">] TargetUser: User option
-    [<JsonPropertyName "target_application">] TargetApplication: Application option
+    [<JsonPropertyName "target_application">] TargetApplication: PartialApplication option
     [<JsonPropertyName "approximate_presence_count">] ApproximatePresenceCount: int option
     [<JsonPropertyName "approximate_member_count">] ApproximateMemberCount: int option
     [<JsonPropertyName "expires_at">] ExpiresAt: DateTime
@@ -920,32 +1128,31 @@ type InviteMetadata = {
     [<JsonPropertyName "created_at">] CreatedAt: DateTime
 }
 
-// GetChannelInvite returns a list Invite objects with InviteMetadata added. To make this easy to implement here, I've
-// just created this type to combine the two. If changes are made to either Invite or InviteMetadata, they should be
-// duplicated here. A proper fix for this is probably possible, but implementing this way means the return type is more
-// accurate for now making it a lower priority fix.
-
-// TODO: Make below type by combining `Invite` and `InviteMetadata` somehow without code duplication
-
+[<JsonConverter(typeof<InviteWithmetadataConverter>)>]
 type InviteWithMetadata = {
-    [<JsonPropertyName "type">] Type: InviteType
-    [<JsonPropertyName "code">] Code: string
-    [<JsonPropertyName "guild">] Guild: Guild option
-    [<JsonPropertyName "channel">] Channel: Channel option
-    [<JsonPropertyName "inviter">] Inviter: User option
-    [<JsonPropertyName "target_type">] TargetType: InviteTargetType option
-    [<JsonPropertyName "target_user">] TargetUser: User option
-    [<JsonPropertyName "target_application">] TargetApplication: Application option
-    [<JsonPropertyName "approximate_presence_count">] ApproximatePresenceCount: int option
-    [<JsonPropertyName "approximate_member_count">] ApproximateMemberCount: int option
-    [<JsonPropertyName "expires_at">] ExpiresAt: DateTime
-    [<JsonPropertyName "guild_scheduled_event">] GuildScheduledEvent: GuildScheduledEvent option
-    [<JsonPropertyName "uses">] Uses: int
-    [<JsonPropertyName "max_uses">] MaxUses: int
-    [<JsonPropertyName "max_age">] MaxAge: int
-    [<JsonPropertyName "temporary">] Temporary: bool
-    [<JsonPropertyName "created_at">] CreatedAt: DateTime
+    Invite: Invite
+    Metadata: InviteMetadata
 }
+
+and InviteWithmetadataConverter () =
+    inherit JsonConverter<InviteWithMetadata> ()
+    
+    override _.Read (reader, typeToConvert, options) =
+        let success, document = JsonDocument.TryParseValue &reader
+        if not success then raise (JsonException())
+
+        let json = document.RootElement.GetRawText()
+
+        {
+            Invite = Json.deserializeF json;
+            Metadata = Json.deserializeF json;
+        }
+
+    override _.Write (writer, value, options) =
+        let invite = Json.serializeF value.Invite
+        let metadata = Json.serializeF value.Metadata
+
+        writer.WriteRawValue (Json.merge invite metadata)
 
 type InteractionData = {
     [<JsonPropertyName "id">] Id: string
@@ -980,9 +1187,9 @@ type Interaction = {
     [<JsonPropertyName "application_id">] ApplicationId: string
     [<JsonPropertyName "type">] Type: InteractionType
     [<JsonPropertyName "data">] Data: InteractionData option
-    [<JsonPropertyName "guild">] Guild: Guild option
+    [<JsonPropertyName "guild">] Guild: PartialGuild option
     [<JsonPropertyName "guild_id">] GuildId: string option
-    [<JsonPropertyName "channel">] Channel: Channel option
+    [<JsonPropertyName "channel">] Channel: PartialChannel option
     [<JsonPropertyName "channel_id">] ChannelId: string option
     [<JsonPropertyName "member">] Member: GuildMember option
     [<JsonPropertyName "user">] User: User option
@@ -1371,13 +1578,34 @@ type GuildIntegration = {
     [<JsonPropertyName "scopes">] Scopes: OAuth2Scope list option
 }
 
+type PartialGuildIntegration = {
+    [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "name">] Name: string option
+    [<JsonPropertyName "type">] Type: GuildIntegrationType option
+    [<JsonPropertyName "enabled">] Enabled: bool option
+    [<JsonPropertyName "syncing">] Syncing: bool option
+    [<JsonPropertyName "role_id">] RoleId: string option
+    [<JsonPropertyName "enable_emoticons">] EnableEmoticons: bool option
+    [<JsonPropertyName "expire_behavior">] ExpireBehavior: IntegrationExpireBehaviorType option
+    [<JsonPropertyName "expire_grace_period">] ExpireGracePeriod: int option
+    [<JsonPropertyName "user">] User: User option
+    [<JsonPropertyName "account">] Account: GuildIntegrationAccount option
+    [<JsonPropertyName "synced_at">] SyncedAt: DateTime option
+    [<JsonPropertyName "subscriber_count">] SubscriberCount: int option
+    [<JsonPropertyName "revoked">] Revoked: bool option
+    [<JsonPropertyName "application">] Application: GuildIntegrationApplication option
+    [<JsonPropertyName "scopes">] Scopes: OAuth2Scope list option
+}
+
+// TODO: Name, type, account, application may be present even in partial? Shown in audit log entry example. Should check a connection to confirm
+
 // https://discord.com/developers/docs/resources/user#connection-object-connection-structure
 type Connection = {
     [<JsonPropertyName "id">] Id: string
     [<JsonPropertyName "name">] Name: string
     [<JsonPropertyName "type">] Type: ConnectionServiceType
     [<JsonPropertyName "revoked">] Revoked: bool option
-    [<JsonPropertyName "integrations">] Integrations: GuildIntegration list option
+    [<JsonPropertyName "integrations">] Integrations: PartialGuildIntegration list option
     [<JsonPropertyName "verified">] Verified: bool
     [<JsonPropertyName "friend_sync">] FriendSync: bool
     [<JsonPropertyName "show_activity">] ShowActivity: bool
@@ -1402,8 +1630,8 @@ type Webhook = {
     [<JsonPropertyName "avatar">] Avatar: string option
     [<JsonPropertyName "token">] Token: string option
     [<JsonPropertyName "application_id">] ApplicationId: string option
-    [<JsonPropertyName "source_guild">] SourceGuild: Guild option
-    [<JsonPropertyName "source_channel">] SourceChannel: Channel option
+    [<JsonPropertyName "source_guild">] SourceGuild: PartialGuild option
+    [<JsonPropertyName "source_channel">] SourceChannel: PartialChannel option
     [<JsonPropertyName "url">] Url: string option
 }
 
@@ -1449,7 +1677,7 @@ type AuditLog = {
     [<JsonPropertyName "audit_log_entries">] AuditLogEntries: AuditLogEntry list
     [<JsonPropertyName "auto_moderation_rules">] AutoModerationRules: AutoModerationRule list
     [<JsonPropertyName "guild_scheduled_events">] GuildScheduledEvents: GuildScheduledEvent list
-    [<JsonPropertyName "integrations">] Integrations: GuildIntegration list
+    [<JsonPropertyName "integrations">] Integrations: PartialGuildIntegration list
     [<JsonPropertyName "threads">] Threads: Channel list
     [<JsonPropertyName "users">] Users: User list
     [<JsonPropertyName "webhooks">] Webhooks: Webhook list
@@ -1572,6 +1800,22 @@ type VoiceState = {
     [<JsonPropertyName "request_to_speak_timestamp">] RequestToSpeakTimestamp: DateTime option
 }
 
+type PartialVoiceState = {
+    [<JsonPropertyName "guild_id">] GuildId: string option
+    [<JsonPropertyName "channel_id">] ChannelId: string option
+    [<JsonPropertyName "user_id">] UserId: string option
+    [<JsonPropertyName "member">] Member: GuildMember option
+    [<JsonPropertyName "session_id">] SessionId: string option
+    [<JsonPropertyName "deaf">] Deaf: bool option
+    [<JsonPropertyName "mute">] Mute: bool option
+    [<JsonPropertyName "self_deaf">] SelfDeaf: bool option
+    [<JsonPropertyName "self_mute">] SelfMute: bool option
+    [<JsonPropertyName "self_stream">] SelfStream: bool option
+    [<JsonPropertyName "self_video">] SelfVideo: bool option
+    [<JsonPropertyName "suppress">] Suppress: bool option
+    [<JsonPropertyName "request_to_speak_timestamp">] RequestToSpeakTimestamp: DateTime option
+}
+
 // https://discord.com/developers/docs/resources/soundboard#soundboard-sound-object-soundboard-sound-structure
 type SoundboardSound = {
     [<JsonPropertyName "name">] Name: string
@@ -1599,6 +1843,8 @@ type InteractionCallbackResource = {
     [<JsonPropertyName "message">] Message: Message option
 }
 
+// TODO: Should below types be moved into rest?
+
 // https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-interaction-response-structure
 type InteractionResponsePayload<'a> = {
     [<JsonPropertyName "type">] Type: InteractionCallbackType
@@ -1613,7 +1859,7 @@ type MessageInteractionCallback = {
     [<JsonPropertyName "allowed_mentions">] AllowedMentions: AllowedMentions option
     [<JsonPropertyName "flags">] Flags: int option
     [<JsonPropertyName "components">] Components: Component list option
-    [<JsonPropertyName "attachments">] Attachments: Attachment list option
+    [<JsonPropertyName "attachments">] Attachments: PartialAttachment list option
     [<JsonPropertyName "poll">] Poll: Poll option
 }
 
@@ -1675,3 +1921,5 @@ and InteractionResponseConverter () =
         | ApplicationCommandAutocompleteResult a -> Json.serializeF a |> writer.WriteRawValue
         | Modal m -> Json.serializeF m |> writer.WriteRawValue
         | LaunchActivity l -> Json.serializeF l |> writer.WriteRawValue
+
+// TODO: Review InteractionData types and double check with "receiving and responding" docs

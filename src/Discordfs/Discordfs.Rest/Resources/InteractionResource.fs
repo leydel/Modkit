@@ -55,7 +55,7 @@ type EditOriginalInteractionResponsePayload (
     ?embeds: Embed list,
     ?allowed_mentions: AllowedMentions,
     ?components: Component list,
-    ?attachments: Attachment list,
+    ?attachments: PartialAttachment list,
     ?poll: Poll,
     ?files: IDictionary<string, IPayloadBuilder>
 ) =
@@ -96,7 +96,7 @@ type CreateFollowUpMessagePayload (
     ?embeds: Embed list,
     ?allowed_mentions: AllowedMentions,
     ?components: Component list,
-    ?attachments: Attachment list,
+    ?attachments: PartialAttachment list,
     ?flags: int,
     ?poll: Poll,
     ?files: IDictionary<string, IPayloadBuilder>
@@ -138,7 +138,7 @@ type EditFollowUpMessagePayload (
     ?embeds: Embed list option,
     ?allowed_mentions: AllowedMentions option,
     ?components: Component list option,
-    ?attachments: Attachment list option,
+    ?attachments: PartialAttachment list option,
     ?poll: Poll option,
     ?files: IDictionary<string, IPayloadBuilder>
 ) =

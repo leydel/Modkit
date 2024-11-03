@@ -14,7 +14,7 @@ type CreateMessage (
     ?message_reference: MessageReference,
     ?components:        Component list,
     ?sticker_ids:       string list,
-    ?attachments:       Attachment list,
+    ?attachments:       PartialAttachment list,
     ?flags:             int,
     ?enforce_nonce:     bool,
     ?poll:              Poll,
@@ -51,7 +51,7 @@ type EditMessage (
     ?flags:          int option,
     ?allow_mentions: AllowedMentions option,
     ?components:     Component list option,
-    ?attachments:    Attachment list option,
+    ?attachments:    PartialAttachment list option,
     ?files:          IDictionary<string, IPayloadBuilder>
 ) =
     inherit Payload() with
