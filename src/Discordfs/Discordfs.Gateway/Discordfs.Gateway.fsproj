@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Types\GatewayEventTypes.fs" />
     <Compile Include="Common\Nullable.fs" />
 	<Compile Include="Payloads\GatewayReceiveEvent.fs" />
 	<Compile Include="Payloads\GatewaySendEvent.fs" />

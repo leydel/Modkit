@@ -3,6 +3,7 @@
 open Azure.Messaging.ServiceBus
 open Discordfs.Gateway.Clients
 open Discordfs.Gateway.Payloads
+open Discordfs.Gateway.Types
 open Discordfs.Rest.Resources
 open Discordfs.Types
 open Modkit.Gateway.Factories

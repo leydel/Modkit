@@ -1,14 +1,15 @@
 ﻿namespace Discordfs.Webhook.Payloads
 
 open Discordfs.Types
+open Discordfs.Webhook.Types
 open System.Text.Json
 open System.Text.Json.Serialization
 
 [<JsonConverter(typeof<WebhookEventConverter>)>]
 type WebhookEvent =
     | PING                   of WebhookEventPayload<Empty>
-    | ENTITLEMENT_CREATE     of WebhookEventPayload<WebhookEventBody<EntitlementCreate>>
-    | APPLICATION_AUTHORIZED of WebhookEventPayload<WebhookEventBody<ApplicationAuthorized>>
+    | ENTITLEMENT_CREATE     of WebhookEventPayload<WebhookEventBody<EntitlementCreateEvent>>
+    | APPLICATION_AUTHORIZED of WebhookEventPayload<WebhookEventBody<ApplicationAuthorizedEvent>>
 
 and WebhookEventConverter () =
     inherit JsonConverter<WebhookEvent> ()

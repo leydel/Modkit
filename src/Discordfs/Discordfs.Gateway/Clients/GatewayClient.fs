@@ -2,6 +2,7 @@
 
 open Discordfs.Gateway.Modules
 open Discordfs.Gateway.Payloads
+open Discordfs.Gateway.Types
 open Discordfs.Types
 open System
 open System.Net.WebSockets

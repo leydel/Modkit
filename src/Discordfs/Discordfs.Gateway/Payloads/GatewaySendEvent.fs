@@ -1,5 +1,6 @@
 ﻿namespace Discordfs.Gateway.Payloads
 
+open Discordfs.Gateway.Types
 open Discordfs.Types
 open System.Text.Json
 open System.Text.Json.Serialization

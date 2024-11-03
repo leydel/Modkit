@@ -6,16 +6,10 @@ open Discordfs.Types
 open System.Collections.Generic
 open System.Net
 open System.Net.Http
-open System.Text.Json.Serialization
 
-type CreateInteractionResponseData =
-    | Message of MessageInteractionCallback
-    | Autocomplete of AutocompleteInteractionCallback
-    | Modal of ModalInteractionCallback
-
-type CreateInteractionResponsePayload (
+type CreateInteractionResponsePayload<'a> (
     ``type``: InteractionCallbackType,
-    ?data: CreateInteractionResponseData,
+    ?data: InteractionResponsePayload<'a>, // TODO: Figure out nicer way to handle this (message, modal, autocomplete)
     ?files: IDictionary<string, IPayloadBuilder>
 ) =
     inherit Payload() with
@@ -32,13 +26,8 @@ type CreateInteractionResponsePayload (
                 files f
             }
 
-type CreateInteractionResponseOkResponse = {
-    [<JsonPropertyName "interaction">] Interaction: InteractionCallback
-    [<JsonPropertyName "resource">] Resource: InteractionCallbackResource
-}
-
 type CreateInteractionResponseResponse =
-    | Ok of CreateInteractionResponseOkResponse
+    | Ok of InteractionCallbackResponse
     | NoContent
     | BadRequest of ErrorResponse
     | TooManyRequests of RateLimitResponse
@@ -178,7 +167,7 @@ module Interaction =
         (interactionId: string)
         (interactionToken: string)
         (withResponse: bool option)
-        (content: CreateInteractionResponsePayload)
+        (content: CreateInteractionResponsePayload<'a>)
         botToken
         (httpClient: HttpClient) =
             req {

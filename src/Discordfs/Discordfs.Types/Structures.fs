@@ -1828,6 +1828,52 @@ type SoundboardSound = {
     [<JsonPropertyName "user">] User: User
 }
 
+// https://discord.com/developers/docs/events/webhook-events#event-body-object
+type WebhookEventBody<'a> = {
+    [<JsonPropertyName "type">] Type: WebhookEventType
+    [<JsonPropertyName "timestamp">] [<JsonConverter(typeof<Converters.UnixEpoch>)>] Timestamp: DateTime
+    [<JsonPropertyName "data">] Data: 'a
+}
+
+// https://discord.com/developers/docs/events/webhook-events#payload-structure
+type WebhookEventPayload<'a> = {
+    [<JsonPropertyName "version">] Version: int
+    [<JsonPropertyName "application_id">] ApplicationId: string
+    [<JsonPropertyName "type">] Type: WebhookType
+    [<JsonPropertyName "event">] Event: 'a
+}
+
+// https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-interaction-response-structure
+type InteractionResponsePayload<'a> = {
+    [<JsonPropertyName "type">] Type: InteractionCallbackType
+    [<JsonPropertyName "data">] Data: 'a
+}
+
+// https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-messages
+type MessageInteractionResponse = {
+    [<JsonPropertyName "tts">] Tts: bool option
+    [<JsonPropertyName "content">] Content: string option
+    [<JsonPropertyName "embeds">] Embeds: Embed list option
+    [<JsonPropertyName "allowed_mentions">] AllowedMentions: AllowedMentions option
+    [<JsonPropertyName "flags">] Flags: int option
+    [<JsonPropertyName "components">] Components: Component list option
+    [<JsonPropertyName "attachments">] Attachments: PartialAttachment list option
+    [<JsonPropertyName "poll">] Poll: Poll option
+}
+
+// https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-autocomplete
+type AutocompleteInteractionResponse = {
+    [<JsonPropertyName "choices">] Choices: ApplicationCommandOptionChoice list
+}
+
+// https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-modal
+type ModalInteractionResponse = {
+    [<JsonPropertyName "custom_id">] CustomId: string
+    [<JsonPropertyName "title">] Title: string
+    [<JsonPropertyName "components">] Components: Component list
+}
+
+// https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-callback-interaction-callback-object
 type InteractionCallback = {
     [<JsonPropertyName "id">] Id: string
     [<JsonPropertyName "type">] Type: InteractionType
@@ -1837,8 +1883,15 @@ type InteractionCallback = {
     [<JsonPropertyName "response_message_ephemeral">] ResponseMessageEphemeral: bool option
 }
 
+// https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-callback-interaction-callback-resource-object
 type InteractionCallbackResource = {
     [<JsonPropertyName "type">] Type: InteractionCallbackType
     [<JsonPropertyName "activity_instance">] ActivityInstance: ActivityInstance option
     [<JsonPropertyName "message">] Message: Message option
+}
+
+// https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-callback-interaction-callback-response-object
+type InteractionCallbackResponse = {
+    [<JsonPropertyName "data">] Data: InteractionCallback
+    [<JsonPropertyName "resource">] Resource: InteractionCallbackResource option
 }

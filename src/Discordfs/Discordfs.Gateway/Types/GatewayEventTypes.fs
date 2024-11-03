@@ -1,5 +1,6 @@
-﻿namespace Discordfs.Types
+﻿namespace Discordfs.Gateway.Types
 
+open Discordfs.Types
 open System
 open System.Text.Json
 open System.Text.Json.Serialization

@@ -6,6 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Types\WebhookEventTypes.fs" />
+    <Compile Include="Types\InteractionEventTypes.fs" />
     <Compile Include="Payloads\WebhookEvent.fs" />
     <Compile Include="Payloads\InteractionReceiveEvent.fs" />
     <Compile Include="Payloads\InteractionRespondEvent.fs" />
