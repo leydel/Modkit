@@ -6,9 +6,9 @@ open System.Text.Json.Serialization
 
 [<JsonConverter(typeof<WebhookEventConverter>)>]
 type WebhookEvent =
-    | Ping of WebhookEventPayload<Empty>
-    | EntitlementCreate of WebhookEventPayload<WebhookEventBody<EntitlementCreate>>
-    | ApplicationAuthorized of WebhookEventPayload<WebhookEventBody<ApplicationAuthorized>>
+    | PING                   of WebhookEventPayload<Empty>
+    | ENTITLEMENT_CREATE     of WebhookEventPayload<WebhookEventBody<EntitlementCreate>>
+    | APPLICATION_AUTHORIZED of WebhookEventPayload<WebhookEventBody<ApplicationAuthorized>>
 
 and WebhookEventConverter () =
     inherit JsonConverter<WebhookEvent> ()
@@ -34,14 +34,14 @@ and WebhookEventConverter () =
         let json = document.RootElement.GetRawText()
 
         match webhookType, webhookEventType with
-        | WebhookPayloadType.PING, _ -> Ping <| Json.deserializeF json
-        | WebhookPayloadType.EVENT, Some ENTITLEMENT_CREATE -> EntitlementCreate <| Json.deserializeF json
-        | WebhookPayloadType.EVENT, Some APPLICATION_AUTHORIZED -> ApplicationAuthorized <| Json.deserializeF json
-        | _ -> failwith "Unexpected WebhookPayloadType and/or WebhookEventType provided"
+        | WebhookPayloadType.PING, _ -> PING <| Json.deserializeF json
+        | WebhookPayloadType.EVENT, Some WebhookEventType.ENTITLEMENT_CREATE -> ENTITLEMENT_CREATE <| Json.deserializeF json
+        | WebhookPayloadType.EVENT, Some WebhookEventType.APPLICATION_AUTHORIZED -> APPLICATION_AUTHORIZED <| Json.deserializeF json
+        | _ -> failwith "Unexpected WebhookPayloadType and/or WebhookEventType provided" // TODO: Handle gracefully for unfamiliar events
                 
     override __.Write (writer, value, options) =
         match value with
-        | Ping p -> Json.serializeF p |> writer.WriteRawValue
-        | EntitlementCreate e -> Json.serializeF e |> writer.WriteRawValue
-        | ApplicationAuthorized a -> Json.serializeF a |> writer.WriteRawValue
+        | PING p -> Json.serializeF p |> writer.WriteRawValue
+        | ENTITLEMENT_CREATE e -> Json.serializeF e |> writer.WriteRawValue
+        | APPLICATION_AUTHORIZED a -> Json.serializeF a |> writer.WriteRawValue
         

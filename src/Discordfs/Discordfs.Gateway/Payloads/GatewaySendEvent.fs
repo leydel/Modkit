@@ -36,7 +36,7 @@ and GatewaySendEventConverter () =
         | GatewayOpcode.REQUEST_SOUNDBOARD_SOUNDS -> REQUEST_SOUNDBOARD_SOUNDS <| Json.deserializeF json
         | GatewayOpcode.VOICE_STATE_UPDATE -> UPDATE_VOICE_STATE <| Json.deserializeF json
         | GatewayOpcode.PRESENCE_UPDATE -> UPDATE_PRESENCE <| Json.deserializeF json
-        | _ -> failwith "Unexpected GatewayOpcode provided"
+        | _ -> failwith "Unexpected GatewayOpcode provided" // TODO: Handle gracefully for unfamiliar events
                 
     override __.Write (writer, value, options) =
         match value with
@@ -47,5 +47,3 @@ and GatewaySendEventConverter () =
         | REQUEST_SOUNDBOARD_SOUNDS r -> Json.serializeF r |> writer.WriteRawValue
         | UPDATE_VOICE_STATE u -> Json.serializeF u |> writer.WriteRawValue
         | UPDATE_PRESENCE u -> Json.serializeF u |> writer.WriteRawValue
-
-// TODO: Determine if this is needed (seems like possibly not, if not used in a while, feel free to delete)

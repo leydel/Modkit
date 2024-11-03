@@ -11,6 +11,7 @@
     <Compile Include="Structures.fs" />
     <Compile Include="GatewayEvents.fs" />
     <Compile Include="WebhookEvents.fs" />
+    <Compile Include="InteractionEvents.fs" />
   </ItemGroup>
 
   <ItemGroup>
