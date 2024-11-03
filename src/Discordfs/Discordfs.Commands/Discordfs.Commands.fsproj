@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Discordfs.Webhook\Discordfs.Webhook.fsproj" />
+    <ProjectReference Include="..\Discordfs.Types\Discordfs.Types.fsproj" />
   </ItemGroup>
 
   <ItemGroup>

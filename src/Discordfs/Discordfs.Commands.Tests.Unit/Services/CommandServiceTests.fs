@@ -2,7 +2,6 @@
 
 open Discordfs.Commands.Structures
 open Discordfs.Types
-open Discordfs.Webhook.Payloads
 open Microsoft.VisualStudio.TestTools.UnitTesting
 open System.Threading.Tasks
 
@@ -16,19 +15,7 @@ type SampleCommand () =
     )
 
     override _.Execute _ =
-        Task.FromResult <| Ok (InteractionResponse.ChannelMessageWithSource {
-            Type = InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE;
-            Data = {
-                Tts = None;
-                Content = Some "Hello world";
-                Embeds = None;
-                AllowedMentions = None;
-                Flags = None;
-                Components = None;
-                Attachments = None;
-                Poll = None;
-            };
-        })
+        Task.FromResult <| Ok (None)
 
 [<TestClass>]
 type CommandServiceTests () =
@@ -130,7 +117,7 @@ type CommandServiceTests () =
         | Error err -> failwith err
         | Ok interactionResponse ->
             match interactionResponse with
-            | ChannelMessageWithSource res -> Assert.AreEqual<string>("Hello world", res.Data.Content.Value)
+            | None -> ()
             | _ -> failwith "Incorrect response type"
     }
 

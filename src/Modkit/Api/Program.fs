@@ -2,8 +2,6 @@
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
-open Modkit.Api.Actions
-open Modkit.Api.Repositories
 open System.IO
 
 HostBuilder()
@@ -19,13 +17,6 @@ HostBuilder()
         services
             .AddApplicationInsightsTelemetryWorkerService()
             .AddSingleton<CosmosClient>(fun _ -> new CosmosClient(ctx.Configuration.GetValue "CosmosDbConnectionString"))
-            // Repositories
-            .AddTransient<INoteRepository, NoteRepository>()
-            // Actions
-            .AddTransient<INoteListAction, NoteListAction>()
-            .AddTransient<INoteGetAction, NoteGetAction>()
-            .AddTransient<INoteAddAction, NoteAddAction>()
-            .AddTransient<INoteRemoveAction, NoteRemoveAction>()
         |> ignore
     )
     .Build()
