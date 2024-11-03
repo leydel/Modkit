@@ -869,3 +869,70 @@ type TypingStartReceiveEvent = {
 
 // https://discord.com/developers/docs/events/gateway-events#user-update
 type UserUpdateReceiveEvent = User
+
+// https://discord.com/developers/docs/events/gateway-events#voice-channel-effect-send
+type VoiceChannelEffectSendReceiveEvent = {
+    [<JsonPropertyName "channel_id">] ChannelId: string
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "user_id">] UserId: string
+    [<JsonPropertyName "emoji">] Emoji: Emoji option
+    [<JsonPropertyName "animation_type">] AnimationType: AnimationType option
+    [<JsonPropertyName "animation_id">] AnimationId: string option
+    [<JsonPropertyName "sound_id">] SoundId: string option
+    [<JsonPropertyName "sound_volume">] SoundVolume: double option
+}
+
+// https://discord.com/developers/docs/events/gateway-events#voice-state-update
+type VoiceStateUpdateReceiveEvent = VoiceState
+
+// https://discord.com/developers/docs/events/gateway-events#voice-server-update
+type VoiceServerUpdateReceiveEvent = {
+    [<JsonPropertyName "token">] Token: string
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "endpoint">] Endpoint: string option
+}
+
+// https://discord.com/developers/docs/events/gateway-events#webhooks-update
+type WebhooksUpdateReceiveEvent = {
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "channel_id">] ChannelId: string
+}
+
+// https://discord.com/developers/docs/events/gateway-events#interaction-create
+type InteractionCreateReceiveEvent = Interaction
+
+// https://discord.com/developers/docs/events/gateway-events#stage-instance-create
+type StageInstanceCreateReceiveEvent = StageInstance
+
+// https://discord.com/developers/docs/events/gateway-events#stage-instance-update
+type StageInstanceUpdateReceiveEvent = StageInstance
+
+// https://discord.com/developers/docs/events/gateway-events#stage-instance-delete
+type StageInstanceDeleteReceiveEvent = StageInstance
+
+// https://discord.com/developers/docs/events/gateway-events#subscription-create
+type SubscriptionCreateReceiveEvent = Subscription
+
+// https://discord.com/developers/docs/events/gateway-events#subscription-update
+type SubscriptionUpdateReceiveEvent = Subscription
+
+// https://discord.com/developers/docs/events/gateway-events#subscription-delete
+type SubscriptionDeleteReceiveEvent = Subscription
+
+// https://discord.com/developers/docs/events/gateway-events#message-poll-vote-add
+type MessagePollVoteAddReceiveEvent = {
+    [<JsonPropertyName "user_id">] UserId: string
+    [<JsonPropertyName "channel_id">] ChannelId: string
+    [<JsonPropertyName "message_id">] MessageId: string
+    [<JsonPropertyName "guild_id">] GuildId: string option
+    [<JsonPropertyName "answer_id">] AnswerId: string
+}
+
+// https://discord.com/developers/docs/events/gateway-events#message-poll-vote-remove
+type MessagePollVoteRemoveReceiveEvent = {
+    [<JsonPropertyName "user_id">] UserId: string
+    [<JsonPropertyName "channel_id">] ChannelId: string
+    [<JsonPropertyName "message_id">] MessageId: string
+    [<JsonPropertyName "guild_id">] GuildId: string option
+    [<JsonPropertyName "answer_id">] AnswerId: string
+}

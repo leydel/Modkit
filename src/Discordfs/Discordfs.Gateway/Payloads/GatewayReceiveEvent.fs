@@ -69,6 +69,19 @@ type GatewayReceiveEvent =
     | PRESENCE_UPDATE                        of GatewayEventPayload<PresenceUpdateReceiveEvent>
     | TYPING_START                           of GatewayEventPayload<TypingStartReceiveEvent>
     | USER_UPDATE                            of GatewayEventPayload<UserUpdateReceiveEvent>
+    | VOICE_CHANNEL_EFFECT_SEND              of GatewayEventPayload<VoiceChannelEffectSendReceiveEvent>
+    | VOICE_STATE_UPDATE                     of GatewayEventPayload<VoiceStateUpdateReceiveEvent>
+    | VOICE_SERVER_UPDATE                    of GatewayEventPayload<VoiceServerUpdateReceiveEvent>
+    | WEBHOOKS_UPDATE                        of GatewayEventPayload<WebhooksUpdateReceiveEvent>
+    | INTERACTION_CREATE                     of GatewayEventPayload<InteractionCreateReceiveEvent>
+    | STAGE_INSTANCE_CREATE                  of GatewayEventPayload<StageInstanceCreateReceiveEvent>
+    | STAGE_INSTANCE_UPDATE                  of GatewayEventPayload<StageInstanceUpdateReceiveEvent>
+    | STAGE_INSTANCE_DELETE                  of GatewayEventPayload<StageInstanceDeleteReceiveEvent>
+    | SUBSCRIPTION_CREATE                    of GatewayEventPayload<SubscriptionCreateReceiveEvent>
+    | SUBSCRIPTION_UPDATE                    of GatewayEventPayload<SubscriptionUpdateReceiveEvent>
+    | SUBSCRIPTION_DELETE                    of GatewayEventPayload<SubscriptionDeleteReceiveEvent>
+    | MESSAGE_POLL_VOTE_ADD                  of GatewayEventPayload<MessagePollVoteAddReceiveEvent>
+    | MESSAGE_POLL_VOTE_REMOVE               of GatewayEventPayload<MessagePollVoteRemoveReceiveEvent>
 
 and GatewayReceiveEventConverter () =
     inherit JsonConverter<GatewayReceiveEvent> ()
@@ -153,6 +166,19 @@ and GatewayReceiveEventConverter () =
         | GatewayOpcode.DISPATCH, Some (nameof PRESENCE_UPDATE) -> PRESENCE_UPDATE <| Json.deserializeF json
         | GatewayOpcode.DISPATCH, Some (nameof TYPING_START) -> TYPING_START <| Json.deserializeF json
         | GatewayOpcode.DISPATCH, Some (nameof USER_UPDATE) -> USER_UPDATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof VOICE_CHANNEL_EFFECT_SEND) -> VOICE_CHANNEL_EFFECT_SEND <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof VOICE_STATE_UPDATE) -> VOICE_STATE_UPDATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof VOICE_SERVER_UPDATE) -> VOICE_SERVER_UPDATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof WEBHOOKS_UPDATE) -> WEBHOOKS_UPDATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof INTERACTION_CREATE) -> INTERACTION_CREATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof STAGE_INSTANCE_CREATE) -> STAGE_INSTANCE_CREATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof STAGE_INSTANCE_UPDATE) -> STAGE_INSTANCE_UPDATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof STAGE_INSTANCE_DELETE) -> STAGE_INSTANCE_DELETE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof SUBSCRIPTION_CREATE) -> SUBSCRIPTION_CREATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof SUBSCRIPTION_UPDATE) -> SUBSCRIPTION_UPDATE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof SUBSCRIPTION_DELETE) -> SUBSCRIPTION_DELETE <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof MESSAGE_POLL_VOTE_ADD) -> MESSAGE_POLL_VOTE_ADD <| Json.deserializeF json
+        | GatewayOpcode.DISPATCH, Some (nameof MESSAGE_POLL_VOTE_REMOVE) -> MESSAGE_POLL_VOTE_REMOVE <| Json.deserializeF json
         | _ -> failwith "Unexpected GatewayOpcode and/or EventName provided" // TODO: Handle gracefully so bot doesnt crash on unfamiliar events
                 
     override __.Write (writer, value, options) =
@@ -220,6 +246,19 @@ and GatewayReceiveEventConverter () =
         | PRESENCE_UPDATE p -> Json.serializeF p |> writer.WriteRawValue
         | TYPING_START t -> Json.serializeF t |> writer.WriteRawValue
         | USER_UPDATE u -> Json.serializeF u |> writer.WriteRawValue
+        | VOICE_CHANNEL_EFFECT_SEND v -> Json.serializeF v |> writer.WriteRawValue
+        | VOICE_STATE_UPDATE v -> Json.serializeF v |> writer.WriteRawValue
+        | VOICE_SERVER_UPDATE v -> Json.serializeF v |> writer.WriteRawValue
+        | WEBHOOKS_UPDATE w -> Json.serializeF w |> writer.WriteRawValue
+        | INTERACTION_CREATE i -> Json.serializeF i |> writer.WriteRawValue
+        | STAGE_INSTANCE_CREATE s -> Json.serializeF s |> writer.WriteRawValue
+        | STAGE_INSTANCE_UPDATE s -> Json.serializeF s |> writer.WriteRawValue
+        | STAGE_INSTANCE_DELETE s -> Json.serializeF s |> writer.WriteRawValue
+        | SUBSCRIPTION_CREATE s -> Json.serializeF s |> writer.WriteRawValue
+        | SUBSCRIPTION_UPDATE s -> Json.serializeF s |> writer.WriteRawValue
+        | SUBSCRIPTION_DELETE s -> Json.serializeF s |> writer.WriteRawValue
+        | MESSAGE_POLL_VOTE_ADD m -> Json.serializeF m |> writer.WriteRawValue
+        | MESSAGE_POLL_VOTE_REMOVE m -> Json.serializeF m |> writer.WriteRawValue
 
 module GatewayReceiveEvent =
     let getSequenceNumber (event: GatewayReceiveEvent) =
