@@ -1,20 +1,17 @@
 ﻿module Modkit.Api.Common.Response
 
-open System.Net
-open System.Net.Http
-open System.Net.Http.Headers
+open Microsoft.Azure.Functions.Worker.Http
+open System.Text.Json
 
-let create (status: HttpStatusCode) =
-    new HttpResponseMessage(status)
-
-let withBody (body: HttpContent) (res: HttpResponseMessage) =
-    res.Content <- body
+let withBody (body: string) (res: HttpResponseData) =
+    res.WriteString body
     res
 
-let withJson (json: string) (res: HttpResponseMessage) =
-    let body = new StringContent(json, MediaTypeHeaderValue("application/json", "utf-8"))
-    withBody body res
-
-let withHeader (key: string) (value: string) (res: HttpResponseMessage) =
+let withHeader (key: string) (value: string) (res: HttpResponseData) =
     res.Headers.Add(key, value)
     res
+
+let withJson (obj: 'a) (res: HttpResponseData) =
+    res
+    |> withBody (Json.serializeF obj)
+    |> withHeader "Content-Type" "application/json"

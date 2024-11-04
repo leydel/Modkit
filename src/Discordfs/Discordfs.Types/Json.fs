@@ -6,7 +6,7 @@ open System.Text.Json.Nodes
 open System.Text.Json.Serialization
 
 module Json =
-    let private options =
+    let options =
         JsonFSharpOptions()
             .WithUnionUnwrapFieldlessTags()
             .WithSkippableOptionFields(SkippableOptionFields.Always, deserializeNullAsNone = true)

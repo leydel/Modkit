@@ -2,12 +2,12 @@
 
 open Microsoft.Azure.Cosmos
 open Microsoft.Azure.Functions.Worker
+open Microsoft.Azure.Functions.Worker.Http
 open Microsoft.Extensions.Logging
 open Modkit.Api.Common
 open Modkit.Api.Modules
 open System
 open System.Net
-open System.Net.Http
 open System.Text.Json
 open System.Text.Json.Serialization
 open System.Threading.Tasks
@@ -17,47 +17,45 @@ type CreateNotePayload = {
     [<JsonPropertyName "content">] Content: string
 }
 
-type CreateNoteResponse = {
-    [<CosmosDBOutput(containerName = Constants.noteContainerName, databaseName = Constants.noteDatabaseName)>] Note: Note
-    [<HttpResult>] Response: HttpResponseMessage
-}
-
 type NoteController () =
     [<Function "ListMemberNotes">]
     member _.ListMemberNotes (
-        [<HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "guilds/{guildId}/members/{memberId}/notes")>] req: HttpRequestMessage,
+        [<HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "guilds/{guildId}/members/{memberId}/notes")>] req: HttpRequestData,
         [<CosmosDBInput(containerName = Constants.noteContainerName, databaseName = Constants.noteDatabaseName, SqlQuery = "SELECT * FROM c WHERE c.guildId = {guildId} AND c.memberId = {memberId}")>] notes: Note list,
-        logger: ILogger,
+        ctx: FunctionContext,
         guildId: string,
         memberId: string
     ) =
-        logger.LogInformation $"Found {notes.Length} notes for member {memberId} in guild {guildId}"
-        Response.create HttpStatusCode.OK |> Response.withJson (notes |> List.map Note.toDto |> Json.serializeF)
+        ctx.GetLogger().LogInformation $"Found {notes.Length} notes for member {memberId} in guild {guildId}"
+        req.CreateResponse HttpStatusCode.OK |> Response.withJson (notes |> List.map Note.toDto)
 
     [<Function "GetMemberNote">]
     member _.GetMemberNote (
-        [<HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "guilds/{guildId}/members/{memberId}/notes/{noteId}")>] req: HttpRequestMessage,
+        [<HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "guilds/{guildId}/members/{memberId}/notes/{noteId}")>] req: HttpRequestData,
         [<CosmosDBInput(containerName = Constants.noteContainerName, databaseName = Constants.noteDatabaseName, Id = "{noteId}", PartitionKey = "{guildId}")>] note: Note option,
-        logger: ILogger,
+        ctx: FunctionContext,
         guildId: string,
         memberId: string,
         noteId: string
     ) =
         match note with
         | None ->
-            logger.LogInformation $"Could not find note {noteId} for member {memberId} in guild {guildId}"
-            Response.create HttpStatusCode.NotFound
+            ctx.GetLogger().LogInformation $"Could not find note {noteId} for member {memberId} in guild {guildId}"
+            req.CreateResponse HttpStatusCode.NotFound
         | Some note ->
-            logger.LogInformation $"Found note {noteId} for member {memberId} in guild {guildId}"
-            Response.create HttpStatusCode.OK |> Response.withJson (note |> Note.toDto |> Json.serializeF)
+            ctx.GetLogger().LogInformation $"Found note {noteId} for member {memberId} in guild {guildId}"
+            req.CreateResponse HttpStatusCode.OK |> Response.withJson (note |> Note.toDto)
 
     [<Function "AddMemberNote">]
     member _.AddMemberNote (
-        [<HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "guilds/{guildId}/members/{memberId}/notes")>] payload: CreateNotePayload,
-        logger: ILogger,
+        [<HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "guilds/{guildId}/members/{memberId}/notes")>] req: HttpRequestData,
+        [<CosmosDBInput(containerName = Constants.noteContainerName, databaseName = Constants.noteDatabaseName)>] container: Container,
+        ctx: FunctionContext,
         guildId: string,
         memberId: string
-    ) =
+    ) = task {
+        let! payload = req.ReadFromJsonAsync<CreateNotePayload>()
+
         let note: Note = {
             Id = Guid.NewGuid().ToString();
             GuildId = guildId;
@@ -67,30 +65,33 @@ type NoteController () =
             CreatedAt = DateTime.Now;
         }
 
-        logger.LogInformation $"Created note {note.Id} for member {memberId} in guild {guildId}"
+        try
+            do! container.CreateItemAsync(note) :> Task
 
-        {
-            Note = note;
-            Response =
-                Response.create HttpStatusCode.Created
-                |> Response.withJson (note |> Note.toDto |> Json.serializeF)
-                |> Response.withHeader "Location" $"/guilds/{note.GuildId}/members/{note.MemberId}/notes/{note.Id}";
-        }
+            ctx.GetLogger().LogInformation $"Created note {note.Id} for member {memberId} in guild {guildId}"
+            return req.CreateResponse HttpStatusCode.Created
+            |> Response.withJson (note |> Note.toDto |> Json.serializeF)
+            |> Response.withHeader "Location" $"/guilds/{note.GuildId}/members/{note.MemberId}/notes/{note.Id}";
+        with | _ ->
+            ctx.GetLogger().LogError $"Failed to create a note for member {memberId} in guild {guildId}"
+            return req.CreateResponse HttpStatusCode.InternalServerError
+    }
 
     [<Function "RemoveMemberNote">]
     member _.RemoveMemberNote (
-        [<HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "guilds/{guildId}/members/{memberId}/notes/{noteId}")>] req: HttpRequestMessage,
+        [<HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "guilds/{guildId}/members/{memberId}/notes/{noteId}")>] req: HttpRequestData,
         [<CosmosDBInput(containerName = Constants.noteContainerName, databaseName = Constants.noteDatabaseName)>] container: Container,
-        logger: ILogger,
+        ctx: FunctionContext,
         guildId: string,
         memberId: string,
         noteId: string
     ) = task {
         try
             do! container.DeleteItemAsync(noteId, PartitionKey guildId) :> Task
-            logger.LogInformation $"Deleted note for member {memberId} in guild {guildId}"
-            return Response.create HttpStatusCode.NoContent
+
+            ctx.GetLogger().LogInformation $"Deleted note for member {memberId} in guild {guildId}"
+            return req.CreateResponse HttpStatusCode.NoContent
         with | _ ->
-            logger.LogInformation $"Could not delete note for member {memberId} in guild {guildId}"
-            return Response.create HttpStatusCode.NotFound
+            ctx.GetLogger().LogInformation $"Could not delete note for member {memberId} in guild {guildId}"
+            return req.CreateResponse HttpStatusCode.NotFound
     }
