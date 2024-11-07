@@ -1,5 +1,6 @@
 ﻿open Azure.Core.Serialization
 open Microsoft.Azure.Functions.Worker
+open Microsoft.Extensions.Azure
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
@@ -23,9 +24,13 @@ HostBuilder()
         // Register services
         !services.AddApplicationInsightsTelemetryWorkerService()
         !services.ConfigureFunctionsApplicationInsights()
+        !services.AddAzureClients(fun builder ->
+            !builder.AddQueueServiceClient(ctx.Configuration.GetValue<string>("AzureWebJobsStorage"))
+        )
 
         // Setup configuration options
         !services.AddOptions<DiscordOptions>().Configure<IConfiguration>(fun s c -> c.GetSection(DiscordOptions.Key).Bind(s))
+        !services.AddOptions<GatewayOptions>().Configure<IConfiguration>(fun s c -> c.GetSection(GatewayOptions.Key).Bind(s))
     )
     .Build()
     .RunAsync()
