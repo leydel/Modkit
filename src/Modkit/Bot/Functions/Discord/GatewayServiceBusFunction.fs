@@ -10,7 +10,7 @@ open System.Text.Json
 type GatewayServiceBusFunction () =
     [<Function(nameof GatewayServiceBusFunction)>]
     member _.Run (
-        [<ServiceBusTrigger("%GatewayQueueName%", IsSessionsEnabled = true)>] message: ServiceBusReceivedMessage,
+        [<ServiceBusTrigger("%Gateway:QueueName%", IsSessionsEnabled = true)>] message: ServiceBusReceivedMessage,
         ctx: FunctionContext
     ) = task {
         let json = message.Body.ToString()

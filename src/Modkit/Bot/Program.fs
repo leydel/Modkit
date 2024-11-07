@@ -3,28 +3,29 @@ open Microsoft.Azure.Functions.Worker
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
+open Modkit.Bot.Configuration
 open System.IO
 open System.Text.Json
 
 HostBuilder()
-    .ConfigureFunctionsWorkerDefaults(fun ctx builder ->
-        builder.Services.Configure(fun (workerOptions: WorkerOptions) ->
-            workerOptions.Serializer <- JsonObjectSerializer(Json.options)
-        ) |> ignore
+    .ConfigureFunctionsWorkerDefaults(fun _ builder ->
+        // Setup json serializer
+        !builder.Services.Configure(fun (workerOptions: WorkerOptions) -> workerOptions.Serializer <- JsonObjectSerializer(Json.options))
     )
     .ConfigureAppConfiguration(fun builder ->
-        builder
+        // Add environment variables to configuration
+        !builder
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("local.settings.json", true)
             .AddEnvironmentVariables()
-        |> ignore
     )
-    .ConfigureLogging(fun logging -> ())
-    .ConfigureServices(fun ctx services -> 
-        services
-            .AddApplicationInsightsTelemetryWorkerService()
-            .ConfigureFunctionsApplicationInsights()
-        |> ignore
+    .ConfigureServices(fun ctx services ->
+        // Register services
+        !services.AddApplicationInsightsTelemetryWorkerService()
+        !services.ConfigureFunctionsApplicationInsights()
+
+        // Setup configuration options
+        !services.AddOptions<DiscordOptions>().Configure<IConfiguration>(fun s c -> c.GetSection(DiscordOptions.Key).Bind(s))
     )
     .Build()
     .RunAsync()

@@ -6,3 +6,4 @@ let inline (>>.) v f = Option.map f v
 let inline (>>?) o v = Option.defaultValue v o
 
 let inline (||>) (a, b) f = f a b
+let inline (!) f = f |> ignore

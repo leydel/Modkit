@@ -10,7 +10,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Include="Functions\ServiceBus\GatewayServiceBusFunction.fs" />
+		<Compile Include="Configuration\DiscordOptions.fs" />
+		<Compile Include="Functions\Discord\InteractionHttpFunction.fs" />
+		<Compile Include="Functions\Discord\GatewayServiceBusFunction.fs" />
 		<Compile Include="Program.fs" />
 		<Content Include="local.settings.json" CopyToOutputDirectory="PreserveNewest" />
 		<Content Include="host.json" CopyToOutputDirectory="PreserveNewest" />
@@ -22,14 +24,16 @@
 		<PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.23.0" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.CosmosDB" Version="4.11.0" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.2.0" />
-		<PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.17.4" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.18.1" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.ApplicationInsights" Version="1.4.0" />
 		<PackageReference Include="Microsoft.Azure.WebJobs.Extensions.ServiceBus" Version="5.16.4" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\Discordfs\Discordfs.Commands\Discordfs.Commands.fsproj" />
 		<ProjectReference Include="..\..\Discordfs\Discordfs.Gateway\Discordfs.Gateway.fsproj" />
-		<ProjectReference Include="..\..\Discordfs\Discordfs.Rest\Discordfs.Rest.fsproj" />
+		<ProjectReference Include="..\..\Discordfs\Discordfs.Webhook\Discordfs.Webhook.fsproj" />
+		<ProjectReference Include="..\Api\Api.fsproj" />
 	</ItemGroup>
 
 	<ItemGroup>
