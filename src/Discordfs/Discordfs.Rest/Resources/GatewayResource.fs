@@ -5,6 +5,7 @@ open Discordfs.Types
 open System.Net
 open System.Net.Http
 open System.Text.Json.Serialization
+open System.Threading.Tasks
 
 type GetGatewayOkResponse = {
     [<JsonPropertyName "url">] Url: string

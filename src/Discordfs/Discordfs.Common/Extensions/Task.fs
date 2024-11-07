@@ -1,6 +1,4 @@
-﻿namespace Discordfs.Rest.Common
-
-open System.Threading.Tasks
+﻿namespace System.Threading.Tasks
 
 module Task =
     let map f t = task {

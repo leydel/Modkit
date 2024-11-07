@@ -7,6 +7,7 @@ open System
 open System.Net
 open System.Net.Http
 open System.Text.Json.Serialization
+open System.Threading.Tasks
 
 type CreateGuildPayload(
     name:                           string,

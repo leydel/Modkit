@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <Compile Include="Types\GatewayEventTypes.fs" />
-    <Compile Include="Common\Nullable.fs" />
 	<Compile Include="Payloads\GatewayReceiveEvent.fs" />
 	<Compile Include="Payloads\GatewaySendEvent.fs" />
     <Compile Include="Modules\Websocket.fs" />
@@ -20,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="8.0.400" />
+    <PackageReference Update="FSharp.Core" Version="8.0.401" />
   </ItemGroup>
 
 </Project>

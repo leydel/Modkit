@@ -5,6 +5,7 @@ open Discordfs.Rest.Types
 open Discordfs.Types
 open System.Net
 open System.Net.Http
+open System.Threading.Tasks
 
 type SendSoundboardSoundPayload (
     sound_id:         string,

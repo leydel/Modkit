@@ -6,6 +6,7 @@ open Discordfs.Types
 open System.Collections.Generic
 open System.Net
 open System.Net.Http
+open System.Threading.Tasks
 
 type GetGlobalApplicationCommandsResponse =
     | Ok of ApplicationCommand list

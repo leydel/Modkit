@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Json.fs" />
     <Compile Include="Enums.fs" />
     <Compile Include="Structures\User.fs" />
     <Compile Include="Structures\GuildMember.fs" />
@@ -45,7 +44,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="8.0.400" />
+    <ProjectReference Include="..\Discordfs.Common\Discordfs.Common.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="8.0.401" />
   </ItemGroup>
 
 </Project>

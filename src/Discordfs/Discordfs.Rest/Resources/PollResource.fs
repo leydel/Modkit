@@ -6,6 +6,7 @@ open Discordfs.Types
 open System.Net
 open System.Net.Http
 open System.Text.Json.Serialization
+open System.Threading.Tasks
 
 type GetAnswerVotersOkResponse = {
     [<JsonPropertyName "users">] Users: User list
