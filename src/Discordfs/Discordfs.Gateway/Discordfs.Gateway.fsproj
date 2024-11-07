@@ -7,8 +7,8 @@
 
   <ItemGroup>
     <Compile Include="Types\GatewayEventTypes.fs" />
-	<Compile Include="Payloads\GatewayReceiveEvent.fs" />
-	<Compile Include="Payloads\GatewaySendEvent.fs" />
+	<Compile Include="Types\GatewayReceiveEvent.fs" />
+	<Compile Include="Types\GatewaySendEvent.fs" />
     <Compile Include="Modules\Websocket.fs" />
     <Compile Include="Modules\Gateway.fs" />
     <Compile Include="Clients\GatewayClient.fs" />

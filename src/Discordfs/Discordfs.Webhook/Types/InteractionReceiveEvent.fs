@@ -1,4 +1,4 @@
-﻿namespace Discordfs.Webhook.Payloads
+﻿namespace Discordfs.Webhook.Types
 
 open Discordfs.Types
 open System.Text.Json

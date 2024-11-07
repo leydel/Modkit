@@ -8,9 +8,9 @@
   <ItemGroup>
     <Compile Include="Types\WebhookEventTypes.fs" />
     <Compile Include="Types\InteractionEventTypes.fs" />
-    <Compile Include="Payloads\WebhookEvent.fs" />
-    <Compile Include="Payloads\InteractionReceiveEvent.fs" />
-    <Compile Include="Payloads\InteractionRespondEvent.fs" />
+    <Compile Include="Types\WebhookEvent.fs" />
+    <Compile Include="Types\InteractionReceiveEvent.fs" />
+    <Compile Include="Types\InteractionRespondEvent.fs" />
     <Compile Include="Modules\Ed25519.fs" />
   </ItemGroup>
 

@@ -1,7 +1,7 @@
 ﻿namespace Modkit.Bot.Functions
 
 open Azure.Messaging.ServiceBus
-open Discordfs.Gateway.Payloads
+open Discordfs.Gateway.Types
 open Microsoft.Azure.Functions.Worker
 open Microsoft.Azure.WebJobs
 open Microsoft.Extensions.Logging
