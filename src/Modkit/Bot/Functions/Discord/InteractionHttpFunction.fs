@@ -16,6 +16,7 @@ type InteractionHttpFunction () =
     [<Function(nameof InteractionHttpFunction)>]
     member _.Run (
         [<HttpTrigger(AuthorizationLevel.Anonymous, "post", "interactions")>] req: HttpRequestData,
+        [<OrchestrationTrigger>]
         ctx: FunctionContext,
         options: IOptions<DiscordOptions>
     ) = task {
