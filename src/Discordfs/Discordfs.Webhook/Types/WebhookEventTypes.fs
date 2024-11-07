@@ -1,7 +1,24 @@
 ﻿namespace Discordfs.Webhook.Types
 
 open Discordfs.Types
+open System
+open System.Text.Json
 open System.Text.Json.Serialization
+
+// https://discord.com/developers/docs/events/webhook-events#event-body-object
+type WebhookEventBody<'a> = {
+    [<JsonPropertyName "type">] Type: WebhookEventType
+    [<JsonPropertyName "timestamp">] [<JsonConverter(typeof<Converters.UnixEpoch>)>] Timestamp: DateTime
+    [<JsonPropertyName "data">] Data: 'a
+}
+
+// https://discord.com/developers/docs/events/webhook-events#payload-structure
+type WebhookEventPayload<'a> = {
+    [<JsonPropertyName "version">] Version: int
+    [<JsonPropertyName "application_id">] ApplicationId: string
+    [<JsonPropertyName "type">] Type: WebhookType
+    [<JsonPropertyName "event">] Event: 'a
+}
 
 // https://discord.com/developers/docs/events/webhook-events#application-authorized-application-authorized-structure
 type ApplicationAuthorizedEvent = {

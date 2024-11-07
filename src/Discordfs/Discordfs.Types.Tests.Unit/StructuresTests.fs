@@ -11,7 +11,7 @@ type StructuresTests () =
         // Arrange
         let json = """{"type":1,"components":[]}"""
 
-        let expected = Component.ActionRow {
+        let expected = Component.ACTION_ROW {
             Type = ComponentType.ACTION_ROW;
             Components = [];
         }
@@ -27,7 +27,7 @@ type StructuresTests () =
         // Arrange
         let json = """{"type":2,"style":1,"label":"Label","emoji":null,"custom_id":"custom-id","url":null,"disabled":null}"""
 
-        let expected = Component.Button {
+        let expected = Component.BUTTON {
             Type = ComponentType.BUTTON;
             Style = ButtonStyle.PRIMARY;
             Label = "Label";
@@ -48,7 +48,7 @@ type StructuresTests () =
         // Arrange
         let json = """{"type":3,"custom_id":"custom-id","options":[],"channel_types":null,"placeholder":null,"default_values":null,"min_values":null,"max_values":null,"disabled":null}"""
         
-        let expected = Component.SelectMenu {
+        let expected = Component.SELECT_MENU {
             Type = ComponentType.STRING_SELECT;
             CustomId = "custom-id";
             Options = Some [];
@@ -71,7 +71,7 @@ type StructuresTests () =
         // Arrange
         let json = """{"type":4,"custom_id":"custom-id","style":1,"label":"Label","min_length":null,"max_length":null,"required":null,"value":null,"placeholder":null}"""
         
-        let expected = Component.TextInput {
+        let expected = Component.TEXT_INPUT {
             Type = ComponentType.TEXT_INPUT;
             CustomId = "custom-id";
             Style = TextInputStyle.SHORT;
@@ -114,7 +114,7 @@ type StructuresTests () =
     [<TestMethod>]
     member _.ComponentConverter_Write_CorrectlySerializesActionRow () =
         // Arrange
-        let actionRow = Component.ActionRow {
+        let actionRow = Component.ACTION_ROW {
             Type = ComponentType.ACTION_ROW;
             Components = [];
         }
@@ -130,7 +130,7 @@ type StructuresTests () =
     [<TestMethod>]
     member _.ComponentConverter_Write_CorrectlySerializesButton () =
         // Arrange
-        let button = Component.Button {
+        let button = Component.BUTTON {
             Type = ComponentType.BUTTON;
             Style = ButtonStyle.PRIMARY;
             Label = "Label";
@@ -151,7 +151,7 @@ type StructuresTests () =
     [<TestMethod>]
     member _.ComponentConverter_Write_CorrectlySerializesSelectMenu () =
         // Arrange
-        let selectMenu = Component.SelectMenu {
+        let selectMenu = Component.SELECT_MENU {
             Type = ComponentType.STRING_SELECT;
             CustomId = "custom-id";
             Options = Some [];
@@ -174,7 +174,7 @@ type StructuresTests () =
     [<TestMethod>]
     member _.ComponentConverter_Write_CorrectlySerializesTextInput () =
         // Arrange
-        let textInput = Component.TextInput {
+        let textInput = Component.TEXT_INPUT {
             Type = ComponentType.TEXT_INPUT;
             CustomId = "custom-id";
             Style = TextInputStyle.SHORT;

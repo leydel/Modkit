@@ -7,6 +7,7 @@ open System
 open System.Collections.Generic
 open System.Net
 open System.Net.Http
+open System.Text.Json
 open System.Text.Json.Serialization
 
 type GetChannelResponse =
@@ -311,8 +312,38 @@ type StartThreadInForumOrMediaChannelPayload (
                 files f
             }
 
+type StartThreadInForumOrMediaChannelOkResponseExtraFields = {
+    [<JsonPropertyName "message">] Message: Message option
+}
+
+[<JsonConverter(typeof<StartThreadInForumOrMediaChannelOkResponseConverter>)>]
+type StartThreadInForumOrMediaChannelOkResponse = {
+    Channel: Channel
+    ExtraFields: StartThreadInForumOrMediaChannelOkResponseExtraFields
+}
+
+and StartThreadInForumOrMediaChannelOkResponseConverter () =
+    inherit JsonConverter<StartThreadInForumOrMediaChannelOkResponse> ()
+
+    override _.Read (reader, typeToConvert, options) =
+        let success, document = JsonDocument.TryParseValue &reader
+        if not success then raise (JsonException())
+
+        let json = document.RootElement.GetRawText()
+
+        {
+            Channel = Json.deserializeF json;
+            ExtraFields = Json.deserializeF json;
+        }
+
+    override _.Write (writer, value, options) =
+        let channel = Json.serializeF value.Channel
+        let extraFields = Json.serializeF value.ExtraFields
+
+        writer.WriteRawValue (Json.merge channel extraFields)
+
 type StartThreadInForumOrMediaChannelResponse =
-    | Created of Channel
+    | Created of StartThreadInForumOrMediaChannelOkResponse
     | BadRequest of ErrorResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse

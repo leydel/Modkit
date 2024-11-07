@@ -7,6 +7,26 @@ open System.Text.Json.Serialization
 
 #nowarn "49"
 
+// https://discord.com/developers/docs/topics/gateway-events#payload-structure
+type GatewayEventPayload<'a> = {
+    [<JsonPropertyName "op">] Opcode: GatewayOpcode
+    [<JsonPropertyName "d">] Data: 'a
+    [<JsonPropertyName "s">] Sequence: int option
+    [<JsonPropertyName "t">] EventName: string option
+}
+with
+    static member build(
+        Opcode: GatewayOpcode,
+        Data: 'a,
+        ?Sequence: int,
+        ?EventName: string
+    ) = {
+        Opcode = Opcode;
+        Data = Data;
+        Sequence = Sequence;
+        EventName = EventName;
+    }
+
 // https://discord.com/developers/docs/topics/gateway-events#identify-identify-structure
 type IdentifySendEvent = {
     [<JsonPropertyName "token">] Token: string

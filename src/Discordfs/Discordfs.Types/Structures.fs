@@ -788,42 +788,38 @@ type SelectMenuDefaultValue = {
 
 [<JsonConverter(typeof<ComponentConverter>)>]
 type Component =
-    | ActionRow of ActionRowComponent
-    | Button of ButtonComponent
-    | SelectMenu of SelectMenuComponent
-    | TextInput of TextInputComponent
+    | ACTION_ROW of ActionRowComponent
+    | BUTTON of ButtonComponent
+    | SELECT_MENU of SelectMenuComponent
+    | TEXT_INPUT of TextInputComponent
 
 and ComponentConverter () =
     inherit JsonConverter<Component> ()
 
     override _.Read (reader, typeToConvert, options) =
-        Console.WriteLine("reading...")
         let success, document = JsonDocument.TryParseValue(&reader)
-
-        if not success then
-            raise (JsonException())
+        if not success then raise (JsonException())
 
         let componentType = document.RootElement.GetProperty "type" |> _.GetInt32() |> enum<ComponentType>
         let json = document.RootElement.GetRawText()
 
         match componentType with
-        | ComponentType.ACTION_ROW -> Component.ActionRow <| Json.deserializeF<ActionRowComponent> json
-        | ComponentType.BUTTON -> Component.Button <| Json.deserializeF<ButtonComponent> json
+        | ComponentType.ACTION_ROW -> Component.ACTION_ROW <| Json.deserializeF<ActionRowComponent> json
+        | ComponentType.BUTTON -> Component.BUTTON <| Json.deserializeF<ButtonComponent> json
         | ComponentType.STRING_SELECT
         | ComponentType.USER_SELECT
         | ComponentType.ROLE_SELECT
         | ComponentType.MENTIONABLE_SELECT
-        | ComponentType.CHANNEL_SELECT -> Component.SelectMenu <| Json.deserializeF<SelectMenuComponent> json
-        | ComponentType.TEXT_INPUT -> Component.TextInput <| Json.deserializeF<TextInputComponent> json
+        | ComponentType.CHANNEL_SELECT -> Component.SELECT_MENU <| Json.deserializeF<SelectMenuComponent> json
+        | ComponentType.TEXT_INPUT -> Component.TEXT_INPUT <| Json.deserializeF<TextInputComponent> json
         | _ -> failwith "Unexpected ComponentType provided"
 
     override _.Write (writer, value, options) =
-        Console.WriteLine("writing...")
         match value with
-        | Component.ActionRow a -> Json.serializeF a |> writer.WriteRawValue
-        | Component.Button b -> Json.serializeF b |> writer.WriteRawValue
-        | Component.SelectMenu s -> Json.serializeF s |> writer.WriteRawValue
-        | Component.TextInput t -> Json.serializeF t |> writer.WriteRawValue
+        | Component.ACTION_ROW a -> Json.serializeF a |> writer.WriteRawValue
+        | Component.BUTTON b -> Json.serializeF b |> writer.WriteRawValue
+        | Component.SELECT_MENU s -> Json.serializeF s |> writer.WriteRawValue
+        | Component.TEXT_INPUT t -> Json.serializeF t |> writer.WriteRawValue
 
 and ActionRowComponent = {
     [<JsonPropertyName "type">] Type: ComponentType
@@ -900,12 +896,11 @@ type Channel = {
     [<JsonPropertyName "default_thread_rate_limit_per_user">] DefaultThreadRateLimitPerUser: int option
     [<JsonPropertyName "default_sort_order">] DefaultSortOrder: ChannelSortOrder option
     [<JsonPropertyName "default_forum_layout">] DefaultForumLayout: ChannelForumLayout option
-
-    // TODO: Separate below somehow (used when starting thread in forum/media channel response
-    [<JsonPropertyName "message">] Message: Message option
 }
 
-and PartialChannel = {
+// TODO: Create DU for different channel types
+
+type PartialChannel = {
     [<JsonPropertyName "id">] Id: string
     [<JsonPropertyName "type">] Type: ChannelType option
     [<JsonPropertyName "guild_id">] GuildId: string option
@@ -943,7 +938,7 @@ and PartialChannel = {
     [<JsonPropertyName "default_forum_layout">] DefaultForumLayout: ChannelForumLayout option
 }
 
-and Message = {
+type Message = {
     [<JsonPropertyName "id">] Id: string
     [<JsonPropertyName "channel_id">] ChannelId: string
     [<JsonPropertyName "author">] Author: User
@@ -964,9 +959,9 @@ and Message = {
     [<JsonPropertyName "type">] Type: MessageType
     [<JsonPropertyName "activity">] Activity: MessageActivity option
     [<JsonPropertyName "application">] Application: PartialApplication option
+    [<JsonPropertyName "flags">] Flags: int option
     [<JsonPropertyName "message_reference">] MessageReference: MessageReference option
-    // TODO: Add message snapshots
-    [<JsonPropertyName "flags">] Flags: int
+    [<JsonPropertyName "message_snapshots">] MessageSnapshots: MessageSnapshot list option
     [<JsonPropertyName "referenced_message">] ReferencedMessage: Message option
     [<JsonPropertyName "interaction_metadata">] InteractionMetadata: MessageInteractionMetadata option
     [<JsonPropertyName "interaction">] Interaction: MessageInteraction option
@@ -1001,9 +996,9 @@ and PartialMessage = {
     [<JsonPropertyName "type">] Type: MessageType option
     [<JsonPropertyName "activity">] Activity: MessageActivity option
     [<JsonPropertyName "application">] Application: PartialApplication option
-    [<JsonPropertyName "message_reference">] MessageReference: MessageReference option
-    // TODO: Add message snapshots
     [<JsonPropertyName "flags">] Flags: int option
+    [<JsonPropertyName "message_reference">] MessageReference: MessageReference option
+    [<JsonPropertyName "message_snapshots">] MessageSnapshots: MessageSnapshot list option
     [<JsonPropertyName "referenced_message">] ReferencedMessage: Message option
     [<JsonPropertyName "interaction_metadata">] InteractionMetadata: MessageInteractionMetadata option
     [<JsonPropertyName "interaction">] Interaction: MessageInteraction option
@@ -1015,6 +1010,25 @@ and PartialMessage = {
     [<JsonPropertyName "resolved">] Resolved: ResolvedData option
     [<JsonPropertyName "poll">] Poll: Poll option
     [<JsonPropertyName "call">] Call: MessageCall option
+}
+
+/// A partial message specifically for message snapshots
+and SnapshotPartialMessage = {
+    [<JsonPropertyName "content">] Content: string option
+    [<JsonPropertyName "timestamp">] Timestamp: DateTime
+    [<JsonPropertyName "edited_timestamp">] EditedTimestamp: DateTime option
+    [<JsonPropertyName "mentions">] Mentions: User list
+    [<JsonPropertyName "mention_roles">] MentionRoles: string list
+    [<JsonPropertyName "attachments">] Attachments: Attachment list
+    [<JsonPropertyName "embeds">] Embeds: Embed list
+    [<JsonPropertyName "type">] Type: MessageType
+    [<JsonPropertyName "flags">] Flags: int option
+    [<JsonPropertyName "components">] Components: Component list option
+    [<JsonPropertyName "sticker_items">] StickerItems: StickerItem list option
+}
+
+and MessageSnapshot = {
+    [<JsonPropertyName "message">] Message: SnapshotPartialMessage
 }
 
 and ResolvedData = {
@@ -1729,26 +1743,6 @@ with
 
         ConnectionProperties.build(operatingSystem)
 
-// https://discord.com/developers/docs/topics/gateway-events#payload-structure
-type GatewayEventPayload<'a> = {
-    [<JsonPropertyName "op">] Opcode: GatewayOpcode
-    [<JsonPropertyName "d">] Data: 'a
-    [<JsonPropertyName "s">] Sequence: int option
-    [<JsonPropertyName "t">] EventName: string option
-}
-with
-    static member build(
-        Opcode: GatewayOpcode,
-        Data: 'a,
-        ?Sequence: int,
-        ?EventName: string
-    ) = {
-        Opcode = Opcode;
-        Data = Data;
-        Sequence = Sequence;
-        EventName = EventName;
-    }
-
 // https://discord.com/developers/docs/resources/sku#sku-object-sku-structure
 type Sku = {
     [<JsonPropertyName "id">] Id: string
@@ -1826,21 +1820,6 @@ type SoundboardSound = {
     [<JsonPropertyName "guild_id">] GuildId: string option
     [<JsonPropertyName "available">] Available: bool
     [<JsonPropertyName "user">] User: User
-}
-
-// https://discord.com/developers/docs/events/webhook-events#event-body-object
-type WebhookEventBody<'a> = {
-    [<JsonPropertyName "type">] Type: WebhookEventType
-    [<JsonPropertyName "timestamp">] [<JsonConverter(typeof<Converters.UnixEpoch>)>] Timestamp: DateTime
-    [<JsonPropertyName "data">] Data: 'a
-}
-
-// https://discord.com/developers/docs/events/webhook-events#payload-structure
-type WebhookEventPayload<'a> = {
-    [<JsonPropertyName "version">] Version: int
-    [<JsonPropertyName "application_id">] ApplicationId: string
-    [<JsonPropertyName "type">] Type: WebhookType
-    [<JsonPropertyName "event">] Event: 'a
 }
 
 // https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-interaction-response-structure
