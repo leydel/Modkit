@@ -1,54 +1,60 @@
 ﻿namespace Discordfs.Commands.Structures
 
+open Discordfs.Rest.Resources
 open Discordfs.Types
 open System.Collections.Generic
-open System.Threading.Tasks
-
-#nowarn "49"
 
 type CommandData = {
-    Name: string
-    NameLocalizations: IDictionary<string, string> option
-    Description: string
+    Name:                     string
+    NameLocalizations:        IDictionary<string, string> option
+    Description:              string option
     DescriptionLocalizations: IDictionary<string, string> option
-    Options: ApplicationCommandOption list option
-    DefaultMemberPermissions: string option
-    DmPermissions: bool option
-    IntegrationTypes: ApplicationIntegrationType list option
-    Type: ApplicationCommandType
-    Nsfw: bool option
+    Options:                  ApplicationCommandOption list option
+    DefaultMemberPermissions: string option option
+    IntegrationTypes:         ApplicationIntegrationType list option
+    Contexts:                 InteractionContextType list option
+    Type:                     ApplicationCommandType option
+    Nsfw:                     bool option
 }
 with
     static member build (
-        Type: ApplicationCommandType,
-        Name: string,
-        Description: string,
-        ?NameLocalizations: IDictionary<string, string>,
-        ?DescriptionLocalizations: IDictionary<string, string>,
-        ?Options: ApplicationCommandOption list,
-        ?DefaultMemberPermissions: string,
-        ?DmPermissions: bool,
-        ?IntegrationTypes: ApplicationIntegrationType list,
-        ?Nsfw: bool
+        name, ?nameLocalizations, ?description, ?descriptionLocalizations, ?options, ?defaultMemberPermissions,
+        ?integrationTypes, ?contexts, ?``type``, ?nsfw 
     ) = {
-        Name = Name
-        NameLocalizations = NameLocalizations
-        Description = Description
-        DescriptionLocalizations = DescriptionLocalizations
-        Options = Options
-        DefaultMemberPermissions = DefaultMemberPermissions
-        DmPermissions = DmPermissions
-        IntegrationTypes = IntegrationTypes
-        Type = Type
-        Nsfw = Nsfw
+        Name = name
+        NameLocalizations = nameLocalizations
+        Description = description
+        DescriptionLocalizations = descriptionLocalizations
+        Options = options
+        DefaultMemberPermissions = defaultMemberPermissions
+        IntegrationTypes = integrationTypes
+        Contexts = contexts
+        Type = ``type``
+        Nsfw = nsfw
     }
 
-[<AbstractClass>]
-type Command () =
-    abstract member Data: CommandData
+module CommandData =
+    let toGlobalApplicationCommandPayload (data: CommandData) =
+        CreateGlobalApplicationCommandPayload(
+            name = data.Name,
+            name_localizations = data.NameLocalizations,
+            ?description = data.Description,
+            description_localizations = data.DescriptionLocalizations,
+            ?options = data.Options,
+            ?default_member_permissions = data.DefaultMemberPermissions,
+            ?integration_types = data.IntegrationTypes,
+            ?``type`` = data.Type,
+            ?nsfw = data.Nsfw
+        )
 
-    abstract member Execute:
-        interaction: Interaction ->
-        Task<Result<InteractionResponsePayload<'a> option, string>>
-
-// TODO: Probably delete and rewrite all this in a functional way
+    let toGuildApplicationCommandPayload (data: CommandData) =
+        CreateGuildApplicationCommandPayload(
+            name = data.Name,
+            name_localizations = data.NameLocalizations,
+            ?description = data.Description,
+            description_localizations = data.DescriptionLocalizations,
+            ?options = data.Options,
+            ?default_member_permissions = data.DefaultMemberPermissions,
+            ?``type`` = data.Type,
+            ?nsfw = data.Nsfw
+        )

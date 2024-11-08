@@ -4,3 +4,6 @@ type DiscordOptions () =
     static member Key = "Discord"
 
     member val PublicKey: string
+
+    member val BotToken: string
+

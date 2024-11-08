@@ -13,6 +13,7 @@
 		<Compile Include="Common\Constants.fs" />
 		<Compile Include="Configuration\DiscordOptions.fs" />
 		<Compile Include="Configuration\GatewayOptions.fs" />
+		<Compile Include="Functions\Commands\PingCommandQueueFunction.fs" />
 		<Compile Include="Functions\Events\MessageCreateOrchestratorFunction.fs" />
 		<Compile Include="Functions\Discord\InteractionHttpFunction.fs" />
 		<Compile Include="Functions\Discord\GatewayServiceBusFunction.fs" />

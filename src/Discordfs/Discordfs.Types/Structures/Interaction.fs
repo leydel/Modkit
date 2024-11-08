@@ -136,6 +136,17 @@ type MessageInteractionResponse = {
     [<JsonPropertyName "attachments">] Attachments: PartialAttachment list option
     [<JsonPropertyName "poll">] Poll: Poll option
 }
+with
+    static member create (?tts, ?content, ?embeds, ?allowedMentions, ?flags, ?components, ?attachments, ?poll) = {
+        Tts = tts;
+        Content = content;
+        Embeds = embeds;
+        AllowedMentions = allowedMentions;
+        Flags = flags;
+        Components = components;
+        Attachments = attachments;
+        Poll = poll;
+    }
 
 // https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-autocomplete
 type AutocompleteInteractionResponse = {

@@ -22,6 +22,7 @@ HostBuilder()
     )
     .ConfigureServices(fun ctx services ->
         // Register services
+        !services.AddHttpClient()
         !services.AddApplicationInsightsTelemetryWorkerService()
         !services.ConfigureFunctionsApplicationInsights()
         !services.AddAzureClients(fun builder ->

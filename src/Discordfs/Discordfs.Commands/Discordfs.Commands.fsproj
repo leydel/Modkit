@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Discordfs.Types\Discordfs.Types.fsproj" />
+    <ProjectReference Include="..\Discordfs.Rest\Discordfs.Rest.fsproj" />
   </ItemGroup>
 
   <ItemGroup>

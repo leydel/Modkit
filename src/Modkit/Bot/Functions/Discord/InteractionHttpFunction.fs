@@ -14,6 +14,7 @@ open Modkit.Bot.Common
 open Modkit.Bot.Configuration
 open System.Net
 open System.Text.Json
+open System.Threading.Tasks
 
 type InteractionHttpFunction (queueServiceClientFactory: IAzureClientFactory<QueueServiceClient>) =
     let queueServiceClient = queueServiceClientFactory.CreateClient Constants.InteractionQueueClientName
@@ -24,6 +25,8 @@ type InteractionHttpFunction (queueServiceClientFactory: IAzureClientFactory<Que
         ctx: FunctionContext,
         options: IOptions<DiscordOptions>
     ) = task {
+        let logger = ctx.GetLogger<InteractionHttpFunction>()
+
         let! json = req.ReadAsStringAsync()
         let publicKey = options.Value.PublicKey
         let signature = req.Headers.TryGetValues "X-Signature-Ed25519" |> fun (_, s) -> Seq.tryHead s >>? ""
@@ -33,10 +36,28 @@ type InteractionHttpFunction (queueServiceClientFactory: IAzureClientFactory<Que
         | true ->
             match Json.deserializeF<InteractionReceiveEvent> json with
             | InteractionReceiveEvent.PING _ ->
-                ctx.GetLogger().LogInformation $"Responding to ping interaction on function invocation {ctx.FunctionId}"
+                logger.LogInformation $"Responding to ping interaction on function invocation {ctx.InvocationId}"
                 return req.CreateResponse HttpStatusCode.OK |> Response.withJson { Type = InteractionCallbackType.PONG; Data = None }
 
-            // TODO: Handle different interaction types here, then offload to queues through queueServiceClient
+            | InteractionReceiveEvent.APPLICATION_COMMAND interaction ->
+                let name = interaction.Data >>. _.Name
+
+                let queueName =
+                    match name with
+                    | Some v when v = PingCommandQueueFunction.Metadata.Name -> Some (Constants.PingCommandQueueName)
+                    | _ -> None
+
+                match queueName with
+                | Some queue ->
+                    do! queueServiceClient.GetQueueClient(queue).SendMessageAsync json :> Task
+                    logger.LogInformation $"Queued message to handle application command interaction {interaction.Id} on function invocation {ctx.InvocationId}"
+                    return req.CreateResponse HttpStatusCode.Accepted
+
+                | None -> 
+                    logger.LogError $"Could not find queue for application command interaction called \"{name}\" on function invocation {ctx.InvocationId}"
+                    return req.CreateResponse HttpStatusCode.InternalServerError
+
+            // TODO: Handle other potential interaction types here (message component, autocomplete, modal)
 
             // We'll see how queues go with latency. They may need to be replaced with something else. Durable tasks
             // are being used for gateway events because they don't have a time limit, and even if they're a few
@@ -47,10 +68,10 @@ type InteractionHttpFunction (queueServiceClientFactory: IAzureClientFactory<Que
             // really quick, they might even work out for interactions too. Lots of testing to do!
 
             | _ ->
-                ctx.GetLogger().LogError $"Unhandled interaction on function invocation {ctx.FunctionId}"
+                ctx.GetLogger().LogError $"Unhandled interaction on function invocation {ctx.InvocationId}"
                 return req.CreateResponse HttpStatusCode.InternalServerError
 
         | false ->
-            ctx.GetLogger().LogInformation $"Failed to verify ed25519 on function invocation {ctx.FunctionId}"
+            ctx.GetLogger().LogInformation $"Failed to verify ed25519 on function invocation {ctx.InvocationId}"
             return req.CreateResponse HttpStatusCode.Unauthorized
     }
