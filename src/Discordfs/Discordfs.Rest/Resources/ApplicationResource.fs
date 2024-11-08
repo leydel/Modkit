@@ -8,6 +8,7 @@ open System.Net
 open System.Net.Http
 open System.Threading.Tasks
 
+[<RequireQualifiedAccess>]
 type GetCurrentApplicationResponse =
     | Ok of Application
     | NotFound of ErrorResponse
@@ -39,14 +40,16 @@ type EditCurrentApplicationPayload (
             optional "interactions_endpoint_url" interactions_endpoint_url
             optional "tags" tags
         }
-
+        
+[<RequireQualifiedAccess>]
 type EditCurrentApplicationResponse =
     | Ok of Application
     | BadRequest of ErrorResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetApplicationActivityInstanceResponse =
     | Ok of ActivityInstance
     | NotFound of ErrorResponse

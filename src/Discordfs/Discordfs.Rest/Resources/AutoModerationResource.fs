@@ -7,6 +7,7 @@ open System.Net
 open System.Net.Http
 open System.Threading.Tasks
 
+[<RequireQualifiedAccess>]
 type GetAutoModerationRuleResponse =
     | Ok              of AutoModerationRule
     | NotFound        of ErrorResponse
@@ -34,7 +35,8 @@ type CreateAutoModerationRulePayload (
             optional "exempt_roles" exempt_roles
             optional "exempt_channels" exempt_channels
         }
-
+        
+[<RequireQualifiedAccess>]
 type CreateAutoModerationRuleResponse =
     | Ok              of AutoModerationRule
     | Created         of AutoModerationRule
@@ -62,14 +64,16 @@ type ModifyAutoModerationRulePayload (
             optional "exempt_roles" exempt_roles
             optional "exempt_channels" exempt_channels
         }
-
+        
+[<RequireQualifiedAccess>]
 type ModifyAutoModerationRuleResponse =
     | Ok              of AutoModerationRule
     | BadRequest      of ErrorResponse
     | NotFound        of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other           of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type DeleteAutoModerationRuleResponse =
     | NoContent
     | NotFound        of ErrorResponse

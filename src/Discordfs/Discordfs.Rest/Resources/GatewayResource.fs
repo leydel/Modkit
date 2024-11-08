@@ -11,6 +11,7 @@ type GetGatewayOkResponse = {
     [<JsonPropertyName "url">] Url: string
 }
 
+[<RequireQualifiedAccess>]
 type GetGatewayResponse =
     | Ok of GetGatewayOkResponse
     | Other of HttpStatusCode
@@ -21,6 +22,7 @@ type GetGatewayBotOkResponse = {
     [<JsonPropertyName "session_start_limit">] SessionStartLimit: SessionStartLimit
 }
 
+[<RequireQualifiedAccess>]
 type GetGatewayBotResponse =
     | Ok of GetGatewayBotOkResponse
     | Other of HttpStatusCode

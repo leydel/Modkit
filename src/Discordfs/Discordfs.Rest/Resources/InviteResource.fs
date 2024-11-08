@@ -7,12 +7,14 @@ open System.Net
 open System.Net.Http
 open System.Threading.Tasks
 
+[<RequireQualifiedAccess>]
 type GetInviteResponse =
     | Ok of Invite
     | NotFound of ErrorResponse
     | TooManyRequests of ErrorResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type DeleteInviteResponse =
     | Ok of Invite
     | NotFound of ErrorResponse

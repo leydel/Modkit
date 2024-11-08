@@ -33,6 +33,11 @@ module Payload =
 
     let json = JsonPayloadBuilder()
 
+    type JsonPayload<'a>(payload: 'a) =
+        interface IPayloadBuilder with
+            member _.ToContent () =
+                new StringContent(Json.serializeF payload, MediaTypeHeaderValue("application/json"))
+
     type JsonListPayload<'a>(list: 'a list) =
         interface IPayloadBuilder with
             member _.ToContent () =

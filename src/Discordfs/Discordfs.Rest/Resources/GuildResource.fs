@@ -36,19 +36,22 @@ type CreateGuildPayload(
             optional "system_channel_id" system_channel_id
             optional "system_channel_flags" system_channel_flags
         }
-
+        
+[<RequireQualifiedAccess>]
 type CreateGuildResponse =
     | Created of Guild
     | BadRequest of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetGuildResponse =
     | Ok of Guild
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetGuildPreviewResponse =
     | Ok of GuildPreview
     | NotFound of ErrorResponse
@@ -100,20 +103,23 @@ type ModifyGuildPayload(
             optional "premium_progress_bar_enabled" premium_progress_bar_enabled
             optional "safety_alerts_channel_id" safety_alerts_channel_id
         }
-
+        
+[<RequireQualifiedAccess>]
 type ModifyGuildResponse =
     | Ok of Guild
     | BadRequest of ErrorResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type DeleteGuildResponse =
     | NoContent
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetGuildChannelsResponse =
     | Ok of Channel list
     | NotFound of ErrorResponse
@@ -161,7 +167,8 @@ type CreateGuildChannelPayload(
             optional "default_forum_layout" default_forum_layout
             optional "default_thread_rate_limit_per_user" default_thread_rate_limit_per_user
         }
-
+        
+[<RequireQualifiedAccess>]
 type CreateGuildChannelResponse =
     | Created of Channel
     | BadRequest of ErrorResponse
@@ -181,7 +188,8 @@ type ModifyGuildChannelPositionsPayload(
     inherit Payload() with
         override _.Content =
             JsonListPayload positions
-
+            
+[<RequireQualifiedAccess>]
 type ModifyGuildChannelPositionsResponse =
     | NoContent
     | BadRequest of ErrorResponse
@@ -194,24 +202,28 @@ type ListActiveGuildThreadsOkResponse = {
     [<JsonPropertyName "members">] Members: GuildMember list
 }
 
+[<RequireQualifiedAccess>]
 type ListActiveGuildThreadsResponse =
     | Ok of ListActiveGuildThreadsOkResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetGuildMemberResponse =
     | Ok of GuildMember
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type ListGuildMembersResponse =
     | Ok of GuildMember list
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type SearchGuildMembersResponse =
     | Ok of GuildMember list
     | NotFound of ErrorResponse
@@ -233,7 +245,8 @@ type AddGuildMemberPayload(
             optional "mute" mute
             optional "deaf" deaf
         }
-
+        
+[<RequireQualifiedAccess>]
 type AddGuildMemberResponse =
     | Created of GuildMember
     | NoContent
@@ -261,7 +274,8 @@ type ModifyGuildMemberPayload(
             optional "communication_disabled_until" communication_disabled_until
             optional "flags" flags
         }
-
+        
+[<RequireQualifiedAccess>]
 type ModifyGuildMemberResponse =
     | Ok of GuildMember
     | NoContent
@@ -277,7 +291,8 @@ type ModifyCurrentMemberPayload(
         override _.Content = json {
             optional "nick" nick
         }
-
+        
+[<RequireQualifiedAccess>]
 type ModifyCurrentMemberResponse =
     | Ok of GuildMember
     | NoContent
@@ -285,31 +300,36 @@ type ModifyCurrentMemberResponse =
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type AddGuildMemberRoleResponse =
     | NoContent
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type RemoveGuildMemberRoleResponse =
     | NoContent
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type RemoveGuildMemberResponse =
     | NoContent
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetGuildBansResponse =
     | Ok of GuildBan list
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetGuildBanResponse =
     | Ok of GuildBan
     | NotFound of ErrorResponse
@@ -325,14 +345,16 @@ type CreateGuildBanPayload(
             optional "delete_message_days" delete_message_days
             optional "delete_message_seconds" delete_message_seconds
         }
-
+        
+[<RequireQualifiedAccess>]
 type CreateGuildBanResponse =
     | NoContent
     | BadRequest of ErrorResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type RemoveGuildBanResponse =
     | NoContent
     | NotFound of ErrorResponse
@@ -354,19 +376,22 @@ type BulkGuildBanOkResponse = {
     [<JsonPropertyName "failed_users">] FailedUsers: string list
 }
 
+[<RequireQualifiedAccess>]
 type BulkGuildBanResponse =
     | Ok of BulkGuildBanOkResponse
     | BadRequest of ErrorResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetGuildRolesResponse =
     | Ok of Role list
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetGuildRoleResponse =
     | Ok of Role
     | NotFound of ErrorResponse
@@ -392,7 +417,8 @@ type CreateGuildRolePayload(
             optional "unicode_emoji" unicode_emoji
             optional "mentionable" mentionable
         }
-
+        
+[<RequireQualifiedAccess>]
 type CreateGuildRoleResponse =
     | Ok of Role
     | BadRequest of ErrorResponse
@@ -411,7 +437,8 @@ type ModifyGuildRolePositionsPayload(
     inherit Payload() with
         override _.Content =
             JsonListPayload positions
-
+            
+[<RequireQualifiedAccess>]
 type ModifyGuildRolePositionsResposne =
     | Ok of Role list
     | BadRequest of ErrorResponse
@@ -438,7 +465,8 @@ type ModifyGuildRolePayload(
             optional "unicode_emoji" unicode_emoji
             optional "mentionable" mentionable
         }
-
+        
+[<RequireQualifiedAccess>]
 type ModifyGuildRoleResponse =
     | Ok of Role
     | BadRequest of ErrorResponse
@@ -453,14 +481,16 @@ type ModifyGuildMfaLevelPayload(
         override _.Content = json {
             required "level" level
         }
-
+        
+[<RequireQualifiedAccess>]
 type ModifyGuildMfaLevelResponse =
     | Ok of GuildMfaLevel
     | BadRequest of ErrorResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type DeleteGuildRoleResponse =
     | NoContent
     | NotFound of ErrorResponse
@@ -471,6 +501,7 @@ type GetGuildPruneCountOkResponse = {
     [<JsonPropertyName "pruned">] Pruned: int
 }
 
+[<RequireQualifiedAccess>]
 type GetGuildPruneCountResponse =
     | Ok of GetGuildPruneCountOkResponse
     | NotFound of ErrorResponse
@@ -495,37 +526,43 @@ type BeginGuildPruneOkResponse = {
     [<JsonPropertyName "pruned">] Pruned: int option
 }
 
+[<RequireQualifiedAccess>]
 type BeginGuildPruneResponse =
     | Ok of BeginGuildPruneOkResponse
     | BadRequest of ErrorResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetGuildVoiceRegionsResponse =
     | Ok of VoiceRegion list
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetGuildInvitesResponse =
     | Ok of InviteWithMetadata list
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetGuildIntegrationsResponse =
     | Ok of GuildIntegration list
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type DeleteGuildIntegrationResponse =
     | NoContent
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetGuildWidgetSettingsResponse =
     | Ok of GuildWidgetSettings
     | NotFound of ErrorResponse
@@ -541,14 +578,16 @@ type ModifyGuildWidgetPayload(
             optional "enabled" enabled
             optional "channel_id" channel_id
         }
-
+        
+[<RequireQualifiedAccess>]
 type ModifyGuildWidgetResponse =
     | Ok of GuildWidgetSettings
     | BadRequest of ErrorResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetGuildWidgetResponse =
     | Ok of GuildWidget
     | NotFound of ErrorResponse
@@ -560,17 +599,20 @@ type GetGuildVanityUrlOkResponse = {
     [<JsonPropertyName "uses">] Uses: int
 }
 
+[<RequireQualifiedAccess>]
 type GetGuildVanityUrlResponse =
     | Ok of GetGuildVanityUrlOkResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetGuildWidgetImageResponse =
     | Ok of string
     | NotFound of ErrorResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetGuildWelcomeScreenResponse =
     | Ok of WelcomeScreen
     | NotFound of ErrorResponse
@@ -588,14 +630,16 @@ type ModifyGuildWelcomeScreenPayload(
             optional "welcome_channels" welcome_channels
             optional "description" description
         }
-
+        
+[<RequireQualifiedAccess>]
 type ModifyGuildWelcomeScreenResponse =
     | Ok of WelcomeScreen
     | BadRequest of ErrorResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetGuildOnboardingResponse =
     | Ok of GuildOnboarding
     | NotFound of ErrorResponse
@@ -615,7 +659,8 @@ type ModifyGuildOnboardingPayload(
             required "enabled" enabled
             required "mode" mode
         }
-
+        
+[<RequireQualifiedAccess>]
 type ModifyGuildOnboardingResponse =
     | Ok of GuildOnboarding
     | BadRequest of ErrorResponse

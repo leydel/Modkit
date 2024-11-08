@@ -9,16 +9,12 @@ open System.Net.Http
 open System.Threading.Tasks
 
 type CreateInteractionResponsePayload<'a> (
-    ``type``: InteractionCallbackType,
-    ?data: InteractionResponsePayload<'a>, // TODO: Figure out nicer way to handle this (message, modal, autocomplete)
+    payload: InteractionResponsePayload<'a>, // TODO: Figure out nicer way to handle this (message, modal, autocomplete)
     ?files: IDictionary<string, IPayloadBuilder>
 ) =
     inherit Payload() with
         override _.Content =
-            let payload_json = json {
-                required "type" ``type``
-                optional "data" data
-            }
+            let payload_json = JsonPayload payload
 
             match files with
             | None -> payload_json
@@ -27,13 +23,15 @@ type CreateInteractionResponsePayload<'a> (
                 files f
             }
 
+[<RequireQualifiedAccess>]
 type CreateInteractionResponseResponse =
     | Ok of InteractionCallbackResponse
     | NoContent
     | BadRequest of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetOriginalInteractionResponseResponse =
     | Ok of Message
     | NotFound of ErrorResponse
@@ -67,13 +65,15 @@ type EditOriginalInteractionResponsePayload (
                 files f
             }
 
+[<RequireQualifiedAccess>]
 type EditOriginalInteractionResponseResponse =
     | Ok of Message
     | BadRequest of ErrorResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type DeleteOriginalInteractionResponseResponse =
     | NoContent
     | NotFound of ErrorResponse
@@ -111,12 +111,14 @@ type CreateFollowUpMessagePayload (
                 files f
             }
 
+[<RequireQualifiedAccess>]
 type CreateFollowUpMessageResponse =
     | NoContent
     | BadRequest of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetFollowUpMessageResponse =
     | Ok of Message
     | NotFound of ErrorResponse
@@ -149,14 +151,16 @@ type EditFollowUpMessagePayload (
                 part "payload_json" payload_json
                 files f
             }
-
+            
+[<RequireQualifiedAccess>]
 type EditFollowUpMessageResponse =
     | Ok of Message
     | BadRequest of ErrorResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type DeleteFollowUpMessageResponse =
     | NoContent
     | NotFound of ErrorResponse

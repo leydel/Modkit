@@ -7,6 +7,7 @@ open System.Net
 open System.Net.Http
 open System.Threading.Tasks
 
+[<RequireQualifiedAccess>]
 type GetGuildAuditLogResponse =
     | Ok of AuditLog
     | NotFound of ErrorResponse

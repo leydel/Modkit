@@ -7,12 +7,14 @@ open System.Net
 open System.Net.Http
 open System.Threading.Tasks
 
+[<RequireQualifiedAccess>]
 type ListGuildEmojisResponse =
     | Ok of Emoji list
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetGuildEmojiResponse =
     | Ok of Emoji
     | NotFound of ErrorResponse
@@ -30,7 +32,8 @@ type CreateGuildEmojiPayload(
             required "image" image
             required "roles" roles
         }
-
+        
+[<RequireQualifiedAccess>]
 type CreateGuildEmojiResponse =
     | Created of Emoji
     | BadRequest of ErrorResponse
@@ -47,26 +50,30 @@ type ModifyGuildEmojiPayload(
             optional "name" name
             optional "roles" roles
         }
-
+        
+[<RequireQualifiedAccess>]
 type ModifyGuildEmojiResponse =
     | Ok of Emoji
     | BadRequest of ErrorResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type DeleteGuildEmojiResponse =
     | NoContent
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type ListApplicationEmojisResponse =
     | Ok of Emoji list
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetApplicationEmojiResponse =
     | Ok of Emoji
     | NotFound of ErrorResponse
@@ -82,7 +89,8 @@ type CreateApplicationEmojiPayload(
             required "name" name
             required "image" image
         }
-
+        
+[<RequireQualifiedAccess>]
 type CreateApplicationEmojiResponse =
     | Created of Emoji
     | BadRequest of ErrorResponse
@@ -97,14 +105,16 @@ type ModifyApplicationEmojiPayload(
         override _.Content = json {
             required "name" name
         }
-
+        
+[<RequireQualifiedAccess>]
 type ModifyApplicationEmojiResponse =
     | Ok of Emoji
     | BadRequest of ErrorResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type DeleteApplicationEmojiResponse =
     | NoContent
     | NotFound of ErrorResponse

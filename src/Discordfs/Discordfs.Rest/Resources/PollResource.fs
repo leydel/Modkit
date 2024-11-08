@@ -12,12 +12,14 @@ type GetAnswerVotersOkResponse = {
     [<JsonPropertyName "users">] Users: User list
 }
 
+[<RequireQualifiedAccess>]
 type GetAnswerVotersResponse =
     | Ok of GetAnswerVotersOkResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type EndPollResponse =
     | Ok of Message
     | NotFound of ErrorResponse

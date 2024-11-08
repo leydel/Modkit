@@ -8,6 +8,7 @@ open System.Net
 open System.Net.Http
 open System.Threading.Tasks
 
+[<RequireQualifiedAccess>]
 type GetGlobalApplicationCommandsResponse =
     | Ok of ApplicationCommand list
     | NotFound of ErrorResponse
@@ -39,14 +40,16 @@ type CreateGlobalApplicationCommandPayload (
             optional "type" ``type``
             optional "nsfw" nsfw
         }
-
+        
+[<RequireQualifiedAccess>]
 type CreateGlobalApplicationCommandResponse =
     | Ok of ApplicationCommand
     | Created of ApplicationCommand
     | BadRequest of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetGlobalApplicationCommandResponse =
     | Ok of ApplicationCommand
     | NotFound of ErrorResponse
@@ -76,14 +79,16 @@ type EditGlobalApplicationCommandPayload (
             optional "contexts" contexts
             optional "nsfw" nsfw
         }
-
+        
+[<RequireQualifiedAccess>]
 type EditGlobalApplicationCommandResponse =
     | Ok of ApplicationCommand
     | BadRequest of ErrorResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type DeleteGlobalApplicationCommandResponse =
     | NoContent
     | NotFound of ErrorResponse
@@ -95,13 +100,15 @@ type BulkOverwriteGlobalApplicationCommandsPayload (
 ) =
     inherit Payload() with
         override _.Content = JsonListPayload commands
-
+        
+[<RequireQualifiedAccess>]
 type BulkOverwriteGlobalApplicationCommandsResponse =
     | Ok of ApplicationCommand list
     | BadRequest of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetGuildApplicationCommandsResponse =
     | Ok of ApplicationCommand list
     | NotFound of ErrorResponse
@@ -129,14 +136,16 @@ type CreateGuildApplicationCommandPayload (
             optional "type" ``type``
             optional "nsfw" nsfw
         }
-
+        
+[<RequireQualifiedAccess>]
 type CreateGuildApplicationCommandResponse =
     | Ok of ApplicationCommand
     | Created of ApplicationCommand
     | BadRequest of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetGuildApplicationCommandResponse =
     | Ok of ApplicationCommand
     | NotFound of ErrorResponse
@@ -162,14 +171,16 @@ type EditGuildApplicationCommandPayload (
             optional "default_member_permissions" default_member_permissions
             optional "nsfw" nsfw
         }
-
+        
+[<RequireQualifiedAccess>]
 type EditGuildApplicationCommandResponse =
     | Ok of ApplicationCommand
     | BadRequest of ErrorResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type DeleteGuildApplicationCommandResponse =
     | NoContent
     | NotFound of ErrorResponse
@@ -181,19 +192,22 @@ type BulkOverwriteGuildApplicationCommands (
 ) =
     inherit Payload() with
         override _.Content = JsonListPayload commands
-
+        
+[<RequireQualifiedAccess>]
 type BulkOverwriteGuildApplicationCommandsResponse =
     | Ok of ApplicationCommand list
     | BadRequest of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetGuildApplicationCommandsPermissionsResponse =
     | Ok of GuildApplicationCommandPermissions list
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetGuildApplicationCommandPermissionsResponse =
     | Ok of GuildApplicationCommandPermissions
     | NotFound of ErrorResponse
@@ -207,7 +221,8 @@ type EditApplicationCommandPermissions (
         override _.Content = json {
             required "permissions" permissions
         }
-
+        
+[<RequireQualifiedAccess>]
 type EditApplicationCommandPermissionsResponse =
     | Ok of GuildApplicationCommandPermissions
     | BadRequest of ErrorResponse

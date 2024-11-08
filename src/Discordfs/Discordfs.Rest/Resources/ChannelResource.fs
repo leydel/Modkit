@@ -11,6 +11,7 @@ open System.Text.Json
 open System.Text.Json.Serialization
 open System.Threading.Tasks
 
+[<RequireQualifiedAccess>]
 type GetChannelResponse =
     | Ok of Channel
     | NotFound of ErrorResponse
@@ -103,14 +104,16 @@ and ModifyThreadChannelPayload (
             optional "flags" flags
             optional "applied_tags" applied_tags
         }
-
+        
+[<RequireQualifiedAccess>]
 type ModifyChannelResponse =
     | Ok of Channel
     | BadRequest of ErrorResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type DeleteChannelResponse =
     | Ok of Channel
     | NotFound of ErrorResponse
@@ -128,14 +131,16 @@ type EditChannelPermissionsPayload (
             optional "allow" allow
             optional "deny" deny
         }
-
+        
+[<RequireQualifiedAccess>]
 type EditChannelPermissionsResponse =
     | NoContent
     | BadRequest of ErrorResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetChannelInvitesResponse =
     | Ok of InviteWithMetadata list
     | NotFound of ErrorResponse
@@ -161,7 +166,8 @@ type CreateChannelInvitePayload (
             optional "target_user_id" target_user_id
             optional "target_application_id" target_application_id
         }
-
+        
+[<RequireQualifiedAccess>]
 type CreateChannelInviteResponse =
     | Ok of InviteWithMetadata
     | NoContent
@@ -169,7 +175,8 @@ type CreateChannelInviteResponse =
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type DeleteChannelPermissionResponse =
     | NoContent
     | NotFound of ErrorResponse
@@ -183,31 +190,36 @@ type FollowAnnouncementChannelPayload (
         override _.Content = json {
             required "webhook_channel_id" webhook_channel_id
         }
-
+        
+[<RequireQualifiedAccess>]
 type FollowAnnouncementChannelResponse =
     | Ok of FollowedChannel
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type TriggerTypingIndicatorResponse =
     | NoContent
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetPinnedMessagesResponse =
     | Ok of Message list
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type PinMessageResponse =
     | NoContent
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type UnpinMessageResponse =
     | NoContent
     | NotFound of ErrorResponse
@@ -223,7 +235,8 @@ type GroupDmAddRecipientPayload (
             required "access_token" access_token
             optional "nick" nick
         }
-
+        
+[<RequireQualifiedAccess>]
 type GroupDmAddRecipientResponse =
     | Created of Channel
     | NoContent
@@ -231,7 +244,8 @@ type GroupDmAddRecipientResponse =
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GroupDmRemoveRecipientResponse =
     | NoContent
     | NotFound of ErrorResponse
@@ -249,7 +263,8 @@ type StartThreadFromMessagePayload (
             optional "auto_archive_duration" auto_archive_duration
             optional "rate_limit_per_user" rate_limit_per_user
         }
-
+        
+[<RequireQualifiedAccess>]
 type StartThreadFromMessageResponse =
     | Created of Channel
     | BadRequest of ErrorResponse
@@ -272,7 +287,8 @@ type StartThreadWithoutMessagePayload (
             optional "invitable" invitable
             optional "rate_limit_per_user" rate_limit_per_user
         }
-
+        
+[<RequireQualifiedAccess>]
 type StartThreadWithoutMessageResponse =
     | Created of Channel
     | BadRequest of ErrorResponse
@@ -342,44 +358,51 @@ and StartThreadInForumOrMediaChannelOkResponseConverter () =
         let extraFields = Json.serializeF value.ExtraFields
 
         writer.WriteRawValue (Json.merge channel extraFields)
-
+        
+[<RequireQualifiedAccess>]
 type StartThreadInForumOrMediaChannelResponse =
     | Created of StartThreadInForumOrMediaChannelOkResponse
     | BadRequest of ErrorResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type JoinThreadResponse =
     | NoContent
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type AddThreadMemberResponse =
     | NoContent
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type LeaveThreadResponse =
     | NoContent
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type RemoveThreadMemberResponse =
     | NoContent
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type GetThreadMemberResponse =
     | Ok of ThreadMember
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type ListThreadMembersResponse =
     | Ok of ThreadMember list
     | NotFound of ErrorResponse
@@ -392,6 +415,7 @@ type ListPublicArchivedThreadsOkResponse = {
     [<JsonPropertyName "has_more">] HasMore: bool
 }
 
+[<RequireQualifiedAccess>]
 type ListPublicArchivedThreadsResponse =
     | Ok of ListPublicArchivedThreadsOkResponse
     | NotFound of ErrorResponse
@@ -404,6 +428,7 @@ type ListPrivateArchivedThreadsOkResponse = {
     [<JsonPropertyName "has_more">] HasMore: bool
 }
 
+[<RequireQualifiedAccess>]
 type ListPrivateArchivedThreadsResponse =
     | Ok of ListPrivateArchivedThreadsOkResponse
     | NotFound of ErrorResponse
@@ -416,6 +441,7 @@ type ListJoinedPrivateArchivedThreadsOkResponse = {
     [<JsonPropertyName "has_more">] HasMore: bool
 }
 
+[<RequireQualifiedAccess>]
 type ListJoinedPrivateArchivedThreadsResponse =
     | Ok of ListJoinedPrivateArchivedThreadsOkResponse
     | NotFound of ErrorResponse

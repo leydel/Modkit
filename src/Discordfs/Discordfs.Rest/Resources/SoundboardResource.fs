@@ -16,25 +16,29 @@ type SendSoundboardSoundPayload (
             required "sound_id" sound_id
             optional "source_guild_id" source_guild_id
         }
-
+        
+[<RequireQualifiedAccess>]
 type SendSoundboardSoundResponse =
     | NoContent
     | BadRequest of ErrorResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type ListDefaultSoundboardSoundsResponse =
     | Ok of SoundboardSound list
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type ListGuildSoundboardSoundsResponse =
     | Ok of SoundboardSound list
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
     
+[<RequireQualifiedAccess>]
 type GetGuildSoundboardSoundResponse =
     | Ok of SoundboardSound
     | NotFound of ErrorResponse
@@ -57,6 +61,7 @@ type CreateGuildSoundboardSoundPayload (
             optional "emoji_name" emoji_name
         }
     
+[<RequireQualifiedAccess>]
 type CreateGuildSoundboardSoundResponse =
     | Created of SoundboardSound
     | BadRequest of ErrorResponse
@@ -78,13 +83,15 @@ type ModifyGuildSoundboardSoundPayload (
             optional "emoji_name" emoji_name
         }
     
+[<RequireQualifiedAccess>]
 type ModifyGuildSoundboardSoundResponse =
     | Ok of SoundboardSound
     | BadRequest of ErrorResponse
     | NotFound of ErrorResponse
     | TooManyRequests of RateLimitResponse
     | Other of HttpStatusCode
-
+    
+[<RequireQualifiedAccess>]
 type DeleteGuildSoundboardSoundResponse =
     | NoContent
     | NotFound of ErrorResponse
