@@ -2,6 +2,7 @@
 
 open Discordfs.Commands.Structures
 open Discordfs.Rest.Resources
+open Discordfs.Rest.Types
 open Discordfs.Types
 open Microsoft.Azure.Functions.Worker
 open Microsoft.Extensions.Logging
@@ -24,22 +25,20 @@ type PingCommandQueueFunction () =
         options: IOptions<DiscordOptions>,
         httpClientFactory: IHttpClientFactory
     ) = task {
-        let client = (options.Value.BotToken, httpClientFactory.CreateClient())
         let logger = ctx.GetLogger<PingCommandQueueFunction>()
+        let client = (options.Value.BotToken, httpClientFactory.CreateClient())
 
-        let content = CreateInteractionResponsePayload({
-            Type = InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE;
-            Data = MessageInteractionResponse.create (content = "Pong!")
-        })
+        try
+            let content = CreateInteractionResponsePayload({
+                Type = InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE;
+                Data = MessageInteractionResponse.create (content = "Pong!")
+            })
 
-        do!
-            client
-            ||> Interaction.createInteractionResponse interaction.Id interaction.Token (Some false) content
-            |> Task.map (fun res ->
-                match res with
-                | CreateInteractionResponseResponse.NoContent ->
-                    logger.LogInformation $"Successfully ponged interaction {interaction.Id} on function invocation {ctx.InvocationId}"
-                | _ ->
-                    logger.LogError $"Failed to respond to interaction {interaction.Id} on function invocation {ctx.InvocationId}"
-            )
+            do! client
+                ||> Interaction.createInteractionResponse interaction.Id interaction.Token (Some false) content
+                ?> DiscordResponse.unwrap :> Task
+
+            logger.LogInformation $"Successfully ponged interaction {interaction.Id} on function invocation {ctx.InvocationId}"
+        with _ ->
+            logger.LogError $"Failed to respond to interaction {interaction.Id} on function invocation {ctx.InvocationId}"
     }

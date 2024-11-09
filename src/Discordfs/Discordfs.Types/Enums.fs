@@ -1197,3 +1197,7 @@ with
         | "APPLICATION_AUTHORIZED" -> Some WebhookEventType.APPLICATION_AUTHORIZED
         | "ENTITLEMENT_CREATE" -> Some WebhookEventType.ENTITLEMENT_CREATE
         | _ -> None
+
+// https://discord.com/developers/docs/topics/opcodes-and-status-codes#json-json-error-codes
+type JsonErrorCode =
+    | TODO = 0

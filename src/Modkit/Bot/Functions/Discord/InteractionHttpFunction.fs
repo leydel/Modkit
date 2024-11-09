@@ -57,6 +57,8 @@ type InteractionHttpFunction (queueServiceClientFactory: IAzureClientFactory<Que
                     logger.LogError $"Could not find queue for application command interaction called \"{name}\" on function invocation {ctx.InvocationId}"
                     return req.CreateResponse HttpStatusCode.InternalServerError
 
+                    // TODO: Return generic "could not find command" response instead of 500
+
             // TODO: Handle other potential interaction types here (message component, autocomplete, modal)
 
             // We'll see how queues go with latency. They may need to be replaced with something else. Durable tasks

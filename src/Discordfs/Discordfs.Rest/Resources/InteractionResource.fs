@@ -23,13 +23,13 @@ type CreateInteractionResponsePayload<'a> (
                 files f
             }
 
-[<RequireQualifiedAccess>]
-type CreateInteractionResponseResponse =
-    | Ok of InteractionCallbackResponse
-    | NoContent
-    | BadRequest of ErrorResponse
-    | TooManyRequests of RateLimitResponse
-    | Other of HttpStatusCode
+//[<RequireQualifiedAccess>]
+//type CreateInteractionResponseResponse =
+//    | Ok of InteractionCallbackResponse
+//    | NoContent
+//    | BadRequest of ErrorResponse
+//    | TooManyRequests of RateLimitResponse
+//    | Other of HttpStatusCode
     
 [<RequireQualifiedAccess>]
 type GetOriginalInteractionResponseResponse =
@@ -182,14 +182,14 @@ module Interaction =
                 payload content
             }
             |> httpClient.SendAsync
-            |> Task.mapT (fun res -> task {
-                match res.StatusCode with
-                | HttpStatusCode.OK -> return! Task.map CreateInteractionResponseResponse.Ok (Http.toJson res)
-                | HttpStatusCode.NoContent -> return CreateInteractionResponseResponse.NoContent
-                | HttpStatusCode.BadRequest -> return! Task.map CreateInteractionResponseResponse.BadRequest (Http.toJson res)
-                | HttpStatusCode.TooManyRequests -> return! Task.map CreateInteractionResponseResponse.TooManyRequests (Http.toJson res)
-                | status -> return CreateInteractionResponseResponse.Other status
-            })
+            ?>> DiscordResponse.asJson<InteractionCallbackResponse>
+            //|> Task.mapT (fun res -> task {
+                //| HttpStatusCode.OK -> return! Task.map CreateInteractionResponseResponse.Ok (Http.toJson res)
+                //| HttpStatusCode.NoContent -> return CreateInteractionResponseResponse.NoContent
+                //| HttpStatusCode.BadRequest -> return! Task.map CreateInteractionResponseResponse.BadRequest (Http.toJson res)
+                //| HttpStatusCode.TooManyRequests -> return! Task.map CreateInteractionResponseResponse.TooManyRequests (Http.toJson res)
+                //| status -> return CreateInteractionResponseResponse.Other status
+            //})
             
     let getOriginalInteractionResponse
         (interactionId: string)
