@@ -26,9 +26,40 @@ type DiscordError =
     | ClientError of ErrorResponse
     | Unexpected of HttpStatusCode
 
+[<JsonConverter(typeof<RateLimitScopeConverter>)>]
+type RateLimitScope =
+    | USER
+    | GLOBAL
+    | SHARED
+
+and RateLimitScopeConverter () =
+    inherit JsonConverter<RateLimitScope>()
+
+    override _.Read (reader, typeToConvert, options) =
+        match reader.GetString() with
+        | "user" -> RateLimitScope.USER
+        | "global" -> RateLimitScope.GLOBAL
+        | "shared" -> RateLimitScope.SHARED
+        | _ -> failwith "Unexpected RateLimitScope provided"
+
+    override _.Write (writer, value, options) =
+        match value with
+        | USER -> "user"
+        | GLOBAL -> "global"
+        | SHARED -> "shared"
+        |> writer.WriteStringValue
+
 type RateLimitHeaders = {
-    TODO: bool // Parse rate limit headers into this type
+    Limit: int
+    Remaining: int
+    Reset: DateTime
+    ResetAfter: double
+    Bucket: string
+    Global: bool
+    Scope: 
 }
+
+// TODO: Form above type from headers in HttpResponseMessage
 
 type RateLimitInfo<'a> = 'a * RateLimitHeaders
 
@@ -36,7 +67,7 @@ type DiscordResponse<'a> = Result<RateLimitInfo<'a>, RateLimitInfo<DiscordError>
 
 module DiscordResponse =
     let private withRateLimitHeaders<'a> (res: HttpResponseMessage) (obj: 'a) =
-        let rateLimitHeaders = { TODO = true } // TODO: Get properly
+        let rateLimitHeaders = () // TODO: Get headers from HttpResponseMessage
         (obj, rateLimitHeaders)
 
     let asJson<'a> (res: HttpResponseMessage) = task {
