@@ -1,11 +1,9 @@
 ﻿namespace Discordfs.Rest.Types
 
-open Discordfs.Rest.Common
 open Discordfs.Types
 open System
 open System.Collections.Generic
 open System.Net
-open System.Net.Http
 open System.Text.Json.Serialization
 
 type RateLimitResponse = {
@@ -50,43 +48,16 @@ and RateLimitScopeConverter () =
         |> writer.WriteStringValue
 
 type RateLimitHeaders = {
-    Limit: int
-    Remaining: int
-    Reset: DateTime
-    ResetAfter: double
-    Bucket: string
-    Global: bool
-    Scope: 
+    Limit: int option
+    Remaining: int option
+    Reset: DateTime option
+    ResetAfter: double option
+    Bucket: string option
+    Global: bool option
+    Scope: RateLimitScope option
 }
 
-// TODO: Form above type from headers in HttpResponseMessage
-
 type RateLimitInfo<'a> = 'a * RateLimitHeaders
-
-type DiscordResponse<'a> = Result<RateLimitInfo<'a>, RateLimitInfo<DiscordError>>
-
-module DiscordResponse =
-    let private withRateLimitHeaders<'a> (res: HttpResponseMessage) (obj: 'a) =
-        let rateLimitHeaders = () // TODO: Get headers from HttpResponseMessage
-        (obj, rateLimitHeaders)
-
-    let asJson<'a> (res: HttpResponseMessage) = task {
-        match int res.StatusCode with
-        | v when v >= 200 && v < 300 -> return! (Http.toJson<'a> res) ?> withRateLimitHeaders res ?> Ok
-        | v when v = 429 -> return! RateLimit <? (Http.toJson res) ?> withRateLimitHeaders res ?> Error
-        | v when v >= 400 && v < 500 -> return! ClientError <? (Http.toJson res) ?> withRateLimitHeaders res ?> Error
-        | _ -> return Unexpected (res.StatusCode) |> withRateLimitHeaders res |> Error
-    }
-
-    let unwrap<'a> (res: DiscordResponse<'a>) =
-        match res with
-        | Ok (v, _) -> v
-        | Error _ -> failwith "Unsuccessful discord response was unwrapped"
-
-    // TODO: Figure out how 204 would work with this
-    // TODO: Figure out how an endpoint returning either 200 or 204 would work
-
-    // NOTE: Ideally, 204 could be treated as Option<Empty>.None, meaning 200/204 is Option<'a> and 200 is 'a
 
 // TODO: Move remaining payloads below into resources as refactored into modules
 
