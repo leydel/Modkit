@@ -33,6 +33,10 @@ type InteractionHttpFunction (queueServiceClientFactory: IAzureClientFactory<Que
         let timestamp = req.Headers.TryGetValues "X-Signature-Timestamp" |> fun (_, s) -> Seq.tryHead s >>? ""
 
         match Ed25519.verify timestamp json signature publicKey with
+        | false ->
+            ctx.GetLogger().LogInformation $"Failed to verify ed25519 on function invocation {ctx.InvocationId}"
+            return req.CreateResponse HttpStatusCode.Unauthorized
+
         | true ->
             match Json.deserializeF<InteractionReceiveEvent> json with
             | InteractionReceiveEvent.PING _ ->
@@ -50,16 +54,29 @@ type InteractionHttpFunction (queueServiceClientFactory: IAzureClientFactory<Que
                 match queueName with
                 | Some queue ->
                     do! queueServiceClient.GetQueueClient(queue).SendMessageAsync json :> Task
+
                     logger.LogInformation $"Queued message to handle application command interaction {interaction.Id} on function invocation {ctx.InvocationId}"
                     return req.CreateResponse HttpStatusCode.Accepted
 
                 | None -> 
                     logger.LogError $"Could not find queue for application command interaction called \"{name}\" on function invocation {ctx.InvocationId}"
-                    return req.CreateResponse HttpStatusCode.InternalServerError
+                    return req.CreateResponse HttpStatusCode.OK
+                    |> Response.withJson {
+                        Type = InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE
+                        Data = MessageInteractionResponse.create (content = "Error: Command not found.")
+                    }
 
-                    // TODO: Return generic "could not find command" response instead of 500
+            | InteractionReceiveEvent.APPLICATION_COMMAND_AUTOCOMPLETE interaction ->
+                ctx.GetLogger().LogError $"Unhandled interaction type on function invocation {ctx.InvocationId}"
+                return req.CreateResponse HttpStatusCode.InternalServerError
 
-            // TODO: Handle other potential interaction types here (message component, autocomplete, modal)
+            | InteractionReceiveEvent.MESSAGE_COMPONENT interaction ->
+                ctx.GetLogger().LogError $"Unhandled interaction type on function invocation {ctx.InvocationId}"
+                return req.CreateResponse HttpStatusCode.InternalServerError
+
+            | InteractionReceiveEvent.MODAL_SUBMIT interaction ->
+                ctx.GetLogger().LogError $"Unhandled interaction type on function invocation {ctx.InvocationId}"
+                return req.CreateResponse HttpStatusCode.InternalServerError
 
             // We'll see how queues go with latency. They may need to be replaced with something else. Durable tasks
             // are being used for gateway events because they don't have a time limit, and even if they're a few
@@ -68,12 +85,4 @@ type InteractionHttpFunction (queueServiceClientFactory: IAzureClientFactory<Que
             // app. I would expect it is fine, but would be worth double checking. If storage queues don't suffice for
             // interactions, either basic or standard service busses would also work, and if orchestrators are actually
             // really quick, they might even work out for interactions too. Lots of testing to do!
-
-            | _ ->
-                ctx.GetLogger().LogError $"Unhandled interaction on function invocation {ctx.InvocationId}"
-                return req.CreateResponse HttpStatusCode.InternalServerError
-
-        | false ->
-            ctx.GetLogger().LogInformation $"Failed to verify ed25519 on function invocation {ctx.InvocationId}"
-            return req.CreateResponse HttpStatusCode.Unauthorized
     }
