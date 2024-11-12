@@ -3,22 +3,61 @@
 open Discordfs.Types
 open System
 open System.Collections.Generic
+open System.Net
 open System.Text.Json.Serialization
-
-#nowarn "49"
-
-type ErrorResponse = {
-    [<JsonPropertyName "code">] Code: int
-    [<JsonPropertyName "message">] Message: string
-    [<JsonPropertyName "errors">] Errors: IDictionary<string, string>
-}
 
 type RateLimitResponse = {
     [<JsonPropertyName "message">] Message: string
     [<JsonPropertyName "retry_after">] RetryAfter: float
     [<JsonPropertyName "global">] Global: bool
-    [<JsonPropertyName "interaccodetion">] Code: int option
+    [<JsonPropertyName "code">] Code: JsonErrorCode option
 }
+
+type ErrorResponse = {
+    [<JsonPropertyName "code">] Code: JsonErrorCode
+    [<JsonPropertyName "message">] Message: string
+    [<JsonPropertyName "errors">] Errors: IDictionary<string, string>
+}
+
+type DiscordError =
+    | RateLimit of RateLimitResponse
+    | ClientError of ErrorResponse
+    | Unexpected of HttpStatusCode
+
+[<JsonConverter(typeof<RateLimitScopeConverter>)>]
+type RateLimitScope =
+    | USER
+    | GLOBAL
+    | SHARED
+
+and RateLimitScopeConverter () =
+    inherit JsonConverter<RateLimitScope>()
+
+    override _.Read (reader, typeToConvert, options) =
+        match reader.GetString() with
+        | "user" -> RateLimitScope.USER
+        | "global" -> RateLimitScope.GLOBAL
+        | "shared" -> RateLimitScope.SHARED
+        | _ -> failwith "Unexpected RateLimitScope provided"
+
+    override _.Write (writer, value, options) =
+        match value with
+        | USER -> "user"
+        | GLOBAL -> "global"
+        | SHARED -> "shared"
+        |> writer.WriteStringValue
+
+type RateLimitHeaders = {
+    Limit: int option
+    Remaining: int option
+    Reset: DateTime option
+    ResetAfter: double option
+    Bucket: string option
+    Global: bool option
+    Scope: RateLimitScope option
+}
+
+type RateLimitInfo<'a> = 'a * RateLimitHeaders
 
 // TODO: Move remaining payloads below into resources as refactored into modules
 

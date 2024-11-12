@@ -1,7 +1,7 @@
 ﻿namespace Modkit.Bot.Functions
 
 open Discordfs.Commands.Structures
-open Discordfs.Rest.Resources
+open Discordfs.Rest
 open Discordfs.Types
 open Microsoft.Azure.Functions.Worker
 open Microsoft.Extensions.Logging
@@ -9,7 +9,6 @@ open Microsoft.Extensions.Options
 open Modkit.Bot.Common
 open Modkit.Bot.Configuration
 open System.Net.Http
-open System.Threading.Tasks
 
 type PingCommandQueueFunction () =
     static member Metadata = CommandData.build(
@@ -24,22 +23,19 @@ type PingCommandQueueFunction () =
         options: IOptions<DiscordOptions>,
         httpClientFactory: IHttpClientFactory
     ) = task {
-        let client = (options.Value.BotToken, httpClientFactory.CreateClient())
         let logger = ctx.GetLogger<PingCommandQueueFunction>()
+        let client = (options.Value.BotToken, httpClientFactory.CreateClient())
 
         let content = CreateInteractionResponsePayload({
             Type = InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE;
             Data = MessageInteractionResponse.create (content = "Pong!")
         })
 
-        do!
-            client
-            ||> Interaction.createInteractionResponse interaction.Id interaction.Token (Some false) content
-            |> Task.map (fun res ->
+        do! client
+            ||> Rest.createInteractionResponse interaction.Id interaction.Token (Some false) content
+            ?> (fun res ->
                 match res with
-                | CreateInteractionResponseResponse.NoContent ->
-                    logger.LogInformation $"Successfully ponged interaction {interaction.Id} on function invocation {ctx.InvocationId}"
-                | _ ->
-                    logger.LogError $"Failed to respond to interaction {interaction.Id} on function invocation {ctx.InvocationId}"
+                | Ok _ -> logger.LogInformation $"Successfully ponged interaction {interaction.Id} on function invocation {ctx.InvocationId}"
+                | Error _ -> logger.LogError $"Failed to respond to interaction {interaction.Id} on function invocation {ctx.InvocationId}"
             )
     }
