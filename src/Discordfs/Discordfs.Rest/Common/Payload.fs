@@ -16,13 +16,13 @@ module Payload =
         member this.Yield(_) =
             this
 
-        [<CustomOperation "required">]
-        member this.Required (_, name: string, value: 'a) =
+        [<CustomOperation>]
+        member this.required (_, name: string, value: 'a) =
             this.Properties.Add(name, value)
             this
 
-        [<CustomOperation "optional">]
-        member this.Optional (_, name: string, value: 'a option) =
+        [<CustomOperation>]
+        member this.optional (_, name: string, value: 'a option) =
             if value.IsSome then
                 this.Properties.Add(name, value)
             this
@@ -60,19 +60,19 @@ module Payload =
         member this.Yield(_) =
             this
 
-        [<CustomOperation "part">]
-        member this.Part (_, name: string, content: IPayloadBuilder) =
+        [<CustomOperation>]
+        member this.part (_, name: string, content: IPayloadBuilder) =
             this.Form.Add(content.ToContent(), name)
             this
             
-        [<CustomOperation "file">]
-        member this.File (_, fileName: string, fileContent: IPayloadBuilder) =
+        [<CustomOperation>]
+        member this.file (_, fileName: string, fileContent: IPayloadBuilder) =
             this.Form.Add(fileContent.ToContent(), $"files[{fileCount}]", fileName)
             fileCount <- fileCount + 1
             this
             
-        [<CustomOperation "files">]
-        member this.Files (_, files: IDictionary<string, IPayloadBuilder>) =
+        [<CustomOperation>]
+        member this.files (_, files: IDictionary<string, IPayloadBuilder>) =
             for fileName, fileContent in Seq.map (|KeyValue|) files do
                 this.Form.Add(fileContent.ToContent(), $"files[{fileCount}]", fileName)
                 fileCount <- fileCount + 1

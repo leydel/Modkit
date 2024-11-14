@@ -28,75 +28,75 @@ module Http =
         member this.Yield(_) =
             this
 
-        [<CustomOperation("get")>]
-        member this.Get (_, endpoint: string) =
+        [<CustomOperation>]
+        member this.get (_, endpoint: string) =
             this.HttpRequestMessage.RequestUri <- new Uri(Constants.DISCORD_API_URL + "/" + endpoint)
             this.HttpRequestMessage.Method <- HttpMethod.Get
 
             this.HttpRequestMessage
 
-        [<CustomOperation("post")>]
-        member this.Post (_, endpoint: string) =
+        [<CustomOperation>]
+        member this.post (_, endpoint: string) =
             this.HttpRequestMessage.RequestUri <- new Uri(Constants.DISCORD_API_URL + "/" + endpoint)
             this.HttpRequestMessage.Method <- HttpMethod.Post
 
             this.HttpRequestMessage
 
-        [<CustomOperation("put")>]
-        member this.Put (_, endpoint: string) =
+        [<CustomOperation>]
+        member this.put (_, endpoint: string) =
             this.HttpRequestMessage.RequestUri <- new Uri(Constants.DISCORD_API_URL + "/" + endpoint)
             this.HttpRequestMessage.Method <- HttpMethod.Put
 
-        [<CustomOperation("patch")>]
-        member this.Patch (_, endpoint: string) =
+        [<CustomOperation>]
+        member this.patch (_, endpoint: string) =
             this.HttpRequestMessage.RequestUri <- new Uri(Constants.DISCORD_API_URL + "/" + endpoint)
             this.HttpRequestMessage.Method <- HttpMethod.Patch
 
             this.HttpRequestMessage
 
-        [<CustomOperation("delete")>]
-        member this.Delete (_, endpoint: string) =
+        [<CustomOperation>]
+        member this.delete (_, endpoint: string) =
             this.HttpRequestMessage.RequestUri <- new Uri(Constants.DISCORD_API_URL + "/" + endpoint)
             this.HttpRequestMessage.Method <- HttpMethod.Delete
 
             this.HttpRequestMessage
 
-        [<CustomOperation("header")>]
-        member this.Header (_, key: string, value: string) =
+        [<CustomOperation>]
+        member this.header (_, key: string, value: string) =
             this.HttpRequestMessage.Headers.Add(key, value)
 
             this.HttpRequestMessage
 
-        [<CustomOperation("header")>]
-        member this.Header(_, key: string, value: string option) =
+        [<CustomOperation>]
+        member this.header(_, key: string, value: string option) =
             match value with
             | Some value -> this.HttpRequestMessage.Headers.Add(key, value)
             | None -> ()
 
             this.HttpRequestMessage
 
-        [<CustomOperation("bot")>]
-        member this.Bot (_, token: string) =
+        [<CustomOperation>]
+        member this.bot (_, token: string) =
             this.HttpRequestMessage.Headers.Add("Authorization", $"Bot {token}")
 
             this.HttpRequestMessage
 
-        [<CustomOperation("oauth")>]
-        member this.Oauth (_, token: string) =
+        [<CustomOperation>]
+        member this.oauth (_, token: string) =
             this.HttpRequestMessage.Headers.Add("Authorization", $"Bearer {token}")
 
             this.HttpRequestMessage
 
-        [<CustomOperation("audit")>]
-        member this.Audit(_, reason: string option) =
+        [<CustomOperation>]
+        member this.audit(_, reason: string option) =
             match reason with
             | Some reason -> this.HttpRequestMessage.Headers.Add("X-Audit-Log-Reason", reason)
             | None -> ()
 
             this.HttpRequestMessage
 
-        [<CustomOperation("query")>]
-        member this.Query(_, key: string, value: string) =
+        [<CustomOperation>]
+        member this.query(_, key: string, value: string) =
             let uriBuilder = UriBuilder(this.HttpRequestMessage.RequestUri)
             let query = HttpUtility.ParseQueryString(uriBuilder.Query)
             query.Add(key, value)
@@ -105,8 +105,8 @@ module Http =
 
             this.HttpRequestMessage
 
-        [<CustomOperation("query")>]
-        member this.Query(_, key: string, value: string option) =
+        [<CustomOperation>]
+        member this.query(_, key: string, value: string option) =
             match value with
             | Some value ->
                 let uriBuilder = UriBuilder(this.HttpRequestMessage.RequestUri)
@@ -118,8 +118,8 @@ module Http =
 
             this.HttpRequestMessage
 
-        [<CustomOperation("payload")>]
-        member this.Payload(_, payload: Payload) =
+        [<CustomOperation>]
+        member this.payload(_, payload: Payload) =
             let content = payload.Content.ToContent()
 
             this.HttpRequestMessage.Headers.Add("Content-Type", content.Headers.ContentType.MediaType)
