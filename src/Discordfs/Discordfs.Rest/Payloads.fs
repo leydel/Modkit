@@ -237,15 +237,77 @@ type EditApplicationCommandPermissions (
 
 // ----- Application -----
 
-// TODO: Implement
+type EditCurrentApplicationPayload (
+    ?custom_install_url:               string,
+    ?description:                      string,
+    ?role_connection_verification_url: string,
+    ?install_params:                   OAuth2InstallParams,
+    ?integration_types_config:         IDictionary<ApplicationIntegrationType, ApplicationIntegrationTypeConfiguration>,
+    ?flags:                            int,
+    ?icon:                             string option,
+    ?cover_image:                      string option,
+    ?interactions_endpoint_url:        string,
+    ?tags:                             string list
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "custom_install_url" custom_install_url
+            optional "description" description
+            optional "role_connection_verification_url" role_connection_verification_url
+            optional "install_params" install_params
+            optional "integration_types_config" integration_types_config
+            optional "flags" flags
+            optional "icon" icon
+            optional "cover_image" cover_image
+            optional "interactions_endpoint_url" interactions_endpoint_url
+            optional "tags" tags
+        }
 
 // ----- Audit Log -----
 
-// TODO: Implement
-
 // ----- Auto Moderation -----
 
-// TODO: Implement
+type CreateAutoModerationRulePayload (
+    name:              string,
+    event_type:        AutoModerationEventType,
+    trigger_type:      AutoModerationTriggerType,
+    actions:           AutoModerationAction list,
+    ?trigger_metadata: AutoModerationTriggerMetadata,
+    ?enabled:          bool,
+    ?exempt_roles:     string list,
+    ?exempt_channels:  string list
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "name" name
+            required "event_type" event_type
+            required "trigger_type" trigger_type
+            optional "trigger_metadata" trigger_metadata
+            required "actions" actions
+            optional "enabled" enabled
+            optional "exempt_roles" exempt_roles
+            optional "exempt_channels" exempt_channels
+        }
+
+type ModifyAutoModerationRulePayload (
+    ?name:             string,
+    ?event_type:       AutoModerationEventType,
+    ?trigger_metadata: AutoModerationTriggerMetadata,
+    ?actions:          AutoModerationAction list,
+    ?enabled:          bool,
+    ?exempt_roles:     string list,
+    ?exempt_channels:  string list
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "name" name
+            optional "event_type" event_type
+            optional "trigger_metadata" trigger_metadata
+            optional "actions" actions
+            optional "enabled" enabled
+            optional "exempt_roles" exempt_roles
+            optional "exempt_channels" exempt_channels
+        }
 
 // ----- Channel -----
 

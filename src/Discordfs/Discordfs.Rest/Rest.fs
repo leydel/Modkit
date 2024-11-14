@@ -319,15 +319,121 @@ let editApplicationCommandPermissions
 
 // ----- Application -----
 
-// TODO: Implement
+let getCurrentApplication
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get "applications/@me"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Application>
+
+let editCurrentApplication
+    (content: EditCurrentApplicationPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch "applications/@me"
+            bot botToken
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Application>
+
+let getApplicationActivityInstance
+    (applicationId: string)
+    (instanceId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch $"applications/{applicationId}/activity-instances/{instanceId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<ActivityInstance>
 
 // ----- Audit Log -----
 
-// TODO: Implement
+let getGuildAuditLog
+    (guildId: string)
+    (userId: string option)
+    (actionType: AuditLogEventType option)
+    (before: string option)
+    (after: string option)
+    (limit: int option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/audit-logs"
+            bot botToken
+            query "user_id" userId
+            query "action_type" (actionType >>. _.ToString())
+            query "before" before
+            query "after" after
+            query "limit" (limit >>. _.ToString())
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<AuditLog>
 
 // ----- Auto Moderation -----
 
-// TODO: Implement
+let getAutoModerationRule
+    (guildId: string)
+    (autoModerationRuleId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/auto-moderation/rules/{autoModerationRuleId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<AutoModerationRule>
+
+let createAutoModerationRule
+    (guildId: string)
+    (auditLogReason: string option)
+    (content: CreateAutoModerationRulePayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"guilds/{guildId}/auto-moderation/rules"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<AutoModerationRule>
+
+let modifyAutoModerationRule
+    (guildId: string)
+    (autoModerationRuleId: string)
+    (auditLogReason: string option)
+    (content: CreateAutoModerationRulePayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch $"guilds/{guildId}/auto-moderation/rules/{autoModerationRuleId}"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<AutoModerationRule>
+
+let deleteAutoModerationRule
+    (guildId: string)
+    (autoModerationRuleId: string)
+    (auditLogReason: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"guilds/{guildId}/auto-moderation/rules/{autoModerationRuleId}"
+            bot botToken
+            audit auditLogReason
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
 
 // ----- Channel -----
 
