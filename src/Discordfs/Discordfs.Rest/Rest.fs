@@ -2,6 +2,7 @@
 
 open Discordfs.Rest.Common
 open Discordfs.Types
+open System
 open System.Net.Http
 
 // ----- Interaction -----
@@ -437,11 +438,493 @@ let deleteAutoModerationRule
 
 // ----- Channel -----
 
-// TODO: Implement
+let getChannel
+    (channelId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"channels/{channelId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Channel>
+
+let modifyChannel
+    (channelId: string)
+    (auditLogReason: string option)
+    (content: ModifyChannelPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch $"channels/{channelId}"
+            bot botToken
+            audit auditLogReason
+            payload (content.Payload)
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Channel>
+
+let deleteChannel
+    (channelId: string)
+    (auditLogReason: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"channels/{channelId}"
+            bot botToken
+            audit auditLogReason
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Channel>
+
+let editChannelPermissions
+    (channelId: string)
+    (overwriteId: string)
+    (auditLogReason: string option)
+    (content: EditChannelPermissionsPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            put $"channels/{channelId}/permissions/{overwriteId}"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let getChannelInvites
+    (channelId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"channels/{channelId}/invites"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<InviteWithMetadata list>
+
+let createChannelInvite
+    (channelId: string)
+    (auditLogReason: string option)
+    (content: CreateChannelInvitePayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"channels/{channelId}/invites"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asOptionalJson<InviteWithMetadata>
+
+let deleteChannelPermission
+    (channelId: string)
+    (overwriteId: string)
+    (auditLogReason: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"channels/{channelId}/permissions/{overwriteId}"
+            bot botToken
+            audit auditLogReason
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let followAnnouncementChannel
+    (channelId: string)
+    (auditLogReason: string option)
+    (content: FollowAnnouncementChannelPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"channels/{channelId}/followers"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<FollowedChannel>
+
+let triggerTypingIndicator
+    (channelId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"channels/{channelId}/typing"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let getPinnedMessages
+    (channelId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"channels/{channelId}/pins"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Message list>
+
+let pinMessage
+    (channelId: string)
+    (messageId: string)
+    (auditLogReason: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            put $"channels/{channelId}/pins/{messageId}"
+            bot botToken
+            audit auditLogReason
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let unpinMessage
+    (channelId: string)
+    (messageId: string)
+    (auditLogReason: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"channels/{channelId}/pins/{messageId}"
+            bot botToken
+            audit auditLogReason
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let groupDmAddRecipient
+    (channelId: string)
+    (userId: string)
+    (content: GroupDmAddRecipientPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            put $"channels/{channelId}/recipients/{userId}"
+            bot botToken
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asOptionalJson<Channel>
+
+let groupDmRemoveRecipient
+    (channelId: string)
+    (userId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"channels/{channelId}/recipients/{userId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let startThreadFromMessage
+    (channelId: string)
+    (messageId: string)
+    (auditLogReason: string option)
+    (content: StartThreadFromMessagePayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"channels/{channelId}/messages/{messageId}/threads"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Channel>
+
+let startThreadWithoutMessage
+    (channelId: string)
+    (auditLogReason: string option)
+    (content: StartThreadWithoutMessagePayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"channels/{channelId}/threads"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Channel>
+
+let startThreadInForumOrMediaChannel
+    (channelId: string)
+    (auditLogReason: string option)
+    (content: StartThreadWithoutMessagePayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"channels/{channelId}/threads"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<StartThreadInForumOrMediaChannelOkResponse>
+
+let joinThread
+    (channelId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            put $"channels/{channelId}/thread-members/@me"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let addThreadMember
+    (channelId: string)
+    (userId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            put $"channels/{channelId}/thread-members/{userId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let leaveThread
+    (channelId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"channels/{channelId}/thread-members/@me"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let removeThreadMember
+    (channelId: string)
+    (userId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"channels/{channelId}/thread-members/{userId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let getThreadMember
+    (channelId: string)
+    (userId: string)
+    (withMember: bool option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"channels/{channelId}/thread-members/{userId}"
+            bot botToken
+            query "with_member" (match withMember with | Some true -> Some "true" | _ -> None)
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<ThreadMember>
+
+let listThreadMembers
+    (channelId: string)
+    (withMember: bool option)
+    (after: string option)
+    (limit: int option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"channels/{channelId}/thread-members"
+            bot botToken
+            query "with_member" (match withMember with | Some true -> Some "true" | _ -> None)
+            query "after" after
+            query "limit" (limit >>. _.ToString())
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<ThreadMember list>
+
+    // TODO: Test paginated response and implement for list thread members
+
+let listPublicArchivedThreads
+    (channelId: string)
+    (before: DateTime option)
+    (limit: int option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"channels/{channelId}/threads/archived/public"
+            bot botToken
+            query "before" (before >>. _.ToString())
+            query "limit" (limit >>. _.ToString())
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<ListPublicArchivedThreadsOkResponse>
+
+let listPrivateArchivedThreads
+    (channelId: string)
+    (before: DateTime option)
+    (limit: int option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"channels/{channelId}/threads/archived/private"
+            bot botToken
+            query "before" (before >>. _.ToString())
+            query "limit" (limit >>. _.ToString())
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<ListPrivateArchivedThreadsOkResponse>
+
+let listJoinedPrivateArchivedThreads
+    (channelId: string)
+    (before: DateTime option)
+    (limit: int option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"channels/{channelId}/users/@me/threads/archived/private"
+            bot botToken
+            query "before" (before >>. _.ToString())
+            query "limit" (limit >>. _.ToString())
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<ListJoinedPrivateArchivedThreadsOkResponse>
 
 // ----- Emoji -----
 
-// TODO: Implement
+let listGuildEmojis
+    (guildId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/emojis"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Emoji list>
+
+let getGuildEmoji
+    (guildId: string)
+    (emojiId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/emojis/{emojiId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Emoji>
+
+let createGuildEmoji
+    (guildId: string)
+    (auditLogReason: string option)
+    (content: CreateGuildEmojiPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"guilds/{guildId}/emojis"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Emoji>
+        
+let modifyGuildEmoji
+    (guildId: string)
+    (emojiId: string)
+    (auditLogReason: string option)
+    (content: ModifyGuildEmojiPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch $"guilds/{guildId}/emojis/{emojiId}"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Emoji>
+
+let deleteGuildEmoji
+    (guildId: string)
+    (emojiId: string)
+    (auditLogReason: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"guilds/{guildId}/emojis/{emojiId}"
+            bot botToken
+            audit auditLogReason
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+        
+let listApplicationEmojis
+    (applicationId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"applications/{applicationId}/emojis"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Emoji list>
+
+let getApplicationEmoji
+    (applicationId: string)
+    (emojiId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"applications/{applicationId}/emojis/{emojiId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Emoji>
+
+let createApplicationEmoji
+    (applicationId: string)
+    (content: CreateApplicationEmojiPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"applications/{applicationId}/emojis"
+            bot botToken
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Emoji>
+        
+let modifyApplicationEmoji
+    (applicationId: string)
+    (emojiId: string)
+    (content: ModifyApplicationEmojiPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch $"applications/{applicationId}/emojis/{emojiId}"
+            bot botToken
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Emoji>
+
+let deleteApplicationEmoji
+    (applicationId: string)
+    (emojiId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"applications/{applicationId}/emojis/{emojiId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
 
 // ----- Entitlement -----
 

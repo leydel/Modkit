@@ -3,6 +3,7 @@
 open Discordfs.Rest.Common
 open Discordfs.Types
 open System.Collections.Generic
+open System.Text.Json
 open System.Text.Json.Serialization
 
 // ----- Interaction -----
@@ -311,11 +312,293 @@ type ModifyAutoModerationRulePayload (
 
 // ----- Channel -----
 
-// TODO: Implement
+type ModifyChannelPayload =
+    | GroupDm of ModifyGroupDmChannelPayload
+    | Guild of ModifyGuildChannelPayload
+    | Thread of ModifyThreadChannelPayload
+with
+    member this.Payload =
+        match this with
+        | ModifyChannelPayload.GroupDm groupdm -> groupdm :> Payload
+        | ModifyChannelPayload.Guild guild -> guild :> Payload
+        | ModifyChannelPayload.Thread thread -> thread :> Payload
+
+and ModifyGroupDmChannelPayload(
+    ?name: string,
+    ?icon: string
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "name" name
+            optional "icon" icon
+        }
+
+and ModifyGuildChannelPayload(
+    ?name:                               string,
+    ?``type``:                           ChannelType,
+    ?position:                           int option,
+    ?topic:                              string option,
+    ?nsfw:                               bool option,
+    ?rate_limit_per_user:                int option,
+    ?bitrate:                            int option,
+    ?user_limit:                         int option,
+    ?permission_overwrites:              PartialPermissionOverwrite list option,
+    ?parent_id:                          string option,
+    ?rtc_region:                         string option,
+    ?video_quality_mode:                 VideoQualityMode option,
+    ?default_auto_archive_duration:      int option,
+    ?flags:                              int,
+    ?available_tags:                     ChannelTag list,
+    ?default_reaction_emoji:             DefaultReaction option,
+    ?default_thread_rate_limit_per_user: int,
+    ?default_sort_order:                 ChannelSortOrder option,
+    ?default_forum_layout:               ChannelForumLayout
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "name" name
+            optional "type" ``type``
+            optional "position" position
+            optional "topic" topic
+            optional "nsfw" nsfw
+            optional "rate_limit_per_user" rate_limit_per_user
+            optional "bitrate" bitrate
+            optional "user_limit" user_limit
+            optional "permission_overwrites" permission_overwrites
+            optional "parent_id" parent_id
+            optional "rtc_region" rtc_region
+            optional "video_quality_mode" video_quality_mode
+            optional "default_auto_archive_duration" default_auto_archive_duration
+            optional "flags" flags
+            optional "available_tags" available_tags
+            optional "default_reaction_emoji" default_reaction_emoji
+            optional "default_thread_rate_limit_per_user" default_thread_rate_limit_per_user
+            optional "default_sort_order" default_sort_order
+            optional "default_forum_layout" default_forum_layout
+        }
+
+and ModifyThreadChannelPayload (
+    ?name:                  string,
+    ?archived:              bool,
+    ?auto_archive_duration: int,
+    ?locked:                bool,
+    ?invitable:             bool,
+    ?rate_limit_per_user:   int option,
+    ?flags:                 int,
+    ?applied_tags:          string list
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "name" name
+            optional "archived" archived
+            optional "auto_archive_duration" auto_archive_duration
+            optional "locked" locked
+            optional "invitable" invitable
+            optional "rate_limit_per_user" rate_limit_per_user
+            optional "flags" flags
+            optional "applied_tags" applied_tags
+        }
+
+type EditChannelPermissionsPayload (
+    ``type``: EditChannelPermissionsType,
+    ?allow:   string option,
+    ?deny:    string option
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "type" ``type``
+            optional "allow" allow
+            optional "deny" deny
+        }
+
+type CreateChannelInvitePayload (
+    target_type:            InviteTargetType,
+    ?max_age:               int,
+    ?max_uses:              int,
+    ?temporary:             bool,
+    ?unique:                bool,
+    ?target_user_id:        string,
+    ?target_application_id: string
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "max_age" max_age
+            optional "max_uses" max_uses
+            optional "temporary" temporary
+            optional "unique" unique
+            required "target_type" target_type
+            optional "target_user_id" target_user_id
+            optional "target_application_id" target_application_id
+        }
+
+type FollowAnnouncementChannelPayload (
+    webhook_channel_id: string
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "webhook_channel_id" webhook_channel_id
+        }
+
+type GroupDmAddRecipientPayload (
+    access_token: string,
+    ?nick: string
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "access_token" access_token
+            optional "nick" nick
+        }
+
+type StartThreadFromMessagePayload (
+    name:                   string,
+    ?auto_archive_duration: int,
+    ?rate_limit_per_user:   int option
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "name" name
+            optional "auto_archive_duration" auto_archive_duration
+            optional "rate_limit_per_user" rate_limit_per_user
+        }
+
+type StartThreadWithoutMessagePayload (
+    name:                   string,
+    ?auto_archive_duration: int,
+    ?``type``:              ThreadType,
+    ?invitable:             bool,
+    ?rate_limit_per_user:   int option
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "name" name
+            optional "auto_archive_duration" auto_archive_duration
+            optional "type" ``type``
+            optional "invitable" invitable
+            optional "rate_limit_per_user" rate_limit_per_user
+        }
+
+type ForumAndMediaThreadMessageParams = {
+    [<JsonPropertyName "content">] Content: string option
+    [<JsonPropertyName "embeds">] Embeds: Embed list option
+    [<JsonPropertyName "allowed_mentions">] AllowedMentions: AllowedMentions option
+    [<JsonPropertyName "components">] Components: Component list option
+    [<JsonPropertyName "sticker_ids">] StickerIds: string list option
+    [<JsonPropertyName "attachments">] Attachments: PartialAttachment list option
+    [<JsonPropertyName "flags">] Flags: int option
+}
+
+type StartThreadInForumOrMediaChannelPayload (
+    name:                   string,
+    message:                ForumAndMediaThreadMessageParams,
+    ?auto_archive_duration: int,
+    ?applied_tags:          string list,
+    ?files:                 IDictionary<string, IPayloadBuilder>
+) =
+    inherit Payload() with
+        override _.Content =
+            let payload_json = json {
+                required "name" name
+                optional "auto_archive_duration" auto_archive_duration
+                required "message" message
+                optional "applied_tags" applied_tags
+            }
+
+            match files with
+            | None -> payload_json
+            | Some f -> multipart {
+                part "payload_json" payload_json
+                files f
+            }
+
+type StartThreadInForumOrMediaChannelOkResponseExtraFields = {
+    [<JsonPropertyName "message">] Message: Message option
+}
+
+[<JsonConverter(typeof<StartThreadInForumOrMediaChannelOkResponseConverter>)>]
+type StartThreadInForumOrMediaChannelOkResponse = {
+    Channel: Channel
+    ExtraFields: StartThreadInForumOrMediaChannelOkResponseExtraFields
+}
+
+and StartThreadInForumOrMediaChannelOkResponseConverter () =
+    inherit JsonConverter<StartThreadInForumOrMediaChannelOkResponse> ()
+
+    override _.Read (reader, typeToConvert, options) =
+        let success, document = JsonDocument.TryParseValue &reader
+        if not success then raise (JsonException())
+
+        let json = document.RootElement.GetRawText()
+
+        {
+            Channel = Json.deserializeF json;
+            ExtraFields = Json.deserializeF json;
+        }
+
+    override _.Write (writer, value, options) =
+        let channel = Json.serializeF value.Channel
+        let extraFields = Json.serializeF value.ExtraFields
+
+        writer.WriteRawValue (Json.merge channel extraFields)
+
+type ListPublicArchivedThreadsOkResponse = {
+    [<JsonPropertyName "threads">] Threads: Channel list
+    [<JsonPropertyName "members">] Members: ThreadMember list
+    [<JsonPropertyName "has_more">] HasMore: bool
+}
+
+type ListPrivateArchivedThreadsOkResponse = {
+    [<JsonPropertyName "threads">] Threads: Channel list
+    [<JsonPropertyName "members">] Members: ThreadMember list
+    [<JsonPropertyName "has_more">] HasMore: bool
+}
+
+type ListJoinedPrivateArchivedThreadsOkResponse = {
+    [<JsonPropertyName "threads">] Threads: Channel list
+    [<JsonPropertyName "members">] Members: ThreadMember list
+    [<JsonPropertyName "has_more">] HasMore: bool
+}
 
 // ----- Emoji -----
 
-// TODO: Implement
+type CreateGuildEmojiPayload(
+    name:  string,
+    image: string,
+    roles: string
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "name" name
+            required "image" image
+            required "roles" roles
+        }
+
+type ModifyGuildEmojiPayload(
+    ?name:  string,
+    ?roles: string option
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "name" name
+            optional "roles" roles
+        }
+
+type CreateApplicationEmojiPayload(
+    name:  string,
+    image: string
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "name" name
+            required "image" image
+        }
+
+type ModifyApplicationEmojiPayload(
+    name: string
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "name" name
+        }
 
 // ----- Entitlement -----
 
