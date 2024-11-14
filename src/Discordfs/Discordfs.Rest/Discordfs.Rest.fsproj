@@ -10,7 +10,6 @@
     <Compile Include="Common\Payload.fs" />
     <Compile Include="Common\Http.fs" />
     <Compile Include="Types\RestTypes.fs" />
-    <Compile Include="Resources\ApplicationCommandResource.fs" />
     <Compile Include="Resources\ApplicationResource.fs" />
     <Compile Include="Resources\AuditLogResource.fs" />
     <Compile Include="Resources\AutoModerationResource.fs" />

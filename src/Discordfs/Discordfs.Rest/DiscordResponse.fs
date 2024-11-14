@@ -5,10 +5,10 @@ open Discordfs.Rest.Types
 open System.Net.Http
 open System.Text.Json
 
-type DiscordResponse<'a> = Result<RateLimitInfo<'a>, RateLimitInfo<DiscordError>>
+type DiscordResponse<'a> = Result<ResponseWithMetadata<'a>, ResponseWithMetadata<DiscordError>>
 
 module DiscordResponse =
-    let private withRateLimitHeaders<'a> (res: HttpResponseMessage) (obj: 'a) =
+    let private withMetadata<'a> (res: HttpResponseMessage) (obj: 'a) =
         let rateLimitHeaders = {
             Limit = None
             Remaining = None
@@ -21,24 +21,28 @@ module DiscordResponse =
         
         // TODO: Get actual headers from HttpResponseMessage
 
-        (obj, rateLimitHeaders)
+        {
+            Data = obj
+            RateLimitHeaders = rateLimitHeaders
+            Status = res.StatusCode
+        }
 
     // Used in requests that return content in a success result
     let asJson<'a> (res: HttpResponseMessage) = task {
         match int res.StatusCode with
-        | v when v >= 200 && v < 300 -> return! (Http.toJson<'a> res) ?> withRateLimitHeaders res ?> Ok
-        | v when v = 429 -> return! RateLimit <? (Http.toJson res) ?> withRateLimitHeaders res ?> Error
-        | v when v >= 400 && v < 500 -> return! ClientError <? (Http.toJson res) ?> withRateLimitHeaders res ?> Error
-        | _ -> return Unexpected (res.StatusCode) |> withRateLimitHeaders res |> Error
+        | v when v >= 200 && v < 300 -> return! (Http.toJson<'a> res) ?> withMetadata res ?> Ok
+        | v when v = 429 -> return! RateLimit <? (Http.toJson res) ?> withMetadata res ?> Error
+        | v when v >= 400 && v < 500 -> return! ClientError <? (Http.toJson res) ?> withMetadata res ?> Error
+        | _ -> return Unexpected (res.StatusCode) |> withMetadata res |> Error
     }
 
     // Used in requests that do not return content in a success result
     let asEmpty (res: HttpResponseMessage) = task {
         match int res.StatusCode with
-        | v when v >= 200 && v < 300 -> return Option<Empty>.None |> withRateLimitHeaders res |> Ok
-        | v when v = 429 -> return! RateLimit <? (Http.toJson res) ?> withRateLimitHeaders res ?> Error
-        | v when v >= 400 && v < 500 -> return! ClientError <? (Http.toJson res) ?> withRateLimitHeaders res ?> Error
-        | _ -> return Unexpected (res.StatusCode) |> withRateLimitHeaders res |> Error
+        | v when v >= 200 && v < 300 -> return Option<Empty>.None |> withMetadata res |> Ok
+        | v when v = 429 -> return! RateLimit <? (Http.toJson res) ?> withMetadata res ?> Error
+        | v when v >= 400 && v < 500 -> return! ClientError <? (Http.toJson res) ?> withMetadata res ?> Error
+        | _ -> return Unexpected (res.StatusCode) |> withMetadata res |> Error
     }
 
     /// Used in requests that may return a content or no content success result
@@ -48,19 +52,19 @@ module DiscordResponse =
             let length = res.Content.Headers.ContentLength |> Nullable.toOption
 
             match length with
-            | Some l when l = 0L -> return Option<'a>.None |> withRateLimitHeaders res |> Ok
-            | _ -> return! (Http.toJson res) ?> withRateLimitHeaders res ?> Ok
+            | Some l when l = 0L -> return Option<'a>.None |> withMetadata res |> Ok
+            | _ -> return! (Http.toJson res) ?> withMetadata res ?> Ok
 
         | v when v = 429 ->
-            return! RateLimit <? (Http.toJson res) ?> withRateLimitHeaders res ?> Error
+            return! RateLimit <? (Http.toJson res) ?> withMetadata res ?> Error
 
         | v when v >= 400 && v < 500 ->
-            return! ClientError <? (Http.toJson res) ?> withRateLimitHeaders res ?> Error
+            return! ClientError <? (Http.toJson res) ?> withMetadata res ?> Error
         | _ ->
-            return Unexpected (res.StatusCode) |> withRateLimitHeaders res |> Error
+            return Unexpected (res.StatusCode) |> withMetadata res |> Error
     }
 
     let unwrap<'a> (res: DiscordResponse<'a>) =
         match res with
-        | Ok (v, _) -> v
+        | Ok { Data = v } -> v
         | Error _ -> failwith "Unsuccessful discord response was unwrapped"

@@ -57,23 +57,13 @@ type RateLimitHeaders = {
     Scope: RateLimitScope option
 }
 
-type RateLimitInfo<'a> = 'a * RateLimitHeaders
+type ResponseWithMetadata<'a> = {
+    Data: 'a
+    RateLimitHeaders: RateLimitHeaders
+    Status: HttpStatusCode
+}
 
 // TODO: Move remaining payloads below into resources as refactored into modules
-
-type BulkOverwriteApplicationCommand = {
-    [<JsonPropertyName "id">] Id: string option
-    [<JsonPropertyName "name">] Name: string
-    [<JsonPropertyName "name_localizations">] NameLocalizations: IDictionary<string, string> option
-    [<JsonPropertyName "description">] Description: string
-    [<JsonPropertyName "description_localizations">] DescriptionLocalizations: IDictionary<string, string> option
-    [<JsonPropertyName "options">] Options: ApplicationCommandOption list option
-    [<JsonPropertyName "default_member_permissions">] DefaultMemberPermissions: string option
-    [<JsonPropertyName "integration_types">] IntegrationTypes: ApplicationIntegrationType list option
-    [<JsonPropertyName "contexts">] Contexts: InteractionContextType list option
-    [<JsonPropertyName "type">] Type: ApplicationCommandType option
-    [<JsonPropertyName "nsfw">] Nsfw: bool option
-}
 
 type VoiceChannelEffect = {
     [<JsonPropertyName "channel_id">] ChannelId: string
