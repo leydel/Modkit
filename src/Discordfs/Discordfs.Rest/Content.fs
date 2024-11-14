@@ -1097,4 +1097,9 @@ type GetGatewayBotOkResponse = {
 
 // ----- OAuth2 -----
 
-// TODO: Implement
+type GetCurrentAuthorizationInformationOkResponse = {
+    [<JsonPropertyName "application">] Application: PartialApplication
+    [<JsonPropertyName "scopes">] Scopes: OAuth2Scope list
+    [<JsonPropertyName "expires">] Expires: DateTime
+    [<JsonPropertyName "user">] User: User option
+}

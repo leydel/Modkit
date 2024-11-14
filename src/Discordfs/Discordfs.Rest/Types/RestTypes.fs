@@ -75,11 +75,3 @@ type VoiceChannelEffect = {
 type ListStickerPacksResponse = {
     [<JsonPropertyName "sticker_packs">] StickerPacks: StickerPack list
 }
-
-// https://discord.com/developers/docs/topics/oauth2#get-current-authorization-information-response-structure
-type GetCurrentAuthorizationInformationResponse = {
-    [<JsonPropertyName "application">] Application: PartialApplication
-    [<JsonPropertyName "scopes">] Scopes: OAuth2Scope list
-    [<JsonPropertyName "expires">] Expires: DateTime
-    [<JsonPropertyName "user">] User: User option
-}

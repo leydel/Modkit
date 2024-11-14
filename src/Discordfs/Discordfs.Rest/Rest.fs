@@ -1861,4 +1861,22 @@ let getGatewayBot
 
 // ----- OAuth2 -----
 
-// TODO: Implement
+let getCurrentBotApplicationInformation
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get "oauth2/applications/@me"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Application>
+
+let getCurrentAuthorizationInformation
+    oauth2AccessToken
+    (httpClient: HttpClient) =
+        req {
+            get "oauth2/@me"
+            oauth oauth2AccessToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GetCurrentAuthorizationInformationOkResponse>
