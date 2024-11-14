@@ -614,6 +614,32 @@ type GatewayIntent =
     | GUILD_MESSAGE_POLLS =             0b00000001_00000000_00000000_00000000
     | DIRECT_MESSAGE_POLLS =            0b00000010_00000000_00000000_00000000
 
+module GatewayIntent =
+    let ALL =
+        int <| (
+                GatewayIntent.GUILDS
+            ||| GatewayIntent.GUILD_MEMBERS
+            ||| GatewayIntent.GUILD_MODERATION
+            ||| GatewayIntent.GUILD_EMOJIS_AND_STICKERS
+            ||| GatewayIntent.GUILD_INTEGRATIONS
+            ||| GatewayIntent.GUILD_WEBHOOKS
+            ||| GatewayIntent.GUILD_INVITES
+            ||| GatewayIntent.GUILD_VOICE_STATES
+            ||| GatewayIntent.GUILD_PRESENCES
+            ||| GatewayIntent.GUILD_MESSAGES
+            ||| GatewayIntent.GUILD_MESSAGE_REACTIONS
+            ||| GatewayIntent.GUILD_MESSAGE_TYPING
+            ||| GatewayIntent.DIRECT_MESSAGES
+            ||| GatewayIntent.DIRECT_MESSAGE_REACTIONS
+            ||| GatewayIntent.DIRECT_MESSAGE_TYPING
+            ||| GatewayIntent.MESSAGE_CONTENT
+            ||| GatewayIntent.GUILD_SCHEDULED_EVENTS
+            ||| GatewayIntent.AUTO_MODERATION_CONFIGURATION
+            ||| GatewayIntent.AUTO_MODERATION_EXECUTION
+            ||| GatewayIntent.GUILD_MESSAGE_POLLS
+            ||| GatewayIntent.DIRECT_MESSAGE_POLLS
+        )
+
 [<JsonConverter(typeof<StatusTypeConverter>)>]
 type StatusType =
     | ONLINE

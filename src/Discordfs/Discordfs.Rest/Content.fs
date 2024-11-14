@@ -1007,7 +1007,15 @@ type ModifyGuildOnboardingPayload(
 
 // ----- Gateway -----
 
-// TODO: Implement
+type GetGatewayOkResponse = {
+    [<JsonPropertyName "url">] Url: string
+}
+
+type GetGatewayBotOkResponse = {
+    [<JsonPropertyName "url">] Url: string
+    [<JsonPropertyName "shards">] Shards: int
+    [<JsonPropertyName "session_start_limit">] SessionStartLimit: SessionStartLimit
+}
 
 // ----- OAuth2 -----
 

@@ -1655,7 +1655,36 @@ let modifyGuildOnboarding
 
 // ----- Gateway -----
 
-// TODO: Implement
+let getGateway
+    (version: string)
+    (encoding: GatewayEncoding)
+    (compression: GatewayCompression option)
+    (httpClient: HttpClient) =
+        req {
+            get "gateway"
+            query "v" version
+            query "encoding" (encoding.ToString())
+            query "compress" (compression >>. _.ToString())
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GetGatewayOkResponse>
+        
+let getGatewayBot
+    (version: string)
+    (encoding: GatewayEncoding)
+    (compression: GatewayCompression option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get "gateway/bot"
+            bot botToken
+            query "v" version
+            query "encoding" (encoding.ToString())
+            query "compress" (compression >>. _.ToString())
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GetGatewayBotOkResponse>
+        
 
 // ----- OAuth2 -----
 

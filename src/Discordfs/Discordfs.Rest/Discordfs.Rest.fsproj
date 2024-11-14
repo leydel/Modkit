@@ -25,7 +25,6 @@
     <Compile Include="Resources\UserResource.fs" />
     <Compile Include="Resources\VoiceResource.fs" />
     <Compile Include="Resources\WebhookResource.fs" />
-    <Compile Include="Resources\GatewayResource.fs" />
     <Compile Include="Resources\OAuth2Resource.fs" />
     <Compile Include="Content.fs" />
     <Compile Include="Rest.fs" />
