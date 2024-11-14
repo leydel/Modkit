@@ -32,7 +32,7 @@ module DiscordResponse =
     // Used in requests that return content in a success result
     let asJson<'a> (res: HttpResponseMessage) = task {
         match int res.StatusCode with
-        | v when v >= 200 && v < 300 -> return! (Http.toJson<'a> res) ?> withMetadata res ?> Ok
+        | _ when res.IsSuccessStatusCode -> return! (Http.toJson<'a> res) ?> withMetadata res ?> Ok
         | v when v = 429 -> return! RateLimit <? (Http.toJson res) ?> withMetadata res ?> Error
         | v when v >= 400 && v < 500 -> return! ClientError <? (Http.toJson res) ?> withMetadata res ?> Error
         | _ -> return Unexpected (res.StatusCode) |> withMetadata res |> Error
@@ -41,7 +41,7 @@ module DiscordResponse =
     // Used in requests that do not return content in a success result
     let asEmpty (res: HttpResponseMessage) = task {
         match int res.StatusCode with
-        | v when v >= 200 && v < 300 -> return Option<Empty>.None |> withMetadata res |> Ok
+        | _ when res.IsSuccessStatusCode -> return Option<Empty>.None |> withMetadata res |> Ok
         | v when v = 429 -> return! RateLimit <? (Http.toJson res) ?> withMetadata res ?> Error
         | v when v >= 400 && v < 500 -> return! ClientError <? (Http.toJson res) ?> withMetadata res ?> Error
         | _ -> return Unexpected (res.StatusCode) |> withMetadata res |> Error
@@ -50,7 +50,7 @@ module DiscordResponse =
     /// Used in requests that may return a content or no content success result
     let asOptionalJson<'a> (res: HttpResponseMessage) = task {
         match int res.StatusCode with
-        | v when res.IsSuccessStatusCode ->
+        | _ when res.IsSuccessStatusCode ->
             let length = res.Content.Headers.ContentLength |> Nullable.toOption
 
             match length with
@@ -64,6 +64,14 @@ module DiscordResponse =
             return! ClientError <? (Http.toJson res) ?> withMetadata res ?> Error
         | _ ->
             return Unexpected (res.StatusCode) |> withMetadata res |> Error
+    }
+
+    let asRaw (res: HttpResponseMessage) = task {
+        match int res.StatusCode with
+        | _ when res.IsSuccessStatusCode -> return! (Http.toRaw res) ?> withMetadata res ?> Ok
+        | v when v = 429 -> return! RateLimit <? (Http.toJson res) ?> withMetadata res ?> Error
+        | v when v >= 400 && v < 500 -> return! ClientError <? (Http.toJson res) ?> withMetadata res ?> Error
+        | _ -> return Unexpected (res.StatusCode) |> withMetadata res |> Error 
     }
 
     let unwrap<'a> (res: DiscordResponse<'a>) =

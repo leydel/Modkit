@@ -928,11 +928,674 @@ let deleteApplicationEmoji
 
 // ----- Entitlement -----
 
-// TODO: Implement
+let listEntitlements
+    (applicationId: string)
+    (userId: string option)
+    (skuIds: string list option)
+    (before: string option)
+    (after: string option)
+    (limit: int option)
+    (guildId: string option)
+    (excludeEnded: bool option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"applications/{applicationId}/entitlements"
+            bot botToken
+            query "user_id" userId
+            query "sku_ids" (skuIds >>. String.concat ",")
+            query "before" before
+            query "after" after
+            query "limit" (limit >>. _.ToString())
+            query "guild_id" guildId
+            query "exclude_ended" (excludeEnded >>. _.ToString())
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Entitlement list>
+
+let consumeEntitlement
+    (applicationId: string)
+    (entitlementId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"applications/{applicationId}/entitlements/{entitlementId}/consume"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let createTestEntitlement
+    (applicationId: string)
+    (content: CreateTestEntitlementPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"applications/{applicationId}/entitlements"
+            bot botToken
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Entitlement>
+
+let deleteTestEntitlement
+    (applicationId: string)
+    (entitlementId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"applications/{applicationId}/entitlements/{entitlementId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
 
 // ----- Guild -----
 
-// TODO: Implement
+let createGuild
+    (content: CreateGuildPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post "guilds"
+            bot botToken
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Guild>
+
+let getGuild
+    (guildId: string)
+    (withCounts: bool option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}"
+            bot botToken
+            query "with_counts" (withCounts >>. _.ToString())
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Guild>
+
+let getGuildPreview
+    (guildId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/preview"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildPreview>
+
+let modifyGuild
+    (guildId: string)
+    (auditLogReason: string option)
+    (content: ModifyGuildPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch $"guilds/{guildId}"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Guild>
+
+let deleteGuild
+    (guildId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"guilds/{guildId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let getGuildChannels
+    (guildId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/channels"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Channel list>
+
+let createGuildChannel
+    (guildId: string)
+    (auditLogReason: string option)
+    (content: CreateGuildChannelPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"guilds/{guildId}/channels"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Channel>
+
+let modifyGuildChannelPositions
+    (guildId: string)
+    (content: ModifyGuildChannelPositionsPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch $"guilds/{guildId}/channels"
+            bot botToken
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let listActiveGuildThreads
+    (guildId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/threads/active"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<ListActiveGuildThreadsOkResponse>
+
+let getGuildMember
+    (guildId: string)
+    (userId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/members/{userId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildMember>
+
+let listGuildMembers
+    (guildId: string)
+    (limit: int option)
+    (after: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/members"
+            bot botToken
+            query "limit" (limit >>. _.ToString())
+            query "after" (after >>. _.ToString())
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildMember list>
+
+let searchGuildMembers
+    (guildId: string)
+    (q: string) // query (cannot name same due to req ce)
+    (limit: int option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/members/search"
+            bot botToken
+            query "query" q
+            query "limit" (limit >>. _.ToString())
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildMember list>
+
+let addGuildMember
+    (guildId: string)
+    (userId: string)
+    (content: AddGuildMemberPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            put $"guilds/{guildId}/members/{userId}"
+            bot botToken
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asOptionalJson<GuildMember> // TODO: Double check this has both 200 and 204
+
+let modifyGuildMember
+    (guildId: string)
+    (userId: string)
+    (auditLogReason: string option)
+    (content: ModifyGuildMemberPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch $"guilds/{guildId}/members/{userId}"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asOptionalJson<GuildMember> // TODO: Double check this has both 200 and 204
+
+let modifyCurrentMember
+    (guildId: string)
+    (auditLogReason: string option)
+    (content: ModifyCurrentMemberPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch $"guilds/{guildId}/members/@me"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asOptionalJson<GuildMember> // TODO: Double check this has both 200 and 204
+        
+let addGuildMemberRole
+    (guildId: string)
+    (userId: string)
+    (roleId: string)
+    (auditLogReason: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            put $"guilds/{guildId}/members/{userId}/roles/{roleId}"
+            bot botToken
+            audit auditLogReason
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let removeGuildMemberRole
+    (guildId: string)
+    (userId: string)
+    (roleId: string)
+    (auditLogReason: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"guilds/{guildId}/members/{userId}/roles/{roleId}"
+            bot botToken
+            audit auditLogReason
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let removeGuildMember
+    (guildId: string)
+    (userId: string)
+    (auditLogReason: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"guilds/{guildId}/members/{userId}"
+            bot botToken
+            audit auditLogReason
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let getGuildBans
+    (guildId: string)
+    (limit: int option)
+    (before: string option)
+    (after: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/bans"
+            bot botToken
+            query "limit" (limit >>. _.ToString())
+            query "before" before
+            query "after" after
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildBan list>
+
+let getGuildBan
+    (guildId: string)
+    (userId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/bans/{userId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildBan>
+
+let createGuildBan
+    (guildId: string)
+    (userId: string)
+    (auditLogReason: string option)
+    (content: CreateGuildBanPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            put $"guilds/{guildId}/bans/{userId}"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let removeGuildBan
+    (guildId: string)
+    (userId: string)
+    (auditLogReason: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"guilds/{guildId}/bans/{userId}"
+            bot botToken
+            audit auditLogReason
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let bulkGuildBan
+    (guildId: string)
+    (auditLogReason: string option)
+    (content: BulkGuildBanPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"guilds/{guildId}/bulk-ban"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<BulkGuildBanOkResponse>
+
+let getGuildRoles
+    (guildId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/roles"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Role list>
+
+let getGuildRole
+    (guildId: string)
+    (roleId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/roles/{roleId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Role>
+
+let createGuildRole
+    (guildId: string)
+    (auditLogReason: string option)
+    (content: CreateGuildRolePayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"guilds/{guildId}/roles"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Role>
+
+let modifyGuildRolePositions
+    (guildId: string)
+    (auditLogReason: string option)
+    (content: ModifyGuildRolePositionsPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch $"guilds/{guildId}/channels"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Role list>
+
+let modifyGuildRole
+    (guildId: string)
+    (roleId: string)
+    (auditLogReason: string option)
+    (content: ModifyGuildRolePayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch $"guilds/{guildId}/roles/{roleId}"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Role>
+
+let modifyGuildMfaLevel
+    (guildId: string)
+    (auditLogReason: string option)
+    (content: ModifyGuildMfaLevelPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"guilds/{guildId}/mfa"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildMfaLevel>
+
+let deleteGuildRole
+    (guildId: string)
+    (roleId: string)
+    (auditLogReason: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"guilds/{guildId}/roles/{roleId}"
+            bot botToken
+            audit auditLogReason
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let getGuildPruneCount
+    (guildId: string)
+    (days: int option)
+    (includeRoles: string list option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/prune"
+            bot botToken
+            query "days" (days >>. _.ToString())
+            query "include_roles" (includeRoles >>. String.concat ",")
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GetGuildPruneCountOkResponse>
+
+let beginGuildPrune
+    (guildId: string)
+    (auditLogReason: string option)
+    (content: BeginGuildPrunePayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"guilds/{guildId}/prune"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<BeginGuildPruneOkResponse>
+
+let getGuildVoiceRegions
+    (guildId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/regions"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<VoiceRegion list>
+
+let getGuildInvites
+    (guildId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/invites"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<InviteWithMetadata list>
+
+let getGuildIntegrations
+    (guildId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/integrations"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildIntegration list>
+
+let deleteGuildIntegration
+    (guildId: string)
+    (integrationId: string)
+    (auditLogReason: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"guilds/{guildId}/integrations/{integrationId}"
+            bot botToken
+            audit auditLogReason
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let getGuildWidgetSettings
+    (guildId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/widget"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildWidgetSettings>
+
+let modifyGuildWidget
+    (guildId: string)
+    (auditLogReason: string option)
+    (content: ModifyGuildWidgetPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch $"guilds/{guildId}/widget"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildWidgetSettings>
+
+let getGuildWidget
+    (guildId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/widget.json"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildWidget>
+
+let getGuildVanityUrl
+    (guildId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/vanity-url"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GetGuildVanityUrlOkResponse>
+
+let getGuildWidgetImage
+    (guildId: string)
+    (style: GuildWidgetStyle option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/widget.png"
+            bot botToken
+            query "style" (style >>. _.ToString())
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asRaw // TODO: Convert to png image format
+
+let getGuildWelcomeScreen
+    (guildId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/welcome-screen"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<WelcomeScreen>
+
+let modifyGuildWelcomeScreen
+    (guildId: string)
+    (auditLogReason: string option)
+    (content: ModifyGuildWelcomeScreenPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch $"guilds/{guildId}/welcome-screen"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<WelcomeScreen>
+
+let getGuildOnboarding
+    (guildId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/onboarding"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildOnboarding>
+
+let modifyGuildOnboarding
+    (guildId: string)
+    (auditLogReason: string option)
+    (content: ModifyGuildOnboardingPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            put $"guilds/{guildId}/onboarding"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildOnboarding>
 
 // ----- Guild Scheduled Event -----
 

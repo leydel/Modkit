@@ -10,8 +10,6 @@
     <Compile Include="Common\Payload.fs" />
     <Compile Include="Common\Http.fs" />
     <Compile Include="Types\RestTypes.fs" />
-    <Compile Include="Resources\EntitlementResource.fs" />
-    <Compile Include="Resources\GuildResource.fs" />
     <Compile Include="Resources\GuildScheduledEventResource.fs" />
     <Compile Include="Resources\GuildTemplateResource.fs" />
     <Compile Include="Resources\InviteResource.fs" />

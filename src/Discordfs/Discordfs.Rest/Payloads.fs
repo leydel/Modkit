@@ -2,6 +2,7 @@
 
 open Discordfs.Rest.Common
 open Discordfs.Types
+open System
 open System.Collections.Generic
 open System.Text.Json
 open System.Text.Json.Serialization
@@ -602,11 +603,347 @@ type ModifyApplicationEmojiPayload(
 
 // ----- Entitlement -----
 
-// TODO: Implement
+type CreateTestEntitlementPayload (
+    sku_id:     string,
+    owner_id:   string,
+    owner_type: EntitlementOwnerType
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "sku_id" sku_id
+            required "owner_id" owner_id
+            required "owner_type" owner_type
+        }
 
 // ----- Guild -----
 
-// TODO: Implement
+type CreateGuildPayload(
+    name:                           string,
+    ?icon:                          string,
+    ?verification_level:            GuildVerificationLevel,
+    ?default_message_notifications: GuildMessageNotificationLevel,
+    ?explicit_content_filter:       GuildExplicitContentFilterLevel,
+    ?roles:                         Role list,
+    ?channels:                      PartialChannel list,
+    ?afk_channel_id:                string,
+    ?afk_timeout:                   int,
+    ?system_channel_id:             string,
+    ?system_channel_flags:          int
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "name" name
+            optional "icon" icon
+            optional "verification_level" verification_level
+            optional "default_message_notifications" default_message_notifications
+            optional "explicit_content_filter" explicit_content_filter
+            optional "roles" roles
+            optional "channels" channels
+            optional "afk_channel_id" afk_channel_id
+            optional "afk_timeout" afk_timeout
+            optional "system_channel_id" system_channel_id
+            optional "system_channel_flags" system_channel_flags
+        }
+
+type ModifyGuildPayload(
+    ?name:                          string,
+    ?verification_level:            GuildVerificationLevel option,
+    ?default_message_notifications: GuildMessageNotificationLevel option,
+    ?explicit_content_filter:       GuildExplicitContentFilterLevel option,
+    ?afk_channel_id:                string option,
+    ?afk_timeout:                   int,
+    ?icon:                          string option,
+    ?owner_id:                      string,
+    ?splash:                        string option,
+    ?discovery_splash:              string option,
+    ?banner:                        string option,
+    ?system_channel_id:             string option,
+    ?system_channel_flags:          int,
+    ?rules_channel_id:              string option,
+    ?public_updates_channel_id:     string option,
+    ?preferred_locale:              string option,
+    ?features:                      GuildFeature list,
+    ?description:                   string option,
+    ?premium_progress_bar_enabled:  bool,
+    ?safety_alerts_channel_id:      string option
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "name" name
+            optional "verification_level" verification_level
+            optional "default_message_notifications" default_message_notifications
+            optional "explicit_content_filter" explicit_content_filter
+            optional "afk_channel_id" afk_channel_id
+            optional "afk_timeout" afk_timeout
+            optional "icon" icon
+            optional "owner_id" owner_id
+            optional "splash" splash
+            optional "discovery_splash" discovery_splash
+            optional "banner" banner
+            optional "system_channel_id" system_channel_id
+            optional "system_channel_flags" system_channel_flags
+            optional "rules_channel_id" rules_channel_id
+            optional "public_updates_channel_id" public_updates_channel_id
+            optional "preferred_locale" preferred_locale
+            optional "features" (features >>. List.map _.ToString())
+            optional "description" description
+            optional "premium_progress_bar_enabled" premium_progress_bar_enabled
+            optional "safety_alerts_channel_id" safety_alerts_channel_id
+        }
+
+type CreateGuildChannelPayload(
+    name:                                string,
+    ?``type``:                           ChannelType option,
+    ?topic:                              string option,
+    ?bitrate:                            int option,
+    ?user_limit:                         int option,
+    ?rate_limit_per_user:                int option,
+    ?position:                           int option,
+    ?permission_overwrites:              PartialPermissionOverwrite list option,
+    ?parent_id:                          string option,
+    ?nsfw:                               bool option,
+    ?rtc_region:                         string option,
+    ?video_quality_mode:                 VideoQualityMode option,
+    ?default_auto_archive_duration:      int option,
+    ?default_reaction_emoji:             DefaultReaction option,
+    ?available_tags:                     ChannelTag list option,
+    ?default_sort_order:                 ChannelSortOrder option,
+    ?default_forum_layout:               ChannelForumLayout option,
+    ?default_thread_rate_limit_per_user: int option
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "name" name
+            optional "type" ``type``
+            optional "topic" topic
+            optional "bitrate" bitrate
+            optional "user_limit" user_limit
+            optional "rate_limit_per_user" rate_limit_per_user
+            optional "position" position
+            optional "permission_overwrites" permission_overwrites
+            optional "parent_id" parent_id
+            optional "nsfw" nsfw
+            optional "rtc_region" rtc_region
+            optional "video_quality_mode" video_quality_mode
+            optional "default_auto_archive_duration" default_auto_archive_duration
+            optional "default_reaction_emoji" default_reaction_emoji
+            optional "available_tags" available_tags
+            optional "default_sort_order" default_sort_order
+            optional "default_forum_layout" default_forum_layout
+            optional "default_thread_rate_limit_per_user" default_thread_rate_limit_per_user
+        }
+
+
+type ModifyGuildChannelPosition = {
+    [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "position">] Position: int option
+    [<JsonPropertyName "lock_permissions">] LockPermissions: bool option
+    [<JsonPropertyName "parent_id">] ParentId: string option
+}
+
+type ModifyGuildChannelPositionsPayload(
+    positions: ModifyGuildChannelPosition list
+) =
+    inherit Payload() with
+        override _.Content =
+            JsonListPayload positions
+
+type ListActiveGuildThreadsOkResponse = {
+    [<JsonPropertyName "threads">] Threads: Channel list
+    [<JsonPropertyName "members">] Members: GuildMember list
+}
+
+type AddGuildMemberPayload(
+    access_token: string,
+    ?nick:        string,
+    ?roles:       string list,
+    ?mute:        bool,
+    ?deaf:        bool
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "access_token" access_token
+            optional "nick" nick
+            optional "roles" roles
+            optional "mute" mute
+            optional "deaf" deaf
+        }
+
+type ModifyGuildMemberPayload(
+    ?nick:                         string option,
+    ?roles:                        string list option,
+    ?mute:                         bool option,
+    ?deaf:                         bool option,
+    ?channel_id:                   string option,
+    ?communication_disabled_until: DateTime option,
+    ?flags:                        int option
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "nick" nick
+            optional "roles" roles
+            optional "mute" mute
+            optional "deaf" deaf
+            optional "channel_id" channel_id
+            optional "communication_disabled_until" communication_disabled_until
+            optional "flags" flags
+        }
+
+type ModifyCurrentMemberPayload(
+    ?nick: string option
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "nick" nick
+        }
+
+type CreateGuildBanPayload(
+    ?delete_message_days:    int,
+    ?delete_message_seconds: int
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "delete_message_days" delete_message_days
+            optional "delete_message_seconds" delete_message_seconds
+        }
+
+type BulkGuildBanPayload(
+    user_ids:                string list,
+    ?delete_message_seconds: int
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "user_ids" user_ids
+            optional "delete_message_seconds" delete_message_seconds
+        }
+
+type BulkGuildBanOkResponse = {
+    [<JsonPropertyName "banned_users">] BannedUsers: string list
+    [<JsonPropertyName "failed_users">] FailedUsers: string list
+}
+    
+type CreateGuildRolePayload(
+    ?name:          string,
+    ?permissions:   string,
+    ?color:         int,
+    ?hoist:         bool,
+    ?icon:          string option,
+    ?unicode_emoji: string option,
+    ?mentionable:   bool
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "name" name
+            optional "permissions" permissions
+            optional "color" color
+            optional "hoist" hoist
+            optional "icon" icon
+            optional "unicode_emoji" unicode_emoji
+            optional "mentionable" mentionable
+        }
+
+type ModifyGuildRolePosition = {
+    [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "position">] Position: int option
+}
+
+type ModifyGuildRolePositionsPayload(
+    positions: ModifyGuildRolePosition list
+) =
+    inherit Payload() with
+        override _.Content =
+            JsonListPayload positions
+
+type ModifyGuildRolePayload(
+    ?name:          string option,
+    ?permissions:   string option,
+    ?color:         int option,
+    ?hoist:         bool option,
+    ?icon:          string option,
+    ?unicode_emoji: string option,
+    ?mentionable:   bool option
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "name" name
+            optional "permissions" permissions
+            optional "color" color
+            optional "hoist" hoist
+            optional "icon" icon
+            optional "unicode_emoji" unicode_emoji
+            optional "mentionable" mentionable
+        }
+
+type ModifyGuildMfaLevelPayload(
+    level: GuildMfaLevel
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "level" level
+        }
+
+type GetGuildPruneCountOkResponse = {
+    [<JsonPropertyName "pruned">] Pruned: int
+}
+
+type BeginGuildPrunePayload(
+    ?days: int,
+    ?compute_prune_count: bool,
+    ?include_roles: string list,
+    ?reason: string
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "days" days
+            optional "compute_prune_count" compute_prune_count
+            optional "include_roles" include_roles
+            optional "reason" reason
+        }
+
+type BeginGuildPruneOkResponse = {
+    [<JsonPropertyName "pruned">] Pruned: int option
+}
+
+type ModifyGuildWidgetPayload(
+    ?enabled:    bool,
+    ?channel_id: string option
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "enabled" enabled
+            optional "channel_id" channel_id
+        }
+
+type GetGuildVanityUrlOkResponse = {
+    [<JsonPropertyName "code">] Code: string option
+    [<JsonPropertyName "uses">] Uses: int
+}
+
+type ModifyGuildWelcomeScreenPayload(
+    ?enabled:          bool option,
+    ?welcome_channels: WelcomeScreenChannel list option,
+    ?description:      string option
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "enabled" enabled
+            optional "welcome_channels" welcome_channels
+            optional "description" description
+        }
+
+type ModifyGuildOnboardingPayload(
+    prompts:             GuildOnboardingPrompt list,
+    default_channel_ids: string list,
+    enabled:             bool,
+    mode:                OnboardingMode
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "prompts" prompts
+            required "default_channel_ids" default_channel_ids
+            required "enabled" enabled
+            required "mode" mode
+        }
 
 // ----- Guild Scheduled Event -----
 
