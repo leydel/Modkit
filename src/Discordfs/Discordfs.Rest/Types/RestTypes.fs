@@ -24,28 +24,23 @@ type DiscordError =
     | ClientError of ErrorResponse
     | Unexpected of HttpStatusCode
 
-[<JsonConverter(typeof<RateLimitScopeConverter>)>]
 type RateLimitScope =
     | USER
     | GLOBAL
     | SHARED
+with
+    override this.ToString () =
+        match this with
+        | USER -> "user"
+        | GLOBAL -> "global"
+        | SHARED -> "shared"
 
-and RateLimitScopeConverter () =
-    inherit JsonConverter<RateLimitScope>()
-
-    override _.Read (reader, typeToConvert, options) =
-        match reader.GetString() with
+    static member FromString (str: string) =
+        match str with
         | "user" -> RateLimitScope.USER
         | "global" -> RateLimitScope.GLOBAL
         | "shared" -> RateLimitScope.SHARED
         | _ -> failwith "Unexpected RateLimitScope provided"
-
-    override _.Write (writer, value, options) =
-        match value with
-        | USER -> "user"
-        | GLOBAL -> "global"
-        | SHARED -> "shared"
-        |> writer.WriteStringValue
 
 type RateLimitHeaders = {
     Limit: int option

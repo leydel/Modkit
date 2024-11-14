@@ -2,6 +2,7 @@
 
 open Discordfs.Rest.Common
 open Discordfs.Rest.Types
+open System
 open System.Net.Http
 open System.Text.Json
 
@@ -9,21 +10,22 @@ type DiscordResponse<'a> = Result<ResponseWithMetadata<'a>, ResponseWithMetadata
 
 module DiscordResponse =
     let private withMetadata<'a> (res: HttpResponseMessage) (obj: 'a) =
-        let rateLimitHeaders = {
-            Limit = None
-            Remaining = None
-            Reset = None
-            ResetAfter = None
-            Bucket = None
-            Global = None
-            Scope = None
-        }
-        
-        // TODO: Get actual headers from HttpResponseMessage
+        let getOptionalHeader (key: string) (res: HttpResponseMessage) =
+            match res.Headers.TryGetValues key with
+            | true, v -> v |> Seq.tryHead
+            | false, _ -> None
 
         {
             Data = obj
-            RateLimitHeaders = rateLimitHeaders
+            RateLimitHeaders = {
+                Limit = res |> getOptionalHeader "X-RateLimit-Limit" >>. int
+                Remaining = res |> getOptionalHeader "X-RateLimit-Remaining" >>. int
+                Reset = res |> getOptionalHeader "X-RateLimit-Reset" >>. DateTime.Parse
+                ResetAfter = res |> getOptionalHeader "X-RateLimit-ResetAfter" >>. double
+                Bucket = res |> getOptionalHeader "X-RateLimit-Bucket"
+                Global = res |> getOptionalHeader "X-RateLimit-Global" >>. bool.Parse
+                Scope = res |> getOptionalHeader "X-RateLimit-Scope" >>. RateLimitScope.FromString
+            }
             Status = res.StatusCode
         }
 
