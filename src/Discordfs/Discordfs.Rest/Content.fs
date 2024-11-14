@@ -583,6 +583,10 @@ type ModifyGuildEmojiPayload(
             optional "roles" roles
         }
 
+type ListApplicationEmojisOkResponse = {
+    [<JsonPropertyName "items">] Items: Emoji list
+}
+
 type CreateApplicationEmojiPayload(
     name:  string,
     image: string

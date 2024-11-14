@@ -71,11 +71,6 @@ type VoiceChannelEffect = {
     [<JsonPropertyName "sound_volume">] SoundVolume: double option
 }
 
-// https://discord.com/developers/docs/resources/emoji#list-application-emojis
-type ListApplicationEmojisResponse = {
-    [<JsonPropertyName "items">] Items: Emoji list
-}
-
 // https://discord.com/developers/docs/resources/sticker#list-sticker-packs-response-structure
 type ListStickerPacksResponse = {
     [<JsonPropertyName "sticker_packs">] StickerPacks: StickerPack list

@@ -873,7 +873,7 @@ let listApplicationEmojis
             bot botToken
         }
         |> httpClient.SendAsync
-        ?>> DiscordResponse.asJson<Emoji list>
+        ?>> DiscordResponse.asJson<ListApplicationEmojisOkResponse>
 
 let getApplicationEmoji
     (applicationId: string)
