@@ -11,8 +11,6 @@
     <Compile Include="Common\Http.fs" />
     <Compile Include="Types\RestTypes.fs" />
     <Compile Include="Modules\DiscordResponse.fs" />
-    <Compile Include="Resources\GuildScheduledEventResource.fs" />
-    <Compile Include="Resources\GuildTemplateResource.fs" />
     <Compile Include="Resources\InviteResource.fs" />
     <Compile Include="Resources\MessageResource.fs" />
     <Compile Include="Resources\PollResource.fs" />

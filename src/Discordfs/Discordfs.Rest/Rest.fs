@@ -1599,11 +1599,184 @@ let modifyGuildOnboarding
 
 // ----- Guild Scheduled Event -----
 
-// TODO: Implement
+let listGuildScheduledEvents
+    (guildId: string)
+    (withUserCount: bool option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/scheduled-events"
+            bot botToken
+            query "with_user_count" (withUserCount >>. _.ToString())
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildScheduledEvent list>
+
+let createGuildScheduledEvent
+    (guildId: string)
+    (auditLogReason: string option)
+    (content: CreateGuildScheduledEventPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"guilds/{guildId}/scheduled-events"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildScheduledEvent>
+
+let getGuildScheduledEvent
+    (guildId: string)
+    (guildScheduledEventId: string)
+    (withUserCount: bool option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/scheduled-events/{guildScheduledEventId}"
+            bot botToken
+            query "with_user_count" (withUserCount >>. _.ToString())
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildScheduledEvent>
+
+let modifyGuildScheduledEvent
+    (guildId: string)
+    (guildScheduledEventId: string)
+    (auditLogReason: string option)
+    (content: ModifyGuildScheduledEventPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch $"guilds/{guildId}/scheduled-events/{guildScheduledEventId}"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildScheduledEvent>
+
+let deleteGuildScheduledEvent
+    (guildId: string)
+    (guildScheduledEventId: string)
+    //(auditLogReason: string option) // TODO: Check if audit log is supposed to be available for this
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"guilds/{guildId}/scheduled-events/{guildScheduledEventId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let getGuildScheduledEventUsers
+    (guildId: string)
+    (guildScheduledEventId: string)
+    (limit: int option)
+    (withMember: bool option)
+    (before: string option)
+    (after: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/scheduled-events/{guildScheduledEventId}/users"
+            bot botToken
+            query "limit" (limit >>. _.ToString())
+            query "with_member" (withMember >>. _.ToString())
+            query "before" before
+            query "after" after
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildScheduledEventUser list>
 
 // ----- Guild Template -----
 
-// TODO: Implement
+let getGuildTemplate
+    (templateCode: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/templates/{templateCode}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildTemplate>
+
+let createGuildFromTemplate
+    (templateCode: string)
+    (content: CreateGuildFromTemplatePayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"guilds/templates/{templateCode}"
+            bot botToken
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Guild>
+
+let getGuildTemplates
+    (guildId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/templates"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildTemplate list>
+
+let createGuildTemplate
+    (guildId: string)
+    (content: CreateGuildTemplatePayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"guilds/{guildId}/templates"
+            bot botToken
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildTemplate>
+
+let syncGuildTemplate
+    (guildId: string)
+    (templateCode: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            put $"guilds/{guildId}/templates/{templateCode}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildTemplate>
+
+let modifyGuildTemplate
+    (guildId: string)
+    (templateCode: string)
+    (content: ModifyGuildTemplatePayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch $"guilds/{guildId}/templates/{templateCode}"
+            bot botToken
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildTemplate>
+
+let deleteGuildTemplate
+    (guildId: string)
+    (templateCode: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"guilds/{guildId}/templates/{templateCode}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildTemplate>
 
 // ----- Invite -----
 

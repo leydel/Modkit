@@ -951,11 +951,89 @@ type ModifyGuildOnboardingPayload(
 
 // ----- Guild Scheduled Event -----
 
-// TODO: Implement
+type CreateGuildScheduledEventPayload (
+    name:                 string,
+    privacy_level:        PrivacyLevelType,
+    scheduled_start_time: DateTime,
+    entity_type:          ScheduledEntityType,
+    ?channel_id:          string,
+    ?entity_metadata:     EntityMetadata,
+    ?scheduled_end_time:  DateTime,
+    ?description:         string,
+    ?image:               string,
+    ?recurrence_rule:     RecurrenceRule
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "channel_id" channel_id
+            optional "entity_metadata" entity_metadata
+            required "name" name
+            required "privacy_level" privacy_level
+            required "scheduled_start_time" scheduled_start_time
+            optional "scheduled_end_time" scheduled_end_time
+            optional "description" description
+            required "entity_type" entity_type
+            optional "image" image
+            optional "recurrence_rule" recurrence_rule
+        }
+
+type ModifyGuildScheduledEventPayload (
+    ?channel_id:           string option,
+    ?entity_metadata:      EntityMetadata option,
+    ?name:                 string,
+    ?privacy_level:        PrivacyLevelType,
+    ?scheduled_start_time: DateTime,
+    ?scheduled_end_time:   DateTime,
+    ?description:          string option,
+    ?entity_type:          ScheduledEntityType,
+    ?image:                string,
+    ?recurrence_rule:      RecurrenceRule option
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "channel_id" channel_id
+            optional "entity_metadata" entity_metadata
+            optional "name" name
+            optional "privacy_level" privacy_level
+            optional "scheduled_start_time" scheduled_start_time
+            optional "scheduled_end_time" scheduled_end_time
+            optional "description" description
+            optional "entity_type" entity_type
+            optional "image" image
+            optional "recurrence_rule" recurrence_rule
+        }
 
 // ----- Guild Template -----
 
-// TODO: Implement
+type CreateGuildFromTemplatePayload (
+    name:  string,
+    ?icon: string
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "name" name
+            optional "icon" icon
+        }
+
+type CreateGuildTemplatePayload (
+    name:         string,
+    ?description: string
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "name" name
+            optional "description" description
+        }
+
+type ModifyGuildTemplatePayload (
+    ?name:        string,
+    ?description: string
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "name" name
+            optional "description" description
+        }
 
 // ----- Invite -----
 
