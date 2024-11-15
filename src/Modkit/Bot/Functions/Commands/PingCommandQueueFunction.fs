@@ -10,7 +10,7 @@ open Modkit.Bot.Common
 open Modkit.Bot.Configuration
 open System.Net.Http
 
-type PingCommandQueueFunction () =
+type PingCommandQueueFunction (logger: ILogger<PingCommandQueueFunction>) =
     static member Metadata = CommandData.build(
         name = "ping",
         description = "Test if the bot is online",
@@ -23,7 +23,8 @@ type PingCommandQueueFunction () =
         options: IOptions<DiscordOptions>,
         httpClientFactory: IHttpClientFactory
     ) = task {
-        let logger = ctx.GetLogger<PingCommandQueueFunction>()
+        logger.LogInformation("Handling ping command for interaction {InteractionId}", interaction.Id)
+
         let client = (options.Value.BotToken, httpClientFactory.CreateClient())
 
         let content = CreateInteractionResponsePayload({
@@ -35,7 +36,7 @@ type PingCommandQueueFunction () =
             ||> Rest.createInteractionResponse interaction.Id interaction.Token (Some false) content
             ?> (fun res ->
                 match res with
-                | Ok _ -> logger.LogInformation $"Successfully ponged interaction {interaction.Id} on function invocation {ctx.InvocationId}"
-                | Error _ -> logger.LogError $"Failed to respond to interaction {interaction.Id} on function invocation {ctx.InvocationId}"
+                | Ok _ -> logger.LogInformation "Successfully ponged interaction"
+                | Error { Data = err } -> logger.LogError(DiscordError.toExn err, "Failed to respond due to Discord error")
             )
     }

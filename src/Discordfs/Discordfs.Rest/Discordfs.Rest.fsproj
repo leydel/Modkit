@@ -10,6 +10,7 @@
     <Compile Include="Common\Payload.fs" />
     <Compile Include="Common\Http.fs" />
     <Compile Include="Types\RestTypes.fs" />
+    <Compile Include="Modules\DiscordError.fs" />
     <Compile Include="Modules\DiscordResponse.fs" />
     <Compile Include="Resources\InviteResource.fs" />
     <Compile Include="Resources\MessageResource.fs" />

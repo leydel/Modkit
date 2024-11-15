@@ -11,18 +11,13 @@ type RateLimitResponse = {
     [<JsonPropertyName "retry_after">] RetryAfter: float
     [<JsonPropertyName "global">] Global: bool
     [<JsonPropertyName "code">] Code: JsonErrorCode option
-}
+} 
 
 type ErrorResponse = {
     [<JsonPropertyName "code">] Code: JsonErrorCode
     [<JsonPropertyName "message">] Message: string
     [<JsonPropertyName "errors">] Errors: IDictionary<string, string>
 }
-
-type DiscordError =
-    | RateLimit of RateLimitResponse
-    | ClientError of ErrorResponse
-    | Unexpected of HttpStatusCode
 
 type RateLimitScope =
     | USER

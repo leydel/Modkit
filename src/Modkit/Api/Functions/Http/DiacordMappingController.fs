@@ -16,7 +16,7 @@ type PutDiacordMappingPayload = {
     [<JsonPropertyName "mapping">] Mapping: IDictionary<string, string>
 }
 
-type DiacordMappingController () =
+type DiacordMappingController (logger: ILogger<DiacordMappingController>) =
     [<Function "GetDiacordMapping">]
     member _.GetDiacordMapping (
         [<HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "guilds/{guildId}/mapping")>] req: HttpRequestData,
@@ -24,14 +24,12 @@ type DiacordMappingController () =
         ctx: FunctionContext,
         guildId: string
     ) =
-        let logger = ctx.GetLogger<DiacordMappingController>()
-
         match mapping with
         | None ->
-            logger.LogInformation $"Could not find diacord mapping for guild {guildId}"
+            logger.LogInformation("Could not find diacord mapping for guild {GuildId}", guildId)
             req.CreateResponse HttpStatusCode.NotFound
         | Some note ->
-            logger.LogInformation $"Found diacord mapping for guild {guildId}"
+            logger.LogInformation("Found diacord mapping for guild {GuildId}", guildId)
             req.CreateResponse HttpStatusCode.OK |> Response.withJson (note |> DiacordMapping.toDto)
 
     [<Function "PutDiacordMapping">]
@@ -42,8 +40,6 @@ type DiacordMappingController () =
         ctx: FunctionContext,
         guildId: string
     ) = task {
-        let logger = ctx.GetLogger<DiacordMappingController>()
-
         let mapping: DiacordMapping = {
             GuildId = guildId;
             Mapping = payload.Mapping;
@@ -54,18 +50,18 @@ type DiacordMappingController () =
 
             match res.StatusCode with
             | HttpStatusCode.OK ->
-                logger.LogInformation $"Updated existing diacord mapping for guild {guildId}"
+                logger.LogInformation("Updated existing diacord mapping for guild {GuildId}", guildId)
                 return req.CreateResponse HttpStatusCode.OK |> Response.withJson (mapping |> DiacordMapping.toDto)
             | HttpStatusCode.Created ->
-                logger.LogInformation $"Created new diacord mapping for guild {guildId}"
+                logger.LogInformation("Created new diacord mapping for guild {GuildId}", guildId)
                 return req.CreateResponse HttpStatusCode.Created
                 |> Response.withJson (mapping |> DiacordMapping.toDto |> Json.serializeF)
                 |> Response.withHeader "Location" $"/guilds/{mapping.GuildId}/mapping"
-            | _ ->
-                logger.LogError $"Unexpected status code when upserting diacord mapping for guild {guildId}"
+            | status ->
+                logger.LogError("Unexpected status code {Status} when upserting diacord mapping for guild {GuildId}", status, guildId)
                 return req.CreateResponse HttpStatusCode.InternalServerError
-        with | _ ->
-            logger.LogError $"Failed to upsert diacord mapping for guild {guildId}"
+        with | exn ->
+            logger.LogError(exn, "Failed to upsert diacord mapping for guild {GuildId}", guildId)
             return req.CreateResponse HttpStatusCode.InternalServerError
     }
 
@@ -76,14 +72,12 @@ type DiacordMappingController () =
         ctx: FunctionContext,
         guildId: string
     ) = task {
-        let logger = ctx.GetLogger<DiacordMappingController>()
-
         try
             do! container.DeleteItemAsync(guildId, PartitionKey guildId) :> Task
 
-            logger.LogInformation $"Deleted diacord mapping for guild {guildId}"
+            logger.LogInformation("Deleted diacord mapping for guild {GuildId}", guildId)
             return req.CreateResponse HttpStatusCode.NoContent
         with | _ ->
-            logger.LogInformation $"Could not delete diacord mapping for guild {guildId}"
+            logger.LogInformation("Could not delete diacord mapping for guild {GuildId}", guildId)
             return req.CreateResponse HttpStatusCode.NotFound
     }

@@ -15,7 +15,10 @@ open Modkit.Bot.Configuration
 open System.Net
 open System.Threading.Tasks
 
-type InteractionHttpFunction (queueServiceClientFactory: IAzureClientFactory<QueueServiceClient>) =
+type InteractionHttpFunction (
+    queueServiceClientFactory: IAzureClientFactory<QueueServiceClient>,
+    logger: ILogger<InteractionHttpFunction>
+) =
     let queueServiceClient = queueServiceClientFactory.CreateClient Constants.InteractionQueueClientName
 
     [<Function(nameof InteractionHttpFunction)>]
@@ -25,8 +28,6 @@ type InteractionHttpFunction (queueServiceClientFactory: IAzureClientFactory<Que
         ctx: FunctionContext,
         options: IOptions<DiscordOptions>
     ) = task {
-        let logger = ctx.GetLogger<InteractionHttpFunction>()
-
         let! json = req.ReadAsStringAsync()
         let publicKey = options.Value.PublicKey
         let signature = req.Headers.TryGetValues "X-Signature-Ed25519" |> fun (_, s) -> Seq.tryHead s >>? ""
@@ -34,13 +35,13 @@ type InteractionHttpFunction (queueServiceClientFactory: IAzureClientFactory<Que
 
         match Ed25519.verify timestamp json signature publicKey with
         | false ->
-            ctx.GetLogger().LogInformation $"Failed to verify ed25519 on function invocation {ctx.InvocationId}"
+            logger.LogInformation $"Failed to verify ed25519"
             return req.CreateResponse HttpStatusCode.Unauthorized
 
         | true ->
             match event with
             | InteractionReceiveEvent.PING _ ->
-                logger.LogInformation $"Responding to ping interaction on function invocation {ctx.InvocationId}"
+                logger.LogInformation "Responding to ping interaction"
                 return req.CreateResponse HttpStatusCode.OK |> Response.withJson { Type = InteractionCallbackType.PONG; Data = None }
 
             | InteractionReceiveEvent.APPLICATION_COMMAND interaction ->
@@ -55,11 +56,11 @@ type InteractionHttpFunction (queueServiceClientFactory: IAzureClientFactory<Que
                 | Some queue ->
                     do! queueServiceClient.GetQueueClient(queue).SendMessageAsync json :> Task
 
-                    logger.LogInformation $"Queued message to handle application command interaction {interaction.Id} on function invocation {ctx.InvocationId}"
+                    logger.LogInformation("Queued message to handle application command interaction {InteractionId}", interaction.Id)
                     return req.CreateResponse HttpStatusCode.Accepted
 
                 | None -> 
-                    logger.LogError $"Could not find queue for application command interaction called \"{name}\" on function invocation {ctx.InvocationId}"
+                    logger.LogError("Could not find queue for application command queue for {Name}", name)
                     return req.CreateResponse HttpStatusCode.OK
                     |> Response.withJson {
                         Type = InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE
@@ -67,15 +68,15 @@ type InteractionHttpFunction (queueServiceClientFactory: IAzureClientFactory<Que
                     }
 
             | InteractionReceiveEvent.APPLICATION_COMMAND_AUTOCOMPLETE interaction ->
-                ctx.GetLogger().LogError $"Unhandled interaction type on function invocation {ctx.InvocationId}"
+                logger.LogError "Unhandled interaction type"
                 return req.CreateResponse HttpStatusCode.InternalServerError
 
             | InteractionReceiveEvent.MESSAGE_COMPONENT interaction ->
-                ctx.GetLogger().LogError $"Unhandled interaction type on function invocation {ctx.InvocationId}"
+                logger.LogError "Unhandled interaction type"
                 return req.CreateResponse HttpStatusCode.InternalServerError
 
             | InteractionReceiveEvent.MODAL_SUBMIT interaction ->
-                ctx.GetLogger().LogError $"Unhandled interaction type on function invocation {ctx.InvocationId}"
+                logger.LogError "Unhandled interaction type"
                 return req.CreateResponse HttpStatusCode.InternalServerError
 
             // We'll see how queues go with latency. They may need to be replaced with something else. Durable tasks

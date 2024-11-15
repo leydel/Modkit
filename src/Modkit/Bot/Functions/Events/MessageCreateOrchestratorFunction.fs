@@ -11,9 +11,10 @@ type MessageCreateOrchestratorFunction () =
         { Message = message }: MessageCreateReceiveEvent
     ) = task {
         let logger = ctx.CreateReplaySafeLogger<MessageCreateOrchestratorFunction>()
+        logger.LogInformation("Handling message create orchestrator for message {MessageId}", message.Id)
 
         match message.Content with
-        | Some content -> logger.LogDebug $"{message.Author.Username} said: {content}"
+        | Some content -> logger.LogDebug("{AuthorUsername} said: {MessageContent}", message.Author.Username, content)
         | None -> logger.LogDebug "Message content intent is not enabled"
 
         // Actual message create event handling logic can be orchestrated here

@@ -19,11 +19,10 @@ HostBuilder()
             .AddJsonFile("local.settings.json", true)
             .AddEnvironmentVariables()
     )
-    .ConfigureLogging(fun logging -> ())
-    .ConfigureServices(fun ctx services -> 
-        !services
-            .AddApplicationInsightsTelemetryWorkerService()
-            .ConfigureFunctionsApplicationInsights()
+    .ConfigureServices(fun ctx services ->
+        !services.AddLogging()
+        !services.AddApplicationInsightsTelemetryWorkerService()
+        !services.ConfigureFunctionsApplicationInsights()
     )
     .Build()
     .RunAsync()

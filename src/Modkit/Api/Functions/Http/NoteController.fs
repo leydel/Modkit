@@ -17,7 +17,7 @@ type CreateNotePayload = {
     [<JsonPropertyName "content">] Content: string
 }
 
-type NoteController () =
+type NoteController (logger: ILogger<NoteController>) =
     [<Function "ListMemberNotes">]
     member _.ListMemberNotes (
         [<HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "guilds/{guildId}/members/{memberId}/notes")>] req: HttpRequestData,
@@ -26,9 +26,7 @@ type NoteController () =
         guildId: string,
         memberId: string
     ) =
-        let logger = ctx.GetLogger<NoteController>()
-
-        logger.LogInformation $"Found {notes.Length} notes for member {memberId} in guild {guildId}"
+        logger.LogInformation("Found {NoteCount} notes for member {MemberId} in guild {GuildId}", notes.Length, memberId, guildId)
         req.CreateResponse HttpStatusCode.OK |> Response.withJson (notes |> List.map Note.toDto)
 
     [<Function "GetMemberNote">]
@@ -40,14 +38,12 @@ type NoteController () =
         memberId: string,
         noteId: string
     ) =
-        let logger = ctx.GetLogger<NoteController>()
-
         match note with
         | None ->
-            logger.LogInformation $"Could not find note {noteId} for member {memberId} in guild {guildId}"
+            logger.LogInformation("Could not find note {NoteId} for member {MemberId} in guild {GuildId}", noteId, memberId, guildId)
             req.CreateResponse HttpStatusCode.NotFound
         | Some note ->
-            logger.LogInformation $"Found note {noteId} for member {memberId} in guild {guildId}"
+            logger.LogInformation("Found note {NoteId} for member {MemberId} in guild {GuildId}", noteId, memberId, guildId)
             req.CreateResponse HttpStatusCode.OK |> Response.withJson (note |> Note.toDto)
 
     [<Function "AddMemberNote">]
@@ -59,8 +55,6 @@ type NoteController () =
         guildId: string,
         memberId: string
     ) = task {
-        let logger = ctx.GetLogger<NoteController>()
-
         let note: Note = {
             Id = Guid.NewGuid().ToString();
             GuildId = guildId;
@@ -73,12 +67,12 @@ type NoteController () =
         try
             do! container.CreateItemAsync(note) :> Task
 
-            logger.LogInformation $"Created note {note.Id} for member {memberId} in guild {guildId}"
+            logger.LogInformation("Created note {NoteId} for member {MemberId} in guild {GuildId}", note.Id, memberId, guildId)
             return req.CreateResponse HttpStatusCode.Created
             |> Response.withJson (note |> Note.toDto |> Json.serializeF)
             |> Response.withHeader "Location" $"/guilds/{note.GuildId}/members/{note.MemberId}/notes/{note.Id}";
         with | _ ->
-            logger.LogError $"Failed to create a note for member {memberId} in guild {guildId}"
+            logger.LogError("Failed to create a note for member {MemberId} in guild {GuildId}", memberId, guildId)
             return req.CreateResponse HttpStatusCode.InternalServerError
     }
 
@@ -91,14 +85,12 @@ type NoteController () =
         memberId: string,
         noteId: string
     ) = task {
-        let logger = ctx.GetLogger<NoteController>()
-
         try
             do! container.DeleteItemAsync(noteId, PartitionKey guildId) :> Task
 
-            logger.LogInformation $"Deleted note for member {memberId} in guild {guildId}"
+            logger.LogInformation("Deleted note {NoteId} for member {MemberId} in guild {GuildId}", noteId, memberId, guildId)
             return req.CreateResponse HttpStatusCode.NoContent
         with | _ ->
-            logger.LogInformation $"Could not delete note for member {memberId} in guild {guildId}"
+            logger.LogInformation("Could not delete note {NoteId} for member {MemberId} in guild {GuildId}", noteId, memberId, guildId)
             return req.CreateResponse HttpStatusCode.NotFound
     }
