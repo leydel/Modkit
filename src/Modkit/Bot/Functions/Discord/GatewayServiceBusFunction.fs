@@ -15,8 +15,10 @@ type GatewayServiceBusFunction () =
         [<DurableClient>] orchestrationClient: DurableTaskClient,
         ctx: FunctionContext
     ) = task {
+        let logger = ctx.GetLogger<GatewayServiceBusFunction>()
         let json = message.Body.ToString()
-        ctx.GetLogger().LogDebug json
+
+        logger.LogDebug json
 
         let run (name: string) (event: 'a) =
             orchestrationClient.ScheduleNewOrchestrationInstanceAsync(name, input = event) :> Task

@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Discordfs.Commands\Discordfs.Commands.fsproj" />
+    <ProjectReference Include="..\Discordfs.Common\Discordfs.Common.fsproj" />
+    <ProjectReference Include="..\Discordfs.Gateway\Discordfs.Gateway.fsproj" />
+    <ProjectReference Include="..\Discordfs.Rest\Discordfs.Rest.fsproj" />
+    <ProjectReference Include="..\Discordfs.Types\Discordfs.Types.fsproj" />
+    <ProjectReference Include="..\Discordfs.Webhook\Discordfs.Webhook.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="9.0.100" />
+  </ItemGroup>
+
+</Project>

@@ -5,31 +5,26 @@ open Discordfs.Gateway.Clients
 open Discordfs.Gateway.Types
 open Discordfs.Rest
 open Discordfs.Types
+open Modkit.Gateway.Configuration
 open Modkit.Gateway.Factories
-open Microsoft.Extensions.Configuration
+open Microsoft.Extensions.Options
 open System.Net.Http
 open System.Text.Json
 open System.Threading.Tasks
 
 type Client (
-    configuration: IConfiguration,
     httpClientFactory: IHttpClientFactory,
-    serviceBusClientFactory: IServiceBusClientFactory
-) =
-    let httpClient = httpClientFactory.CreateClient()
-    
-    let serviceBusConnectionString = configuration.GetValue "AzureWebJobsServiceBus"
-    let serviceBusQueueName = configuration.GetValue<string> "GatewayQueueName"
-    let discordBotToken = configuration.GetValue<string> "DiscordBotToken"
-    let useGateway = configuration.GetValue<bool> "UseGateway"
-
+    serviceBusClientFactory: IServiceBusClientFactory,
+    discordOptions: IOptions<DiscordOptions>,
+    serviceBusOptions: IOptions<ServiceBusOptions>
+) =    
     let handler =
-        match useGateway with
+        match serviceBusOptions.Value.Enabled with
         | false ->
             fun _ -> Task.FromResult ()
         | true ->
-            let client = serviceBusClientFactory.CreateClient serviceBusConnectionString
-            let sender = client.CreateSender serviceBusQueueName
+            let client = serviceBusClientFactory.CreateClient serviceBusOptions.Value.ConnectionString
+            let sender = client.CreateSender serviceBusOptions.Value.GatewayEventQueueName
 
             fun (event: GatewayReceiveEvent) -> task {
                 let json = Json.serializeF event
@@ -37,7 +32,7 @@ type Client (
             }
 
     let identify = IdentifySendEvent.build(
-        Token = discordBotToken,
+        Token = discordOptions.Value.BotToken,
         Intents = GatewayIntent.ALL,
         Properties = ConnectionProperties.build(),
         Shard = (0, 1),
@@ -54,6 +49,8 @@ type Client (
     )
 
     member _.StartAsync () = task {
+        let httpClient = httpClientFactory.CreateClient()
+
         let! gatewayUrl =
             httpClient |> Rest.getGateway "10" GatewayEncoding.JSON None
             ?> Result.map _.Data.Url

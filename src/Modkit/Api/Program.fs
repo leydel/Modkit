@@ -8,23 +8,22 @@ open System.Text.Json
 
 HostBuilder()
     .ConfigureFunctionsWorkerDefaults(fun ctx builder ->
-        builder.Services.Configure(fun (workerOptions: WorkerOptions) ->
+        !builder.Services.Configure(fun (workerOptions: WorkerOptions) ->
             workerOptions.Serializer <- JsonObjectSerializer(Json.options)
-        ) |> ignore
+        )
+        !builder.ConfigureCosmosDBExtension()
     )
     .ConfigureAppConfiguration(fun builder ->
-        builder
+        !builder
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("local.settings.json", true)
             .AddEnvironmentVariables()
-        |> ignore
     )
     .ConfigureLogging(fun logging -> ())
     .ConfigureServices(fun ctx services -> 
-        services
+        !services
             .AddApplicationInsightsTelemetryWorkerService()
             .ConfigureFunctionsApplicationInsights()
-        |> ignore
     )
     .Build()
     .RunAsync()

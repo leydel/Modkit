@@ -13,7 +13,6 @@ open Modkit.Api.Common
 open Modkit.Bot.Common
 open Modkit.Bot.Configuration
 open System.Net
-open System.Text.Json
 open System.Threading.Tasks
 
 type InteractionHttpFunction (queueServiceClientFactory: IAzureClientFactory<QueueServiceClient>) =
@@ -22,6 +21,7 @@ type InteractionHttpFunction (queueServiceClientFactory: IAzureClientFactory<Que
     [<Function(nameof InteractionHttpFunction)>]
     member _.Run (
         [<HttpTrigger(AuthorizationLevel.Anonymous, "post", "interactions")>] req: HttpRequestData,
+        [<FromBody>] event: InteractionReceiveEvent,
         ctx: FunctionContext,
         options: IOptions<DiscordOptions>
     ) = task {
@@ -38,7 +38,7 @@ type InteractionHttpFunction (queueServiceClientFactory: IAzureClientFactory<Que
             return req.CreateResponse HttpStatusCode.Unauthorized
 
         | true ->
-            match Json.deserializeF<InteractionReceiveEvent> json with
+            match event with
             | InteractionReceiveEvent.PING _ ->
                 logger.LogInformation $"Responding to ping interaction on function invocation {ctx.InvocationId}"
                 return req.CreateResponse HttpStatusCode.OK |> Response.withJson { Type = InteractionCallbackType.PONG; Data = None }
