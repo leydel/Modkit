@@ -65,8 +65,3 @@ type VoiceChannelEffect = {
     [<JsonPropertyName "sound_id">] SoundId: SoundboardSoundId option
     [<JsonPropertyName "sound_volume">] SoundVolume: double option
 }
-
-// https://discord.com/developers/docs/resources/sticker#list-sticker-packs-response-structure
-type ListStickerPacksResponse = {
-    [<JsonPropertyName "sticker_packs">] StickerPacks: StickerPack list
-}

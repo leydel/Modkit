@@ -1186,11 +1186,63 @@ type ModifyGuildSoundboardSoundPayload (
 
 // ----- Stage Instance -----
 
-// TODO: Implement
+type CreateStageInstancePayload (
+    channel_id:                string,
+    topic:                     string,
+    ?privacy_level:            PrivacyLevelType,
+    ?send_start_notification:  bool,
+    ?guild_scheduled_event_id: string
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "channel_id" channel_id
+            required "topic" topic
+            optional "privacy_level" privacy_level
+            optional "send_start_notification" send_start_notification
+            optional "guild_scheduled_event_id" guild_scheduled_event_id
+        }
+
+type ModifyStageInstancePayload (
+    ?topic:         string,
+    ?privacy_level: PrivacyLevelType
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "topic" topic
+            optional "privacy_level" privacy_level
+        }
 
 // ----- Sticker -----
 
-// TODO: Implement
+type ListStickerPacksOkResponse = {
+    [<JsonPropertyName "sticker_packs">] StickerPacks: StickerPack list
+}
+
+type CreateGuildStickerPayload (
+    name: string,
+    description: string,
+    tags: string,
+    fileContent: IPayloadBuilder
+) =
+    inherit Payload() with
+        override _.Content = multipart {
+            part "name" (StringPayload name)
+            part "description" (StringPayload description)
+            part "tags" (StringPayload tags)
+            part "file" fileContent
+        }
+
+type ModifyGuildStickerPayload (
+    name:        string,
+    description: string option,
+    tags:        string
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "name" name
+            required "description" description
+            required "tags" tags
+        }
 
 // ----- Subscription -----
 

@@ -2160,11 +2160,149 @@ let deleteGuildSoundboardSound
 
 // ----- Stage Instance -----
 
-// TODO: Implement
+let createStageInstance
+    (auditLogReason: string option)
+    (content: CreateStageInstancePayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post "stage_instances"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<StageInstance>
+
+let getStanceInstance
+    (channelId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"stage-instances/{channelId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<StageInstance>
+
+let modifyStageInstance
+    (channelId: string)
+    (auditLogReason: string option)
+    (content: ModifyStageInstancePayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch $"stage-instances/{channelId}"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<StageInstance>
+
+let deleteStageInstance
+    (channelId: string)
+    (auditLogReason: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"stage-instances/{channelId}"
+            bot botToken
+            audit auditLogReason
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
 
 // ----- Sticker -----
 
-// TODO: Implement
+let listStickerPacks
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get "sticker-packs"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<ListStickerPacksOkResponse>
+
+let getStickerPack
+    (packId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"sticker-packs/{packId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<StickerPack>
+
+let listGuildStickers
+    (guildId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/stickers"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Sticker list>
+
+let getGuildSticker
+    (guildId: string)
+    (stickerId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/stickers/{stickerId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Sticker>
+
+let createGuildSticker
+    (guildId: string)
+    (auditLogReason: string option)
+    (content: CreateGuildStickerPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"guilds/{guildId}/stickers"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Sticker>
+
+let modifyGuildSticker
+    (guildId: string)
+    (stickerId: string)
+    (auditLogReason: string option)
+    (content: CreateGuildStickerPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch $"guilds/{guildId}/stickers/{stickerId}"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Sticker>
+
+let deleteGuildSticker
+    (guildId: string)
+    (stickerId: string)
+    (auditLogReason: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"guilds/{guildId}/stickers/{stickerId}"
+            bot botToken
+            audit auditLogReason
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
 
 // ----- Subscription -----
 
