@@ -1142,11 +1142,47 @@ type UpdateApplicationRoleConnectionMetadataRecordsPayload (
 
 // ----- Sku -----
 
-// TODO: Implement
-
 // ----- Soundboard -----
 
-// TODO: Implement
+type SendSoundboardSoundPayload (
+    sound_id:         string,
+    ?source_guild_id: string
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "sound_id" sound_id
+            optional "source_guild_id" source_guild_id
+        }
+
+type CreateGuildSoundboardSoundPayload (
+    name: string,
+    sound: string,
+    ?volume: double option,
+    ?emoji_id: string option,
+    ?emoji_name: string option
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "name" name
+            required "sound" sound
+            optional "volume" volume
+            optional "emoji_id" emoji_id
+            optional "emoji_name" emoji_name
+        }
+
+type ModifyGuildSoundboardSoundPayload (
+    ?name: string,
+    ?volume: double option,
+    ?emoji_id: string option,
+    ?emoji_name: string option
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "name" name
+            optional "volume" volume
+            optional "emoji_id" emoji_id
+            optional "emoji_name" emoji_name
+        }
 
 // ----- Stage Instance -----
 

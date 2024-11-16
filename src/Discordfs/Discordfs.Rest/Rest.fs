@@ -2054,11 +2054,109 @@ let updateApplicationRoleConnectionMetadataRecords
 
 // ----- Sku -----
 
-// TODO: Implement
+let listSkus
+    (applicationId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"applications/{applicationId}/skus"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Sku list>
 
 // ----- Soundboard -----
 
-// TODO: Implement
+let sendSoundboardSound
+    (channelId: string)
+    (content: SendSoundboardSoundPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"channels/{channelId}/send-soundboard-sound"
+            bot botToken
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let listDefaultSoundboardSounds
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get "soundboard-default-sounds"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<SoundboardSound list>
+
+let listGuildSoundboardSounds
+    (guildId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/soundboard-sounds"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<SoundboardSound list>
+
+let getGuildSoundboardSound
+    (guildId: string)
+    (soundId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/soundboard-sounds/{soundId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<SoundboardSound>
+
+let createGuildSoundboardSound
+    (guildId: string)
+    (auditLogReason: string option)
+    (content: CreateGuildSoundboardSoundPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"guilds/{guildId}/soundboard-sounds"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<SoundboardSound>
+
+let modifyGuildSoundboardSound
+    (guildId: string)
+    (soundId: string)
+    (auditLogReason: string option)
+    (content: ModifyGuildSoundboardSoundPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch $"guilds/{guildId}/soundboard-sounds/{soundId}"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<SoundboardSound>
+
+let deleteGuildSoundboardSound
+    (guildId: string)
+    (soundId: string)
+    (auditLogReason: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"guilds/{guildId}/soundboard-sounds/{soundId}"
+            bot botToken
+            audit auditLogReason
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
 
 // ----- Stage Instance -----
 
