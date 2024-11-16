@@ -1997,11 +1997,60 @@ let bulkDeleteMessages
 
 // ----- Poll -----
 
-// TODO: Implement
+let getAnswerVoters
+    (channelId: string)
+    (messageId: string)
+    (answerId: string)
+    (after: string option)
+    (limit: int option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"channels/{channelId}/polls/{messageId}/answers/{answerId}"
+            bot botToken
+            query "after" after
+            query "limit" (limit >>. _.ToString())
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GetAnswerVotersOkResponse>
+
+let endPoll
+    (channelId: string)
+    (messageId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"channels/{channelId}/polls/{messageId}/expire"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Message>
 
 // ----- Role Connection -----
 
-// TODO: Implement
+let getApplicationRoleConnectionMetadataRecords
+    (applicationId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"applications/{applicationId}/role-connections/metadata"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<ApplicationRoleConnectionMetadata list>
+
+let updateApplicationRoleConnectionMetadataRecords
+    (applicationId: string)
+    (content: UpdateApplicationRoleConnectionMetadataRecordsPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            put $"applications/{applicationId}/role-connections/metadata"
+            bot botToken
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<ApplicationRoleConnectionMetadata list>
 
 // ----- Sku -----
 

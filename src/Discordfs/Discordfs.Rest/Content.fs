@@ -1116,11 +1116,29 @@ type BulkDeleteMessagesPayload (
 
 // ----- Poll -----
 
-// TODO: Implement
+type GetAnswerVotersOkResponse = {
+    [<JsonPropertyName "users">] Users: User list
+}
 
 // ----- Role Connection -----
 
-// TODO: Implement
+type UpdateApplicationRoleConnectionMetadataRecordsPayload (
+    ``type``: ApplicationRoleConnectionMetadataType,
+    key: string,
+    name: string,
+    description: string,
+    ?name_localizations: IDictionary<string, string>,
+    ?description_localizations: IDictionary<string, string>
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "type" ``type``
+            required "key" key
+            required "name" name
+            optional "name_localizations" name_localizations
+            required "description" description
+            optional "description_localizations" description_localizations
+        }
 
 // ----- Sku -----
 
