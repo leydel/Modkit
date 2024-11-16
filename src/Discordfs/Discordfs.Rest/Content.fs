@@ -1037,11 +1037,82 @@ type ModifyGuildTemplatePayload (
 
 // ----- Invite -----
 
-// TODO: Implement
-
 // ----- Message -----
 
-// TODO: Implement
+type CreateMessagePayload (
+    ?content:           string,
+    ?nonce:             MessageNonce,
+    ?tts:               bool,
+    ?embeds:            Embed list,
+    ?allow_mentions:    AllowedMentions,
+    ?message_reference: MessageReference,
+    ?components:        Component list,
+    ?sticker_ids:       string list,
+    ?attachments:       PartialAttachment list,
+    ?flags:             int,
+    ?enforce_nonce:     bool,
+    ?poll:              Poll,
+    ?files:             IDictionary<string, IPayloadBuilder>
+) =
+    inherit Payload() with
+        override _.Content =
+            let payload_json = json {
+                optional "content" content
+                optional "nonce" (match nonce with | Some (MessageNonce.Number n) -> Some n | _ -> None)
+                optional "nonce" (match nonce with | Some (MessageNonce.String s) -> Some s | _ -> None)
+                optional "tts" tts
+                optional "embeds" embeds
+                optional "allowed_mentions" allow_mentions
+                optional "message_reference" message_reference
+                optional "components" components
+                optional "sticker_ids" sticker_ids
+                optional "attachments" attachments
+                optional "flags" flags
+                optional "enforce_nonce" enforce_nonce
+                optional "poll" poll
+            }
+
+            match files with
+            | None -> payload_json
+            | Some f -> multipart {
+                part "payload_json" payload_json
+                files f
+            }
+
+type EditMessagePayload (
+    ?content:        string option,
+    ?embeds:         Embed list option,
+    ?flags:          int option,
+    ?allow_mentions: AllowedMentions option,
+    ?components:     Component list option,
+    ?attachments:    PartialAttachment list option,
+    ?files:          IDictionary<string, IPayloadBuilder>
+) =
+    inherit Payload() with
+        override _.Content =
+            let payload_json = json {
+                optional "content" content
+                optional "embeds" embeds
+                optional "flags" flags
+                optional "allowed_mentions" allow_mentions
+                optional "components" components
+                optional "attachments" attachments
+            }
+
+            match files with
+            | None -> payload_json
+            | Some f -> multipart {
+                part "payload_json" payload_json
+                files f
+            }
+
+type BulkDeleteMessagesPayload (
+    messages: string list
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "messages" messages
+        }
 
 // ----- Poll -----
 

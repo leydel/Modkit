@@ -1780,11 +1780,220 @@ let deleteGuildTemplate
 
 // ----- Invite -----
 
-// TODO: Implement
+let getInvite
+    (inviteCode: string)
+    (withCounts: bool option)
+    (withExpiration: bool option)
+    (guildScheduledEventId: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"invites/{inviteCode}"
+            bot botToken
+            query "with_counts" (withCounts >>. _.ToString())
+            query "with_expiration" (withExpiration >>. _.ToString())
+            query "guild_scheduled_event_id" guildScheduledEventId
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Invite>
+
+let deleteInvite
+    (inviteCode: string)
+    (auditLogReason: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"invites/{inviteCode}"
+            bot botToken
+            audit auditLogReason
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Invite>
 
 // ----- Message -----
 
-// TODO: Implement
+let getChannelMessages
+    (channelId: string)
+    (around: string option)
+    (before: string option)
+    (after: string option)
+    (limit: int option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"channels/{channelId}/messages"
+            bot botToken
+            query "around" around
+            query "before" before
+            query "after" after
+            query "limit" (limit >>. _.ToString())
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Message list>
+
+let getChannelMessage
+    (channelId: string)
+    (messageId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"channels/{channelId}/messages/{messageId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Message>
+
+let createMessage
+    (channelId: string)
+    (content: CreateMessagePayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"channels/{channelId}/messages"
+            bot botToken
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Message>
+
+let crosspostMessage
+    (channelId: string)
+    (messageId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"channels/{channelId}/messages/{messageId}/crosspost"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Message>
+
+let createReaction
+    (channelId: string)
+    (messageId: string)
+    (emoji: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"channels/{channelId}/messages/{messageId}/reactions/{emoji}/@me"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let deleteOwnReaction
+    (channelId: string)
+    (messageId: string)
+    (emoji: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"channels/{channelId}/messages/{messageId}/reactions/{emoji}/@me"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let deleteUserReaction
+    (channelId: string)
+    (messageId: string)
+    (emoji: string)
+    (userId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"channels/{channelId}/messages/{messageId}/reactions/{emoji}/{userId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let getReactions
+    (channelId: string)
+    (messageId: string)
+    (emoji: string)
+    (``type``: ReactionType option)
+    (after: string option)
+    (limit: int option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"channels/{channelId}/messages/{messageId}/reactions/{emoji}"
+            bot botToken
+            query "type" (``type`` >>. int >>. _.ToString())
+            query "after" after
+            query "limit" (limit >>. _.ToString())
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<User list>
+
+let deleteAllReactions
+    (channelId: string)
+    (messageId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"channels/{channelId}/messages/{messageId}/reactions"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let deleteAllReactionsForEmoji
+    (channelId: string)
+    (messageId: string)
+    (emoji: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"channels/{channelId}/messages/{messageId}/reactions/{emoji}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let editMessage
+    (channelId: string)
+    (messageId: string)
+    (content: EditMessagePayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch $"channels/{channelId}/messages/{messageId}"
+            bot botToken
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Message>
+
+let deleteMessage
+    (channelId: string)
+    (messageId: string)
+    (auditLogReason: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"channels/{channelId}/messages/{messageId}"
+            bot botToken
+            audit auditLogReason
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let bulkDeleteMessages
+    (channelId: string)
+    (auditLogReason: string option)
+    (content: BulkDeleteMessagesPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"channels/{channelId}/messages/bulk-delete"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
 
 // ----- Poll -----
 
