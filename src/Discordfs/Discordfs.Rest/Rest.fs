@@ -1,6 +1,7 @@
 ﻿module Discordfs.Rest.Rest
 
 open Discordfs.Rest.Common
+open Discordfs.Rest.Types
 open Discordfs.Types
 open System
 open System.Net.Http
@@ -2306,11 +2307,194 @@ let deleteGuildSticker
 
 // ----- Subscription -----
 
-// TODO: Implement
+let listSkuSubscriptions
+    (skuId: string)
+    (before: string option)
+    (after: string option)
+    (limit: int option)
+    (userId: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"skus/{skuId}/subscriptions"
+            bot botToken
+            query "before" before
+            query "after" after
+            query "limit" (limit >>. _.ToString())
+            query "userId" userId
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Subscription list>
+
+let getSkuSubscription
+    (skuId: string)
+    (subscriptionId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"skus/{skuId}/subscriptions/{subscriptionId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Subscription>
 
 // ----- User -----
 
-// TODO: Implement
+let getCurrentUser
+    (token: DiscordAccessToken)
+    (httpClient: HttpClient) =
+        match token with
+        | DiscordAccessToken.OAUTH oauthToken ->
+            req {
+                get "users/@me"
+                oauth oauthToken
+            }
+        | DiscordAccessToken.BOT botToken ->
+            req {
+                get "users/@me"
+                bot botToken
+            }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<User>
+
+let getUser
+    (userId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"users/{userId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<User>
+
+let modifyCurrentUser
+    (content: ModifyCurrentUserPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch "users/@me"
+            bot botToken
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<User>
+
+let getCurrentUserGuilds
+    (before: string option)
+    (after: string option)
+    (limit: int option)
+    (withCounts: bool option)
+    (token: DiscordAccessToken)
+    (httpClient: HttpClient) =
+        match token with
+        | DiscordAccessToken.OAUTH oauthToken ->
+            req {
+                get "users/@me/guilds"
+                oauth oauthToken
+                query "before" before
+                query "after" after
+                query "limit" (limit >>. _.ToString())
+                query "with_counts" (withCounts >>. _.ToString())
+            }
+        | DiscordAccessToken.BOT botToken ->
+            req {
+                get "users/@me/guilds"
+                bot botToken
+                query "before" before
+                query "after" after
+                query "limit" (limit >>. _.ToString())
+                query "with_counts" (withCounts >>. _.ToString())
+            }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<PartialGuild list>
+
+let getCurrentUserGuildMember
+    (guildId: string)
+    (token: DiscordAccessToken)
+    (httpClient: HttpClient) =
+        match token with
+        | DiscordAccessToken.OAUTH oauthToken ->
+            req {
+                get $"users/@me/guilds/{guildId}/member"
+                oauth oauthToken
+            }
+        | DiscordAccessToken.BOT botToken ->
+            req {
+                get $"users/@me/guilds/{guildId}/member"
+                bot botToken
+            }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<GuildMember>
+
+let leaveGuild
+    (guildId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"users/@me/guilds/{guildId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let createDm
+    (content: CreateDmPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post "users/@me/channels"
+            bot botToken
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Channel>
+
+let createGroupDm
+    (content: CreateGroupDmPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post "users/@me/channels"
+            bot botToken
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Channel>
+
+let getCurrentUserConnections
+    oauthToken
+    (httpClient: HttpClient) =
+        req {
+            get "users/@me/connections"
+            oauth oauthToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Connection list>
+
+let getCurrentUserApplicationRoleConnection
+    (applicationId: string)
+    oauthToken
+    (httpClient: HttpClient) =
+        req {
+            get $"users/@me/applications/{applicationId}/role-connection"
+            oauth oauthToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<ApplicationRoleConnection>
+
+let updateCurrentUserApplicationRoleConnection
+    (applicationId: string)
+    (content: UpdateCurrentUserApplicationRoleConnectionPayload)
+    oauthToken
+    (httpClient: HttpClient) =
+        req {
+            put $"users/@me/applications/{applicationId}/role-connection"
+            oauth oauthToken
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<ApplicationRoleConnection>
 
 // ----- Voice -----
 
@@ -2356,7 +2540,7 @@ let getGatewayBot
 // ----- OAuth2 -----
 
 let getCurrentBotApplicationInformation
-    botToken
+    botToken // TODO: Check swagger for if this is meant to be bot or access token
     (httpClient: HttpClient) =
         req {
             get "oauth2/applications/@me"
@@ -2366,11 +2550,11 @@ let getCurrentBotApplicationInformation
         ?>> DiscordResponse.asJson<Application>
 
 let getCurrentAuthorizationInformation
-    oauth2AccessToken
+    oauthToken
     (httpClient: HttpClient) =
         req {
             get "oauth2/@me"
-            oauth oauth2AccessToken
+            oauth oauthToken
         }
         |> httpClient.SendAsync
         ?>> DiscordResponse.asJson<GetCurrentAuthorizationInformationOkResponse>

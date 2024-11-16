@@ -1246,11 +1246,52 @@ type ModifyGuildStickerPayload (
 
 // ----- Subscription -----
 
-// TODO: Implement
-
 // ----- User -----
 
-// TODO: Implement
+type ModifyCurrentUserPayload (
+    ?username: string,
+    ?avatar:   string option,
+    ?banner:   string option
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "username" username
+            optional "avatar" avatar
+            optional "banner" banner
+        }
+
+type CreateDmPayload (
+    recipient_id: string
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "recipient_id" recipient_id
+        }
+
+type CreateGroupDmPayload (
+    access_tokens: string list,
+    nicks:         IDictionary<string, string>
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "access_tokens" access_tokens
+            required "nicks" nicks
+        }
+
+    // TODO: Test if these are optional (likely just nicks is, but cant use openapi spec to check because same endpoint
+    //       used for createDM which uses a different kind of payload and it doesnt discriminate them)
+
+type UpdateCurrentUserApplicationRoleConnectionPayload (
+    ?platform_name:     string,
+    ?platform_username: string,
+    ?metadata:          ApplicationRoleConnectionMetadata
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "platform_name" platform_name
+            optional "platform_username" platform_username
+            optional "metadata" metadata // TODO: Test how "stringified values" work (not in openapi spec)
+        }
 
 // ----- Voice -----
 

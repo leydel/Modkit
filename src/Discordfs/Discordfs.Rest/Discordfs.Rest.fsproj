@@ -11,8 +11,6 @@
     <Compile Include="Common\Http.fs" />
     <Compile Include="Types\RestTypes.fs" />
     <Compile Include="Modules\DiscordResponse.fs" />
-    <Compile Include="Resources\SubscriptionResource.fs" />
-    <Compile Include="Resources\UserResource.fs" />
     <Compile Include="Resources\VoiceResource.fs" />
     <Compile Include="Resources\WebhookResource.fs" />
     <Compile Include="Content.fs" />

@@ -53,6 +53,11 @@ type ResponseWithMetadata<'a> = {
     Status: HttpStatusCode
 }
 
+[<RequireQualifiedAccess>]
+type DiscordAccessToken =
+    | OAUTH of string
+    | BOT of string
+
 // TODO: Move remaining payloads below into resources as refactored into modules
 
 type VoiceChannelEffect = {
