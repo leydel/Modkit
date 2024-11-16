@@ -2498,11 +2498,232 @@ let updateCurrentUserApplicationRoleConnection
 
 // ----- Voice -----
 
-// TODO: Implement
+let listVoiceRegions
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get "voice/regions"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<VoiceRegion list>
+
+let getCurrentUserVoiceState
+    (guildId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/voice-states/@me"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<VoiceState>
+
+let getUserVoiceState
+    (guildId: string)
+    (userId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/voice-states/{userId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<VoiceState>
+
+let modifyCurrentUserVoiceState
+    (guildId: string)
+    (content: ModifyCurrentUserVoiceStatePayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch $"guilds/{guildId}/voice-states/@me"
+            bot botToken
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let modifyUserVoiceState
+    (guildId: string)
+    (userId: string)
+    (content: ModifyUserVoiceStatePayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch $"guilds/{guildId}/voice-states/{userId}"
+            bot botToken
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
 
 // ----- Webhook -----
 
-// TODO: Implement
+let createWebhook
+    (channelId: string)
+    (auditLogReason: string option)
+    (content: CreateWebhookPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            post $"channels/{channelId}/webhooks"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Webhook>
+
+let getChannelWebhooks
+    (channelId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"channels/{channelId}/webhooks"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Webhook list>
+
+let getGuildWebhooks
+    (guildId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"guilds/{guildId}/webhooks"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Webhook list>
+
+let getWebhook
+    (webhookId: string)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            get $"webhooks/{webhookId}"
+            bot botToken
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Webhook>
+
+let getWebhookWithToken
+    (webhookId: string)
+    (webhookToken: string)
+    (httpClient: HttpClient) =
+        req {
+            get $"webhooks/{webhookId}/{webhookToken}"
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Webhook>
+
+let modifyWebhook
+    (webhookId: string)
+    (auditLogReason: string option)
+    (content: ModifyWebhookPayload)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            patch $"webhooks/{webhookId}"
+            bot botToken
+            audit auditLogReason
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Webhook>
+
+let modifyWebhookWithToken
+    (webhookId: string)
+    (webhookToken: string)
+    (content: ModifyWebhookWithTokenPayload)
+    (httpClient: HttpClient) =
+        req {
+            patch $"webhooks/{webhookId}/{webhookToken}"
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Webhook>
+
+let deleteWebhook
+    (webhookId: string)
+    (auditLogReason: string option)
+    botToken
+    (httpClient: HttpClient) =
+        req {
+            delete $"webhooks/{webhookId}"
+            bot botToken
+            audit auditLogReason
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let deleteWebhookWithToken
+    (webhookId: string)
+    (webhookToken: string)
+    (httpClient: HttpClient) =
+        req {
+            delete $"webhooks/{webhookId}/{webhookToken}"
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let executeWebhook
+    (webhookId: string)
+    (webhookToken: string)
+    (wait: bool option)
+    (threadId: string option)
+    (content: ExecuteWebhookPayload)
+    (httpClient: HttpClient) =
+        req {
+            post $"webhooks/{webhookId}/{webhookToken}"
+            query "wait" (wait >>. _.ToString())
+            query "thread_id" threadId
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Message>
+
+let getWebhookMessage
+    (webhookId: string)
+    (webhookToken: string)
+    (messageId: string)
+    (threadId: string option)
+    (httpClient: HttpClient) =
+        req {
+            get $"webhooks/{webhookId}/{webhookToken}/messages/{messageId}"
+            query "thread_id" threadId
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Message>
+
+let editWebhookMessage
+    (webhookId: string)
+    (webhookToken: string)
+    (messageId: string)
+    (threadId: string option)
+    (content: EditWebhookMessagePayload)
+    (httpClient: HttpClient) =
+        req {
+            patch $"webhooks/{webhookId}/{webhookToken}/messages/{messageId}"
+            query "thread_id" threadId
+            payload content
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asJson<Message>
+
+let deleteWebhookMessage
+    (webhookId: string)
+    (webhookToken: string)
+    (messageId: string)
+    (threadId: string option)
+    (httpClient: HttpClient) =
+        req {
+            patch $"webhooks/{webhookId}/{webhookToken}/messages/{messageId}"
+            query "thread_id" threadId
+        }
+        |> httpClient.SendAsync
+        ?>> DiscordResponse.asEmpty
 
 // ----- Gateway -----
 

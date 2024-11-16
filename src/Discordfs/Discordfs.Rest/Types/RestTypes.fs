@@ -57,16 +57,3 @@ type ResponseWithMetadata<'a> = {
 type DiscordAccessToken =
     | OAUTH of string
     | BOT of string
-
-// TODO: Move remaining payloads below into resources as refactored into modules
-
-type VoiceChannelEffect = {
-    [<JsonPropertyName "channel_id">] ChannelId: string
-    [<JsonPropertyName "guild_id">] GuildId: string
-    [<JsonPropertyName "user_id">] UserId: string
-    [<JsonPropertyName "emoji">] Emoji: Emoji option
-    [<JsonPropertyName "animation_type">] AnimationType: AnimationType option
-    [<JsonPropertyName "animation_id">] AnimationId: int option
-    [<JsonPropertyName "sound_id">] SoundId: SoundboardSoundId option
-    [<JsonPropertyName "sound_volume">] SoundVolume: double option
-}

@@ -1295,11 +1295,127 @@ type UpdateCurrentUserApplicationRoleConnectionPayload (
 
 // ----- Voice -----
 
-// TODO: Implement
+type ModifyCurrentUserVoiceStatePayload (
+    ?channel_id:                 string,
+    ?suppress:                   bool,
+    ?request_to_speak_timestamp: DateTime option
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "channel_id" channel_id
+            optional "suppress" suppress
+            optional "request_to_speak_timestamp" request_to_speak_timestamp
+        }
+
+type ModifyUserVoiceStatePayload (
+    channel_id: string,
+    ?suppress:  bool
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "channel_id" channel_id
+            optional "suppress" suppress
+        }
 
 // ----- Webhook -----
 
-// TODO: Implement
+type CreateWebhookPayload (
+    name:    string,
+    ?avatar: string option
+) =
+    inherit Payload() with
+        override _.Content = json {
+            required "name" name
+            optional "avatar" avatar
+        }
+
+type ModifyWebhookPayload (
+    ?name:       string,
+    ?avatar:     string option,
+    ?channel_id: string
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "name" name
+            optional "avatar" avatar
+            optional "channel_id" channel_id
+        }
+
+type ModifyWebhookWithTokenPayload (
+    ?name:   string,
+    ?avatar: string option
+) =
+    inherit Payload() with
+        override _.Content = json {
+            optional "name" name
+            optional "avatar" avatar
+        }
+
+type ExecuteWebhookPayload (
+    ?content: string,
+    ?username: string,
+    ?avatar_url: string,
+    ?tts: bool,
+    ?embeds: Embed list,
+    ?allowed_mentions: AllowedMentions,
+    ?components: Component list,
+    ?attachments: PartialAttachment list,
+    ?flags: int,
+    ?thread_name: string,
+    ?applied_tags: string list,
+    ?poll: Poll,
+    ?files: IDictionary<string, IPayloadBuilder>
+) =
+    inherit Payload() with
+        override _.Content =
+            let payload_json = json {
+                optional "content" content
+                optional "username" username
+                optional "avatar_url" avatar_url
+                optional "tts" tts
+                optional "embeds" embeds
+                optional "allowed_mentions" allowed_mentions
+                optional "components" components
+                optional "attachments" attachments
+                optional "flags" flags
+                optional "thread_name" thread_name
+                optional "applied_tags" applied_tags
+                optional "poll" poll                
+            }
+
+            match files with
+            | None -> payload_json
+            | Some f -> multipart {
+                part "payload_json" payload_json
+                files f
+            }
+
+type EditWebhookMessagePayload (
+    ?content: string option,
+    ?embeds: Embed list option,
+    ?allowed_mentions: AllowedMentions option,
+    ?components: Component list option,
+    ?attachments: PartialAttachment list option,
+    ?poll: Poll option,
+    ?files: IDictionary<string, IPayloadBuilder>
+) =
+    inherit Payload() with
+        override _.Content =
+            let payload_json = json {
+                optional "content" content
+                optional "embeds" embeds
+                optional "allowed_mentions" allowed_mentions
+                optional "components" components
+                optional "attachments" attachments
+                optional "poll" poll                
+            }
+
+            match files with
+            | None -> payload_json
+            | Some f -> multipart {
+                part "payload_json" payload_json
+                files f
+            }
 
 // ----- Gateway -----
 
