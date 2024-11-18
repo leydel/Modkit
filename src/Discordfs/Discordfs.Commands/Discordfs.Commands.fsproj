@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Structures\Command.fs" />
     <Compile Include="Patterns\Options.fs" />
+    <Compile Include="Command.fs" />
   </ItemGroup>
 
   <ItemGroup>

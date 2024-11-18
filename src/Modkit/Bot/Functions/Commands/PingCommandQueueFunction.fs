@@ -1,6 +1,6 @@
 ﻿namespace Modkit.Bot.Functions
 
-open Discordfs.Commands.Structures
+open Discordfs.Commands
 open Discordfs.Rest
 open Discordfs.Types
 open Microsoft.Azure.Functions.Worker
@@ -11,11 +11,11 @@ open Modkit.Bot.Configuration
 open System.Net.Http
 
 type PingCommandQueueFunction (logger: ILogger<PingCommandQueueFunction>) =
-    static member Metadata = CommandData.build(
-        name = "ping",
-        description = "Test if the bot is online",
-        ``type`` = ApplicationCommandType.CHAT_INPUT
-    )
+    static member Metadata = command "ping" {
+        description "Test if the bot is online"
+    }
+
+    // TODO: Separate command data definition from function, to neatly handle subcommands and groups
 
     member _.Run (
         [<QueueTrigger(Constants.PingCommandQueueName)>] interaction: Interaction,
