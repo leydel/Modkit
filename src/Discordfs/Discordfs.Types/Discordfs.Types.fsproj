@@ -45,7 +45,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\Extensions\Extensions.fsproj" />
-    <ProjectReference Include="..\..\Shared\JsonUtils\JsonUtils.fsproj" />
   </ItemGroup>
 
   <ItemGroup>

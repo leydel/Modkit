@@ -9,6 +9,14 @@
     <Compile Include="Nullable.fs" />
     <Compile Include="Task.fs" />
     <Compile Include="Overloads.fs" />
+    <Compile Include="Json.fs" />
+    <Compile Include="Http\Payload.fs" />
+    <Compile Include="Http\Http.fs" />
+    <Compile Include="Http\Response.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FSharp.SystemTextJson" Version="1.3.13" />
   </ItemGroup>
 
   <ItemGroup>
