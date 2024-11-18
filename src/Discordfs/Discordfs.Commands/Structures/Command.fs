@@ -1,6 +1,6 @@
 ﻿namespace Discordfs.Commands.Structures
 
-open Discordfs.Rest.Resources
+open Discordfs.Rest
 open Discordfs.Types
 open System.Collections.Generic
 

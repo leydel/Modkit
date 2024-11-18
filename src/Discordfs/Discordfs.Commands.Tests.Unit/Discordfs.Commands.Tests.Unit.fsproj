@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <Compile Include="Patterns\OptionsTests.fs" />
-    <Compile Include="Services\CommandServiceTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

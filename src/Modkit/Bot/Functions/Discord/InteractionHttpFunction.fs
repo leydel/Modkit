@@ -9,10 +9,10 @@ open Microsoft.Azure.Functions.Worker.Http
 open Microsoft.Extensions.Azure
 open Microsoft.Extensions.Logging
 open Microsoft.Extensions.Options
-open Modkit.Api.Common
 open Modkit.Bot.Common
 open Modkit.Bot.Configuration
 open System.Net
+open System.Net.Http
 open System.Threading.Tasks
 
 type InteractionHttpFunction (

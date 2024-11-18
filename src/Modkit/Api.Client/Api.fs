@@ -1,4 +1,4 @@
-﻿module Modkit.Api.Api
+﻿module Modkit.Api.Client.Api
 
 open Modkit.Api.Common
 open Modkit.Api.Functions.Http

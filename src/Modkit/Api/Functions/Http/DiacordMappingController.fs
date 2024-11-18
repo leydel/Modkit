@@ -8,6 +8,7 @@ open Modkit.Api.Common
 open Modkit.Api.Modules
 open System.Collections.Generic
 open System.Net
+open System.Net.Http
 open System.Text.Json
 open System.Text.Json.Serialization
 open System.Threading.Tasks
