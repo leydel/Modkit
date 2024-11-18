@@ -8,11 +8,12 @@ open Modkit.Api.Common
 open Modkit.Api.Modules
 open System
 open System.Net
+open System.Net.Http
 open System.Text.Json
 open System.Text.Json.Serialization
 open System.Threading.Tasks
 
-type CreateNotePayload = {
+type AddMemberNotePayload = {
     [<JsonPropertyName "message_id">] MessageId: string option
     [<JsonPropertyName "content">] Content: string
 }
@@ -49,7 +50,7 @@ type NoteController (logger: ILogger<NoteController>) =
     [<Function "AddMemberNote">]
     member _.AddMemberNote (
         [<HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "guilds/{guildId}/members/{memberId}/notes")>] req: HttpRequestData,
-        [<FromBody>] payload: CreateNotePayload,
+        [<FromBody>] payload: AddMemberNotePayload,
         [<CosmosDBInput(containerName = Constants.noteContainerName, databaseName = Constants.noteDatabaseName)>] container: Container,
         ctx: FunctionContext,
         guildId: string,

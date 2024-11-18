@@ -11,11 +11,12 @@
 	
   <ItemGroup>
     <Compile Include="Common\Constants.fs" />
-    <Compile Include="Common\Response.fs" />
+    <Compile Include="Common\Http.fs" />
     <Compile Include="Modules\Note.fs" />
     <Compile Include="Modules\DiacordMapping.fs" />
     <Compile Include="Functions\Http\NoteController.fs" />
     <Compile Include="Functions\Http\DiacordMappingController.fs" />
+    <Compile Include="Api.fs" />
     <Compile Include="Program.fs" />
     <Content Include="local.settings.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="host.json" CopyToOutputDirectory="PreserveNewest" />
@@ -32,7 +33,9 @@
   </ItemGroup>
 	
   <ItemGroup>
-    <ProjectReference Include="..\..\Discordfs\Discordfs\Discordfs.fsproj" />
+    <ProjectReference Include="..\..\Shared\Extensions\Extensions.fsproj" />
+    <ProjectReference Include="..\..\Shared\HttpUtils\HttpUtils.fsproj" />
+    <ProjectReference Include="..\..\Shared\JsonUtils\JsonUtils.fsproj" />
   </ItemGroup>
 	
   <ItemGroup>

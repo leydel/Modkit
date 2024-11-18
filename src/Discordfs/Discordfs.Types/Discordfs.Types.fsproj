@@ -44,7 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Discordfs.Common\Discordfs.Common.fsproj" />
+    <ProjectReference Include="..\..\Shared\JsonUtils\JsonUtils.fsproj" />
   </ItemGroup>
 
   <ItemGroup>

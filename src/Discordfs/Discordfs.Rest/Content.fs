@@ -4,6 +4,7 @@ open Discordfs.Rest.Common
 open Discordfs.Types
 open System
 open System.Collections.Generic
+open System.Net.Http
 open System.Text.Json
 open System.Text.Json.Serialization
 

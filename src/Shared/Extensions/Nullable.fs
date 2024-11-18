@@ -1,7 +1,4 @@
-﻿[<AutoOpen>]
-module Nullable
-
-open System
+﻿module System.Nullable
 
 let toOption (v: Nullable<'a>) =
     if v.HasValue then Some v.Value

@@ -1,4 +1,4 @@
-﻿module Modkit.Api.Common.Response
+﻿module System.Net.Http.Response
 
 open Microsoft.Azure.Functions.Worker.Http
 open System.Text.Json

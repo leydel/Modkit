@@ -1,9 +1,10 @@
-﻿namespace Discordfs.Rest.Common
+﻿namespace System.Net.Http
 
 open System.Collections.Generic
-open System.Net.Http
 open System.Net.Http.Headers
 open System.Text.Json
+
+// TODO: Create alternative approach for creating payloads (operation to add record directly?)
 
 [<AutoOpen>]
 module Payload =
@@ -87,3 +88,11 @@ module Payload =
     [<AbstractClass>]
     type Payload() =
         abstract member Content: IPayloadBuilder
+
+    type JsonPayloadImpl<'a> (content: 'a) =
+        inherit Payload()
+
+        override _.Content = JsonPayload content
+
+    let fromObj<'a> (value: 'a) =
+        JsonPayloadImpl value :> Payload

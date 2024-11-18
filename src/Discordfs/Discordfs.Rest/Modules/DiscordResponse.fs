@@ -1,6 +1,5 @@
 ﻿namespace Discordfs.Rest
 
-open Discordfs.Rest.Common
 open Discordfs.Rest.Types
 open System
 open System.Net.Http

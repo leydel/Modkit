@@ -1,20 +1,11 @@
-﻿namespace Discordfs.Rest.Common
+﻿namespace System.Net.Http
 
 open System
-open System.Net.Http
 open System.Text.Json
 open System.Threading.Tasks
 open System.Web
 
-[<AutoOpen>]
 module Http =
-    //let send (httpClientFactory: IHttpClientFactory) (req: HttpRequestMessage) =
-    //    httpClientFactory.CreateClient().SendAsync req
-    let send (httpClientFactory) (req: HttpRequestMessage) =
-        Task.FromResult <| new HttpResponseMessage()
-
-    // TODO: Remove all remaining uses of Http.send then delete this (only keeping to prevent build failures)
-
     let toJson<'a> (res: HttpResponseMessage) =
         res.Content.ReadAsStringAsync()
         |> Task.map (fun body -> Json.deserializeF<'a> body) 
@@ -22,41 +13,48 @@ module Http =
     let toRaw (res: HttpResponseMessage) =
         res.Content.ReadAsStringAsync()
 
-    type RequestBuilder() =
+    type RequestBuilder(host: string) =
+        member val Host = host with get, set
         member val HttpRequestMessage = new HttpRequestMessage()
 
         member this.Yield(_) =
             this
 
         [<CustomOperation>]
+        member this.host (_, host: string) =
+            this.Host <- host
+
+            this.HttpRequestMessage
+
+        [<CustomOperation>]
         member this.get (_, endpoint: string) =
-            this.HttpRequestMessage.RequestUri <- new Uri(Constants.DISCORD_API_URL + "/" + endpoint)
+            this.HttpRequestMessage.RequestUri <- new Uri(this.Host + "/" + endpoint)
             this.HttpRequestMessage.Method <- HttpMethod.Get
 
             this.HttpRequestMessage
 
         [<CustomOperation>]
         member this.post (_, endpoint: string) =
-            this.HttpRequestMessage.RequestUri <- new Uri(Constants.DISCORD_API_URL + "/" + endpoint)
+            this.HttpRequestMessage.RequestUri <- new Uri(this.Host + "/" + endpoint)
             this.HttpRequestMessage.Method <- HttpMethod.Post
 
             this.HttpRequestMessage
 
         [<CustomOperation>]
         member this.put (_, endpoint: string) =
-            this.HttpRequestMessage.RequestUri <- new Uri(Constants.DISCORD_API_URL + "/" + endpoint)
+            this.HttpRequestMessage.RequestUri <- new Uri(this.Host + "/" + endpoint)
             this.HttpRequestMessage.Method <- HttpMethod.Put
 
         [<CustomOperation>]
         member this.patch (_, endpoint: string) =
-            this.HttpRequestMessage.RequestUri <- new Uri(Constants.DISCORD_API_URL + "/" + endpoint)
+            this.HttpRequestMessage.RequestUri <- new Uri(this.Host + "/" + endpoint)
             this.HttpRequestMessage.Method <- HttpMethod.Patch
 
             this.HttpRequestMessage
 
         [<CustomOperation>]
         member this.delete (_, endpoint: string) =
-            this.HttpRequestMessage.RequestUri <- new Uri(Constants.DISCORD_API_URL + "/" + endpoint)
+            this.HttpRequestMessage.RequestUri <- new Uri(this.Host + "/" + endpoint)
             this.HttpRequestMessage.Method <- HttpMethod.Delete
 
             this.HttpRequestMessage
@@ -126,6 +124,4 @@ module Http =
             this.HttpRequestMessage.Content <- content
             
             this.HttpRequestMessage
-
-    let req = RequestBuilder()
     
