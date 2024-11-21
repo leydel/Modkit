@@ -1,6 +1,5 @@
 ﻿module Discordfs.Rest.Rest
 
-open Discordfs.Rest.Common
 open Discordfs.Rest.Modules
 open Discordfs.Types
 open System

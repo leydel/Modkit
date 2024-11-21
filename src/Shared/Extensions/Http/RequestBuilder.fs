@@ -5,79 +5,81 @@ open System.Web
 
 [<AutoOpen>]
 module RequestBuilder =
-    type RequestBuilder(host: string) =
-        member val Host = host with get, set // TODO: Figure out neat way to clean this up
+    let private setPath host endpoint method (req: HttpRequestMessage) =
+        req.RequestUri <- new Uri(host + "/" + endpoint)
+        req.Method <- method
+        req
 
-        member _.Yield(_) = ()
+    let private addHeader key (value: string option) (req: HttpRequestMessage) =
+        match value with
+        | Some value -> req.Headers.Add(key, value); req
+        | None -> req
+
+    let private addQueryString key value (req: HttpRequestMessage) =
+        match value with
+        | Some value ->
+            let uriBuilder = UriBuilder(req.RequestUri)
+            let query = HttpUtility.ParseQueryString(uriBuilder.Query)
+            query.Add(key, value)
+            uriBuilder.Query <- query.ToString()
+            req.RequestUri <- uriBuilder.Uri
+            req
+        | None -> req
+
+    let private addPayload (payload: Payload) (req: HttpRequestMessage) =
+        let content = payload.Content.ToContent()
+        addHeader "Content-Type" (Some content.Headers.ContentType.MediaType) req |> ignore
+        req.Content <- content
+        req
+
+    type RequestBuilder (host) =
+        member val Host: string = host with get, set
+
+        member _.Yield(_: unit) = new HttpRequestMessage()
         member _.Yield(req: HttpRequestMessage) = req
 
+        /// Overwrite the host used to create the req computation expression.
         [<CustomOperation>]
-        member this.host (req: HttpRequestMessage, host: string) =
+        member this.host (req, host) =
             this.Host <- host
             req
 
         [<CustomOperation>]
-        member this.get (req: HttpRequestMessage, endpoint: string) =
-            req.RequestUri <- new Uri(this.Host + "/" + endpoint)
-            req.Method <- HttpMethod.Get
-            req
+        member this.get (req, endpoint) =
+            setPath this.Host endpoint HttpMethod.Get req
 
         [<CustomOperation>]
-        member this.post (req: HttpRequestMessage, endpoint: string) =
-            req.RequestUri <- new Uri(this.Host + "/" + endpoint)
-            req.Method <- HttpMethod.Post
-            req
+        member this.post (req, endpoint) =
+            setPath this.Host endpoint HttpMethod.Post req
 
         [<CustomOperation>]
-        member this.put (req: HttpRequestMessage, endpoint: string) =
-            req.RequestUri <- new Uri(this.Host + "/" + endpoint)
-            req.Method <- HttpMethod.Put
-            req
+        member this.put (req, endpoint) =
+            setPath this.Host endpoint HttpMethod.Put req
 
         [<CustomOperation>]
-        member this.patch (req: HttpRequestMessage, endpoint: string) =
-            req.RequestUri <- new Uri(this.Host + "/" + endpoint)
-            req.Method <- HttpMethod.Patch
-            req
+        member this.patch (req, endpoint) =
+            setPath this.Host endpoint HttpMethod.Patch req
 
         [<CustomOperation>]
-        member this.delete (req: HttpRequestMessage, endpoint: string) =
-            req.RequestUri <- new Uri(this.Host + "/" + endpoint)
-            req.Method <- HttpMethod.Delete
-            req
+        member this.delete (req, endpoint) =
+            setPath this.Host endpoint HttpMethod.Delete req
 
         [<CustomOperation>]
-        member _.header(req: HttpRequestMessage, key: string, value: string option) =
-            match value with
-            | Some value -> req.Headers.Add(key, value)
-            | None -> ()
-            req
+        member _.header(req, key, value) =
+            addHeader key value req
 
         [<CustomOperation>]
-        member this.header (req: HttpRequestMessage, key: string, value: string) =
-            this.header(req, key, Some value)
+        member _.header(req, key, value) =
+            addHeader key (Some value) req
 
         [<CustomOperation>]
-        member _.query(req: HttpRequestMessage, key: string, value: string option) =
-            match value with
-            | Some value ->
-                let uriBuilder = UriBuilder(req.RequestUri)
-                let query = HttpUtility.ParseQueryString(uriBuilder.Query)
-                query.Add(key, value)
-                uriBuilder.Query <- query.ToString()
-                req.RequestUri <- uriBuilder.Uri
-                req
-            | None -> req
+        member _.query(req, key, value) =
+            addQueryString key value req
 
         [<CustomOperation>]
-        member this.query(req: HttpRequestMessage, key: string, value: string) =
-            this.query(req, key, Some value)
+        member _.query(req, key, value) =
+            addQueryString key (Some value) req
 
         [<CustomOperation>]
         member _.payload(req: HttpRequestMessage, payload: Payload) =
-            let content = payload.Content.ToContent()
-
-            req.Headers.Add("Content-Type", content.Headers.ContentType.MediaType)
-            req.Content <- content
-            req
-    
+            addPayload payload req
