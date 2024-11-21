@@ -1,12 +1,9 @@
 ﻿[<AutoOpen>]
 module Overloads
 
-open System
 open System.Threading.Tasks
 
 // General purpose overloads
-[<Obsolete>]
-let inline (||>) (a, b) f = f a b
 let inline (!) f = f |> ignore
 
 // Option overloads

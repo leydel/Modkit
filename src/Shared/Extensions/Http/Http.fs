@@ -45,6 +45,8 @@ module Http =
             this.HttpRequestMessage.RequestUri <- new Uri(this.Host + "/" + endpoint)
             this.HttpRequestMessage.Method <- HttpMethod.Put
 
+            this.HttpRequestMessage
+
         [<CustomOperation>]
         member this.patch (_, endpoint: string) =
             this.HttpRequestMessage.RequestUri <- new Uri(this.Host + "/" + endpoint)
@@ -70,20 +72,6 @@ module Http =
             match value with
             | Some value -> this.HttpRequestMessage.Headers.Add(key, value)
             | None -> ()
-
-            this.HttpRequestMessage
-
-        [<CustomOperation>]
-        [<Obsolete>]
-        member this.bot (_, token: string) =
-            this.HttpRequestMessage.Headers.Add("Authorization", $"Bot {token}")
-
-            this.HttpRequestMessage
-
-        [<CustomOperation>]
-        [<Obsolete>]
-        member this.oauth (_, token: string) =
-            this.HttpRequestMessage.Headers.Add("Authorization", $"Bearer {token}")
 
             this.HttpRequestMessage
 
@@ -127,3 +115,4 @@ module Http =
             
             this.HttpRequestMessage
     
+        // TODO: Fix this builder to not use `this.HttpRequestMessage`
