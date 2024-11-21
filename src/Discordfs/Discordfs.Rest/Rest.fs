@@ -342,9 +342,9 @@ let createAutoModerationRule
     (client: BotClient) =
         req {
             post $"guilds/{guildId}/auto-moderation/rules"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<AutoModerationRule>
 
@@ -356,9 +356,9 @@ let modifyAutoModerationRule
     (client: BotClient) =
         req {
             patch $"guilds/{guildId}/auto-moderation/rules/{autoModerationRuleId}"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<AutoModerationRule>
 
@@ -369,8 +369,8 @@ let deleteAutoModerationRule
     (client: BotClient) =
         req {
             delete $"guilds/{guildId}/auto-moderation/rules/{autoModerationRuleId}"
-            audit auditLogReason
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asEmpty
 
@@ -392,9 +392,9 @@ let modifyChannel
     (client: BotClient) =
         req {
             patch $"channels/{channelId}"
-            audit auditLogReason
             payload (content.Payload)
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<Channel>
 
@@ -404,8 +404,8 @@ let deleteChannel
     (client: BotClient) =
         req {
             delete $"channels/{channelId}"
-            audit auditLogReason
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<Channel>
 
@@ -417,9 +417,9 @@ let editChannelPermissions
     (client: BotClient) =
         req {
             put $"channels/{channelId}/permissions/{overwriteId}"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asEmpty
 
@@ -439,9 +439,9 @@ let createChannelInvite
     (client: BotClient) =
         req {
             post $"channels/{channelId}/invites"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asOptionalJson<InviteWithMetadata>
 
@@ -452,8 +452,8 @@ let deleteChannelPermission
     (client: BotClient) =
         req {
             delete $"channels/{channelId}/permissions/{overwriteId}"
-            audit auditLogReason
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asEmpty
 
@@ -464,9 +464,9 @@ let followAnnouncementChannel
     (client: BotClient) =
         req {
             post $"channels/{channelId}/followers"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<FollowedChannel>
 
@@ -495,8 +495,8 @@ let pinMessage
     (client: BotClient) =
         req {
             put $"channels/{channelId}/pins/{messageId}"
-            audit auditLogReason
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asEmpty
 
@@ -507,8 +507,8 @@ let unpinMessage
     (client: BotClient) =
         req {
             delete $"channels/{channelId}/pins/{messageId}"
-            audit auditLogReason
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asEmpty
 
@@ -542,9 +542,9 @@ let startThreadFromMessage
     (client: BotClient) =
         req {
             post $"channels/{channelId}/messages/{messageId}/threads"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<Channel>
 
@@ -555,9 +555,9 @@ let startThreadWithoutMessage
     (client: BotClient) =
         req {
             post $"channels/{channelId}/threads"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<Channel>
 
@@ -568,9 +568,9 @@ let startThreadInForumOrMediaChannel
     (client: BotClient) =
         req {
             post $"channels/{channelId}/threads"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<StartThreadInForumOrMediaChannelOkResponse>
 
@@ -708,9 +708,9 @@ let createGuildEmoji
     (client: BotClient) =
         req {
             post $"guilds/{guildId}/emojis"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<Emoji>
         
@@ -722,9 +722,9 @@ let modifyGuildEmoji
     (client: BotClient) =
         req {
             patch $"guilds/{guildId}/emojis/{emojiId}"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<Emoji>
 
@@ -735,8 +735,8 @@ let deleteGuildEmoji
     (client: BotClient) =
         req {
             delete $"guilds/{guildId}/emojis/{emojiId}"
-            audit auditLogReason
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asEmpty
         
@@ -887,9 +887,9 @@ let modifyGuild
     (client: BotClient) =
         req {
             patch $"guilds/{guildId}"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<Guild>
 
@@ -918,9 +918,9 @@ let createGuildChannel
     (client: BotClient) =
         req {
             post $"guilds/{guildId}/channels"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<Channel>
 
@@ -1000,9 +1000,9 @@ let modifyGuildMember
     (client: BotClient) =
         req {
             patch $"guilds/{guildId}/members/{userId}"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asOptionalJson<GuildMember> // TODO: Double check this has both 200 and 204
 
@@ -1013,9 +1013,9 @@ let modifyCurrentMember
     (client: BotClient) =
         req {
             patch $"guilds/{guildId}/members/@me"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asOptionalJson<GuildMember> // TODO: Double check this has both 200 and 204
         
@@ -1027,8 +1027,8 @@ let addGuildMemberRole
     (client: BotClient) =
         req {
             put $"guilds/{guildId}/members/{userId}/roles/{roleId}"
-            audit auditLogReason
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asEmpty
 
@@ -1040,8 +1040,8 @@ let removeGuildMemberRole
     (client: BotClient) =
         req {
             delete $"guilds/{guildId}/members/{userId}/roles/{roleId}"
-            audit auditLogReason
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asEmpty
 
@@ -1052,8 +1052,8 @@ let removeGuildMember
     (client: BotClient) =
         req {
             delete $"guilds/{guildId}/members/{userId}"
-            audit auditLogReason
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asEmpty
 
@@ -1090,9 +1090,9 @@ let createGuildBan
     (client: BotClient) =
         req {
             put $"guilds/{guildId}/bans/{userId}"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asEmpty
 
@@ -1103,8 +1103,8 @@ let removeGuildBan
     (client: BotClient) =
         req {
             delete $"guilds/{guildId}/bans/{userId}"
-            audit auditLogReason
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asEmpty
 
@@ -1115,9 +1115,9 @@ let bulkGuildBan
     (client: BotClient) =
         req {
             post $"guilds/{guildId}/bulk-ban"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<BulkGuildBanOkResponse>
 
@@ -1147,9 +1147,9 @@ let createGuildRole
     (client: BotClient) =
         req {
             post $"guilds/{guildId}/roles"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<Role>
 
@@ -1160,9 +1160,9 @@ let modifyGuildRolePositions
     (client: BotClient) =
         req {
             patch $"guilds/{guildId}/channels"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<Role list>
 
@@ -1174,9 +1174,9 @@ let modifyGuildRole
     (client: BotClient) =
         req {
             patch $"guilds/{guildId}/roles/{roleId}"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<Role>
 
@@ -1187,9 +1187,9 @@ let modifyGuildMfaLevel
     (client: BotClient) =
         req {
             post $"guilds/{guildId}/mfa"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<GuildMfaLevel>
 
@@ -1200,8 +1200,8 @@ let deleteGuildRole
     (client: BotClient) =
         req {
             delete $"guilds/{guildId}/roles/{roleId}"
-            audit auditLogReason
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asEmpty
 
@@ -1225,9 +1225,9 @@ let beginGuildPrune
     (client: BotClient) =
         req {
             post $"guilds/{guildId}/prune"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<BeginGuildPruneOkResponse>
 
@@ -1265,8 +1265,8 @@ let deleteGuildIntegration
     (client: BotClient) =
         req {
             delete $"guilds/{guildId}/integrations/{integrationId}"
-            audit auditLogReason
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asEmpty
 
@@ -1286,9 +1286,9 @@ let modifyGuildWidget
     (client: BotClient) =
         req {
             patch $"guilds/{guildId}/widget"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<GuildWidgetSettings>
 
@@ -1337,9 +1337,9 @@ let modifyGuildWelcomeScreen
     (client: BotClient) =
         req {
             patch $"guilds/{guildId}/welcome-screen"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<WelcomeScreen>
 
@@ -1359,9 +1359,9 @@ let modifyGuildOnboarding
     (client: BotClient) =
         req {
             put $"guilds/{guildId}/onboarding"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<GuildOnboarding>
 
@@ -1385,9 +1385,9 @@ let createGuildScheduledEvent
     (client: BotClient) =
         req {
             post $"guilds/{guildId}/scheduled-events"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<GuildScheduledEvent>
 
@@ -1411,9 +1411,9 @@ let modifyGuildScheduledEvent
     (client: BotClient) =
         req {
             patch $"guilds/{guildId}/scheduled-events/{guildScheduledEventId}"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<GuildScheduledEvent>
 
@@ -1543,8 +1543,8 @@ let deleteInvite
     (client: BotClient) =
         req {
             delete $"invites/{inviteCode}"
-            audit auditLogReason
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<Invite>
 
@@ -1689,8 +1689,8 @@ let deleteMessage
     (client: BotClient) =
         req {
             delete $"channels/{channelId}/messages/{messageId}"
-            audit auditLogReason
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asEmpty
 
@@ -1701,9 +1701,9 @@ let bulkDeleteMessages
     (client: BotClient) =
         req {
             post $"channels/{channelId}/messages/bulk-delete"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asEmpty
 
@@ -1814,9 +1814,9 @@ let createGuildSoundboardSound
     (client: BotClient) =
         req {
             post $"guilds/{guildId}/soundboard-sounds"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<SoundboardSound>
 
@@ -1828,9 +1828,9 @@ let modifyGuildSoundboardSound
     (client: BotClient) =
         req {
             patch $"guilds/{guildId}/soundboard-sounds/{soundId}"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<SoundboardSound>
 
@@ -1841,8 +1841,8 @@ let deleteGuildSoundboardSound
     (client: BotClient) =
         req {
             delete $"guilds/{guildId}/soundboard-sounds/{soundId}"
-            audit auditLogReason
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asEmpty
 
@@ -1854,9 +1854,9 @@ let createStageInstance
     (client: BotClient) =
         req {
             post "stage_instances"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<StageInstance>
 
@@ -1876,9 +1876,9 @@ let modifyStageInstance
     (client: BotClient) =
         req {
             patch $"stage-instances/{channelId}"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<StageInstance>
 
@@ -1888,8 +1888,8 @@ let deleteStageInstance
     (client: BotClient) =
         req {
             delete $"stage-instances/{channelId}"
-            audit auditLogReason
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asEmpty
 
@@ -1938,9 +1938,9 @@ let createGuildSticker
     (client: BotClient) =
         req {
             post $"guilds/{guildId}/stickers"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<Sticker>
 
@@ -1952,9 +1952,9 @@ let modifyGuildSticker
     (client: BotClient) =
         req {
             patch $"guilds/{guildId}/stickers/{stickerId}"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<Sticker>
 
@@ -1965,8 +1965,8 @@ let deleteGuildSticker
     (client: BotClient) =
         req {
             delete $"guilds/{guildId}/stickers/{stickerId}"
-            audit auditLogReason
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asEmpty
 
@@ -2171,9 +2171,9 @@ let createWebhook
     (client: BotClient) =
         req {
             post $"channels/{channelId}/webhooks"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<Webhook>
 
@@ -2221,9 +2221,9 @@ let modifyWebhook
     (client: BotClient) =
         req {
             patch $"webhooks/{webhookId}"
-            audit auditLogReason
             payload content
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asJson<Webhook>
 
@@ -2245,8 +2245,8 @@ let deleteWebhook
     (client: BotClient) =
         req {
             delete $"webhooks/{webhookId}"
-            audit auditLogReason
         }
+        |> DiscordRequest.withAuditLogReason auditLogReason
         |> client.SendAsync
         ?>> DiscordResponse.asEmpty
 

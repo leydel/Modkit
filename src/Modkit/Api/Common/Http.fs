@@ -14,7 +14,7 @@ type ApiResponse<'a> = Result<'a, HttpStatusCode>
 module ApiResponse =
     let asJson<'a> (res: HttpResponseMessage) = task {
         match res.StatusCode with
-        | _ when res.IsSuccessStatusCode -> return! (Http.toJson<'a> res) ?> Ok
+        | _ when res.IsSuccessStatusCode -> return! res.Content.ReadAsStringAsync() ?> Json.deserializeF<'a> ?> Ok
         | status -> return Error status
     }
 
@@ -31,14 +31,14 @@ module ApiResponse =
 
             match length with
             | Some l when l = 0L -> return Option<'a>.None |> Ok
-            | _ -> return! (Http.toJson res) ?> Ok
+            | _ -> return! res.Content.ReadAsStringAsync() ?> Json.deserializeF<'a> ?> Some ?> Ok
         | status ->
             return Error status
     }
 
     let asRaw (res: HttpResponseMessage) = task {
         match res.StatusCode with
-        | _ when res.IsSuccessStatusCode -> return! (Http.toRaw res) ?> Ok
+        | _ when res.IsSuccessStatusCode -> return! res.Content.ReadAsStringAsync() ?> Ok
         | status -> return Error status
     }
 

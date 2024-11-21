@@ -28,12 +28,16 @@ module DiscordResponse =
             Status = res.StatusCode
         }
 
+    let private toJson<'a> (res: HttpResponseMessage) =
+        res.Content.ReadAsStringAsync()
+        ?> Json.deserializeF<'a>
+
     // Used in requests that return content in a success result
     let asJson<'a> (res: HttpResponseMessage) = task {
         match int res.StatusCode with
-        | _ when res.IsSuccessStatusCode -> return! (Http.toJson<'a> res) ?> withMetadata res ?> Ok
-        | v when v = 429 -> return! RateLimit <? (Http.toJson res) ?> withMetadata res ?> Error
-        | v when v >= 400 && v < 500 -> return! ClientError <? (Http.toJson res) ?> withMetadata res ?> Error
+        | _ when res.IsSuccessStatusCode -> return! (toJson<'a> res) ?> withMetadata res ?> Ok
+        | v when v = 429 -> return! RateLimit <? (toJson res) ?> withMetadata res ?> Error
+        | v when v >= 400 && v < 500 -> return! ClientError <? (toJson res) ?> withMetadata res ?> Error
         | _ -> return Unexpected (res.StatusCode) |> withMetadata res |> Error
     }
 
@@ -41,8 +45,8 @@ module DiscordResponse =
     let asEmpty (res: HttpResponseMessage) = task {
         match int res.StatusCode with
         | _ when res.IsSuccessStatusCode -> return Option<Empty>.None |> withMetadata res |> Ok
-        | v when v = 429 -> return! RateLimit <? (Http.toJson res) ?> withMetadata res ?> Error
-        | v when v >= 400 && v < 500 -> return! ClientError <? (Http.toJson res) ?> withMetadata res ?> Error
+        | v when v = 429 -> return! RateLimit <? (toJson res) ?> withMetadata res ?> Error
+        | v when v >= 400 && v < 500 -> return! ClientError <? (toJson res) ?> withMetadata res ?> Error
         | _ -> return Unexpected (res.StatusCode) |> withMetadata res |> Error
     }
 
@@ -54,22 +58,22 @@ module DiscordResponse =
 
             match length with
             | Some l when l = 0L -> return Option<'a>.None |> withMetadata res |> Ok
-            | _ -> return! (Http.toJson res) ?> withMetadata res ?> Ok
+            | _ -> return! (toJson res) ?> withMetadata res ?> Ok
 
         | v when v = 429 ->
-            return! RateLimit <? (Http.toJson res) ?> withMetadata res ?> Error
+            return! RateLimit <? (toJson res) ?> withMetadata res ?> Error
 
         | v when v >= 400 && v < 500 ->
-            return! ClientError <? (Http.toJson res) ?> withMetadata res ?> Error
+            return! ClientError <? (toJson res) ?> withMetadata res ?> Error
         | _ ->
             return Unexpected (res.StatusCode) |> withMetadata res |> Error
     }
 
     let asRaw (res: HttpResponseMessage) = task {
         match int res.StatusCode with
-        | _ when res.IsSuccessStatusCode -> return! (Http.toRaw res) ?> withMetadata res ?> Ok
-        | v when v = 429 -> return! RateLimit <? (Http.toJson res) ?> withMetadata res ?> Error
-        | v when v >= 400 && v < 500 -> return! ClientError <? (Http.toJson res) ?> withMetadata res ?> Error
+        | _ when res.IsSuccessStatusCode -> return! res.Content.ReadAsStringAsync() ?> withMetadata res ?> Ok
+        | v when v = 429 -> return! RateLimit <? (toJson res) ?> withMetadata res ?> Error
+        | v when v >= 400 && v < 500 -> return! ClientError <? (toJson res) ?> withMetadata res ?> Error
         | _ -> return Unexpected (res.StatusCode) |> withMetadata res |> Error 
     }
 

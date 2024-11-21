@@ -15,6 +15,7 @@
     <Compile Include="Types\RestTypes.fs" />
     <Compile Include="Modules\HttpClient.fs" />
     <Compile Include="Modules\DiscordError.fs" />
+    <Compile Include="Modules\DiscordRequest.fs" />
     <Compile Include="Modules\DiscordResponse.fs" />
     <Compile Include="Content.fs" />
     <Compile Include="Rest.fs" />

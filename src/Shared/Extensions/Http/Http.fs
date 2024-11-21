@@ -1,18 +1,9 @@
 ﻿namespace System.Net.Http
 
 open System
-open System.Text.Json
-open System.Threading.Tasks
 open System.Web
 
 module Http =
-    let toJson<'a> (res: HttpResponseMessage) =
-        res.Content.ReadAsStringAsync()
-        |> Task.map (fun body -> Json.deserializeF<'a> body) 
-
-    let toRaw (res: HttpResponseMessage) =
-        res.Content.ReadAsStringAsync()
-
     type RequestBuilder(host: string) =
         member val Host = host with get, set
         member val HttpRequestMessage = new HttpRequestMessage()
@@ -71,14 +62,6 @@ module Http =
         member this.header(_, key: string, value: string option) =
             match value with
             | Some value -> this.HttpRequestMessage.Headers.Add(key, value)
-            | None -> ()
-
-            this.HttpRequestMessage
-
-        [<CustomOperation>]
-        member this.audit(_, reason: string option) =
-            match reason with
-            | Some reason -> this.HttpRequestMessage.Headers.Add("X-Audit-Log-Reason", reason)
             | None -> ()
 
             this.HttpRequestMessage
