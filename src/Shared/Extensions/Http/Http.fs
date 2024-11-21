@@ -74,12 +74,14 @@ module Http =
             this.HttpRequestMessage
 
         [<CustomOperation>]
+        [<Obsolete>]
         member this.bot (_, token: string) =
             this.HttpRequestMessage.Headers.Add("Authorization", $"Bot {token}")
 
             this.HttpRequestMessage
 
         [<CustomOperation>]
+        [<Obsolete>]
         member this.oauth (_, token: string) =
             this.HttpRequestMessage.Headers.Add("Authorization", $"Bearer {token}")
 

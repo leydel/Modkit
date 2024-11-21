@@ -25,7 +25,7 @@ type PingCommandQueueFunction (logger: ILogger<PingCommandQueueFunction>) =
     ) = task {
         logger.LogInformation("Handling ping command for interaction {InteractionId}", interaction.Id)
 
-        let client = (options.Value.BotToken, httpClientFactory.CreateClient())
+        let client = httpClientFactory.CreateBotClient options.Value.BotToken
 
         let content = CreateInteractionResponsePayload({
             Type = InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE;
@@ -33,7 +33,7 @@ type PingCommandQueueFunction (logger: ILogger<PingCommandQueueFunction>) =
         })
 
         do! client
-            ||> Rest.createInteractionResponse interaction.Id interaction.Token (Some false) content
+            |> Rest.createInteractionResponse interaction.Id interaction.Token (Some false) content
             ?> (fun res ->
                 match res with
                 | Ok _ -> logger.LogInformation "Successfully ponged interaction"

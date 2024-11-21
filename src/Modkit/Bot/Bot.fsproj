@@ -11,6 +11,7 @@
 
 	<ItemGroup>
 		<Compile Include="Common\Constants.fs" />
+		<Compile Include="Extensions\IHttpClientFactoryExtensions.fs" />
 		<Compile Include="Configuration\DiscordOptions.fs" />
 		<Compile Include="Configuration\GatewayOptions.fs" />
 		<Compile Include="Functions\Commands\PingCommandQueueFunction.fs" />

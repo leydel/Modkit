@@ -1,6 +1,7 @@
 ﻿module Discordfs.Rest.Rest
 
 open Discordfs.Rest.Common
+open Discordfs.Rest.Modules
 open Discordfs.Rest.Types
 open Discordfs.Types
 open System
@@ -13,80 +14,68 @@ let createInteractionResponse
     (interactionToken: string)
     (withResponse: bool option)
     (content: CreateInteractionResponsePayload<'a>)
-    botToken
-    (httpClient: HttpClient) =
+    (client: BotClient) =
         req {
             post $"interactions/{interactionId}/{interactionToken}/callback"
-            bot botToken
             query "with_response" (withResponse >>. _.ToString())
             payload content
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asOptionalJson<InteractionCallbackResponse>
             
 let getOriginalInteractionResponse
     (interactionId: string)
     (interactionToken: string)
-    botToken
-    (httpClient: HttpClient) =
+    (client: BotClient) =
         req {
             get $"webhooks/{interactionId}/{interactionToken}/messages/@original"
-            bot botToken
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asJson<Message>
             
 let editOriginalInteractionResponse
     (interactionId: string)
     (interactionToken: string)
     (content: EditOriginalInteractionResponsePayload)
-    botToken
-    (httpClient: HttpClient) =
+    (client: BotClient) =
         req {
             patch $"webhooks/{interactionId}/{interactionToken}/messages/@original"
-            bot botToken
             payload content
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asJson<Message>
             
 let deleteOriginalInteractionResponse
     (interactionId: string)
     (interactionToken: string)
-    botToken
-    (httpClient: HttpClient) =
+    (client: BotClient) =
         req {
             delete $"webhooks/{interactionId}/{interactionToken}/messages/@original"
-            bot botToken
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asEmpty
             
 let createFollowUpMessage
     (applicationId: string)
     (interactionToken: string)
     (content: CreateFollowUpMessagePayload)
-    botToken
-    (httpClient: HttpClient) =
+    (client: BotClient) =
         req {
             post $"webhooks/{applicationId}/{interactionToken}"
-            bot botToken
             payload content
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asEmpty
             
 let getFollowUpMessage
     (applicationId: string)
     (interactionToken: string)
     (messageId: string)
-    botToken
-    (httpClient: HttpClient) =
+    (client: BotClient) =
         req {
             get $"webhooks/{applicationId}/{interactionToken}/messages/{messageId}"
-            bot botToken
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asJson<Message>
             
 let editFollowUpMessage
@@ -94,27 +83,23 @@ let editFollowUpMessage
     (interactionToken: string)
     (messageId: string)
     (content: EditFollowUpMessagePayload)
-    botToken
-    (httpClient: HttpClient) =
+    (client: BotClient) =
         req {
             patch $"webhooks/{applicationId}/{interactionToken}/messages/{messageId}"
-            bot botToken
             payload content
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asJson<Message>
             
 let deleteFollowUpMessage
     (applicationId: string)
     (interactionToken: string)
     (messageId: string)
-    botToken
-    (httpClient: HttpClient) =
+    (client: BotClient) =
         req {
             delete $"webhooks/{applicationId}/{interactionToken}/messages/{messageId}"
-            bot botToken
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asEmpty
 
 // ----- Application Command -----
@@ -122,119 +107,101 @@ let deleteFollowUpMessage
 let getGlobalApplicationCommands
     (applicationId: string)
     (withLocalizations: bool option)
-    botToken
-    (httpClient: HttpClient) =
+    (client: BotClient) =
         req {
             get $"applications/{applicationId}/commands"
-            bot botToken
             query "with_localizations" (withLocalizations >>. _.ToString())
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asJson<ApplicationCommand list>
             
 let createGlobalApplicationCommand
     (applicationId: string)
     (content: CreateGlobalApplicationCommandPayload)
-    botToken
-    (httpClient: HttpClient) =
+    (client: BotClient) =
         req {
             post $"applications/{applicationId}/commands"
-            bot botToken
             payload content
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asJson<ApplicationCommand>
             
 let getGlobalApplicationCommand
     (applicationId: string)
     (commandId: string)
-    botToken
-    (httpClient: HttpClient) =
+    (client: BotClient) =
         req {
             get $"applications/{applicationId}/commands/{commandId}"
-            bot botToken
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asJson<ApplicationCommand>
             
 let editGlobalApplicationCommand
     (applicationId: string)
     (commandId: string)
     (content: EditGlobalApplicationCommandPayload)
-    botToken
-    (httpClient: HttpClient) =
+    (client: BotClient) =
         req {
             patch $"applications/{applicationId}/commands/{commandId}"
-            bot botToken
             payload content
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asJson<ApplicationCommand>
             
 let deleteGlobalApplicationCommand
     (applicationId: string)
     (commandId: string)
-    botToken
-    (httpClient: HttpClient) =
+    (client: BotClient) =
         req {
             delete $"applications/{applicationId}/commands/{commandId}"
-            bot botToken
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asEmpty
             
 let bulkOverwriteGlobalApplicationCommands
     (applicationId: string)
     (content: BulkOverwriteGlobalApplicationCommandsPayload)
-    botToken
-    (httpClient: HttpClient) =
+    (client: BotClient) =
         req {
             put $"applications/{applicationId}/commands"
-            bot botToken
             payload content
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asJson<ApplicationCommand list>
             
 let getGuildApplicationCommands
     (applicationId: string)
     (guildId: string)
     (withLocalizations: bool option)
-    botToken
-    (httpClient: HttpClient) =
+    (client: BotClient) =
         req {
             get $"applications/{applicationId}/guilds/{guildId}/commands"
-            bot botToken
             query "with_localizations" (withLocalizations >>. _.ToString())
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asJson<ApplicationCommand list>
             
 let createGuildApplicationCommand
     (applicationId: string)
     (guildId: string)
     (content: CreateGuildApplicationCommandPayload)
-    botToken
-    (httpClient: HttpClient) =
+    (client: BotClient) =
         req {
             post $"applications/{applicationId}/guilds/{guildId}/commands"
-            bot botToken
             payload content
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asJson<ApplicationCommand>
             
 let getGuildApplicationCommand
     (applicationId: string)
     (guildId: string)
     (commandId: string)
-    botToken
-    (httpClient: HttpClient) =
+    (client: BotClient) =
         req {
             get $"applications/{applicationId}/guilds/{guildId}/commands/{commandId}"
-            bot botToken
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asJson<ApplicationCommand>
             
 let editGuildApplicationCommand
@@ -242,66 +209,56 @@ let editGuildApplicationCommand
     (guildId: string)
     (commandId: string)
     (content: EditGuildApplicationCommandPayload)
-    botToken
-    (httpClient: HttpClient) =
+    (client: BotClient) =
         req {
             patch $"applications/{applicationId}/guilds/{guildId}/commands/{commandId}"
-            bot botToken
             payload content
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asJson<ApplicationCommand>
             
 let deleteGuildApplicationCommand
     (applicationId: string)
     (guildId: string)
     (commandId: string)
-    botToken
-    (httpClient: HttpClient) =
+    (client: BotClient) =
         req {
             delete $"applications/{applicationId}/guilds/{guildId}/commands/{commandId}"
-            bot botToken
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asEmpty
             
 let bulkOverwriteGuildApplicationCommands
     (applicationId: string)
     (guildId: string)
     (content: BulkOverwriteGlobalApplicationCommandsPayload)
-    botToken
-    (httpClient: HttpClient) =
+    (client: BotClient) =
         req {
             put $"applications/{applicationId}/guilds/{guildId}/commands"
-            bot botToken
             payload content
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asJson<ApplicationCommand list>
             
 let getGuildApplicationCommandsPermissions
     (applicationId: string)
     (guildId: string)
-    botToken
-    (httpClient: HttpClient) =
+    (client: BotClient) =
         req {
             get $"applications/{applicationId}/guilds/{guildId}/commands/permissions"
-            bot botToken
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asJson<GuildApplicationCommandPermissions list>
             
 let getGuildApplicationCommandPermissions
     (applicationId: string)
     (guildId: string)
     (commandId: string)
-    botToken
-    (httpClient: HttpClient) =
+    (client: BotClient) =
         req {
             get $"applications/{applicationId}/guilds/{guildId}/commands/{commandId}/permissions"
-            bot botToken
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asJson<GuildApplicationCommandPermissions>
             
 let editApplicationCommandPermissions
@@ -309,14 +266,12 @@ let editApplicationCommandPermissions
     (guildId: string)
     (commandId: string)
     (content: EditApplicationCommandPermissions)
-    oauthToken
-    (httpClient: HttpClient) =
+    (client: OAuthClient) =
         req {
             put $"applications/{applicationId}/guilds/{guildId}/commands/{commandId}/permissions"
-            oauth oauthToken
             payload content
         }
-        |> httpClient.SendAsync
+        |> client.SendAsync
         ?>> DiscordResponse.asJson<GuildApplicationCommandPermissions>
 
 // ----- Application -----
