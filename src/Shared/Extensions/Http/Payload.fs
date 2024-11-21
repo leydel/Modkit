@@ -96,3 +96,5 @@ module Payload =
 
     let fromObj<'a> (value: 'a) =
         JsonPayloadImpl value :> Payload
+
+    // TODO: Refactor/rewrite these payloads to clean up usage

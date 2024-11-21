@@ -7,7 +7,7 @@ open System.Text.Json
 
 [<AutoOpen>]
 module Req =
-    let req = Http.RequestBuilder("This should be replaced by `httpClient.BaseAddress.ToString()`")
+    let req = RequestBuilder("This should be replaced by `httpClient.BaseAddress.ToString()`")
 
 type ApiResponse<'a> = Result<'a, HttpStatusCode>
 
