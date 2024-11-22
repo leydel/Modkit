@@ -1,13 +1,11 @@
 ﻿namespace Modkit.Bot.Functions
 
-open Discordfs.Webhook.Modules
 open Discordfs.Webhook.Types
 open Microsoft.Azure.Functions.Worker
 open Microsoft.Azure.Functions.Worker.Http
 open Microsoft.DurableTask.Client
 open Microsoft.Extensions.Logging
-open Microsoft.Extensions.Options
-open Modkit.Bot.Configuration
+open Modkit.Bot.Bindings
 open System.Net
 open System.Threading.Tasks
 
@@ -18,15 +16,10 @@ type WebhookEventHttpFunction (
     member _.Run (
         [<HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "events")>] req: HttpRequestData,
         [<FromBody>] webhookEvent: WebhookEvent,
-        [<FromBody>] body: string,
         [<DurableClient>] orchestrationClient: DurableTaskClient,
-        options: IOptions<DiscordOptions>
+        [<VerifyEd25519>] verified: bool
     ) = task {
-        let publicKey = options.Value.PublicKey
-        let signature = req.Headers.GetValueOption "X-Signature-Ed25519" >>? ""
-        let timestamp = req.Headers.GetValueOption "X-Signature-Timestamp" >>? ""
-
-        match Ed25519.verify timestamp body signature publicKey with
+        match verified with
         | false ->
             logger.LogInformation $"Failed to verify ed25519"
             return req.CreateResponse HttpStatusCode.Unauthorized

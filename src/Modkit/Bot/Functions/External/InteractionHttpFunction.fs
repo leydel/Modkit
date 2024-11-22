@@ -2,17 +2,16 @@
 
 open Azure.Storage.Queues
 open Discordfs.Types
-open Discordfs.Webhook.Modules
 open Discordfs.Webhook.Types
 open Microsoft.Azure.Functions.Worker
 open Microsoft.Azure.Functions.Worker.Http
 open Microsoft.Extensions.Azure
 open Microsoft.Extensions.Logging
-open Microsoft.Extensions.Options
+open Modkit.Bot.Bindings
 open Modkit.Bot.Common
-open Modkit.Bot.Configuration
 open System.Net
 open System.Net.Http
+open System.Text.Json
 open System.Threading.Tasks
 
 type InteractionHttpFunction (
@@ -25,14 +24,9 @@ type InteractionHttpFunction (
     member _.Run (
         [<HttpTrigger(AuthorizationLevel.Anonymous, "post", "interactions")>] req: HttpRequestData,
         [<FromBody>] event: InteractionReceiveEvent,
-        [<FromBody>] body: string,
-        options: IOptions<DiscordOptions>
+        [<VerifyEd25519>] verified: bool
     ) = task {
-        let publicKey = options.Value.PublicKey
-        let signature = req.Headers.GetValueOption "X-Signature-Ed25519" >>? ""
-        let timestamp = req.Headers.GetValueOption "X-Signature-Timestamp" >>? ""
-
-        match Ed25519.verify timestamp body signature publicKey with
+        match verified with
         | false ->
             logger.LogInformation $"Failed to verify ed25519"
             return req.CreateResponse HttpStatusCode.Unauthorized
@@ -52,7 +46,8 @@ type InteractionHttpFunction (
 
                 match queueName with
                 | Some queue ->
-                    do! queueServiceClient.GetQueueClient(queue).SendMessageAsync body :> Task
+                    let json = Json.serializeF interaction
+                    do! queueServiceClient.GetQueueClient(queue).SendMessageAsync json :> Task
 
                     logger.LogInformation("Queued message to handle application command interaction {InteractionId}", interaction.Id)
                     return req.CreateResponse HttpStatusCode.Accepted
@@ -65,15 +60,15 @@ type InteractionHttpFunction (
                         Data = MessageInteractionResponse.create (content = "Error: Command not found.")
                     }
 
-            | InteractionReceiveEvent.APPLICATION_COMMAND_AUTOCOMPLETE interaction ->
+            | InteractionReceiveEvent.APPLICATION_COMMAND_AUTOCOMPLETE _ ->
                 logger.LogError "Unhandled interaction type"
                 return req.CreateResponse HttpStatusCode.InternalServerError
 
-            | InteractionReceiveEvent.MESSAGE_COMPONENT interaction ->
+            | InteractionReceiveEvent.MESSAGE_COMPONENT _ ->
                 logger.LogError "Unhandled interaction type"
                 return req.CreateResponse HttpStatusCode.InternalServerError
 
-            | InteractionReceiveEvent.MODAL_SUBMIT interaction ->
+            | InteractionReceiveEvent.MODAL_SUBMIT _ ->
                 logger.LogError "Unhandled interaction type"
                 return req.CreateResponse HttpStatusCode.InternalServerError
 

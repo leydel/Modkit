@@ -13,6 +13,12 @@
 		<Compile Include="Extensions\IHttpClientFactoryExtensions.fs" />
 		<Compile Include="Configuration\DiscordOptions.fs" />
 		<Compile Include="Configuration\GatewayOptions.fs" />
+		<Compile Include="Bindings\VerifyEd25519\VerifyEd25519Options.fs" />
+		<Compile Include="Bindings\VerifyEd25519\VerifyEd25519OptionsSetup.fs" />
+		<Compile Include="Bindings\VerifyEd25519\VerifyEd25519BindingData.fs" />
+		<Compile Include="Bindings\VerifyEd25519\VerifyEd25519Converter.fs" />
+		<Compile Include="Bindings\VerifyEd25519\VerifyEd25519Attribute.fs" />
+		<Compile Include="Bindings\VerifyEd25519\VerifyEd25519Builder.fs" />
 		<Compile Include="Functions\Commands\PingCommandQueueFunction.fs" />
 		<Compile Include="Functions\WebhookEvents\ApplicationAuthorizedWebhookEventOrchestratorFunction.fs" />
 		<Compile Include="Functions\WebhookEvents\EntitlementCreateWebhookEventOrchestratorFunction.fs" />

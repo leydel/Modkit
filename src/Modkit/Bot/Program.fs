@@ -4,6 +4,7 @@ open Microsoft.Extensions.Azure
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
+open Modkit.Bot.Bindings
 open Modkit.Bot.Configuration
 open System.IO
 open System.Text.Json
@@ -12,6 +13,9 @@ HostBuilder()
     .ConfigureFunctionsWorkerDefaults(fun _ builder ->
         // Setup json serializer
         !builder.Services.Configure(fun (workerOptions: WorkerOptions) -> workerOptions.Serializer <- JsonObjectSerializer(Json.options))
+
+        // Setup bindings
+        VerifyEd25519Builder.configure builder
     )
     .ConfigureAppConfiguration(fun builder ->
         // Add environment variables to configuration
