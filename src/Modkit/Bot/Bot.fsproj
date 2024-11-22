@@ -4,8 +4,6 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<AzureFunctionsVersion>v4</AzureFunctionsVersion>
 		<OutputType>Exe</OutputType>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
 		<RootNamespace>Modkit.Bot</RootNamespace>
 	</PropertyGroup>
 
@@ -15,9 +13,12 @@
 		<Compile Include="Configuration\DiscordOptions.fs" />
 		<Compile Include="Configuration\GatewayOptions.fs" />
 		<Compile Include="Functions\Commands\PingCommandQueueFunction.fs" />
-		<Compile Include="Functions\Events\MessageCreateOrchestratorFunction.fs" />
+		<Compile Include="Functions\WebhookEvents\ApplicationAuthorizedWebhookEventOrchestratorFunction.fs" />
+		<Compile Include="Functions\WebhookEvents\EntitlementCreateWebhookEventOrchestratorFunction.fs" />
+		<Compile Include="Functions\GatewayEvents\MessageCreateOrchestratorFunction.fs" />
 		<Compile Include="Functions\Discord\InteractionHttpFunction.fs" />
-		<Compile Include="Functions\Discord\GatewayServiceBusFunction.fs" />
+		<Compile Include="Functions\Discord\WebhookEventHttpFunction.fs" />
+		<Compile Include="Functions\Discord\GatewayEventServiceBusFunction.fs" />
 		<Compile Include="Program.fs" />
 		<Content Include="local.settings.json" CopyToOutputDirectory="PreserveNewest" />
 		<Content Include="host.json" CopyToOutputDirectory="PreserveNewest" />

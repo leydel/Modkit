@@ -8,8 +8,8 @@ open Microsoft.Extensions.Logging
 open System.Text.Json
 open System.Threading.Tasks
 
-type GatewayServiceBusFunction (logger: ILogger<GatewayServiceBusFunction>) =
-    [<Function(nameof GatewayServiceBusFunction)>]
+type GatewayEventServiceBusFunction (logger: ILogger<GatewayEventServiceBusFunction>) =
+    [<Function(nameof GatewayEventServiceBusFunction)>]
     member _.Run (
         [<ServiceBusTrigger("%Gateway:QueueName%")>] message: ServiceBusReceivedMessage,
         [<DurableClient>] orchestrationClient: DurableTaskClient,
