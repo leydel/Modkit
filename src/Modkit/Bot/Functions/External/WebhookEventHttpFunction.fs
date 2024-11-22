@@ -16,18 +16,17 @@ type WebhookEventHttpFunction (
 ) =
     [<Function(nameof WebhookEventHttpFunction)>]
     member _.Run (
-        [<HttpTrigger(AuthorizationLevel.Anonymous, "post", "events")>] req: HttpRequestData,
+        [<HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "events")>] req: HttpRequestData,
         [<FromBody>] webhookEvent: WebhookEvent,
+        [<FromBody>] body: string,
         [<DurableClient>] orchestrationClient: DurableTaskClient,
-        ctx: FunctionContext,
         options: IOptions<DiscordOptions>
     ) = task {
-        let! json = req.ReadAsStringAsync()
         let publicKey = options.Value.PublicKey
-        let signature = req.Headers.TryGetValues "X-Signature-Ed25519" |> fun (_, s) -> Seq.tryHead s >>? ""
-        let timestamp = req.Headers.TryGetValues "X-Signature-Timestamp" |> fun (_, s) -> Seq.tryHead s >>? ""
+        let signature = req.Headers.GetValueOption "X-Signature-Ed25519" >>? ""
+        let timestamp = req.Headers.GetValueOption "X-Signature-Timestamp" >>? ""
 
-        match Ed25519.verify timestamp json signature publicKey with
+        match Ed25519.verify timestamp body signature publicKey with
         | false ->
             logger.LogInformation $"Failed to verify ed25519"
             return req.CreateResponse HttpStatusCode.Unauthorized
@@ -38,14 +37,9 @@ type WebhookEventHttpFunction (
                 orchestrationClient.ScheduleNewOrchestrationInstanceAsync(name, input = event) :> Task
 
             match webhookEvent with
-            | WebhookEvent.PING _ ->
-                logger.LogInformation "Responding to ping webhook event"
-
-            | WebhookEvent.APPLICATION_AUTHORIZED { Event = event } ->
-                do! run (nameof ApplicationAuthorizedWebhookEventOrchestratorFunction) event.Data
-
-            | WebhookEvent.ENTITLEMENT_CREATE { Event = event } ->
-                do! run (nameof EntitlementCreateWebhookEventOrchestratorFunction) event.Data
+            | WebhookEvent.PING _ -> logger.LogInformation "Responding to ping webhook event"
+            | WebhookEvent.APPLICATION_AUTHORIZED { Event = event } -> do! run (nameof ApplicationAuthorizedWebhookEventOrchestratorFunction) event.Data
+            | WebhookEvent.ENTITLEMENT_CREATE { Event = event } -> do! run (nameof EntitlementCreateWebhookEventOrchestratorFunction) event.Data
 
             return req.CreateResponse HttpStatusCode.NoContent
     }

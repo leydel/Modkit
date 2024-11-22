@@ -12,8 +12,7 @@ type GatewayEventServiceBusFunction (logger: ILogger<GatewayEventServiceBusFunct
     [<Function(nameof GatewayEventServiceBusFunction)>]
     member _.Run (
         [<ServiceBusTrigger("%Gateway:QueueName%")>] message: ServiceBusReceivedMessage,
-        [<DurableClient>] orchestrationClient: DurableTaskClient,
-        ctx: FunctionContext
+        [<DurableClient>] orchestrationClient: DurableTaskClient
     ) = task {
         let json = message.Body.ToString()
         logger.LogDebug("Received raw json for gateway event: {Json}", json)

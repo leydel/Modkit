@@ -25,15 +25,14 @@ type InteractionHttpFunction (
     member _.Run (
         [<HttpTrigger(AuthorizationLevel.Anonymous, "post", "interactions")>] req: HttpRequestData,
         [<FromBody>] event: InteractionReceiveEvent,
-        ctx: FunctionContext,
+        [<FromBody>] body: string,
         options: IOptions<DiscordOptions>
     ) = task {
-        let! json = req.ReadAsStringAsync()
         let publicKey = options.Value.PublicKey
-        let signature = req.Headers.TryGetValues "X-Signature-Ed25519" |> fun (_, s) -> Seq.tryHead s >>? ""
-        let timestamp = req.Headers.TryGetValues "X-Signature-Timestamp" |> fun (_, s) -> Seq.tryHead s >>? ""
+        let signature = req.Headers.GetValueOption "X-Signature-Ed25519" >>? ""
+        let timestamp = req.Headers.GetValueOption "X-Signature-Timestamp" >>? ""
 
-        match Ed25519.verify timestamp json signature publicKey with
+        match Ed25519.verify timestamp body signature publicKey with
         | false ->
             logger.LogInformation $"Failed to verify ed25519"
             return req.CreateResponse HttpStatusCode.Unauthorized
@@ -46,7 +45,6 @@ type InteractionHttpFunction (
 
             | InteractionReceiveEvent.APPLICATION_COMMAND interaction ->
                 let name = interaction.Data >>. _.Name
-
                 let queueName =
                     match name with
                     | Some v when v = PingCommandQueueFunction.Metadata.Name -> Some (Constants.PingCommandQueueName)
@@ -54,7 +52,7 @@ type InteractionHttpFunction (
 
                 match queueName with
                 | Some queue ->
-                    do! queueServiceClient.GetQueueClient(queue).SendMessageAsync json :> Task
+                    do! queueServiceClient.GetQueueClient(queue).SendMessageAsync body :> Task
 
                     logger.LogInformation("Queued message to handle application command interaction {InteractionId}", interaction.Id)
                     return req.CreateResponse HttpStatusCode.Accepted

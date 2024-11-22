@@ -9,6 +9,7 @@
 
 	<ItemGroup>
 		<Compile Include="Common\Constants.fs" />
+		<Compile Include="Extensions\HttpHeadersCollectionExtensions.fs" />
 		<Compile Include="Extensions\IHttpClientFactoryExtensions.fs" />
 		<Compile Include="Configuration\DiscordOptions.fs" />
 		<Compile Include="Configuration\GatewayOptions.fs" />
@@ -16,9 +17,9 @@
 		<Compile Include="Functions\WebhookEvents\ApplicationAuthorizedWebhookEventOrchestratorFunction.fs" />
 		<Compile Include="Functions\WebhookEvents\EntitlementCreateWebhookEventOrchestratorFunction.fs" />
 		<Compile Include="Functions\GatewayEvents\MessageCreateOrchestratorFunction.fs" />
-		<Compile Include="Functions\Discord\InteractionHttpFunction.fs" />
-		<Compile Include="Functions\Discord\WebhookEventHttpFunction.fs" />
-		<Compile Include="Functions\Discord\GatewayEventServiceBusFunction.fs" />
+		<Compile Include="Functions\External\InteractionHttpFunction.fs" />
+		<Compile Include="Functions\External\WebhookEventHttpFunction.fs" />
+		<Compile Include="Functions\External\GatewayEventServiceBusFunction.fs" />
 		<Compile Include="Program.fs" />
 		<Content Include="local.settings.json" CopyToOutputDirectory="PreserveNewest" />
 		<Content Include="host.json" CopyToOutputDirectory="PreserveNewest" />
