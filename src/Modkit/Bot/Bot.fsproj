@@ -19,6 +19,7 @@
 		<Compile Include="Bindings\VerifyEd25519\VerifyEd25519Converter.fs" />
 		<Compile Include="Bindings\VerifyEd25519\VerifyEd25519Attribute.fs" />
 		<Compile Include="Bindings\VerifyEd25519\VerifyEd25519Builder.fs" />
+		<Compile Include="Functions\Commands\Notes\NoteAddCommandQueueFunction.fs" />
 		<Compile Include="Functions\Commands\PingCommandQueueFunction.fs" />
 		<Compile Include="Functions\WebhookEvents\ApplicationAuthorizedWebhookEventOrchestratorFunction.fs" />
 		<Compile Include="Functions\WebhookEvents\EntitlementCreateWebhookEventOrchestratorFunction.fs" />

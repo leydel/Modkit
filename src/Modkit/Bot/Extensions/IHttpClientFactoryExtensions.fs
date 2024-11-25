@@ -21,3 +21,9 @@ type System.Net.Http.IHttpClientFactory with
     member this.CreateOAuthClient token =
         let httpClient = this.CreateClient() 
         HttpClient.toOAuthClient token httpClient
+
+    member this.CreateApiClient () =
+        let httpClient = this.CreateClient()
+        // TODO: Add api key once implemented
+        httpClient
+        
