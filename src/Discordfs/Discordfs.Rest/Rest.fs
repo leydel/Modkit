@@ -802,6 +802,7 @@ let listEntitlements
     (limit: int option)
     (guildId: string option)
     (excludeEnded: bool option)
+    (excludeDeleted: bool option)
     (client: BotClient) =
         req {
             get $"applications/{applicationId}/entitlements"
@@ -812,9 +813,20 @@ let listEntitlements
             query "limit" (limit >>. _.ToString())
             query "guild_id" guildId
             query "exclude_ended" (excludeEnded >>. _.ToString())
+            query "exclude_deleted" (excludeDeleted >>. _.ToString())
         }
         |> client.SendAsync
         ?>> DiscordResponse.asJson<Entitlement list>
+
+let getEntitlement
+    (applicationId: string)
+    (entitlementId: string)
+    (client: BotClient) =
+        req {
+            get $"applications/{applicationId}/entitlements/{entitlementId}"
+        }
+        |> client.SendAsync
+        ?>> DiscordResponse.asJson<Entitlement>
 
 let consumeEntitlement
     (applicationId: string)
