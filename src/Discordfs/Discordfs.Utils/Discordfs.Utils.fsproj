@@ -9,6 +9,7 @@
     <Compile Include="Constants.fs" />
     <Compile Include="Snowflake.fs" />
     <Compile Include="MessageFormat.fs" />
+    <Compile Include="Cdn.fs" />
   </ItemGroup>
 
   <ItemGroup>
