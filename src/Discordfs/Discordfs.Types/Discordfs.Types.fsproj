@@ -7,36 +7,7 @@
 
   <ItemGroup>
     <Compile Include="Enums.fs" />
-    <Compile Include="Structures\User.fs" />
-    <Compile Include="Structures\GuildMember.fs" />
-    <Compile Include="Structures\Channel.fs" />
-    <Compile Include="Structures\Emoji.fs" />
-    <Compile Include="Structures\Sticker.fs" />
-    <Compile Include="Structures\Role.fs" />
-    <Compile Include="Structures\GuildScheduledEvent.fs" />
-    <Compile Include="Structures\GuildOnboarding.fs" />
-    <Compile Include="Structures\Guild.fs" />
-    <Compile Include="Structures\StageInstance.fs" />
-    <Compile Include="Structures\Voice.fs" />
-    <Compile Include="Structures\Soundboard.fs" />
-    <Compile Include="Structures\Application.fs" />
-    <Compile Include="Structures\Embed.fs" />
-    <Compile Include="Structures\Poll.fs" />
-    <Compile Include="Structures\Attachment.fs" />
-    <Compile Include="Structures\Reaction.fs" />
-    <Compile Include="Structures\Component.fs" />
-    <Compile Include="Structures\Message.fs" />
-    <Compile Include="Structures\Webhook.fs" />
-    <Compile Include="Structures\Invite.fs" />
-    <Compile Include="Structures\Monetisation.fs" />
-    <Compile Include="Structures\ApplicationCommand.fs" />
-    <Compile Include="Structures\ApplicationRoleConnection.fs" />
-    <Compile Include="Structures\Activity.fs" />
-    <Compile Include="Structures\Integration.fs" />
-    <Compile Include="Structures\Interaction.fs" />
-    <Compile Include="Structures\AutoModeration.fs" />
-    <Compile Include="Structures\AuditLog.fs" />
-    <Compile Include="Structures\Gateway.fs" />
+    <Compile Include="Structures.fs" />
   </ItemGroup>
 
   <ItemGroup>
