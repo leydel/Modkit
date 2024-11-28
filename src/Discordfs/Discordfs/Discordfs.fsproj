@@ -10,6 +10,7 @@
     <ProjectReference Include="..\Discordfs.Gateway\Discordfs.Gateway.fsproj" />
     <ProjectReference Include="..\Discordfs.Rest\Discordfs.Rest.fsproj" />
     <ProjectReference Include="..\Discordfs.Types\Discordfs.Types.fsproj" />
+    <ProjectReference Include="..\Discordfs.Utils\Discordfs.Utils.fsproj" />
     <ProjectReference Include="..\Discordfs.Webhook\Discordfs.Webhook.fsproj" />
   </ItemGroup>
 
