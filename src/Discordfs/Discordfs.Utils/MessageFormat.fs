@@ -1,5 +1,7 @@
 ﻿namespace Discordfs.Utils
 
+open System
+
 type TimestampStyle =
     | SHORT_TIME
     | LONG_TIME
@@ -53,6 +55,6 @@ module MessageFormat =
     let customAnimatedEmoji (name: string) (id: string) = $"<a:{name}:{id}>"
 
     /// Default style can be used through `TimestampStyle.zero()`
-    let timestamp (timestamp: int64) (style: TimestampStyle) = $"<t:{timestamp}:{style}>"
+    let timestamp (timestamp: DateTime) (style: TimestampStyle) = $"<t:{Math.Floor(timestamp.Subtract(DateTime.UnixEpoch).TotalMilliseconds)}:{style}>"
 
     let guildNavigation (id: string) (``type``: GuildNavigationType) = $"<{id}:{``type``}>"
