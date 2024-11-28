@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Constants.fs" />
+    <Compile Include="Snowflake.fs" />
+    <Compile Include="MessageFormat.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Discordfs.Types\Discordfs.Types.fsproj" />
+  </ItemGroup>
+
+</Project>
