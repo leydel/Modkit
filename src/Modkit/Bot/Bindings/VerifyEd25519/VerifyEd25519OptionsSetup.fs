@@ -8,9 +8,9 @@ type VerifyEd25519OptionsSetup (configuration: IConfiguration) =
     interface IConfigureNamedOptions<VerifyEd25519Options> with
         member _.Configure (name: string, options: VerifyEd25519Options) =
             let key =
-                match String.IsNullOrWhiteSpace name
+                match String.IsNullOrWhiteSpace name with
                 | false -> name
-                | true -> VerifyOptions.DefaultPublicKeyConfigurationName
+                | true -> VerifyEd25519Options.DefaultPublicKeyConfigurationName
 
             options.PublicKey <- configuration.GetValue<string> key
 
