@@ -1,12 +1,9 @@
 name: Deploy website to SWA
 
 on:
-  push:
-    branches:
-      - website
   workflow_dispatch:
 
-# TODO: Configure deployment to automatically run on changes to `Webiste` project
+# TODO: Configure deployment to automatically run on changes to `Website` project
 
 jobs:
   deploy:

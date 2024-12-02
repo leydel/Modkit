@@ -5,7 +5,7 @@ open Feliz
 
 [<ReactComponent>]
 let App () = React.fragment [
-    Html.p "Hello world"
+    Html.div []
 ]
 
 ReactDOM
