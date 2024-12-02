@@ -2,18 +2,16 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>Modkit.Gateway</RootNamespace>
+    <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Configuration\DiscordOptions.fs" />
-    <Compile Include="Configuration\ServiceBusOptions.fs" />
+    <Compile Include="Types\GatewayEventHandler.fs" />
+    <Compile Include="Managers\Shard.fs" />
     <Compile Include="Factories\ServiceBusClientFactory.fs" />
-    <Compile Include="Clients\Client.fs" />
+    <Compile Include="Factories\ShardFactory.fs" />
+    <Compile Include="WorkerNode.fs" />
     <Compile Include="Program.fs" />
-    <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
-    <None Include=".gitignore" />
     <None Include="Dockerfile" />
   </ItemGroup>
 
@@ -26,10 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Discordfs\Discordfs\Discordfs.fsproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="9.0.100" />
+    <ProjectReference Include="..\..\Shared\Extensions\Extensions.fsproj" />
   </ItemGroup>
 
 </Project>

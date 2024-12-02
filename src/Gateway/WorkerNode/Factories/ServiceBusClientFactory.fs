@@ -1,4 +1,4 @@
-﻿namespace Modkit.Gateway.Factories
+﻿namespace Modkit.Gateway.WorkerNode.Factories
 
 open Azure.Messaging.ServiceBus
 

@@ -1,6 +1,5 @@
-﻿open Modkit.Gateway.Clients
-open Modkit.Gateway.Configuration
-open Modkit.Gateway.Factories
+﻿open Modkit.Gateway.WorkerNode
+open Modkit.Gateway.WorkerNode.Factories
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
@@ -19,15 +18,11 @@ Host
     .ConfigureServices(fun services ->
         // Register services
         !services.AddHttpClient()
-        !services.AddSingleton<IServiceBusClientFactory, ServiceBusClientFactory>()
-        !services.AddTransient<Client>()
-
-        // Setup configuration options
-        !services.AddOptions<DiscordOptions>().Configure<IConfiguration>(fun s c -> c.GetSection(DiscordOptions.Key).Bind(s))
-        !services.AddOptions<ServiceBusOptions>().Configure<IConfiguration>(fun s c -> c.GetSection(ServiceBusOptions.Key).Bind(s))
+        !services.AddTransient<IServiceBusClientFactory, ServiceBusClientFactory>()
+        !services.AddTransient<IShardFactory, ShardFactory>()
     )
     .Build()
-    .Services.GetRequiredService<Client>()
+    .Services.GetRequiredService<WorkerNode>()
     .StartAsync()
 |> Async.AwaitTask
 |> Async.RunSynchronously
