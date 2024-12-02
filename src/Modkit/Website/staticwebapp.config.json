@@ -1,8 +1,13 @@
 {
   "routes": [
     {
-      "route": "/*",
+      "route": "/discord",
       "redirect": "https://discord.gg/SFX3fJZ4NA",
+      "statusCode": 301
+    },
+    {
+      "route": "/*",
+      "redirect": "https://github.com/FinOCE/Modkit",
       "statusCode": 301
     }
   ]
