@@ -1,0 +1,9 @@
+{
+  "routes": [
+    {
+      "route": "/*",
+      "redirect": "https://discord.gg/SFX3fJZ4NA",
+      "statusCode": 301
+    }
+  ]
+}
