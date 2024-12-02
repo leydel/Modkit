@@ -53,8 +53,8 @@ module Cdn =
     let storePageAsset (applicationId: string) (assetId: string) =
         IMAGE_BASE_URL + $"app-assets/{applicationId}/store/{assetId}.png"
 
-    let stickerPackBanner (applicationId: string) (stickerPackBannerAssetId: string) =
-        IMAGE_BASE_URL + $"app-assets/{applicationId}/store/{stickerPackBannerAssetId}.png"
+    let stickerPackBanner (stickerPackBannerAssetId: string) =
+        IMAGE_BASE_URL + $"app-assets/710982414301790216/store/{stickerPackBannerAssetId}.png"
 
     let teamIcon (teamId: string) (teamIconHash: string) =
         IMAGE_BASE_URL + $"team-icons/{teamId}/{teamIconHash}.png"
