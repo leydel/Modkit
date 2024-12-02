@@ -6,12 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Discordfs.Commands\Discordfs.Commands.fsproj" />
-    <ProjectReference Include="..\Discordfs.Gateway\Discordfs.Gateway.fsproj" />
-    <ProjectReference Include="..\Discordfs.Rest\Discordfs.Rest.fsproj" />
+    <Compile Include="Constants.fs" />
+    <Compile Include="Snowflake.fs" />
+    <Compile Include="MessageFormat.fs" />
+    <Compile Include="Cdn.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Discordfs.Types\Discordfs.Types.fsproj" />
-    <ProjectReference Include="..\Discordfs.Utils\Discordfs.Utils.fsproj" />
-    <ProjectReference Include="..\Discordfs.Webhook\Discordfs.Webhook.fsproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -9,6 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="SnowflakeTests.fs" />
+    <Compile Include="MessageFormatTests.fs" />
+    <Compile Include="CdnTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -23,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Api\Api.fsproj" />
+    <ProjectReference Include="..\Discordfs.Utils\Discordfs.Utils.fsproj" />
   </ItemGroup>
 
   <ItemGroup>

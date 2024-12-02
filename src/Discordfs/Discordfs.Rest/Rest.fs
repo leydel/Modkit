@@ -3,6 +3,7 @@
 open Discordfs.Rest.Modules
 open Discordfs.Types
 open System
+open System.Net.Http
 
 // ----- Interaction -----
 
@@ -2334,7 +2335,7 @@ let getGateway
     (version: string)
     (encoding: GatewayEncoding)
     (compression: GatewayCompression option)
-    (client: BotClient) =
+    (client: HttpClient) =
         req {
             get "gateway"
             query "v" version

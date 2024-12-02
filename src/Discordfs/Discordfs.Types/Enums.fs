@@ -1119,6 +1119,7 @@ type ConnectionServiceType =
     | AMAZON_MUSIC
     | BATTLE_NET
     | BUNGIE
+    | CRUNCHYROLL
     | DOMAIN
     | EBAY
     | EPIC_GAMES
@@ -1147,6 +1148,7 @@ and ConnectionServiceTypeConverter () =
             | "amazon-music" -> ConnectionServiceType.AMAZON_MUSIC
             | "battlenet" -> ConnectionServiceType.BATTLE_NET
             | "bungie" -> ConnectionServiceType.BUNGIE
+            | "cruncyroll" -> ConnectionServiceType.CRUNCHYROLL
             | "domain" -> ConnectionServiceType.DOMAIN
             | "ebay" -> ConnectionServiceType.EBAY
             | "epicgames" -> ConnectionServiceType.EPIC_GAMES
@@ -1175,6 +1177,7 @@ and ConnectionServiceTypeConverter () =
                 | ConnectionServiceType.AMAZON_MUSIC -> "amazon-music"
                 | ConnectionServiceType.BATTLE_NET -> "battlenet"
                 | ConnectionServiceType.BUNGIE -> "bungie"
+                | ConnectionServiceType.CRUNCHYROLL -> "crunchyroll"
                 | ConnectionServiceType.DOMAIN -> "domain"
                 | ConnectionServiceType.EBAY -> "ebay"
                 | ConnectionServiceType.EPIC_GAMES -> "epicgames"
