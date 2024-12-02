@@ -31,6 +31,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - run: |
+          cd src/Modkit/Website
           dotnet tool restore
           dotnet restore
           npm ci
