@@ -16,6 +16,7 @@ open System.Threading.Tasks
 
 type PutApplicationPayload = {
     [<JsonPropertyName "token">] Token: string
+    [<JsonPropertyName "publicKey">] PublicKey: string
 }
 
 type ApplicationController (
@@ -60,7 +61,7 @@ type ApplicationController (
 
             | Ok _ ->
                 try
-                    let roleApp: RoleApp = { Id = app.Id; Token = payload.Token } // TODO: Encrypt token at rest
+                    let roleApp: RoleApp = { Id = app.Id; Token = payload.Token; PublicKey = payload.PublicKey } // TODO: Encrypt token at rest
                     do! container.UpsertItemAsync(roleApp, PartitionKey app.Id) :> Task
 
                     logger.LogInformation("Successfully updated application {ApplicationId}", app.Id)

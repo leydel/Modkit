@@ -16,6 +16,7 @@
 		<Compile Include="Functions\Http\ApplicationController.fs" />
 		<Compile Include="Functions\Web\LinkedRoleHttpFunction.fs" />
 		<Compile Include="Functions\Web\OAuthCallbackHttpFunction.fs" />
+		<Compile Include="Functions\External\InteractionHttpFunction.fs" />
 		<Compile Include="Program.fs" />
 		<Content Include="local.settings.json" CopyToOutputDirectory="PreserveNewest" />
 		<Content Include="host.json" CopyToOutputDirectory="PreserveNewest" />
