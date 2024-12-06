@@ -2,6 +2,7 @@
 
 open Discordfs.Rest
 open Discordfs.Rest.Modules
+open Microsoft.Azure.Cosmos
 open Microsoft.Azure.Functions.Worker
 open Microsoft.Azure.Functions.Worker.Http
 open Microsoft.Extensions.Logging
@@ -10,8 +11,11 @@ open Modkit.Roles.Common
 open Modkit.Roles.Configuration
 open Modkit.Roles.Modules
 open Modkit.Roles.Types
+open System
+open System.Collections.Generic
 open System.Net
 open System.Net.Http
+open System.Threading.Tasks
 
 type OAuthCallbackHttpFunction (
     logger: ILogger<OAuthCallbackHttpFunction>,
@@ -21,7 +25,8 @@ type OAuthCallbackHttpFunction (
     [<Function(nameof OAuthCallbackHttpFunction)>]
     member _.Run (
         [<HttpTrigger(AuthorizationLevel.Anonymous, "get", "applications/{applicationId}/oauth-callback")>] req: HttpRequestData,
-        [<CosmosDBInput(containerName = ROLE_APP_CONTAINER_NAME, databaseName = ROLE_APP_DATABASE_NAME, Id = "{applicationId}", PartitionKey = "{applicationId}")>] app: RoleApp option,
+        [<CosmosDBInput(containerName = ROLE_APP_CONTAINER_NAME, databaseName = DATABASE_NAME, Id = "{applicationId}", PartitionKey = "{applicationId}")>] app: RoleApp option,
+        [<CosmosDBInput(containerName = APP_USER_CONTAINER_NAME, databaseName = DATABASE_NAME)>] container: Container,
         applicationId: string
     ) = task {
         match app with
@@ -62,6 +67,8 @@ type OAuthCallbackHttpFunction (
             | _ ->
                 // TODO: Implement oauth2 endpoints into Discordfs.Rest (/oauth2/token for here, uses `code`)
                 let accessToken = "TEMPORARY UNTIL ABOVE TODO IS COMPLETED"
+                let accessTokenExpiry = DateTime.UtcNow
+                let refreshToken = "TEMPORARY UNTIL ABOVE TODO IS COMPLETED"
 
                 let client = httpClientFactory.CreateClient() |> HttpClient.toOAuthClient accessToken
 
@@ -75,13 +82,32 @@ type OAuthCallbackHttpFunction (
                     return res
 
                 | Ok { Data = user } ->
-                    // TODO: Save user to database (and store access/refresh tokens for updating connection metadata)
-                
-                    logger.LogInformation("Successfully saved oauth token for user {UserId}", user.Id)
-                
-                    let res = req.CreateResponse(HttpStatusCode.OK)
-                    do! res.WriteStringAsync("Successfully linked, you can now return to Discord.")
-                    return res
+                    try
+                        let appUser: AppUser = {
+                            Id = user.Id
+                            ApplicationId = app.Id
+                            AccessToken = accessToken
+                            AccessTokenExpiry = accessTokenExpiry
+                            RefreshToken = refreshToken
+                            Metadata = Dictionary<string, int>() // TODO: Figure out how metadata should be handled (change feed trigger too?)
+                        }
 
-                    // TODO: Redirect to some success page or respond with a nice page directly
+                        do! container.UpsertItemAsync(appUser, PartitionKey app.Id) :> Task
+
+                        // TODO: Figure out correct approach for handling existing users who reauthorize
+                
+                        logger.LogInformation("Successfully saved oauth token for user {UserId} on application {ApplicationId}", user.Id, app.Id)
+                
+                        let res = req.CreateResponse(HttpStatusCode.OK)
+                        do! res.WriteStringAsync("Successfully linked, you can now return to Discord.")
+                        return res
+
+                        // TODO: Redirect to some success page or respond with a nice page directly
+
+                    with | ex ->
+                        logger.LogError(ex, "Failed to upsert user {UserId} to application {ApplicationId}", user.Id, app.Id)
+
+                        let res = req.CreateResponse(HttpStatusCode.InternalServerError)
+                        do! res.WriteAsJsonAsync({| message = "Unexpectedly failed to save user" |})
+                        return res
     }

@@ -18,12 +18,12 @@ type LinkedRoleHttpFunction (
     [<Function(nameof LinkedRoleHttpFunction)>]
     member _.Run (
         [<HttpTrigger(AuthorizationLevel.Anonymous, "get", "applications/{applicationId}/linked-role")>] req: HttpRequestData,
-        [<CosmosDBInput(containerName = ROLE_APP_CONTAINER_NAME, databaseName = ROLE_APP_DATABASE_NAME, Id = "{applicationId}", PartitionKey = "{applicationId}")>] app: RoleApp option,
+        [<CosmosDBInput(containerName = ROLE_APP_CONTAINER_NAME, databaseName = DATABASE_NAME, Id = "{applicationId}", PartitionKey = "{applicationId}")>] app: RoleApp option,
         applicationId: string
     ) = task {
         match app with
         | None ->
-            logger.LogInformation("Attempted to redirect to oauth for app {ApplicationId} which ahsn't been configured", applicationId)
+            logger.LogInformation("Attempted to redirect to oauth for app {ApplicationId} which hasn't been configured", applicationId)
 
             let res = req.CreateResponse(HttpStatusCode.NotFound)
             do! res.WriteAsJsonAsync({| message = "Application does not exist" |})

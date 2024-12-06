@@ -26,7 +26,7 @@ type ApplicationController (
     [<Function "PostApplication">]
     member _.PostApplication (
         [<HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "applications")>] req: HttpRequestData,
-        [<CosmosDBInput(containerName = ROLE_APP_CONTAINER_NAME, databaseName = ROLE_APP_DATABASE_NAME)>] container: Container,
+        [<CosmosDBInput(containerName = ROLE_APP_CONTAINER_NAME, databaseName = DATABASE_NAME)>] container: Container,
         [<FromBody>] payload: PostApplicationPayload
     ) = task {
         let host = req.Url.GetLeftPart(UriPartial.Authority)
