@@ -14,7 +14,7 @@ open System.Net.Http
 open System.Text.Json.Serialization
 open System.Threading.Tasks
 
-type PutApplicationPayload = {
+type PostApplicationPayload = {
     [<JsonPropertyName "token">] Token: string
     [<JsonPropertyName "publicKey">] PublicKey: string
 }
@@ -27,7 +27,7 @@ type ApplicationController (
     member _.PostApplication (
         [<HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "applications")>] req: HttpRequestData,
         [<CosmosDBInput(containerName = ROLE_APP_CONTAINER_NAME, databaseName = ROLE_APP_DATABASE_NAME)>] container: Container,
-        [<FromBody>] payload: PutApplicationPayload
+        [<FromBody>] payload: PostApplicationPayload
     ) = task {
         let host = req.Url.GetLeftPart(UriPartial.Authority)
         let client = httpClientFactory.CreateClient() |> HttpClient.toBotClient payload.Token
