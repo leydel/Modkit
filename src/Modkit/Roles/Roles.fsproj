@@ -12,8 +12,10 @@
 		<Compile Include="Configuration\CryptoOptions.fs" />
 		<Compile Include="Types\RoleApp.fs" />
 		<Compile Include="Types\AppUser.fs" />
+		<Compile Include="Types\Condition.fs" />
 		<Compile Include="Modules\Crypto.fs" />
 		<Compile Include="Modules\Discord.fs" />
+		<Compile Include="Functions\Commands\Conditions\AddConditionCommand.fs" />
 		<Compile Include="Functions\Http\ApplicationController.fs" />
 		<Compile Include="Functions\Web\LinkedRoleHttpFunction.fs" />
 		<Compile Include="Functions\Web\OAuthCallbackHttpFunction.fs" />
@@ -31,6 +33,7 @@
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.CosmosDB" Version="4.11.0" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.DurableTask" Version="1.2.2" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.2.0" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Storage.Queues" Version="5.5.0" />
 	</ItemGroup>
 	
 	<ItemGroup>
