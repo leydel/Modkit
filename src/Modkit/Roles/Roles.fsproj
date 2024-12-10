@@ -12,7 +12,6 @@
 		<Compile Include="Configuration\CryptoOptions.fs" />
 		<Compile Include="Types\RoleApp.fs" />
 		<Compile Include="Types\AppUser.fs" />
-		<Compile Include="Types\Condition.fs" />
 		<Compile Include="Modules\Crypto.fs" />
 		<Compile Include="Modules\Discord.fs" />
 		<Compile Include="Functions\Commands\Conditions\AddConditionCommand.fs" />
