@@ -6,7 +6,6 @@ open System.IO
 open System.Net
 open System.Security.Cryptography
 open System.Text
-open System.Text.Json.Serialization
 
 open MediatR
 open Microsoft.Azure.Functions.Worker
@@ -19,10 +18,6 @@ open Modkit.Roles.Application.Commands
 open Modkit.Roles.Application.Queries
 
 open Modkit.Roles.Presentation.Common
-
-type PostApplicationPayload = {
-    [<JsonPropertyName "token">] Token: string
-}
 
 type WebController (
     mediator: IMediator,

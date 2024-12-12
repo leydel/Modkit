@@ -10,6 +10,7 @@
 	<ItemGroup>
 	  <Compile Include="Common\Constants.fs" />
 	  <Compile Include="Controllers\WebController.fs" />
+	  <Compile Include="Controllers\InteractionController.fs" />
 	  <Compile Include="Controllers\ApplicationController.fs" />
 	  <Compile Include="Program.fs" />
 	</ItemGroup>

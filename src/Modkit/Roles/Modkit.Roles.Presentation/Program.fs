@@ -1,11 +1,14 @@
-﻿open Azure.Core.Serialization
+﻿open System.Reflection
+open System.IO
+open System.Text.Json
+
+open Azure.Core.Serialization
 open Microsoft.Azure.Functions.Worker
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
+
 open Modkit.Roles.Application.Options
-open System.IO
-open System.Text.Json
 
 HostBuilder()
     .ConfigureFunctionsWorkerDefaults(fun _ builder ->
@@ -21,6 +24,8 @@ HostBuilder()
     )
     .ConfigureServices(fun ctx services ->
         // Register services
+        !services.AddMediatR(fun services -> !services.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()))
+        // TODO: Check if application project same assembly for above (or maybe just resolve manually?)
         !services.AddHttpClient()
         !services.AddLogging()
         !services.AddApplicationInsightsTelemetryWorkerService()
