@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<RootNamespace>Modkit.Roles.Domain</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="Entities\Application.fs" />
+		<Compile Include="Entities\User.fs" />
+	</ItemGroup>
+
+</Project>

@@ -1,4 +1,4 @@
-﻿namespace Modkit.Roles.Configuration
+﻿namespace Modkit.Roles.Application.Options
 
 type CryptoOptions () =
     static member Key = "Crypto"

@@ -1,34 +1,34 @@
-﻿namespace Modkit.Roles.Functions
+﻿namespace Modkit.Roles.Presentation.Controllers
+
+open System.Net
 
 open Discordfs.Types
 open Discordfs.Webhook.Modules
 open Discordfs.Webhook.Types
+open MediatR
 open Microsoft.Azure.Functions.Worker
 open Microsoft.Azure.Functions.Worker.Http
-open Microsoft.Extensions.Logging
-open Modkit.Roles.Common
-open Modkit.Roles.Types
-open System.Net
 
-type InteractionHttpFunction (
-    logger: ILogger<InteractionHttpFunction>
+open Modkit.Roles.Domain.Entities
+open Modkit.Roles.Application.Queries
+
+type InteractionController (
+    mediator: IMediator
 ) =
-    [<Function(nameof InteractionHttpFunction)>]
-    member _.Run (
+    [<Function "PostInteraction">]
+    member _.PostInteraction (
         [<HttpTrigger(AuthorizationLevel.Anonymous, "post", "applications/{applicationId}/interactions")>] req: HttpRequestData,
-        [<CosmosDBInput(containerName = ROLE_APP_CONTAINER_NAME, databaseName = DATABASE_NAME, Id = "{applicationId}", PartitionKey = "{applicationId}")>] app: RoleApp option,
         [<FromBody>] event: InteractionReceiveEvent,
         applicationId: string
     ) = task {
-        match app with
-        | None ->
-            logger.LogInformation("Failed to find application {ApplicationId}", applicationId)
-
-            let res = req.CreateResponse HttpStatusCode.NotFound
-            do! res.WriteAsJsonAsync {| message = "Application not found" |}
+        let! application = mediator.Send(GetApplicationFromIdQuery applicationId)
+        match application with
+        | Error _ ->
+            let res = req.CreateResponse(HttpStatusCode.NotFound)
+            do! res.WriteAsJsonAsync({| message = "Application does not exist" |})
             return res
 
-        | Some app ->
+        | Ok app ->
             let tryGetHeader name (headers: HttpHeadersCollection) =
                 match headers.Contains name with
                 | true -> headers.GetValues name |> Seq.tryHead
@@ -40,21 +40,17 @@ type InteractionHttpFunction (
 
             match Ed25519.verify body signature timestamp app.PublicKey with
             | false ->
-                logger.LogInformation("Failed to verify ed25519 for application {ApplicationId}", applicationId)
                 return req.CreateResponse HttpStatusCode.Unauthorized
 
             | true ->
                 match event with
                 | InteractionReceiveEvent.PING _ ->
-                    logger.LogInformation("Responding to ping interaction for application {ApplicationId}", applicationId)
-                    
                     let res = req.CreateResponse HttpStatusCode.OK
                     do! res.WriteAsJsonAsync { Type = InteractionCallbackType.PONG; Data = None }
                     return res
 
-                // TODO: Handle interaction events as required
+                // TODO: Handle interaction events as required (through mediator)
 
                 | _ ->
-                    logger.LogError("Unexpected interaction event received for application {ApplicationId}", applicationId)
                     return req.CreateResponse HttpStatusCode.InternalServerError
     }

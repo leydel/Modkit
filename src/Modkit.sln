@@ -59,19 +59,27 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Extensions", "Shared\Extens
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Api.Client", "Modkit\Api.Client\Api.Client.fsproj", "{1EFB96C0-ADF8-428C-B90D-DFF9C18DEE01}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Discordfs.Utils", "Discordfs\Discordfs.Utils\Discordfs.Utils.fsproj", "{FB8B38DD-3EC1-4C95-B69B-3DE5F8080A27}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Discordfs.Utils", "Discordfs\Discordfs.Utils\Discordfs.Utils.fsproj", "{FB8B38DD-3EC1-4C95-B69B-3DE5F8080A27}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Discordfs.Utils.Tests.Unit", "Discordfs\Discordfs.Utils.Tests.Unit\Discordfs.Utils.Tests.Unit.fsproj", "{72494BB6-4ED7-437B-8C40-18CE27071C71}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Discordfs.Utils.Tests.Unit", "Discordfs\Discordfs.Utils.Tests.Unit\Discordfs.Utils.Tests.Unit.fsproj", "{72494BB6-4ED7-437B-8C40-18CE27071C71}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Website", "Modkit\Website\Website.fsproj", "{4EC3F92E-A189-4815-A5E2-936CD693607D}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Website", "Modkit\Website\Website.fsproj", "{4EC3F92E-A189-4815-A5E2-936CD693607D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gateway", "Gateway", "{73A5C85E-AD74-45DF-97E1-40F27E7EB916}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WorkerNode", "Gateway\WorkerNode\WorkerNode.fsproj", "{6A931A0D-3D90-46CE-84E1-2D89F83C65CE}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "WorkerNode", "Gateway\WorkerNode\WorkerNode.fsproj", "{6A931A0D-3D90-46CE-84E1-2D89F83C65CE}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Orchestrator", "Gateway\Orchestrator\Orchestrator.fsproj", "{B7B64FF1-7E61-4720-84E4-76AA34779662}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Orchestrator", "Gateway\Orchestrator\Orchestrator.fsproj", "{B7B64FF1-7E61-4720-84E4-76AA34779662}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Roles", "Modkit\Roles\Roles.fsproj", "{5A519AC2-71B1-4DF2-9A83-C742B0D4B23F}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Roles", "Roles", "{2A33BC42-CE14-4569-979B-0FC842D99675}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Modkit.Roles.Domain", "Modkit\Roles\Modkit.Roles.Domain\Modkit.Roles.Domain.fsproj", "{6142FE4E-C70B-436D-BA04-51F9FDE2E098}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Modkit.Roles.Application", "Modkit\Roles\Modkit.Roles.Application\Modkit.Roles.Application.fsproj", "{D61AC995-9078-4A56-A1ED-3D2D10803D34}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Modkit.Roles.Infrastructure", "Modkit\Roles\Modkit.Roles.Infrastructure\Modkit.Roles.Infrastructure.fsproj", "{BAD453FF-E685-496A-A726-3598F45B3702}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Modkit.Roles.Presentation", "Modkit\Roles\Modkit.Roles.Presentation\Modkit.Roles.Presentation.fsproj", "{A5242D5F-88E5-4344-A794-61ED420B3ADF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -179,10 +187,22 @@ Global
 		{B7B64FF1-7E61-4720-84E4-76AA34779662}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7B64FF1-7E61-4720-84E4-76AA34779662}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7B64FF1-7E61-4720-84E4-76AA34779662}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5A519AC2-71B1-4DF2-9A83-C742B0D4B23F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5A519AC2-71B1-4DF2-9A83-C742B0D4B23F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5A519AC2-71B1-4DF2-9A83-C742B0D4B23F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5A519AC2-71B1-4DF2-9A83-C742B0D4B23F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6142FE4E-C70B-436D-BA04-51F9FDE2E098}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6142FE4E-C70B-436D-BA04-51F9FDE2E098}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6142FE4E-C70B-436D-BA04-51F9FDE2E098}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6142FE4E-C70B-436D-BA04-51F9FDE2E098}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D61AC995-9078-4A56-A1ED-3D2D10803D34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D61AC995-9078-4A56-A1ED-3D2D10803D34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D61AC995-9078-4A56-A1ED-3D2D10803D34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D61AC995-9078-4A56-A1ED-3D2D10803D34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAD453FF-E685-496A-A726-3598F45B3702}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAD453FF-E685-496A-A726-3598F45B3702}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAD453FF-E685-496A-A726-3598F45B3702}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAD453FF-E685-496A-A726-3598F45B3702}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5242D5F-88E5-4344-A794-61ED420B3ADF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5242D5F-88E5-4344-A794-61ED420B3ADF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5242D5F-88E5-4344-A794-61ED420B3ADF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5242D5F-88E5-4344-A794-61ED420B3ADF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -216,7 +236,11 @@ Global
 		{4EC3F92E-A189-4815-A5E2-936CD693607D} = {3AF421C4-689C-46A7-9F96-1429150EBFE9}
 		{6A931A0D-3D90-46CE-84E1-2D89F83C65CE} = {73A5C85E-AD74-45DF-97E1-40F27E7EB916}
 		{B7B64FF1-7E61-4720-84E4-76AA34779662} = {73A5C85E-AD74-45DF-97E1-40F27E7EB916}
-		{5A519AC2-71B1-4DF2-9A83-C742B0D4B23F} = {3AF421C4-689C-46A7-9F96-1429150EBFE9}
+		{2A33BC42-CE14-4569-979B-0FC842D99675} = {3AF421C4-689C-46A7-9F96-1429150EBFE9}
+		{6142FE4E-C70B-436D-BA04-51F9FDE2E098} = {2A33BC42-CE14-4569-979B-0FC842D99675}
+		{D61AC995-9078-4A56-A1ED-3D2D10803D34} = {2A33BC42-CE14-4569-979B-0FC842D99675}
+		{BAD453FF-E685-496A-A726-3598F45B3702} = {2A33BC42-CE14-4569-979B-0FC842D99675}
+		{A5242D5F-88E5-4344-A794-61ED420B3ADF} = {2A33BC42-CE14-4569-979B-0FC842D99675}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8FBB409A-BF16-45C1-A1A9-963CC88FA6B4}
