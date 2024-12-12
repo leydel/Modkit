@@ -10,9 +10,19 @@
 		<Compile Include="Options\CryptoOptions.fs" />
 		<Compile Include="Repositories\IApplicationRepository.fs" />
 		<Compile Include="Repositories\IUserRepository.fs" />
+		<Compile Include="Commands\CreateApplicationCommand.fs" />
+		<Compile Include="Commands\CreateUserCommand.fs" />
+		<Compile Include="Queries\GetApplicationFromIdQuery.fs" />
+		<Compile Include="Queries\GetApplicationFromTokenQuery.fs" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="MediatR" Version="12.4.1" />
+	  <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\Discordfs\Discordfs\Discordfs.fsproj" />
 	  <ProjectReference Include="..\Modkit.Roles.Domain\Modkit.Roles.Domain.fsproj" />
 	</ItemGroup>
 
