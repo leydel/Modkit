@@ -4,14 +4,15 @@ open System.Net
 
 open Discordfs.Types
 open Discordfs.Webhook.Types
-open MediatR
 open Microsoft.Azure.Functions.Worker
 open Microsoft.Azure.Functions.Worker.Http
+
+open Modkit.Roles.Application.Services
 
 open Modkit.Roles.Presentation.Modules
 open Modkit.Roles.Presentation.Middleware
 
-type InteractionController (mediator: ISender) =
+type InteractionController (interactionService: IInteractionService) =
     [<Function "PostInteraction">]
     [<VerifyEd25519>]
     member _.PostInteraction (
@@ -24,8 +25,19 @@ type InteractionController (mediator: ISender) =
             return! req.CreateResponse HttpStatusCode.OK
             |> withJson { Type = InteractionCallbackType.PONG; Data = None }
 
-        // TODO: Handle interaction events as required (through mediator)
+        | InteractionReceiveEvent.APPLICATION_COMMAND interaction ->
+            do! interactionService.HandleApplicationCommand interaction
+            return req.CreateResponse HttpStatusCode.Accepted
 
-        | _ ->
-            return req.CreateResponse HttpStatusCode.InternalServerError
+        | InteractionReceiveEvent.APPLICATION_COMMAND_AUTOCOMPLETE interaction ->
+            do! interactionService.HandleApplicationCommandAutocomplete interaction
+            return req.CreateResponse HttpStatusCode.Accepted
+
+        | InteractionReceiveEvent.MESSAGE_COMPONENT interaction ->
+            do! interactionService.HandleMessageComponent interaction
+            return req.CreateResponse HttpStatusCode.Accepted
+
+        | InteractionReceiveEvent.MODAL_SUBMIT interaction ->
+            do! interactionService.HandleModalSubmit interaction
+            return req.CreateResponse HttpStatusCode.Accepted
     }

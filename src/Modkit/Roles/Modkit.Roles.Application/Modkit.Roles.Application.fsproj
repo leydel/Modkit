@@ -14,6 +14,7 @@
 		<Compile Include="Commands\CreateUserCommand.fs" />
 		<Compile Include="Queries\GetLinkedRoleRedirectQuery.fs" />
 		<Compile Include="Queries\VerifyEd25519Query.fs" />
+		<Compile Include="Services\InteractionService.fs" />
 	</ItemGroup>
 
 	<ItemGroup>

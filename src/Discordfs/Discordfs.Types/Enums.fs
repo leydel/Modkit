@@ -93,6 +93,10 @@ type MessageType =
     | GUILD_INCIDENT_REPORT_FALSE_ALARM = 39
     | PURCHASE_NOTIFICATION = 44
 
+type MessageFlag =
+    | EPHEMERAL = 0b01000000
+    // TODO: Document remaining message flags
+
 type ChannelType =
     | GUILD_TEXT = 0
     | DM = 1
