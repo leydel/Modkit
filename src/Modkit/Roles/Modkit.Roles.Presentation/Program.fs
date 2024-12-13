@@ -1,5 +1,4 @@
-﻿open System.Reflection
-open System.IO
+﻿open System.IO
 open System.Text.Json
 
 open Azure.Core.Serialization
@@ -9,6 +8,9 @@ open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 
 open Modkit.Roles.Application.Options
+open Modkit.Roles.Application.Repositories
+open Modkit.Roles.Application.Services
+open Modkit.Roles.Infrastructure.Repositories
 
 open Modkit.Roles.Presentation.Middleware
 
@@ -27,15 +29,22 @@ HostBuilder()
     )
     .ConfigureServices(fun ctx services ->
         // Register services
-        !services.AddMediatR(fun services -> !services.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()))
-        // TODO: Check if application project same assembly for above (or maybe just resolve manually?)
+        !services.AddMediatR(fun services -> !services.RegisterServicesFromAssemblyContaining<InteractionService>()) // TODO: Test if correctly gets all command/query from Application assembly
         !services.AddHttpClient()
         !services.AddLogging()
         !services.AddApplicationInsightsTelemetryWorkerService()
         !services.ConfigureFunctionsApplicationInsights()
+        // TODO: Register CosmosClient
+        
+        !services.AddTransient<IInteractionService, InteractionService>()
 
         // Setup configuration options
         !services.AddOptions<CryptoOptions>().Configure<IConfiguration>(fun s c -> c.GetSection(CryptoOptions.Key).Bind(s))
+
+        // Setup repositories
+        !services.AddTransient<IApplicationRepository, ApplicationRepository>()
+        !services.AddTransient<IUserRepository, UserRepository>()
+
     )
     .Build()
     .RunAsync()

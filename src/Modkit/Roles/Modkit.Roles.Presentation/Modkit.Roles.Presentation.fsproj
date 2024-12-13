@@ -29,6 +29,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\..\..\Shared\Extensions\Extensions.fsproj" />
 	  <ProjectReference Include="..\Modkit.Roles.Application\Modkit.Roles.Application.fsproj" />
+	  <ProjectReference Include="..\Modkit.Roles.Infrastructure\Modkit.Roles.Infrastructure.fsproj" />
 	</ItemGroup>
 
 	<ItemGroup>
