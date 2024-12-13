@@ -9,7 +9,8 @@
 
 	<ItemGroup>
 	  <Compile Include="Common\Constants.fs" />
-	  <Compile Include="Middleware\Ed25519Middleware.fs" />
+	  <Compile Include="Modules\HttpResponseData.fs" />
+      <Compile Include="Middleware\Ed25519Middleware.fs" />
 	  <Compile Include="Controllers\WebController.fs" />
 	  <Compile Include="Controllers\InteractionController.fs" />
 	  <Compile Include="Controllers\ApplicationController.fs" />

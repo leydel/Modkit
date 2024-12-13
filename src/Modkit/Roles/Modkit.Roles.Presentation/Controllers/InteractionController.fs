@@ -8,11 +8,10 @@ open MediatR
 open Microsoft.Azure.Functions.Worker
 open Microsoft.Azure.Functions.Worker.Http
 
+open Modkit.Roles.Presentation.Modules
 open Modkit.Roles.Presentation.Middleware
 
-type InteractionController (
-    mediator: ISender
-) =
+type InteractionController (mediator: ISender) =
     [<Function "PostInteraction">]
     [<VerifyEd25519>]
     member _.PostInteraction (
@@ -22,9 +21,8 @@ type InteractionController (
     ) = task {
         match event with
         | InteractionReceiveEvent.PING _ ->
-            let res = req.CreateResponse HttpStatusCode.OK
-            do! res.WriteAsJsonAsync { Type = InteractionCallbackType.PONG; Data = None }
-            return res
+            return! req.CreateResponse HttpStatusCode.OK
+            |> withJson { Type = InteractionCallbackType.PONG; Data = None }
 
         // TODO: Handle interaction events as required (through mediator)
 
