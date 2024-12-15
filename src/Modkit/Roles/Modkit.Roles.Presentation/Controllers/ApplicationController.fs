@@ -14,6 +14,7 @@ open Modkit.Roles.Presentation.Modules
 
 type PostApplicationPayload = {
     [<JsonPropertyName "token">] Token: string
+    [<JsonPropertyName "clientSecret">] ClientSecret: string
 }
 
 type ApplicationController (mediator: ISender) =
@@ -23,7 +24,7 @@ type ApplicationController (mediator: ISender) =
         [<FromBody>] payload: PostApplicationPayload
     ) = task {
         let hostAuthority = req.Url.GetLeftPart UriPartial.Authority
-        let! createResult = mediator.Send(CreateApplicationCommand(payload.Token, hostAuthority))
+        let! createResult = mediator.Send(CreateApplicationCommand(payload.Token, payload.ClientSecret, hostAuthority))
         
         match createResult with
         | Error CreateApplicationCommandError.InvalidToken ->

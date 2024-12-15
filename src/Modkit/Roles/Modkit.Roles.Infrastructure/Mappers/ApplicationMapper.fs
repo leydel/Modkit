@@ -9,10 +9,12 @@ module ApplicationMapper =
         Id = application.Id
         Token = application.Token
         PublicKey = application.PublicKey
+        ClientSecret = application.ClientSecret
     }
 
     let toDomain (model: ApplicationModel): Application = {
         Id = model.Id
         Token = model.Token
         PublicKey = model.PublicKey
+        ClientSecret = model.ClientSecret
     }

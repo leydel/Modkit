@@ -22,12 +22,14 @@ type CreateUserCommandResponse = Result<User, CreateUserCommandError>
 
 type CreateUserCommand (
     code: string,
-    applicationId: string
+    applicationId: string,
+    hostAuthority: string
 ) =
     interface IRequest<CreateUserCommandResponse>
 
     member val Code = code with get, set
     member val ApplicationId = applicationId with get, set
+    member val HostAuthority = hostAuthority with get, set
 
 type CreateUserCommandHandler (
     applicationRepository: IApplicationRepository,
@@ -40,21 +42,24 @@ type CreateUserCommandHandler (
             match application with
             | Error _ -> return Error UnknownApplication
             | Ok app ->
-                // TODO: Implement oauth2 endpoints into Discordfs.Rest (/oauth2/token for here, uses `code`)
-                let accessToken = "TEMPORARY UNTIL ABOVE TODO IS COMPLETED"
-                let accessTokenExpiry = DateTime.UtcNow
-                let refreshToken = "TEMPORARY UNTIL ABOVE TODO IS COMPLETED"
+                let basicClient = httpClientFactory.CreateClient() |> HttpClient.toBasicClient app.Id app.ClientSecret
+                let authorizationCodeGrantPayload = AuthorizationCodeGrantPayload(req.Code, req.HostAuthority + $"/applications/{app.Id}/linked-role")
+                let! tokenResponse = basicClient |> Rest.authorizationCodeGrant authorizationCodeGrantPayload
 
-                let client = httpClientFactory.CreateClient() |> HttpClient.toOAuthClient accessToken
+                match tokenResponse with
+                | Error _ -> return Error OAuthTokenGenerationFailed
+                | Ok { Data = token } ->
+                    let client = httpClientFactory.CreateClient() |> HttpClient.toOAuthClient token.AccessToken
+                    let! res = DiscordClient.OAuth client |> Rest.getCurrentUser
 
-                let! res = DiscordClient.OAuth client |> Rest.getCurrentUser
-                match res with
-                | Error _ -> return Error DiscordUserFetchFailed
-                | Ok { Data = discordUser } ->
-                    let metadata = Dictionary<string, int>() // TODO: Figure out how metadata should be handled (change feed trigger too?)
+                    match res with
+                    | Error _ -> return Error DiscordUserFetchFailed
+                    | Ok { Data = discordUser } ->
+                        let metadata = Dictionary<string, int>() // TODO: Figure out how metadata should be handled (change feed trigger too?)
 
-                    // TODO: Figure out correct approach for handling existing users who reauthorize
+                        // TODO: Figure out correct approach for handling existing users who reauthorize
 
-                    let! user = userRepository.Put discordUser.Id app.Id accessToken accessTokenExpiry refreshToken metadata
-                    return user |> Result.mapError (fun _ -> DatabaseUpdateFailed)
+                        let accessTokenExpiry = DateTime.UtcNow.AddSeconds token.ExpiresIn
+                        let! user = userRepository.Put discordUser.Id app.Id token.AccessToken accessTokenExpiry token.RefreshToken metadata
+                        return user |> Result.mapError (fun _ -> DatabaseUpdateFailed)
         }

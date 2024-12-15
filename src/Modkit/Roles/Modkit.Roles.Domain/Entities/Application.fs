@@ -4,4 +4,5 @@ type Application = {
     Id: string
     Token: string
     PublicKey: string
+    ClientSecret: string
 }

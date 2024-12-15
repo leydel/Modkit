@@ -12,8 +12,12 @@ module ApplicationModel =
     [<Literal>]
     let PublicKey = "publicKey"
 
+    [<Literal>]
+    let ClientSecret = "clientSecret"
+
 type ApplicationModel = {
     [<JsonPropertyName(ApplicationModel.Id)>] Id: string
     [<JsonPropertyName(ApplicationModel.Token)>] Token: string
     [<JsonPropertyName(ApplicationModel.PublicKey)>] PublicKey: string
+    [<JsonPropertyName(ApplicationModel.ClientSecret)>] ClientSecret: string
 }

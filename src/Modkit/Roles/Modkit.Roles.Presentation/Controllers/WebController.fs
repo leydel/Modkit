@@ -56,6 +56,8 @@ type WebController (
         [<HttpTrigger(AuthorizationLevel.Anonymous, "get", "applications/{applicationId}/oauth-callback")>] req: HttpRequestData,
         applicationId: string
     ) = task {
+        let hostAuthority = req.Url.GetLeftPart UriPartial.Authority
+
         let code = req.Query.GetValues("code") |> Seq.tryHead
         let state = req.Query.GetValues("state") |> Seq.tryHead
         let cookie =
@@ -84,7 +86,7 @@ type WebController (
             |> withJson {| message = "State does not match" |}
             
         | Some code, _, _ ->
-            let! res = mediator.Send(CreateUserCommand(code, applicationId))
+            let! res = mediator.Send(CreateUserCommand(code, applicationId, hostAuthority))
             match res with
             | Error CreateUserCommandError.UnknownApplication ->
                 return! req.CreateResponse HttpStatusCode.NotFound

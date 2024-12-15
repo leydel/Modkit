@@ -19,11 +19,13 @@ type CreateApplicationCommandResponse = Result<Application, CreateApplicationCom
 
 type CreateApplicationCommand (
     token: string,
+    clientSecret: string,
     hostAuthority: string
 ) =
     interface IRequest<CreateApplicationCommandResponse>
 
     member val Token = token with get, set
+    member val ClientSecret = clientSecret with get, set
     member val HostAuthority = hostAuthority with get, set
 
 type CreateApplicationCommandHandler (
@@ -34,11 +36,13 @@ type CreateApplicationCommandHandler (
         member _.Handle (req, ct) = task {        
             let client = httpClientFactory.CreateClient() |> HttpClient.toBotClient req.Token
 
+            // TODO: Add test to ensure client secret is valid (how? client_credentials grant maybe?)
+
             let! currentApplication = client |> Rest.getCurrentApplication
             match currentApplication with
             | Error _ -> return Error InvalidToken
             | Ok { Data = app } ->
-                let! appResult = applicationRepository.Put app.Id req.Token app.VerifyKey
+                let! appResult = applicationRepository.Put app.Id req.Token app.VerifyKey req.ClientSecret
                 match appResult with
                 | Error _ -> return Error DatabaseUpdateFailed
                 | Ok application ->

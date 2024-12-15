@@ -14,11 +14,12 @@ type ApplicationRepository (cosmosClient: CosmosClient) =
     let container = cosmosClient.GetContainer(DATABASE_NAME, APPLICATION_CONTAINER_NAME)
 
     interface IApplicationRepository with
-        member _.Put applicationId token publicKey = task {
+        member _.Put applicationId token publicKey clientSecret = task {
             let model = {
                 Id = applicationId
                 Token = token
                 PublicKey = publicKey
+                ClientSecret = clientSecret
             }
 
             try
@@ -41,7 +42,10 @@ type ApplicationRepository (cosmosClient: CosmosClient) =
         member _.Update applicationId changes = task {
             let operations =
                 changes
-                |> List.map (function | ApplicationChange.Token t -> PatchOperation.Set("/" + ApplicationModel.Token, t))
+                |> List.map (function
+                    | ApplicationChange.Token t -> PatchOperation.Set("/" + ApplicationModel.Token, t)
+                    | ApplicationChange.ClientSecret cs -> PatchOperation.Set("/" + ApplicationModel.ClientSecret, cs)
+                )
 
             try
                 let! res = container.PatchItemAsync<ApplicationModel>(applicationId, PartitionKey applicationId, operations)

@@ -7,6 +7,7 @@ open Modkit.Roles.Domain.Entities
 
 type ApplicationChange =
     | Token of string
+    | ClientSecret of string
 
 [<Interface>]
 type IApplicationRepository =
@@ -14,6 +15,7 @@ type IApplicationRepository =
         applicationId: string ->
         token: string ->
         publicKey: string ->
+        clientSecret: string ->
         Task<Result<Application, HttpStatusCode>>
 
     abstract member Get:
