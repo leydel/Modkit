@@ -1422,7 +1422,69 @@ type GetGatewayBotOkResponse = {
 
 type GetCurrentAuthorizationInformationOkResponse = {
     [<JsonPropertyName "application">] Application: PartialApplication
-    [<JsonPropertyName "scopes">] Scopes: OAuth2Scope list
+    [<JsonPropertyName "scopes">] [<JsonConverter(typeof<OAuth2ScopeListConverter>)>] Scopes: OAuth2Scope list
     [<JsonPropertyName "expires">] Expires: DateTime
     [<JsonPropertyName "user">] User: User option
+}
+
+type AuthorizationCodeGrantPayload (
+    code:          string,
+    redirect_uri:  string
+) =
+    inherit Payload() with
+        override _.Content = urlencoded {
+            required "grant_type" "authorization_code"
+            required "code" code
+            required "redirect_uri" redirect_uri
+        }
+        
+type AuthorizationCodeGrantResponse = {
+    [<JsonPropertyName "access_token">] AccessToken: string
+    [<JsonPropertyName "token_type">] TokenType: string
+    [<JsonPropertyName "expires_in">] ExpiresIn: int
+    [<JsonPropertyName "refresh_token">] RefreshToken: string
+    [<JsonPropertyName "scope">] [<JsonConverter(typeof<OAuth2ScopeListConverter>)>] Scope: OAuth2Scope list
+}
+
+type RefreshTokenGrantPayload (
+    refresh_token: string
+) =
+    inherit Payload() with
+        override _.Content = urlencoded {
+            required "grant_type" "refresh_token"
+            required "refresh_token" refresh_token
+        }
+
+type RefreshTokenGrantResponse = {
+    [<JsonPropertyName "access_token">] AccessToken: string
+    [<JsonPropertyName "token_type">] TokenType: string
+    [<JsonPropertyName "expires_in">] ExpiresIn: int
+    [<JsonPropertyName "refresh_token">] RefreshToken: string
+    [<JsonPropertyName "scope">] [<JsonConverter(typeof<OAuth2ScopeListConverter>)>] Scope: OAuth2Scope list
+}
+
+type RevokeTokenPayload (
+    token:            string,
+    ?token_type_hint: TokenTypeHint
+) =
+    inherit Payload() with
+        override _.Content = urlencoded {
+            required "token" token
+            optional "token_type_hint" token_type_hint
+        }
+        
+type ClientCredentialsGrantPayload (
+    scope: OAuth2Scope list
+) =
+    inherit Payload() with
+        override _.Content = urlencoded {
+            required "grant_type" "client_credentials"
+            required "scope" scope
+        }
+
+type ClientCredentialsGrantResponse = {
+    [<JsonPropertyName "access_token">] AccessToken: string
+    [<JsonPropertyName "token_type">] TokenType: string
+    [<JsonPropertyName "expires_in">] ExpiresIn: int
+    [<JsonPropertyName "scope">] [<JsonConverter(typeof<OAuth2ScopeListConverter>)>] Scope: OAuth2Scope list
 }

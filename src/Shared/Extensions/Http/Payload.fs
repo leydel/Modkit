@@ -34,6 +34,33 @@ module Payload =
 
     let json = JsonPayloadBuilder()
 
+    type UrlEncodedPayloadBuilder() =
+        member val Properties: IDictionary<string, obj> = Dictionary()
+
+        member this.Yield(_) =
+            this
+
+        [<CustomOperation>]
+        member this.required (_, name: string, value: 'a) =
+            this.Properties.Add(name, value)
+            this
+
+        [<CustomOperation>]
+        member this.optional (_, name: string, value: 'a option) =
+            if value.IsSome then
+                this.Properties.Add(name, value)
+            this
+
+        interface IPayloadBuilder with
+            member this.ToContent () =
+                new FormUrlEncodedContent(
+                    this.Properties
+                    |> Seq.map (|KeyValue|)
+                    |> Seq.map (fun (k, v) -> KeyValuePair(k, v.ToString()))
+                )
+
+    let urlencoded = UrlEncodedPayloadBuilder()
+
     type JsonPayload<'a>(payload: 'a) =
         interface IPayloadBuilder with
             member _.ToContent () =

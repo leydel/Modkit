@@ -2377,3 +2377,43 @@ let getCurrentAuthorizationInformation
         }
         |> client.SendAsync
         ?>> DiscordResponse.asJson<GetCurrentAuthorizationInformationOkResponse>
+
+let authorizationCodeGrant
+    (content: AuthorizationCodeGrantPayload)
+    (client: BasicClient) =
+        req {
+            post "oauth2/token"
+            payload content
+        }
+        |> client.SendAsync
+        ?>> DiscordResponse.asJson<AuthorizationCodeGrantResponse>
+
+let refreshTokenGrant
+    (content: RefreshTokenGrantPayload)
+    (client: BasicClient) =
+        req {
+            post "oauth2/token"
+            payload content
+        }
+        |> client.SendAsync
+        ?>> DiscordResponse.asJson<RefreshTokenGrantResponse>
+
+let revokeToken
+    (content: RevokeTokenPayload)
+    (client: BasicClient) =
+        req {
+            post "oauth2/token/revoke"
+            payload content
+        }
+        |> client.SendAsync
+        ?>> DiscordResponse.asEmpty
+
+let clientCredentialsGrant
+    (content: ClientCredentialsGrantPayload)
+    (client: BasicClient) =
+        req {
+            post "oauth2/token"
+            payload content
+        }
+        |> client.SendAsync
+        ?>> DiscordResponse.asJson<ClientCredentialsGrantResponse>
