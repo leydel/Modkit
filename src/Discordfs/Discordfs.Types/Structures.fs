@@ -1054,14 +1054,60 @@ type MessageReference = {
     [<JsonPropertyName "fail_if_not_exists">] FailIfNotExists: bool option
 }
 
-type MessageInteractionMetadata = {
+[<JsonConverter(typeof<MessageInteractionMetadataConverter>)>]
+type MessageInteractionMetadata =
+    | APPLICATION_COMMAND of ApplicationCommandInteractionMetadata
+    | MESSAGE_COMPONENT of MessageComponentInteractionMetadata
+    | MODAL_SUBMIT of ModalSubmitInteractionMetadata
+
+and MessageInteractionMetadataConverter () =
+    inherit JsonConverter<MessageInteractionMetadata> ()
+
+    override _.Read (reader, typeToConvert, options) =
+        let success, document = JsonDocument.TryParseValue(&reader)
+        if not success then raise (JsonException())
+
+        let interactionType = document.RootElement.GetProperty "type" |> _.GetInt32() |> enum<InteractionType>
+        let json = document.RootElement.GetRawText()
+
+        match interactionType with
+        | InteractionType.APPLICATION_COMMAND -> MessageInteractionMetadata.APPLICATION_COMMAND <| Json.deserializeF<ApplicationCommandInteractionMetadata> json
+        | InteractionType.MESSAGE_COMPONENT -> MessageInteractionMetadata.MESSAGE_COMPONENT <| Json.deserializeF<MessageComponentInteractionMetadata> json
+        | InteractionType.MODAL_SUBMIT -> MessageInteractionMetadata.MODAL_SUBMIT <| Json.deserializeF<ModalSubmitInteractionMetadata> json
+        | _ -> failwith "Unexpected InteractionType provided"
+
+    override _.Write (writer, value, options) =
+        match value with
+        | MessageInteractionMetadata.APPLICATION_COMMAND a -> Json.serializeF a |> writer.WriteRawValue
+        | MessageInteractionMetadata.MESSAGE_COMPONENT m -> Json.serializeF m |> writer.WriteRawValue
+        | MessageInteractionMetadata.MODAL_SUBMIT m -> Json.serializeF m |> writer.WriteRawValue
+
+and ApplicationCommandInteractionMetadata = {
     [<JsonPropertyName "id">] Id: string
     [<JsonPropertyName "type">] Type: InteractionType
     [<JsonPropertyName "user">] User: User
-    [<JsonPropertyName "authorizing_integration_owners">] AuthorizingIntegrationOwners: Map<ApplicationIntegrationType, ApplicationIntegrationTypeConfiguration>
-    [<JsonPropertyName "original_response_message_id">] OriginalResponseMessage: string option
-    [<JsonPropertyName "interacted_message_id">] InteractedMessageId: string option
-    [<JsonPropertyName "triggering_interaction_metadata">] TriggeringInteractionMetadata: MessageInteractionMetadata option
+    [<JsonPropertyName "authorizing_integration_owners">] AuthorizingIntegrationOwners: Map<ApplicationIntegrationType, string>
+    [<JsonPropertyName "original_response_message_id">] OriginalResponseMessageId: string option
+    [<JsonPropertyName "target_user">] TargetUser: User option
+    [<JsonPropertyName "target_message_id">] TargetMessageId: string option
+}
+
+and MessageComponentInteractionMetadata = {
+    [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "type">] Type: InteractionType
+    [<JsonPropertyName "user">] User: User
+    [<JsonPropertyName "authorizing_integration_owners">] AuthorizingIntegrationOwners: Map<ApplicationIntegrationType, string>
+    [<JsonPropertyName "original_response_message_id">] OriginalResponseMessageId: string option
+    [<JsonPropertyName "interacted_message_id">] InteractedMessageId: string
+}
+
+and ModalSubmitInteractionMetadata = {
+    [<JsonPropertyName "id">] Id: string
+    [<JsonPropertyName "type">] Type: InteractionType
+    [<JsonPropertyName "user">] User: User
+    [<JsonPropertyName "authorizing_integration_owners">] AuthorizingIntegrationOwners: Map<ApplicationIntegrationType, string>
+    [<JsonPropertyName "original_response_message_id">] OriginalResponseMessageId: string option
+    [<JsonPropertyName "triggering_interaction_metadata">] TriggeringInteractionMetadata: MessageInteractionMetadataConverter // TODO: Find way to ensure this isn't a modal submit
 }
 
 type MessageInteraction = {
@@ -1271,8 +1317,9 @@ type Sku = {
 type Subscription = {
     [<JsonPropertyName "id">] Id: string
     [<JsonPropertyName "user_id">] UserId: string
-    [<JsonPropertyName "sku_id">] SkuId: string
+    [<JsonPropertyName "sku_ids">] SkuIds: string list
     [<JsonPropertyName "entitlement_ids">] EntitlmentIds: string list
+    [<JsonPropertyName "renewal_sku_ids">] RenewalSkuIds: string list option
     [<JsonPropertyName "current_period_start">] CurrentPeriodStart: DateTime
     [<JsonPropertyName "current_period_end">] CurrentPeriodEnd: DateTime
     [<JsonPropertyName "status">] Status: SubscriptionStatusType
