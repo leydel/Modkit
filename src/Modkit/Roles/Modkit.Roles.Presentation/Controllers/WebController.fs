@@ -100,6 +100,10 @@ type WebController (
                 return! req.CreateResponse HttpStatusCode.FailedDependency
                 |> withJson {| message = "Failed to fetch user from Discord" |}
 
+            | Error CreateUserCommandError.DiscordRoleConnectionUpdateFailed ->
+                return! req.CreateResponse HttpStatusCode.FailedDependency
+                |> withJson {| message = "Failed to update user metadata on Discord" |}
+
             | Error CreateUserCommandError.DatabaseUpdateFailed ->
                 return! req.CreateResponse HttpStatusCode.InternalServerError
                 |> withJson {| message = "Unexpectedly failed to save user internally" |}

@@ -1273,13 +1273,13 @@ type CreateGroupDmPayload (
 type UpdateCurrentUserApplicationRoleConnectionPayload (
     ?platform_name:     string,
     ?platform_username: string,
-    ?metadata:          ApplicationRoleConnectionMetadata
+    ?metadata:          IDictionary<string, string> // value is the "stringified value"
 ) =
     inherit Payload() with
         override _.Content = json {
             optional "platform_name" platform_name
             optional "platform_username" platform_username
-            optional "metadata" metadata // TODO: Test how "stringified values" work (not in openapi spec)
+            optional "metadata" metadata
         }
 
 // ----- Voice -----

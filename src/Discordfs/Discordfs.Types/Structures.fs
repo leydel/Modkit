@@ -1449,7 +1449,7 @@ with
 type ApplicationRoleConnection = {
     [<JsonPropertyName "platform_name">] PlatformName: string option
     [<JsonPropertyName "platform_username">] PlatformUsername: string option
-    [<JsonPropertyName "metadata">] Metadata: ApplicationRoleConnectionMetadata
+    [<JsonPropertyName "metadata">] Metadata: IDictionary<string, string> // value is the "stringified value" of the metadata
 }
 
 type ActivityTimestamps = {

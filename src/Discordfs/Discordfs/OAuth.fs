@@ -12,7 +12,7 @@ type OAuthGetGuildsParams =
 type OAuthUpdateRoleConnection = 
     | PlatformName of string
     | PlatformUsername of string
-    | Metadata of ApplicationRoleConnectionMetadata
+    | Metadata of (string * string) seq
 
 module OAuth =
     let getUser client = task {
@@ -45,10 +45,10 @@ module OAuth =
         return DiscordResponse.toOption res
     }
 
-    let updateRoleConnection (optionals: OAuthUpdateRoleConnection list) applicationId client = task {
+    let updateRoleConnection applicationId (optionals: OAuthUpdateRoleConnection list) client = task {
         let platformName = optionals |> List.tryPick (function | OAuthUpdateRoleConnection.PlatformName v -> Some v | _ -> None)
         let platformUsername = optionals |> List.tryPick (function | OAuthUpdateRoleConnection.PlatformUsername v -> Some v | _ -> None)
-        let metadata = optionals |> List.tryPick (function | OAuthUpdateRoleConnection.Metadata v -> Some v | _ -> None)
+        let metadata = optionals |> List.tryPick (function | OAuthUpdateRoleConnection.Metadata v -> dict v |> Some | _ -> None)
 
         let payload = UpdateCurrentUserApplicationRoleConnectionPayload(
             ?platform_name = platformName,

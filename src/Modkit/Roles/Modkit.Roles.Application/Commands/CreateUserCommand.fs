@@ -16,6 +16,7 @@ type CreateUserCommandError =
     | UnknownApplication
     | OAuthTokenGenerationFailed
     | DiscordUserFetchFailed
+    | DiscordRoleConnectionUpdateFailed
     | DatabaseUpdateFailed
 
 type CreateUserCommandResponse = Result<User, CreateUserCommandError>
@@ -54,19 +55,23 @@ type CreateUserCommandHandler (
                     match res with
                     | None -> return Error DiscordUserFetchFailed
                     | Some discordUser ->
-                        // TODO: Figure out correct approach for handling existing users who reauthorize
+                        // TODO: Check if role connection already exists and don't overwrite if existing (below assumes always new user)
 
-                        let accessTokenExpiry = DateTime.UtcNow.AddSeconds token.ExpiresIn
-                        let! user = userRepository.Put {
-                            Id = discordUser.Id
-                            ApplicationId = app.Id
-                            AccessToken = token.AccessToken
-                            AccessTokenExpiry = accessTokenExpiry
-                            RefreshToken = token.RefreshToken
-                            Metadata = []
-                        }
+                        let! roleConnection = client |> OAuth.updateRoleConnection app.Id [] // TODO: Check if any metadata/other has to be pushed
+                        match roleConnection with
+                        | None -> return Error DiscordRoleConnectionUpdateFailed
+                        | Some _ ->
+                            let accessTokenExpiry = DateTime.UtcNow.AddSeconds token.ExpiresIn
+                            let! user = userRepository.Put {
+                                Id = discordUser.Id
+                                ApplicationId = app.Id
+                                AccessToken = token.AccessToken
+                                AccessTokenExpiry = accessTokenExpiry
+                                RefreshToken = token.RefreshToken
+                                Metadata = []
+                            }
 
-                        return user |> Result.mapError (fun _ -> DatabaseUpdateFailed)
+                            return user |> Result.mapError (fun _ -> DatabaseUpdateFailed)
 
-                        // TODO: Should metadata be pushed to discord? I think it does
+            // TODO: Rewrite with ROP
         }
