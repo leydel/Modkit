@@ -2363,7 +2363,7 @@ let getGatewayBot
 // ----- OAuth2 -----
 
 let getCurrentBotApplicationInformation
-    (client: BotClient) =
+    (client: OAuthClient) =
         req {
             get "oauth2/applications/@me"
         }

@@ -5,7 +5,6 @@ open System.Collections.Generic
 open System.Net.Http
 
 open Discordfs
-open Discordfs.Rest
 open Discordfs.Rest.Modules
 open MediatR
 
@@ -44,12 +43,11 @@ type CreateUserCommandHandler (
             | Error _ -> return Error UnknownApplication
             | Ok app ->
                 let basicClient = httpClientFactory.CreateClient() |> HttpClient.toBasicClient app.Id app.ClientSecret
-                let authorizationCodeGrantPayload = AuthorizationCodeGrantPayload(req.Code, req.HostAuthority + $"/applications/{app.Id}/linked-role")
-                let! tokenResponse = basicClient |> Rest.authorizationCodeGrant authorizationCodeGrantPayload
 
+                let! tokenResponse = basicClient |> OAuthFlow.authorizationCodeGrant req.Code $"{req.HostAuthority}/applications/{app.Id}/linked-role"
                 match tokenResponse with
-                | Error _ -> return Error OAuthTokenGenerationFailed
-                | Ok { Data = token } ->
+                | None -> return Error OAuthTokenGenerationFailed
+                | Some token ->
                     let client = httpClientFactory.CreateClient() |> HttpClient.toOAuthClient token.AccessToken
 
                     let! res = client |> OAuth.getUser

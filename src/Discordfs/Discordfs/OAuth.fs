@@ -59,3 +59,13 @@ module OAuth =
         let! res = Rest.updateCurrentUserApplicationRoleConnection applicationId payload client
         return DiscordResponse.toOption res
     }
+
+    let getApplication client = task {
+        let! res = Rest.getCurrentBotApplicationInformation client
+        return DiscordResponse.toOption res
+    }
+
+    let getAuthorizationInformation client = task {
+        let! res = Rest.getCurrentAuthorizationInformation client
+        return DiscordResponse.toOption res
+    }
