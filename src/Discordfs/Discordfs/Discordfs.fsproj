@@ -12,6 +12,7 @@
     <Compile Include="OAuth.fs" />
     <Compile Include="OAuthFlow.fs" />
     <Compile Include="ActivityInstance.fs" />
+    <Compile Include="Guild.fs" />
   </ItemGroup>
 
   <ItemGroup>

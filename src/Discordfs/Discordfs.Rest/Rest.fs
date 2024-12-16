@@ -325,6 +325,15 @@ let getGuildAuditLog
 
 // ----- Auto Moderation -----
 
+let listAutoModerationRulesForGuild
+    (guildId: string)
+    (client: BotClient) =
+        req {
+            get $"guilds/{guildId}/auto-moderation/rules"
+        }
+        |> client.SendAsync
+        ?>> DiscordResponse.asJson<AutoModerationRule list>
+
 let getAutoModerationRule
     (guildId: string)
     (autoModerationRuleId: string)
@@ -352,7 +361,7 @@ let modifyAutoModerationRule
     (guildId: string)
     (autoModerationRuleId: string)
     (auditLogReason: string option)
-    (content: CreateAutoModerationRulePayload)
+    (content: ModifyAutoModerationRulePayload)
     (client: BotClient) =
         req {
             patch $"guilds/{guildId}/auto-moderation/rules/{autoModerationRuleId}"
