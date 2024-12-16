@@ -30,6 +30,14 @@ type ApplicationController (mediator: ISender) =
         | Error CreateApplicationCommandError.InvalidToken ->
             return! req.CreateResponse HttpStatusCode.BadRequest
             |> withJson {| message = "Invalid token provided" |}
+            
+        | Error (CreateApplicationCommandError.MissingRedirectUri redirectUri) ->
+            return! req.CreateResponse HttpStatusCode.BadRequest
+            |> withJson {| message = $"Missing redirect URI `{redirectUri}`" |}
+            
+        | Error CreateApplicationCommandError.InvalidClientSecret ->
+            return! req.CreateResponse HttpStatusCode.BadRequest
+            |> withJson {| message = "Invalid client secret provided" |}
 
         | Error CreateApplicationCommandError.DiscordAppUpdateFailed ->
             return! req.CreateResponse HttpStatusCode.FailedDependency
