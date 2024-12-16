@@ -15,7 +15,7 @@ type OAuthUpdateRoleConnection =
     | Metadata of ApplicationRoleConnectionMetadata
 
 module OAuth =
-    let get client = task {
+    let getUser client = task {
         let! res = Rest.getCurrentUser (DiscordClient.OAuth client)
         return DiscordResponse.toOption res
     }

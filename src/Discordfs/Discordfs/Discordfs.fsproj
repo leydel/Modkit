@@ -10,6 +10,7 @@
     <Compile Include="Bot.fs" />
     <Compile Include="User.fs" />
     <Compile Include="OAuth.fs" />
+    <Compile Include="ActivityInstance.fs" />
   </ItemGroup>
 
   <ItemGroup>

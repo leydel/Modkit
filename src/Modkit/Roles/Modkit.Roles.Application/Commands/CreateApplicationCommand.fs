@@ -2,7 +2,7 @@
 
 open System.Net.Http
 
-open Discordfs.Rest
+open Discordfs
 open Discordfs.Rest.Modules
 open MediatR
 
@@ -38,24 +38,23 @@ type CreateApplicationCommandHandler (
 
             // TODO: Add test to ensure client secret is valid (how? client_credentials grant maybe?)
 
-            let! currentApplication = client |> Rest.getCurrentApplication
+            let! currentApplication = client |> Bot.getApplication
             match currentApplication with
-            | Error _ -> return Error InvalidToken
-            | Ok { Data = app } ->
+            | None -> return Error InvalidToken
+            | Some app ->
                 let! appResult = applicationRepository.Put app.Id req.Token app.VerifyKey req.ClientSecret
                 match appResult with
                 | Error _ -> return Error DatabaseUpdateFailed
                 | Ok application ->
                     let client = httpClientFactory.CreateClient() |> HttpClient.toBotClient req.Token
 
-                    let editCurrentApplicationPayload = EditCurrentApplicationPayload(
-                        description = "A custom bot built with Modkit Roles! https://modkit.org/linked-roles",
-                        role_connection_verification_url = req.HostAuthority + $"/applications/{app.Id}/linked-role",
-                        interactions_endpoint_url = req.HostAuthority + $"/applications/{app.Id}/interactions"
-                    )
+                    let! res = client |> Bot.editApplication [
+                        Description "A custom bot built with Modkit Roles! https://modkit.org/linked-roles"
+                        RoleConnectionVerificationUrl $"{req.HostAuthority}/applications/{app.Id}/linked-role"
+                        InteractionsEndpointUrl $"{req.HostAuthority}/applications/{app.Id}/interactions"
+                    ]
 
-                    let! res = client |> Rest.editCurrentApplication editCurrentApplicationPayload
-                    return res |> function | Error _ -> Error DiscordAppUpdateFailed | Ok _ -> Ok application
+                    return res |> function | None -> Error DiscordAppUpdateFailed | Some _ -> Ok application
 
             // TODO: Rewrite into ROP
         }

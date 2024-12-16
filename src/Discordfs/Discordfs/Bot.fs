@@ -2,8 +2,21 @@
 
 open Discordfs.Rest
 open Discordfs.Rest.Modules
+open Discordfs.Types
 
-type BotModify =
+type BotEditApplication =
+    | CustomInstallUrl of string
+    | Description of string
+    | RoleConnectionVerificationUrl of string
+    | InstallParams of OAuth2InstallParams
+    | IntegrationTypesConfig of (ApplicationIntegrationType * ApplicationIntegrationTypeConfiguration) seq
+    | Flags of int
+    | Icon of string option
+    | CoverImage of string option
+    | InteractionsEndpointUrl of string
+    | AppTags of string list
+
+type BotModifyUser =
     | Username of string
     | Avatar of string option
     | Banner of string option
@@ -14,15 +27,49 @@ type BotGetGuildsParams =
     | WithCounts of bool
 
 module Bot =
-    let get client = task {
+    let getApplication client = task {
+        let! res = Rest.getCurrentApplication client
+        return DiscordResponse.toOption res
+    }
+
+    let editApplication (optionals: BotEditApplication list) client = task {
+        let customInstallUrl = optionals |> List.tryPick (function | BotEditApplication.CustomInstallUrl v -> Some v | _ -> None)
+        let description = optionals |> List.tryPick (function | BotEditApplication.Description v -> Some v | _ -> None)
+        let roleConnectionVerificationUrl = optionals |> List.tryPick (function | BotEditApplication.RoleConnectionVerificationUrl v -> Some v | _ -> None)
+        let installParams = optionals |> List.tryPick (function | BotEditApplication.InstallParams v -> Some v | _ -> None)
+        let integrationTypesConfig = optionals |> List.tryPick (function | BotEditApplication.IntegrationTypesConfig v -> Some <| dict v | _ -> None)
+        let flags = optionals |> List.tryPick (function | BotEditApplication.Flags v -> Some v | _ -> None)
+        let icon = optionals |> List.tryPick (function | BotEditApplication.Icon v -> Some v | _ -> None)
+        let coverImage = optionals |> List.tryPick (function | BotEditApplication.CoverImage v -> Some v | _ -> None)
+        let interactionsEndpointUrl = optionals |> List.tryPick (function | BotEditApplication.InteractionsEndpointUrl v -> Some v | _ -> None)
+        let tags = optionals |> List.tryPick (function | BotEditApplication.AppTags v -> Some v | _ -> None)
+        
+        let payload = EditCurrentApplicationPayload(
+            ?custom_install_url = customInstallUrl,
+            ?description = description,
+            ?role_connection_verification_url = roleConnectionVerificationUrl,
+            ?install_params = installParams,
+            ?integration_types_config = integrationTypesConfig,
+            ?flags = flags,
+            ?icon = icon,
+            ?cover_image = coverImage,
+            ?interactions_endpoint_url = interactionsEndpointUrl,
+            ?tags = tags
+        )
+
+        let! res = Rest.editCurrentApplication payload client
+        return DiscordResponse.toOption res
+    }
+
+    let getUser client = task {
         let! res = Rest.getCurrentUser (DiscordClient.Bot client)
         return DiscordResponse.toOption res
     }
 
-    let modify (optionals: BotModify list) client = task {
-        let username = optionals |> List.tryPick (function | BotModify.Username v -> Some v | _ -> None)
-        let avatar = optionals |> List.tryPick (function | BotModify.Avatar v -> Some v | _ -> None)
-        let banner = optionals |> List.tryPick (function | BotModify.Banner v -> Some v | _ -> None)
+    let modifyUser (optionals: BotModifyUser list) client = task {
+        let username = optionals |> List.tryPick (function | BotModifyUser.Username v -> Some v | _ -> None)
+        let avatar = optionals |> List.tryPick (function | BotModifyUser.Avatar v -> Some v | _ -> None)
+        let banner = optionals |> List.tryPick (function | BotModifyUser.Banner v -> Some v | _ -> None)
 
         let payload = ModifyCurrentUserPayload(?username = username, ?avatar = avatar, ?banner = banner)
 

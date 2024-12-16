@@ -4,6 +4,7 @@ open System
 open System.Collections.Generic
 open System.Net.Http
 
+open Discordfs
 open Discordfs.Rest
 open Discordfs.Rest.Modules
 open MediatR
@@ -50,11 +51,11 @@ type CreateUserCommandHandler (
                 | Error _ -> return Error OAuthTokenGenerationFailed
                 | Ok { Data = token } ->
                     let client = httpClientFactory.CreateClient() |> HttpClient.toOAuthClient token.AccessToken
-                    let! res = DiscordClient.OAuth client |> Rest.getCurrentUser
 
+                    let! res = client |> OAuth.getUser
                     match res with
-                    | Error _ -> return Error DiscordUserFetchFailed
-                    | Ok { Data = discordUser } ->
+                    | None -> return Error DiscordUserFetchFailed
+                    | Some discordUser ->
                         let metadata = Dictionary<string, int>() // TODO: Figure out how metadata should be handled (change feed trigger too?)
 
                         // TODO: Figure out correct approach for handling existing users who reauthorize
