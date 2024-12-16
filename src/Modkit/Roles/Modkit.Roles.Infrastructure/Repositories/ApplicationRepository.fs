@@ -14,13 +14,8 @@ type ApplicationRepository (cosmosClient: CosmosClient) =
     let container = cosmosClient.GetContainer(DATABASE_NAME, APPLICATION_CONTAINER_NAME)
 
     interface IApplicationRepository with
-        member _.Put applicationId token publicKey clientSecret = task {
-            let model = {
-                Id = applicationId
-                Token = token
-                PublicKey = publicKey
-                ClientSecret = clientSecret
-            }
+        member _.Put application = task {
+            let model = ApplicationMapper.fromDomain application
 
             try
                 let! res = container.UpsertItemAsync<ApplicationModel>(model, PartitionKey model.Id)
@@ -45,6 +40,7 @@ type ApplicationRepository (cosmosClient: CosmosClient) =
                 |> List.map (function
                     | ApplicationChange.Token t -> PatchOperation.Set("/" + ApplicationModel.Token, t)
                     | ApplicationChange.ClientSecret cs -> PatchOperation.Set("/" + ApplicationModel.ClientSecret, cs)
+                    | ApplicationChange.Metadata m -> PatchOperation.Set("/" + ApplicationModel.Metadata, m)
                 )
 
             try

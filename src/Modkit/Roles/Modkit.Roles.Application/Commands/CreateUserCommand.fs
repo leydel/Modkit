@@ -54,11 +54,19 @@ type CreateUserCommandHandler (
                     match res with
                     | None -> return Error DiscordUserFetchFailed
                     | Some discordUser ->
-                        let metadata = Dictionary<string, int>() // TODO: Figure out how metadata should be handled (change feed trigger too?)
-
                         // TODO: Figure out correct approach for handling existing users who reauthorize
 
                         let accessTokenExpiry = DateTime.UtcNow.AddSeconds token.ExpiresIn
-                        let! user = userRepository.Put discordUser.Id app.Id token.AccessToken accessTokenExpiry token.RefreshToken metadata
+                        let! user = userRepository.Put {
+                            Id = discordUser.Id
+                            ApplicationId = app.Id
+                            AccessToken = token.AccessToken
+                            AccessTokenExpiry = accessTokenExpiry
+                            RefreshToken = token.RefreshToken
+                            Metadata = []
+                        }
+
                         return user |> Result.mapError (fun _ -> DatabaseUpdateFailed)
+
+                        // TODO: Should metadata be pushed to discord? I think it does
         }

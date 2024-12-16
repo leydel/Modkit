@@ -14,15 +14,8 @@ type UserRepository (cosmosClient: CosmosClient) =
     let container = cosmosClient.GetContainer(DATABASE_NAME, USER_CONTAINER_NAME)
 
     interface IUserRepository with
-        member _.Put userId applicationId accessToken accessTokenExpiry refreshToken metadata = task {
-            let model = {
-                Id = userId
-                ApplicationId = applicationId
-                AccessToken = accessToken
-                AccessTokenExpiry = accessTokenExpiry
-                RefreshToken = refreshToken
-                Metadata = metadata
-            }
+        member _.Put user = task {
+            let model = UserMapper.fromDomain user
 
             try
                 let! res = container.UpsertItemAsync<UserModel>(model, PartitionKey model.ApplicationId)

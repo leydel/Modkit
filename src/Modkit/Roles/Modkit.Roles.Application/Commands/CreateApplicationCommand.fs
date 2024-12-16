@@ -42,7 +42,14 @@ type CreateApplicationCommandHandler (
             match currentApplication with
             | None -> return Error InvalidToken
             | Some app ->
-                let! appResult = applicationRepository.Put app.Id req.Token app.VerifyKey req.ClientSecret
+                let! appResult = applicationRepository.Put {
+                    Id = app.Id
+                    Token = req.Token
+                    PublicKey = app.VerifyKey
+                    ClientSecret = req.ClientSecret
+                    Metadata = []
+                }
+
                 match appResult with
                 | Error _ -> return Error DatabaseUpdateFailed
                 | Ok application ->

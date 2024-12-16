@@ -7,6 +7,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Compile Include="Types\MetadataType.fs" />
 		<Compile Include="Entities\Application.fs" />
 		<Compile Include="Entities\User.fs" />
 	</ItemGroup>

@@ -1,7 +1,6 @@
 ﻿namespace Modkit.Roles.Application.Repositories
 
 open System
-open System.Collections.Generic
 open System.Net
 open System.Threading.Tasks
 
@@ -9,17 +8,12 @@ open Modkit.Roles.Domain.Entities
 
 type UserChange =
     | Token of accessToken: string * accessTokenExpiry: DateTime * refreshToken: string
-    | Metadata of IDictionary<string, int>
+    | Metadata of (string * int) seq
 
 [<Interface>]
 type IUserRepository =
     abstract member Put:
-        userId: string ->
-        applicationId: string ->
-        accessToken: string ->
-        accessTokenExpiry: DateTime ->
-        refreshToken: string ->
-        metadata: IDictionary<string, int> ->
+        user: User ->
         Task<Result<User, HttpStatusCode>>
 
     abstract member Get:

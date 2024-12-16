@@ -3,19 +3,18 @@
 open System.Net
 open System.Threading.Tasks
 
+open Modkit.Roles.Domain.Types
 open Modkit.Roles.Domain.Entities
 
 type ApplicationChange =
     | Token of string
     | ClientSecret of string
+    | Metadata of (string * MetadataType) seq
 
 [<Interface>]
 type IApplicationRepository =
     abstract member Put:
-        applicationId: string ->
-        token: string ->
-        publicKey: string ->
-        clientSecret: string ->
+        application: Application ->
         Task<Result<Application, HttpStatusCode>>
 
     abstract member Get:

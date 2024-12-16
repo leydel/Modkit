@@ -11,7 +11,7 @@ module UserMapper =
         AccessToken = user.AccessToken
         AccessTokenExpiry = user.AccessTokenExpiry
         RefreshToken = user.RefreshToken
-        Metadata = user.Metadata
+        Metadata = user.Metadata |> dict
     }
 
     let toDomain (model: UserModel): User = {
@@ -20,5 +20,5 @@ module UserMapper =
         AccessToken = model.AccessToken
         AccessTokenExpiry = model.AccessTokenExpiry
         RefreshToken = model.RefreshToken
-        Metadata = model.Metadata
+        Metadata = model.Metadata |> Seq.map (fun kvp -> (kvp.Key, kvp.Value))
     }

@@ -11,6 +11,7 @@
       <Compile Include="Common\Constants.fs" />
       <Compile Include="Models\ApplicationModel.fs" />
       <Compile Include="Models\UserModel.fs" />
+      <Compile Include="Mappers\MetadataTypeMapper.fs" />
       <Compile Include="Mappers\ApplicationMapper.fs" />
       <Compile Include="Mappers\UserMapper.fs" />
       <Compile Include="Repositories\ApplicationRepository.fs" />
