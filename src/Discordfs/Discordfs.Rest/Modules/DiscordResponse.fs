@@ -81,3 +81,8 @@ module DiscordResponse =
         match res with
         | Ok { Data = v } -> v
         | Error _ -> failwith "Unsuccessful discord response was unwrapped"
+
+    let toOption<'a> (res: DiscordResponse<'a>) =
+        match res with
+        | Error _ -> None
+        | Ok { Data = v } -> Some v
