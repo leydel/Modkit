@@ -12,6 +12,8 @@
 		<Compile Include="Repositories\IUserRepository.fs" />
 		<Compile Include="Commands\CreateApplicationCommand.fs" />
 		<Compile Include="Commands\CreateUserCommand.fs" />
+		<Compile Include="Commands\AddConditionCommand.fs" />
+		<Compile Include="Commands\RemoveConditionCommand.fs" />
 		<Compile Include="Queries\GetLinkedRoleRedirectQuery.fs" />
 		<Compile Include="Queries\VerifyEd25519Query.fs" />
 		<Compile Include="Services\InteractionService.fs" />
