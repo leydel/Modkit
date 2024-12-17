@@ -1,6 +1,5 @@
 ﻿namespace Discordfs.Rest
 
-open Discordfs.Rest.Common
 open Discordfs.Types
 open System
 open System.Collections.Generic
@@ -250,7 +249,10 @@ type EditCurrentApplicationPayload (
     ?icon:                             string option,
     ?cover_image:                      string option,
     ?interactions_endpoint_url:        string,
-    ?tags:                             string list
+    ?tags:                             string list,
+    ?event_webhooks_url:               string,
+    ?event_webhooks_status:            WebhookEventStatus,
+    ?event_webhooks_types:             WebhookEventType list
 ) =
     inherit Payload() with
         override _.Content = json {
@@ -264,6 +266,9 @@ type EditCurrentApplicationPayload (
             optional "cover_image" cover_image
             optional "interactions_endpoint_url" interactions_endpoint_url
             optional "tags" tags
+            optional "event_webhooks_url" event_webhooks_url
+            optional "event_webhooks_status" event_webhooks_status
+            optional "event_webhooks_types" event_webhooks_types
         }
 
 // ----- Audit Log -----

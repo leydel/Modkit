@@ -628,7 +628,7 @@ type Application = {
     [<JsonPropertyName "bot_public">] BotPublic: bool
     [<JsonPropertyName "bot_require_code_grant">] BotRequireCodeGrant: bool
     [<JsonPropertyName "bot">] Bot: PartialUser option
-    [<JsonPropertyName "terms_of_Service_url">] TermsOfServiceUrl: string option
+    [<JsonPropertyName "terms_of_service_url">] TermsOfServiceUrl: string option
     [<JsonPropertyName "privacy_policy_url">] PrivacyPolicyUrl: string option
     [<JsonPropertyName "owner">] Owner: PartialUser option
     [<JsonPropertyName "verify_key">] VerifyKey: string
@@ -640,9 +640,13 @@ type Application = {
     [<JsonPropertyName "cover_image">] CoverImage: string option
     [<JsonPropertyName "flags">] Flags: int option
     [<JsonPropertyName "approximate_guild_count">] ApproximateGuildCount: int option
+    [<JsonPropertyName "approximate_user_install_count">] ApproximateUserInstallCount: int option
     [<JsonPropertyName "redirect_uris">] RedirectUris: string list option
     [<JsonPropertyName "interactions_endpoint_url">] InteractionsEndpointUrl: string option
     [<JsonPropertyName "role_connections_verification_url">] RoleConnectionsVerificationUrl: string option
+    [<JsonPropertyName "event_webhooks_url">] EventWebhooksUrl: string option
+    [<JsonPropertyName "event_webhooks_status">] EventWebhooksStatus: WebhookEventStatus
+    [<JsonPropertyName "event_webhooks_types">] EventWebhooksTypes: WebhookEventType list option
     [<JsonPropertyName "tags">] Tags: string list option
     [<JsonPropertyName "install_params">] InstallParams: OAuth2InstallParams option
     [<JsonPropertyName "integration_types_config">] IntegrationTypesConfig: Map<ApplicationIntegrationType, ApplicationIntegrationTypeConfiguration> option

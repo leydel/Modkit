@@ -960,48 +960,54 @@ with
 
     static member FromString (str: string) =
         match str with
-        | "activities.read" -> OAuth2Scope.ACTIVITIES_READ
-        | "activities.write" -> OAuth2Scope.ACTIVITIES_WRITE
-        | "applications.builds.read" -> OAuth2Scope.APPLICATIONS_BUILDS_READ
-        | "applications.builds.upload" -> OAuth2Scope.APPLICATIONS_BUILDS_UPLOAD
-        | "applications.commands" -> OAuth2Scope.APPLICATIONS_COMMANDS
-        | "applications.commands.update" -> OAuth2Scope.APPLICATIONS_COMMANDS_UPDATE
-        | "applications.commands.permissions.update" -> OAuth2Scope.APPLICATIONS_COMMANDS_PERMISSIONS_UPDATE
-        | "applications.entitlements" -> OAuth2Scope.APPLICATIONS_ENTITLEMENTS
-        | "applications.store.update" -> OAuth2Scope.APPLICATIONS_STORE_UPDATE
-        | "bot" -> OAuth2Scope.BOT
-        | "connections" -> OAuth2Scope.CONNECTIONS
-        | "dm_channels.read" -> OAuth2Scope.DM_CHANNELS_READ
-        | "email" -> OAuth2Scope.EMAIL
-        | "gdm.join" -> OAuth2Scope.GDM_JOIN
-        | "guilds" -> OAuth2Scope.GUILDS
-        | "guilds.join" -> OAuth2Scope.GUILDS_JOIN
-        | "guilds.members.read" -> OAuth2Scope.GUILDS_MEMBERS_READ
-        | "identify" -> OAuth2Scope.IDENTIFY
-        | "messages.read" -> OAuth2Scope.MESSAGES_READ
-        | "relationships.read" -> OAuth2Scope.RELATIONSHIPS_READ
-        | "role_connections.write" -> OAuth2Scope.ROLE_CONNECTIONS_WRITE
-        | "rpc" -> OAuth2Scope.RPC
-        | "rpc.activities.write" -> OAuth2Scope.RPC_ACTIVITIES_WRITE
-        | "rpc.notifications.read" -> OAuth2Scope.RPC_NOTIFICATIONS_READ
-        | "rpc.voice.read" -> OAuth2Scope.RPC_VOICE_READ
-        | "rpc.voice.write" -> OAuth2Scope.RPC_VOICE_WRITE
-        | "voice" -> OAuth2Scope.VOICE
-        | "webhook.incoming" -> OAuth2Scope.WEBHOOK_INCOMING
-        | _ -> failwith "Unexpected OAuth2Scope type"
+        | "activities.read" -> Some OAuth2Scope.ACTIVITIES_READ
+        | "activities.write" -> Some OAuth2Scope.ACTIVITIES_WRITE
+        | "applications.builds.read" -> Some OAuth2Scope.APPLICATIONS_BUILDS_READ
+        | "applications.builds.upload" -> Some OAuth2Scope.APPLICATIONS_BUILDS_UPLOAD
+        | "applications.commands" -> Some OAuth2Scope.APPLICATIONS_COMMANDS
+        | "applications.commands.update" -> Some OAuth2Scope.APPLICATIONS_COMMANDS_UPDATE
+        | "applications.commands.permissions.update" -> Some OAuth2Scope.APPLICATIONS_COMMANDS_PERMISSIONS_UPDATE
+        | "applications.entitlements" -> Some OAuth2Scope.APPLICATIONS_ENTITLEMENTS
+        | "applications.store.update" -> Some OAuth2Scope.APPLICATIONS_STORE_UPDATE
+        | "bot" -> Some OAuth2Scope.BOT
+        | "connections" -> Some OAuth2Scope.CONNECTIONS
+        | "dm_channels.read" -> Some OAuth2Scope.DM_CHANNELS_READ
+        | "email" -> Some OAuth2Scope.EMAIL
+        | "gdm.join" -> Some OAuth2Scope.GDM_JOIN
+        | "guilds" -> Some OAuth2Scope.GUILDS
+        | "guilds.join" -> Some OAuth2Scope.GUILDS_JOIN
+        | "guilds.members.read" -> Some OAuth2Scope.GUILDS_MEMBERS_READ
+        | "identify" -> Some OAuth2Scope.IDENTIFY
+        | "messages.read" -> Some OAuth2Scope.MESSAGES_READ
+        | "relationships.read" -> Some OAuth2Scope.RELATIONSHIPS_READ
+        | "role_connections.write" -> Some OAuth2Scope.ROLE_CONNECTIONS_WRITE
+        | "rpc" -> Some OAuth2Scope.RPC
+        | "rpc.activities.write" -> Some OAuth2Scope.RPC_ACTIVITIES_WRITE
+        | "rpc.notifications.read" -> Some OAuth2Scope.RPC_NOTIFICATIONS_READ
+        | "rpc.voice.read" -> Some OAuth2Scope.RPC_VOICE_READ
+        | "rpc.voice.write" -> Some OAuth2Scope.RPC_VOICE_WRITE
+        | "voice" -> Some OAuth2Scope.VOICE
+        | "webhook.incoming" -> Some OAuth2Scope.WEBHOOK_INCOMING
+        | _ -> None
 
 and OAuth2ScopeConverter () =
     inherit JsonConverter<OAuth2Scope> () with
         override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
-            reader.GetString() |> OAuth2Scope.FromString
+            match reader.GetString() |> OAuth2Scope.FromString with
+            | None -> failwith "Unexpected OAuth2Scope type"
+            | Some v -> v
 
         override _.Write (writer: Utf8JsonWriter, value: OAuth2Scope, options: JsonSerializerOptions) =
             writer.WriteStringValue (value.ToString())
 
 and OAuth2ScopeListConverter () =
     inherit JsonConverter<OAuth2Scope list> () with
-        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
-            reader.GetString() |> _.Split(' ') |> Array.map OAuth2Scope.FromString |> Array.toList
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
+            reader.GetString()
+            |> _.Split(' ')
+            |> Array.map OAuth2Scope.FromString
+            |> Array.map (function | Some v -> v | None -> failwith "Unexpected OAuth2Scope type")
+            |> Array.toList
 
         override _.Write (writer: Utf8JsonWriter, value: OAuth2Scope list, options: JsonSerializerOptions) =
             writer.WriteStringValue (value |> List.map (_.ToString()) |> (fun v -> String.Join(' ', v)))
@@ -1250,7 +1256,14 @@ type WebhookPayloadType =
     | PING = 0
     | EVENT = 1
 
+// https://discord.com/developers/docs/resources/application#application-object-application-event-webhook-status
+type WebhookEventStatus =
+    | DISABLED = 1
+    | ENABLED = 2
+    | DISABLED_BY_DISCORD = 3
+
 // https://discord.com/developers/docs/events/webhook-events#event-types
+[<JsonConverter(typeof<WebhookEventTypeConverter>)>]
 type WebhookEventType =
     | APPLICATION_AUTHORIZED
     | ENTITLEMENT_CREATE
@@ -1265,6 +1278,16 @@ with
         | "APPLICATION_AUTHORIZED" -> Some WebhookEventType.APPLICATION_AUTHORIZED
         | "ENTITLEMENT_CREATE" -> Some WebhookEventType.ENTITLEMENT_CREATE
         | _ -> None
+
+and WebhookEventTypeConverter () =
+    inherit JsonConverter<WebhookEventType> () with
+        override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
+            match reader.GetString() |> WebhookEventType.FromString with
+            | None -> failwith "Unexpected WebhookEventType type"
+            | Some v -> v
+
+        override _.Write (writer: Utf8JsonWriter, value: WebhookEventType, options: JsonSerializerOptions) = 
+            value.ToString() |> writer.WriteStringValue
 
 // https://discord.com/developers/docs/topics/opcodes-and-status-codes#json-json-error-codes
 type JsonErrorCode =

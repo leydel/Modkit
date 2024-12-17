@@ -15,6 +15,9 @@ type BotEditApplication =
     | CoverImage of string option
     | InteractionsEndpointUrl of string
     | AppTags of string list
+    | EventWebhooksUrl of string
+    | EventWebhooksStatus of WebhookEventStatus
+    | EventWebhooksTypes of WebhookEventType list
 
 type BotModifyUser =
     | Username of string
@@ -43,6 +46,9 @@ module Bot =
         let coverImage = optionals |> List.tryPick (function | BotEditApplication.CoverImage v -> Some v | _ -> None)
         let interactionsEndpointUrl = optionals |> List.tryPick (function | BotEditApplication.InteractionsEndpointUrl v -> Some v | _ -> None)
         let tags = optionals |> List.tryPick (function | BotEditApplication.AppTags v -> Some v | _ -> None)
+        let eventWebhooksUrl = optionals |> List.tryPick (function | BotEditApplication.EventWebhooksUrl v -> Some v | _ -> None)
+        let eventWebhooksStatus = optionals |> List.tryPick (function | BotEditApplication.EventWebhooksStatus v -> Some v | _ -> None)
+        let eventWebhooksTypes = optionals |> List.tryPick (function | BotEditApplication.EventWebhooksTypes v -> Some v | _ -> None)
         
         let payload = EditCurrentApplicationPayload(
             ?custom_install_url = customInstallUrl,
@@ -54,7 +60,10 @@ module Bot =
             ?icon = icon,
             ?cover_image = coverImage,
             ?interactions_endpoint_url = interactionsEndpointUrl,
-            ?tags = tags
+            ?tags = tags,
+            ?event_webhooks_url = eventWebhooksUrl,
+            ?event_webhooks_status = eventWebhooksStatus,
+            ?event_webhooks_types = eventWebhooksTypes
         )
 
         let! res = Rest.editCurrentApplication payload client
