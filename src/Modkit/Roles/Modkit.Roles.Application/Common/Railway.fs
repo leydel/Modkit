@@ -2,53 +2,51 @@
 
 open System.Threading.Tasks
 
-type RailwayResult<'a, 'b, 'c> = Result<('a * 'b), 'c>
+type Railway<'a, 'b> =
+    | Sync of Result<'a, 'b>
+    | Task of Task<Result<'a, 'b>>
+    | Async of Async<Result<'a, 'b>>
 
-module RailwayResult =
-    let fromResult r =
-        r |> Result.map (fun v -> ((), v))
-
+[<AutoOpen>]
 module Railway =
-    type RailwayBuilder () =
-        member inline _.Yield (_) = Ok ()
-        member inline _.Yield (v: Result<'a, 'b>) = RailwayResult.fromResult v
-        member inline _.Yield (v: RailwayResult<'a, 'b, 'c>) = v
+    let toTask (v: Railway<'a, 'b>) =
+        match v with
+        | Railway.Sync v -> task { return v }
+        | Railway.Task v -> v
+        | Railway.Async v -> v |> Async.StartAsTask
 
-        [<CustomOperation>]
-        member inline _.next (acc: Result<'a, 'b>, f: 'a -> Result<'c, 'b>) =
-            Result.bind (fun v -> f v) acc
+    let toAsync (v: Railway<'a, 'b>) =
+        match v with
+        | Railway.Sync v -> async { return v }
+        | Railway.Task v -> v |> Async.AwaitTask
+        | Railway.Async v -> v
 
-        [<CustomOperation>]
-        member inline _.next (acc: Result<'a, 'b>, f: 'a -> Task<Result<'c, 'b>>) = task {
-            match acc with
-            | Error e -> return Error e
-            | Ok v -> return! f v
-        }
+    let bind (f: 'a -> Railway<'c, 'b>) (v: Railway<'a, 'b>) =
+        match v with
+        | Railway.Sync v ->
+            match v with
+            | Error e -> Error e |> Railway.Sync
+            | Ok v -> f v
 
-        [<CustomOperation>]
-        member inline _.next (acc: Task<Result<'a, 'b>>, f: 'a -> Result<'c, 'b>) = task {
-            let! res = acc
-            return Result.bind f res
-        }
+        | Railway.Task t ->
+            task {
+                match! t with
+                | Error e -> return Error e
+                | Ok v -> return! f v |> toTask
+            }
+            |> Railway.Task
 
-        [<CustomOperation>]
-        member inline _.next (acc: Task<Result<'a, 'b>>, f: 'a -> Task<Result<'c, 'b>>) = task {
-            match! acc with
-            | Error e -> return Error e
-            | Ok v -> return! f v
-        }
+        | Railway.Async a ->
+            async {
+                match! a with
+                | Error e -> return Error e
+                | Ok v -> return! f v |> toAsync
+            }
+            |> Railway.Async
 
-        // TODO: Change above to ahndle RailwayResults to store state (?)
+    type RailwayBuilder<'b> () =
+        member _.Zero () = Ok ()
+        member _.Bind (v: Railway<'a, 'b>, f: 'a -> Railway<'c, 'b>) = bind f v
+        member _.Return (v: 'a) = Railway.Sync (Ok v)
 
-    let railway = RailwayBuilder()
-
-    let test () =
-        let first = fun _ -> Ok ""
-        let second = fun _ -> Task.FromResult (Error "")
-        let third = fun _ -> Ok ()
-
-        railway {
-            next first
-            next second
-            next third
-        }
+    let railway<'b> = RailwayBuilder<'b>()
