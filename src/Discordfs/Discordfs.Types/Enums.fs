@@ -1163,6 +1163,7 @@ type ReactionType =
 type ConnectionServiceType =
     | AMAZON_MUSIC
     | BATTLE_NET
+    | BLUESKY
     | BUNGIE
     | CRUNCHYROLL
     | DOMAIN
@@ -1172,6 +1173,7 @@ type ConnectionServiceType =
     | GITHUB
     | INSTAGRAM
     | LEAGUE_OF_LEGENDS
+    | MASTODON
     | PAYPAL
     | PLAYSTATION
     | REDDIT
@@ -1185,66 +1187,75 @@ type ConnectionServiceType =
     | TWITTER
     | XBOX
     | YOUTUBE
+with
+    override this.ToString () =
+        match this with
+        | ConnectionServiceType.AMAZON_MUSIC -> "amazon-music"
+        | ConnectionServiceType.BATTLE_NET -> "battlenet"
+        | ConnectionServiceType.BLUESKY -> "bluesky"
+        | ConnectionServiceType.BUNGIE -> "bungie"
+        | ConnectionServiceType.CRUNCHYROLL -> "crunchyroll"
+        | ConnectionServiceType.DOMAIN -> "domain"
+        | ConnectionServiceType.EBAY -> "ebay"
+        | ConnectionServiceType.EPIC_GAMES -> "epicgames"
+        | ConnectionServiceType.FACEBOOK -> "facebook"
+        | ConnectionServiceType.GITHUB -> "github"
+        | ConnectionServiceType.INSTAGRAM -> "instagram"
+        | ConnectionServiceType.LEAGUE_OF_LEGENDS -> "leagueoflegends"
+        | ConnectionServiceType.MASTODON -> "mastodon"
+        | ConnectionServiceType.PAYPAL -> "paypal"
+        | ConnectionServiceType.PLAYSTATION -> "playstation"
+        | ConnectionServiceType.REDDIT -> "reddit"
+        | ConnectionServiceType.RIOT_GAMES -> "riotgames"
+        | ConnectionServiceType.ROBLOX -> "roblox"
+        | ConnectionServiceType.SPOTIFY -> "spotify"
+        | ConnectionServiceType.SKYPE -> "skype"
+        | ConnectionServiceType.STEAM -> "steam"
+        | ConnectionServiceType.TIKTOK -> "tiktok"
+        | ConnectionServiceType.TWITCH -> "twitch"
+        | ConnectionServiceType.TWITTER -> "twitter"
+        | ConnectionServiceType.XBOX -> "xbox"
+        | ConnectionServiceType.YOUTUBE -> "youtube"
+
+    static member FromString (str: string) =
+        match str with
+        | "amazon-music" -> Some ConnectionServiceType.AMAZON_MUSIC
+        | "battlenet" -> Some ConnectionServiceType.BATTLE_NET
+        | "bluesky" -> Some ConnectionServiceType.BLUESKY
+        | "bungie" -> Some ConnectionServiceType.BUNGIE
+        | "cruncyroll" -> Some ConnectionServiceType.CRUNCHYROLL
+        | "domain" -> Some ConnectionServiceType.DOMAIN
+        | "ebay" -> Some ConnectionServiceType.EBAY
+        | "epicgames" -> Some ConnectionServiceType.EPIC_GAMES
+        | "facebook" -> Some ConnectionServiceType.FACEBOOK
+        | "github" -> Some ConnectionServiceType.GITHUB
+        | "instagram" -> Some ConnectionServiceType.INSTAGRAM
+        | "leagueoflegends" -> Some ConnectionServiceType.LEAGUE_OF_LEGENDS
+        | "mastodon" -> Some ConnectionServiceType.MASTODON
+        | "paypal" -> Some ConnectionServiceType.PAYPAL
+        | "playstation" -> Some ConnectionServiceType.PLAYSTATION
+        | "reddit" -> Some ConnectionServiceType.REDDIT
+        | "riotgames" -> Some ConnectionServiceType.RIOT_GAMES
+        | "roblox" -> Some ConnectionServiceType.ROBLOX
+        | "spotify" -> Some ConnectionServiceType.SPOTIFY
+        | "skype" -> Some ConnectionServiceType.SKYPE
+        | "steam" -> Some ConnectionServiceType.STEAM
+        | "tiktok" -> Some ConnectionServiceType.TIKTOK
+        | "twitch" -> Some ConnectionServiceType.TWITCH
+        | "twitter" -> Some ConnectionServiceType.TWITTER
+        | "xbox" -> Some ConnectionServiceType.XBOX
+        | "youtube" -> Some ConnectionServiceType.YOUTUBE
+        | _ -> None
 
 and ConnectionServiceTypeConverter () =
     inherit JsonConverter<ConnectionServiceType> () with
         override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
-            match reader.GetString() with
-            | "amazon-music" -> ConnectionServiceType.AMAZON_MUSIC
-            | "battlenet" -> ConnectionServiceType.BATTLE_NET
-            | "bungie" -> ConnectionServiceType.BUNGIE
-            | "cruncyroll" -> ConnectionServiceType.CRUNCHYROLL
-            | "domain" -> ConnectionServiceType.DOMAIN
-            | "ebay" -> ConnectionServiceType.EBAY
-            | "epicgames" -> ConnectionServiceType.EPIC_GAMES
-            | "facebook" -> ConnectionServiceType.FACEBOOK
-            | "github" -> ConnectionServiceType.GITHUB
-            | "instagram" -> ConnectionServiceType.INSTAGRAM
-            | "leagueoflegends" -> ConnectionServiceType.LEAGUE_OF_LEGENDS
-            | "paypal" -> ConnectionServiceType.PAYPAL
-            | "playstation" -> ConnectionServiceType.PLAYSTATION
-            | "reddit" -> ConnectionServiceType.REDDIT
-            | "riotgames" -> ConnectionServiceType.RIOT_GAMES
-            | "roblox" -> ConnectionServiceType.ROBLOX
-            | "spotify" -> ConnectionServiceType.SPOTIFY
-            | "skype" -> ConnectionServiceType.SKYPE
-            | "steam" -> ConnectionServiceType.STEAM
-            | "tiktok" -> ConnectionServiceType.TIKTOK
-            | "twitch" -> ConnectionServiceType.TWITCH
-            | "twitter" -> ConnectionServiceType.TWITTER
-            | "xbox" -> ConnectionServiceType.XBOX
-            | "youtube" -> ConnectionServiceType.YOUTUBE
-            | _ -> failwith "Unexpected ConnectionServiceType type"
+            match reader.GetString() |> ConnectionServiceType.FromString with
+            | None -> failwith "Unexpected ConnectionServiceType type"
+            | Some v -> v
 
         override _.Write (writer: Utf8JsonWriter, value: ConnectionServiceType, options: JsonSerializerOptions) = 
-            let string =
-                match value with
-                | ConnectionServiceType.AMAZON_MUSIC -> "amazon-music"
-                | ConnectionServiceType.BATTLE_NET -> "battlenet"
-                | ConnectionServiceType.BUNGIE -> "bungie"
-                | ConnectionServiceType.CRUNCHYROLL -> "crunchyroll"
-                | ConnectionServiceType.DOMAIN -> "domain"
-                | ConnectionServiceType.EBAY -> "ebay"
-                | ConnectionServiceType.EPIC_GAMES -> "epicgames"
-                | ConnectionServiceType.FACEBOOK -> "facebook"
-                | ConnectionServiceType.GITHUB -> "github"
-                | ConnectionServiceType.INSTAGRAM -> "instagram"
-                | ConnectionServiceType.LEAGUE_OF_LEGENDS -> "leagueoflegends"
-                | ConnectionServiceType.PAYPAL -> "paypal"
-                | ConnectionServiceType.PLAYSTATION -> "playstation"
-                | ConnectionServiceType.REDDIT -> "reddit"
-                | ConnectionServiceType.RIOT_GAMES -> "riotgames"
-                | ConnectionServiceType.ROBLOX -> "roblox"
-                | ConnectionServiceType.SPOTIFY -> "spotify"
-                | ConnectionServiceType.SKYPE -> "skype"
-                | ConnectionServiceType.STEAM -> "steam"
-                | ConnectionServiceType.TIKTOK -> "tiktok"
-                | ConnectionServiceType.TWITCH -> "twitch"
-                | ConnectionServiceType.TWITTER -> "twitter"
-                | ConnectionServiceType.XBOX -> "xbox"
-                | ConnectionServiceType.YOUTUBE -> "youtube"
-
-            writer.WriteStringValue string
+            value.ToString() |> writer.WriteStringValue
 
 // https://discord.com/developers/docs/resources/user#connection-object-visibility-types
 type ConnectionVisibilityType =
