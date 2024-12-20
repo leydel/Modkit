@@ -1,5 +1,6 @@
 ﻿namespace Modkit.Roles.Application.Common
 
+open System
 open System.Threading.Tasks
 
 type Railway<'a, 'b> =
@@ -9,6 +10,13 @@ type Railway<'a, 'b> =
 
 [<AutoOpen>]
 module Railway =
+    [<Obsolete "Recommended to run railways in tasks or async. This will be blocking if non-synchronous paths are taken.">]
+    let toSync (v: Railway<'a, 'b>) =
+        match v with
+        | Railway.Sync v -> v
+        | Railway.Task v -> v.Result
+        | Railway.Async v -> v |> Async.RunSynchronously
+
     let toTask (v: Railway<'a, 'b>) =
         match v with
         | Railway.Sync v -> task { return v }
