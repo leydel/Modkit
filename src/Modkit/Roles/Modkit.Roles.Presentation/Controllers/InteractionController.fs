@@ -4,15 +4,18 @@ open System.Net
 
 open Discordfs.Types
 open Discordfs.Webhook.Types
+open MediatR
 open Microsoft.Azure.Functions.Worker
 open Microsoft.Azure.Functions.Worker.Http
-
-open Modkit.Roles.Application.Services
+open Microsoft.Extensions.Logging
 
 open Modkit.Roles.Presentation.Modules
 open Modkit.Roles.Presentation.Middleware
 
-type InteractionController (interactionService: IInteractionService) =
+type InteractionController (
+    logger: ILogger<InteractionController>,
+    mediator: ISender
+) =
     [<Function "PostInteraction">]
     [<VerifyEd25519>]
     member _.PostInteraction (
@@ -25,19 +28,9 @@ type InteractionController (interactionService: IInteractionService) =
             return! req.CreateResponse HttpStatusCode.OK
             |> withJson { Type = InteractionCallbackType.PONG; Data = None }
 
-        | InteractionReceiveEvent.APPLICATION_COMMAND interaction ->
-            do! interactionService.HandleApplicationCommand interaction
-            return req.CreateResponse HttpStatusCode.Accepted
+        // TODO: Handle interactions by pattern matching to them here
 
-        | InteractionReceiveEvent.APPLICATION_COMMAND_AUTOCOMPLETE interaction ->
-            do! interactionService.HandleApplicationCommandAutocomplete interaction
-            return req.CreateResponse HttpStatusCode.Accepted
-
-        | InteractionReceiveEvent.MESSAGE_COMPONENT interaction ->
-            do! interactionService.HandleMessageComponent interaction
-            return req.CreateResponse HttpStatusCode.Accepted
-
-        | InteractionReceiveEvent.MODAL_SUBMIT interaction ->
-            do! interactionService.HandleModalSubmit interaction
-            return req.CreateResponse HttpStatusCode.Accepted
+        | _ ->
+            logger.LogError "Unhandled interaction received"
+            return req.CreateResponse HttpStatusCode.InternalServerError
     }

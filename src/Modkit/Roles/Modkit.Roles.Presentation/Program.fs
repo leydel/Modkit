@@ -35,8 +35,6 @@ HostBuilder()
         !services.AddApplicationInsightsTelemetryWorkerService()
         !services.ConfigureFunctionsApplicationInsights()
         // TODO: Register CosmosClient
-        
-        !services.AddTransient<IInteractionService, InteractionService>()
 
         // Setup configuration options
         !services.AddOptions<CryptoOptions>().Configure<IConfiguration>(fun s c -> c.GetSection(CryptoOptions.Key).Bind(s))
