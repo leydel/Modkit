@@ -47,7 +47,13 @@ module Railway =
     type RailwayBuilder<'b> () =
         member _.Zero () = Ok ()
         member _.Bind (v: Railway<'a, 'b>, f: 'a -> Railway<'c, 'b>) = bind f v
+        member _.Bind (v: Result<'a, 'b>, f: 'a -> Railway<'c, 'b>) = bind f (Railway.Sync v)
+        member _.Bind (v: Task<Result<'a, 'b>>, f: 'a -> Railway<'c, 'b>) = bind f (Railway.Task v)
+        member _.Bind (v: Async<Result<'a, 'b>>, f: 'a -> Railway<'c, 'b>) = bind f (Railway.Async v)
         member _.Return (v: 'a) = Railway.Sync (Ok v)
         member _.ReturnFrom (v: Railway<'a, 'b>) = v
+        member _.ReturnFrom (v: Result<'a, 'b>) = Railway.Sync v
+        member _.ReturnFrom (v: Task<Result<'a, 'b>>) = Railway.Task v
+        member _.ReturnFrom (v: Async<Result<'a, 'b>>) = Railway.Async v
 
     let railway<'b> = RailwayBuilder<'b>()
