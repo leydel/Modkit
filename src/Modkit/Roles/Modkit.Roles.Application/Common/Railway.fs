@@ -48,5 +48,6 @@ module Railway =
         member _.Zero () = Ok ()
         member _.Bind (v: Railway<'a, 'b>, f: 'a -> Railway<'c, 'b>) = bind f v
         member _.Return (v: 'a) = Railway.Sync (Ok v)
+        member _.ReturnFrom (v: Railway<'a, 'b>) = v
 
     let railway<'b> = RailwayBuilder<'b>()
