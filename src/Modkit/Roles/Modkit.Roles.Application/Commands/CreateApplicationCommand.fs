@@ -85,7 +85,7 @@ type CreateApplicationCommandHandler (
 
     interface IRequestHandler<CreateApplicationCommand, CreateApplicationCommandResponse> with
         member _.Handle (req, ct) = task {
-            return! Railway.toTask (railway {
+            return! railway {
                 let! app = getCurrentApplication req.Token
 
                 let redirectUris = (app.RedirectUris |> Option.defaultValue [])
@@ -95,5 +95,5 @@ type CreateApplicationCommandHandler (
                 do! validateClientSecret app.Id req.ClientSecret
                 do! updateDiscordApplication app req.Token req.HostAuthority
                 return! uploadToDatabase app req.Token req.ClientSecret
-            })
+            } |> Railway.toTask
         }
