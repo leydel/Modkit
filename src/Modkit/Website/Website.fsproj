@@ -7,6 +7,9 @@
 
   <ItemGroup>
     <Compile Include="App.fs" />
+	<None Include="index.html" />
+    <None Include="staticwebapp.config.json" />
+    <None Include=".gitignore" />
   </ItemGroup>
 
   <ItemGroup>
