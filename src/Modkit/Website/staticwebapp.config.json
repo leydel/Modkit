@@ -3,12 +3,12 @@
     {
       "route": "/discord",
       "redirect": "https://discord.gg/SFX3fJZ4NA",
-      "statusCode": 301
+      "statusCode": 302
     },
     {
       "route": "/*",
-      "redirect": "https://github.com/FinOCE/Modkit",
-      "statusCode": 301
+      "redirect": "https://github.com/leydel/Modkit",
+      "statusCode": 302
     }
   ]
 }
