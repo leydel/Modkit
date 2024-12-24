@@ -4,6 +4,7 @@ open System.Net.Http
 
 open Discordfs
 open Discordfs.Rest.Modules
+open Discordfs.Types
 open MediatR
 
 open Modkit.Roles.Domain.Entities
@@ -51,7 +52,7 @@ type CreateApplicationCommandHandler (
 
     let validateClientSecret (applicationId: string) (clientSecret: string) = task {
         let client = httpClientFactory.CreateClient() |> HttpClient.toBasicClient applicationId clientSecret
-        let! res = client |> OAuthFlow.clientCredentialsGrant [Types.OAuth2Scope.IDENTIFY]
+        let! res = client |> OAuthFlow.clientCredentialsGrant [OAuth2Scope.IDENTIFY]
 
         match res with
         | None -> return Error InvalidClientSecret
@@ -64,6 +65,11 @@ type CreateApplicationCommandHandler (
             Description "A custom bot built with Modkit Roles! https://modkit.org/linked-roles"
             RoleConnectionVerificationUrl $"{hostAuthority}/applications/{app.Id}/linked-role"
             InteractionsEndpointUrl $"{hostAuthority}/applications/{app.Id}/interactions"
+            IntegrationTypesConfig [
+                (ApplicationIntegrationType.GUILD_INSTALL, { Oauth2InstallParams = None })
+                // TODO: Check if this install params is correct (maybe none means invalid and both need to be defined?)
+            ]
+            // TODO: Set avatar and banner? Rewrite description?
         ]
 
         match res with
