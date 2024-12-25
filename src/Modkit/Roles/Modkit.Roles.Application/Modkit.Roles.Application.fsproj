@@ -15,6 +15,7 @@
 		<Compile Include="Commands\CreateUserCommand.fs" />
 		<Compile Include="Commands\AddConditionCommand.fs" />
 		<Compile Include="Commands\RemoveConditionCommand.fs" />
+		<Compile Include="Commands\SetUserConditionCommand.fs" />
 		<Compile Include="Queries\GetLinkedRoleRedirectQuery.fs" />
 		<Compile Include="Queries\VerifyEd25519Query.fs" />
 	</ItemGroup>

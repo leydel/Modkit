@@ -9,7 +9,7 @@ open Microsoft.Extensions.Hosting
 
 open Modkit.Roles.Application.Options
 open Modkit.Roles.Application.Repositories
-open Modkit.Roles.Application.Services
+open Modkit.Roles.Application.Commands
 open Modkit.Roles.Infrastructure.Repositories
 
 open Modkit.Roles.Presentation.Middleware
@@ -29,7 +29,7 @@ HostBuilder()
     )
     .ConfigureServices(fun ctx services ->
         // Register services
-        !services.AddMediatR(fun services -> !services.RegisterServicesFromAssemblyContaining<InteractionService>()) // TODO: Test if correctly gets all command/query from Application assembly
+        !services.AddMediatR(fun services -> !services.RegisterServicesFromAssemblyContaining<CreateApplicationCommand>()) // TODO: Test if correctly gets all command/query from Application assembly
         !services.AddHttpClient()
         !services.AddLogging()
         !services.AddApplicationInsightsTelemetryWorkerService()
