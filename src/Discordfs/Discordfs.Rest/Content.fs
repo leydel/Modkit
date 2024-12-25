@@ -1,5 +1,6 @@
 ﻿namespace Discordfs.Rest
 
+open Discordfs.Rest.Types
 open Discordfs.Types
 open System
 open System.Collections.Generic

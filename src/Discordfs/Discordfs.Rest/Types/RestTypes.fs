@@ -53,6 +53,12 @@ type ResponseWithMetadata<'a> = {
     Status: HttpStatusCode
 }
 
+// Used in StartThreadWithoutMessagePayload (should probably be reworked)
+type ThreadType =
+    | ANNOUNCEMENT_THREAD = 10
+    | PUBLIC_THREAD = 11
+    | PRIVATE_THREAD = 12
+
 [<RequireQualifiedAccess>]
 type DiscordAccessToken =
     | OAUTH of string

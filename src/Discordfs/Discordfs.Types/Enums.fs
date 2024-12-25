@@ -93,10 +93,32 @@ type MessageType =
     | GUILD_INCIDENT_REPORT_FALSE_ALARM = 39
     | PURCHASE_NOTIFICATION = 44
 
+// https://discord.com/developers/docs/resources/message#message-object-message-flags
 type MessageFlag =
-    | EPHEMERAL = 0b01000000
-    // TODO: Document remaining message flags
+    /// This message has been published to subscribed channels (via Channel Following)
+    | CROSSPOSTED =                            (1 <<< 0)
+    /// This message originated from a message in another channel (via Channel Following)
+    | IS_CROSSPOST =                           (1 <<< 1)
+    /// Do not include any embeds when serializing this message
+    | SUPPRESS_EMBEDS =                        (1 <<< 2)
+    /// The source message for this crosspost has been deleted (via Channel Following)
+    | SOURCE_MESSAGE_DELETED =                 (1 <<< 3)
+    /// This message came from the urgent message system
+    | URGENT =                                 (1 <<< 4)
+    /// This message has an associated thread, with the same id as the message
+    | HAS_THREAD =                             (1 <<< 5)
+    /// This message is only visible to the user who invoked the Interaction
+    | EPHEMERAL =                              (1 <<< 6)
+    /// This message is an Interaction Response and the bot is "thinking"
+    | LOADING =                                (1 <<< 7)
+    /// This message failed to mention some roles and add their members to the thread
+    | FAILED_TO_MENTION_SOME_ROLES_IN_THREAD = (1 <<< 8)
+    /// This message will not trigger push and desktop notifications
+    | SUPPRESS_NOTIFICATIONS =                 (1 <<< 12)
+    /// This message is a voice message
+    | IS_VOICE_MESSAGE =                       (1 <<< 13)
 
+// https://discord.com/developers/docs/resources/channel#channel-object-channel-types
 type ChannelType =
     | GUILD_TEXT = 0
     | DM = 1
@@ -112,10 +134,19 @@ type ChannelType =
     | GUILD_FORUM = 15
     | GUILD_MEDIA = 16
 
-type ThreadType =
-    | ANNOUNCEMENT_THREAD = 10
-    | PUBLIC_THREAD = 11
-    | PRIVATE_THREAD = 12
+// https://discord.com/developers/docs/resources/channel#channel-object-channel-flags
+type ChannelFlag =
+    /// This thread is pinned to the top of its parent `GUILD_FORUM` or `GUILD_MEDIA` channel
+    | PINNED =                      (1 <<< 1)
+    /// Whether a tag is required to be specified when creating a thread in a `GUILD_FORUM` or a `GUILD_MEDIA`channel. Tags are specified in the `applied_tags` field
+    | REQUIRE_TAG =                 (1 <<< 4)
+    /// When set hides the embedded media download options. Available only for media channels
+    | HIDE_MEDIA_DOWNLOAD_OPTIONS = (1 <<< 15)
+
+// https://discord.com/developers/docs/topics/permissions#role-object-role-flags
+type RoleFlag =
+    /// Role can be selected by members in an onboarding prompt
+    | IN_PROMPT = (1 <<< 0)
 
 type EntitlementType =
     | PURCHASE = 1
@@ -1519,3 +1550,173 @@ type JsonErrorCode =
     | CANNOT_EDIT_POLL_MESSAGE = 520003
     | CANNOT_USE_EMOJI_INCLUDED_WITH_POLL = 520004
     | CANNOT_EXPIRE_NON_POLL_MESSAGE = 520006
+
+// https://discord.com/developers/docs/topics/permissions#permissions-bitwise-permission-flags
+type Permission =
+    /// Allows creation of instant invites
+    | CREATE_INSTANT_INVITE               = (1L <<< 0)
+    /// Allows kicking members
+    | KICK_MEMBERS                        = (1L <<< 1)
+    /// Allows banning members
+    | BAN_MEMBERS                         = (1L <<< 2)
+    /// Allows all permissions and bypasses channel permission overwrites
+    | ADMINISTRATOR                       = (1L <<< 3)
+    /// Allows management and editing of channels
+    | MANAGE_CHANNELS                     = (1L <<< 4)
+    /// Allows management and editing of the guild
+    | MANAGE_GUILD                        = (1L <<< 5)
+    /// Allows for the addition of reactions to messages
+    | ADD_REACTIONS                       = (1L <<< 6)
+    /// Allows for viewing of audit logs
+    | VIEW_AUDIT_LOG                      = (1L <<< 7)
+    /// Allows for using priority speaker in a voice channel
+    | PRIORITY_SPEAKER                    = (1L <<< 8)
+    /// Allows the user to go live
+    | STREAM                              = (1L <<< 9)
+    /// Allows guild members to view a channel, which includes reading messages in text channels and joining voice channels
+    | VIEW_CHANNEL                        = (1L <<< 10)
+    /// Allows for sending messages in a channel and creating threads in a forum (does not allow for sending messages in threads)
+    | SEND_MESSAGES                       = (1L <<< 11)
+    /// Allows for sending of `tts` messages
+    | SEND_TTS_MESSAGES                   = (1L <<< 12)
+    /// Allows for deletion of other users messages
+    | MANAGE_MESSAGES                     = (1L <<< 13)
+    /// Links sent by users with this permission will be auto-embedded
+    | EMBED_LINKS                         = (1L <<< 14)
+    /// Allows for uploading images and files
+    | ATTACH_FILES                        = (1L <<< 15)
+    /// Allows for reading of message history
+    | READ_MESSAGE_HISTORY                = (1L <<< 16)
+    /// Allows for using the `@everyone` tag to notify all users in a channel, and the `@here` tag to notify all online users in a channel
+    | MENTION_EVERYONE                    = (1L <<< 17)
+    /// Allows the usage of custom emojis from other servers
+    | USE_EXTERNAL_EMOJIS                 = (1L <<< 18)
+    /// Allows for viewing guild insights
+    | VIEW_GUILD_INSIGHTS                 = (1L <<< 19)
+    /// Allows for joining of a voice channel
+    | CONNECT                             = (1L <<< 20)
+    /// Allows for speaking in a voice channel
+    | SPEAK                               = (1L <<< 21)
+    /// Allows for muting members in a voice channel
+    | MUTE_MEMBERS                        = (1L <<< 22)
+    /// Allows for deafening of members in a voice channel
+    | DEAFEN_MEMBERS                      = (1L <<< 23)
+    /// Allows for moving of members between voice channels
+    | MOVE_MEMBERS                        = (1L <<< 24)
+    /// Allows for using voice-activity-detection in a voice channel
+    | USE_VAD                             = (1L <<< 25)
+    /// Allows for modification of own nickname (labelled `Use Voice Activity` in Discord client)
+    | CHANGE_NICKNAME                     = (1L <<< 26)
+    /// Allows for modification of other users nicknames
+    | MANAGE_NICKNAMES                    = (1L <<< 27)
+    /// Allows management and editing of roles (labelled `Manage Permissions` in Discord client)
+    | MANAGE_ROLES                        = (1L <<< 28)
+    /// Allows management and editing of webhooks
+    | MANAGE_WEBHOOKS                     = (1L <<< 29)
+    /// Allows for editing and deleting emojis, stickers, and soundboard sounds created by all users
+    | MANAGE_GUILD_EXPRESSIONS            = (1L <<< 30)
+    /// Allows members to use application commands, including slash commands and context menu commands
+    | USE_APPLICATION_COMMANDS            = (1L <<< 31)
+    /// Allows for requesting to speak in stage channels
+    | REQUEST_TO_SPEAK                    = (1L <<< 32)
+    /// Allows for editing and deleting scheduled events created by all users
+    | MANAGE_EVENTS                       = (1L <<< 33)
+    /// Allows for deleting and archiving threads, and viewing all private threads
+    | MANAGE_THREADS                      = (1L <<< 34)
+    /// Allows for creating public and announcement threads
+    | CREATE_PUBLIC_THREADS               = (1L <<< 35)
+    /// Allows for creating private threads
+    | CREATE_PRIVATE_THREADS              = (1L <<< 36)
+    /// Allows the usage of custom stickers from other servers
+    | USE_EXTERNAL_STICKERS               = (1L <<< 37)
+    /// Allows for sending messages in threads
+    | SEND_MESSAGES_IN_THREADS            = (1L <<< 38)
+    /// Allows for using Activities (applications with the `EMBEDDED` flag) in a voice channel
+    | USE_EMBEDDED_ACTIVITIES             = (1L <<< 39)
+    /// Allows for timing out users to prevent them from sending or reacting to messages in chat and threads, and from speaking in voice and stage channels (labelled `Timeout Members` in Discord client)
+    | MODERATE_MEMBERS                    = (1L <<< 40)
+    /// Allows for viewing role subscription insights
+    | VIEW_CREATOR_MONETIZATION_ANALYTICS = (1L <<< 41)
+    /// Allows for using soundboard in a voice channel
+    | USE_SOUNDBOARD                      = (1L <<< 42)
+    ///// Allows for creating emojis, stickers, and soundboard sounds, and editing and deleting those created by the current user
+    //| CREATE_GUILD_EXPRESSIONS            = (1L <<< 43) // (Not yet available to developers)
+    ///// Allows for creating scheduled events, and editing and deleting those created by the current user
+    //| CREATE_EVENTS                       = (1L <<< 44) // (Not yet available to developers)
+    /// Allows the usage of custom soundboard sounds from other servers
+    | USE_EXTERNAL_SOUNDS                 = (1L <<< 45)
+    /// Allows sending voice messages
+    | SEND_VOICE_MESSAGES                 = (1L <<< 46)
+    /// Allows sending polls
+    | SEND_POLLS                          = (1L <<< 49)
+    /// Allows user-installed apps to send public responses. When disabled, users will still be allowed to use their apps but the responses will be ephemeral. This only applies to apps not also installed to the server
+    | USE_EXTERNAL_APPS                   = (1L <<< 50)
+
+module Permission =
+    /// Returns whether the permission applies to the given channel type
+    let appliesToChannelType channelType permission =
+        let (|Text|Voice|Stage|Invalid|) (channelType: ChannelType) =
+            match channelType with
+            | ChannelType.GUILD_TEXT -> Text
+            | ChannelType.GUILD_VOICE -> Voice
+            | ChannelType.GUILD_ANNOUNCEMENT -> Text
+            | ChannelType.GUILD_STAGE_VOICE -> Stage
+            | ChannelType.GUILD_FORUM -> Text
+            | ChannelType.GUILD_MEDIA -> Text
+            | _ -> Invalid
+
+        match permission, channelType with
+        | Permission.CREATE_INSTANT_INVITE, (Text | Voice | Stage) -> true
+        | Permission.MANAGE_CHANNELS, (Text | Voice | Stage) -> true
+        | Permission.ADD_REACTIONS, (Text | Voice | Stage) -> true
+        | Permission.PRIORITY_SPEAKER, (Voice) -> true
+        | Permission.STREAM, (Voice | Stage) -> true
+        | Permission.VIEW_CHANNEL, (Text | Voice | Stage) -> true
+        | Permission.SEND_MESSAGES, (Text | Voice | Stage) -> true
+        | Permission.SEND_TTS_MESSAGES, (Text | Voice | Stage) -> true
+        | Permission.MANAGE_MESSAGES, (Text | Voice | Stage) -> true
+        | Permission.EMBED_LINKS, (Text | Voice | Stage) -> true
+        | Permission.ATTACH_FILES, (Text | Voice | Stage) -> true
+        | Permission.READ_MESSAGE_HISTORY, (Text | Voice | Stage) -> true
+        | Permission.MENTION_EVERYONE, (Text | Voice | Stage) -> true
+        | Permission.USE_EXTERNAL_EMOJIS, (Text | Voice | Stage) -> true
+        | Permission.CONNECT, (Voice | Stage) -> true
+        | Permission.SPEAK, (Voice) -> true
+        | Permission.MUTE_MEMBERS, (Voice | Stage) -> true
+        | Permission.DEAFEN_MEMBERS, (Voice) -> true
+        | Permission.MOVE_MEMBERS, (Voice | Stage) -> true
+        | Permission.USE_VAD, (Voice) -> true
+        | Permission.MANAGE_ROLES, (Text | Voice | Stage) -> true
+        | Permission.MANAGE_WEBHOOKS, (Text | Voice | Stage) -> true
+        | Permission.USE_APPLICATION_COMMANDS, (Text | Voice | Stage) -> true
+        | Permission.REQUEST_TO_SPEAK, (Stage) -> true
+        | Permission.MANAGE_EVENTS, (Voice | Stage) -> true
+        | Permission.MANAGE_THREADS, (Text) -> true
+        | Permission.CREATE_PUBLIC_THREADS, (Text) -> true
+        | Permission.CREATE_PRIVATE_THREADS, (Text) -> true
+        | Permission.USE_EXTERNAL_STICKERS, (Text | Voice | Stage) -> true
+        | Permission.SEND_MESSAGES_IN_THREADS, (Text) -> true
+        | Permission.USE_EMBEDDED_ACTIVITIES, (Voice) -> true
+        | Permission.USE_SOUNDBOARD, (Voice) -> true
+        //| Permission.CREATE_EVENTS, (Voice | Stage) -> true
+        | Permission.USE_EXTERNAL_SOUNDS, (Voice) -> true
+        | Permission.SEND_VOICE_MESSAGES, (Text | Voice | Stage) -> true
+        | Permission.SEND_POLLS, (Text | Voice | Stage) -> true
+        | Permission.USE_EXTERNAL_APPS, (Text | Voice | Stage) -> true
+        | _ -> false
+
+    // Returns whether the permission requires 2FA when used on a guild that has server-wide 2FA enabled
+    let requiresTwoFactorAuthentication permission =
+        match permission with
+        | Permission.KICK_MEMBERS -> true
+        | Permission.BAN_MEMBERS -> true
+        | Permission.ADMINISTRATOR -> true
+        | Permission.MANAGE_CHANNELS -> true
+        | Permission.MANAGE_GUILD -> true
+        | Permission.MANAGE_MESSAGES -> true
+        | Permission.MANAGE_ROLES -> true
+        | Permission.MANAGE_WEBHOOKS -> true
+        | Permission.MANAGE_GUILD_EXPRESSIONS -> true
+        | Permission.MANAGE_THREADS -> true
+        | Permission.VIEW_CREATOR_MONETIZATION_ANALYTICS -> true
+        | _ -> false
