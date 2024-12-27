@@ -1,11 +1,6 @@
 {
   "routes": [
     {
-      "route": "/discord",
-      "redirect": "https://discord.gg/SFX3fJZ4NA",
-      "statusCode": 302
-    },
-    {
       "route": "/*",
       "redirect": "https://github.com/leydel/Modkit",
       "statusCode": 302
