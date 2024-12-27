@@ -33,6 +33,7 @@ jobs:
           dotnet restore
           npm ci
           npm run build
+          cp ./staticwebapp.config.json ./dist
 
       - name: Build and deploy site
         id: builddeploy
