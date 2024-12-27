@@ -1,9 +1,9 @@
 name: Deploy website to SWA
 
 on:
-  workflow_dispatch:
-
-# TODO: Configure deployment to automatically run on changes to `Website` project
+  push:
+    paths: ["src/Modkit/Website/**"]
+    branches: ["main"]
 
 jobs:
   deploy:
