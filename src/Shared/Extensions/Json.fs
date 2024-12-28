@@ -5,21 +5,15 @@ open System.Text.Json.Nodes
 open System.Text.Json.Serialization
 
 module Json =
-    let options =
-        JsonFSharpOptions()
-            .WithUnionUnwrapFieldlessTags()
-            .WithSkippableOptionFields(SkippableOptionFields.Always, deserializeNullAsNone = true)
-            .ToJsonSerializerOptions()
-    
     let serializeF (value: 'a) =
-        JsonSerializer.Serialize(value, options)
+        JsonSerializer.Serialize(value)
 
     let serialize (value: 'a) =
         try serializeF value |> Some
         with | _ -> None
 
     let deserializeF<'a> (json: string) =
-        JsonSerializer.Deserialize<'a>(json, options)
+        JsonSerializer.Deserialize<'a>(json)
 
     let deserialize<'a> (json: string) =
         try deserializeF json |> Some

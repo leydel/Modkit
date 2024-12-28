@@ -11,9 +11,6 @@ open System.Text.Json
 
 HostBuilder()
     .ConfigureFunctionsWorkerDefaults(fun _ builder ->
-        // Setup json serializer
-        !builder.Services.Configure(fun (workerOptions: WorkerOptions) -> workerOptions.Serializer <- JsonObjectSerializer(Json.options))
-
         // Setup bindings
         VerifyEd25519Builder.configure builder
     )

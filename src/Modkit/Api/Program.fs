@@ -8,9 +8,6 @@ open System.Text.Json
 
 HostBuilder()
     .ConfigureFunctionsWorkerDefaults(fun ctx builder ->
-        !builder.Services.Configure(fun (workerOptions: WorkerOptions) ->
-            workerOptions.Serializer <- JsonObjectSerializer(Json.options)
-        )
         !builder.ConfigureCosmosDBExtension()
     )
     .ConfigureAppConfiguration(fun builder ->

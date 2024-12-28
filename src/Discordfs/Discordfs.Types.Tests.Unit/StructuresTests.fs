@@ -1,7 +1,7 @@
 ﻿namespace Discordfs.Types
 
 open Microsoft.VisualStudio.TestTools.UnitTesting
-open Discordfs.Types
+open System
 open System.Text.Json
 
 [<TestClass>]
@@ -98,7 +98,7 @@ type StructuresTests () =
         let res () = Json.deserializeF<Component> json |> ignore
 
         // Assert
-        Assert.ThrowsException<JsonException> res |> ignore
+        Assert.ThrowsException<Exception> res |> ignore
 
     [<TestMethod>]
     member _.ComponentConverter_Read_FailsOnInvalidJsonString () =

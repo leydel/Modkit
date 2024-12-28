@@ -16,8 +16,7 @@ open Modkit.Roles.Presentation.Middleware
 
 HostBuilder()
     .ConfigureFunctionsWorkerDefaults(fun _ builder ->
-        // Setup json serializer
-        !builder.Services.Configure(fun (workerOptions: WorkerOptions) -> workerOptions.Serializer <- JsonObjectSerializer(Json.options))
+        // Setup middleware
         !builder.UseWhen<Ed25519Middleware>(fun ctx -> ctx.FunctionDefinition.Name = "PostInteraction") // TODO: Use reflection with VerifyEd25519 attribute
     )
     .ConfigureAppConfiguration(fun builder ->
