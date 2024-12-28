@@ -98,7 +98,7 @@ type StructuresTests () =
         let res () = Json.deserializeF<Component> json |> ignore
 
         // Assert
-        Assert.ThrowsException<Exception> res |> ignore
+        Assert.ThrowsException<JsonException> res |> ignore
 
     [<TestMethod>]
     member _.ComponentConverter_Read_FailsOnInvalidJsonString () =

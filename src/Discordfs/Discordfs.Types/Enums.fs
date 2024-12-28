@@ -320,7 +320,7 @@ and GuildFeatureConverter () =
 
             match value with
             | Some gf -> gf
-            | None -> failwith "Unexpected GuildFeature type"
+            | None -> raise (JsonException "Unexpected GuildFeature type")
 
         override _.Write (writer: Utf8JsonWriter, value: GuildFeature, options: JsonSerializerOptions) = 
             writer.WriteStringValue (value.ToString())
@@ -350,7 +350,7 @@ and CommandInteractionDataOptionValueConverter () =
             | JsonTokenType.Number -> CommandInteractionDataOptionValue.Int (reader.GetInt32())
             | JsonTokenType.True -> CommandInteractionDataOptionValue.Bool true
             | JsonTokenType.False -> CommandInteractionDataOptionValue.Bool false
-            | _ -> failwith "Unexpected CommandInteractionDataOptionValue value"
+            | _ -> raise (JsonException "Unexpected CommandInteractionDataOptionValue value")
 
         override _.Write (writer: Utf8JsonWriter, value: CommandInteractionDataOptionValue, options: JsonSerializerOptions) =
             match value with
@@ -429,7 +429,7 @@ and MessageNonceConverter () =
             match reader.TokenType with
             | JsonTokenType.Number -> MessageNonce.Number (reader.GetInt32())
             | JsonTokenType.String -> MessageNonce.String (reader.GetString())
-            | _ -> failwith "Unexpected MessageNonce value"
+            | _ -> raise (JsonException "Unexpected MessageNonce value")
 
         override _.Write (writer: Utf8JsonWriter, value: MessageNonce, options: JsonSerializerOptions) =
             match value with
@@ -455,9 +455,9 @@ and ApplicationCommandOptionChoiceValueConverter () =
                 else if reader.TryGetDouble(ref double) then
                     ApplicationCommandOptionChoiceValue.Double double
                 else
-                    failwith "Unexpected ApplicationCommandOptionChoiceValue value"
+                    raise (JsonException "Unexpected ApplicationCommandOptionChoiceValue value")
                 // TODO: Test if this correctly handles int and double
-            | _ -> failwith "Unexpected ApplicationCommandOptionChoiceValue value"
+            | _ -> raise (JsonException "Unexpected ApplicationCommandOptionChoiceValue value")
 
         override _.Write (writer: Utf8JsonWriter, value: ApplicationCommandOptionChoiceValue, options: JsonSerializerOptions) =
             match value with
@@ -482,9 +482,9 @@ and ApplicationCommandMinValueConverter () =
                 else if reader.TryGetDouble(ref double) then
                     ApplicationCommandMinValue.Double double
                 else
-                    failwith "Unexpected ApplicationCommandMinValue value"
+                    raise (JsonException "Unexpected ApplicationCommandMinValue value")
                 // TODO: Test if this correctly handles int and double
-            | _ -> failwith "Unexpected ApplicationCommandMinValue value"
+            | _ -> raise (JsonException "Unexpected ApplicationCommandMinValue value")
 
         override _.Write (writer: Utf8JsonWriter, value: ApplicationCommandMinValue, options: JsonSerializerOptions) = 
             match value with
@@ -508,9 +508,9 @@ and ApplicationCommandMaxValueConverter () =
                 else if reader.TryGetDouble(ref double) then
                     ApplicationCommandMaxValue.Double double
                 else
-                    failwith "Unexpected ApplicationCommandMaxValue value"
+                    raise (JsonException "Unexpected ApplicationCommandMaxValue value")
                 // TODO: Test if this correctly handles int and double
-            | _ -> failwith "Unexpected ApplicationCommandMaxValue value"
+            | _ -> raise (JsonException "Unexpected ApplicationCommandMaxValue value")
 
         override _.Write (writer: Utf8JsonWriter, value: ApplicationCommandMaxValue, options: JsonSerializerOptions) = 
             match value with
@@ -530,7 +530,7 @@ and AllowedMentionsParseTypeConverter () =
             | "roles" -> AllowedMentionsParseType.Roles
             | "users" -> AllowedMentionsParseType.Users
             | "everyone" -> AllowedMentionsParseType.Everyone
-            | _ -> failwith "Unexpected AllowedMentionsParseType value"
+            | _ -> raise (JsonException "Unexpected AllowedMentionsParseType value")
 
         override _.Write (writer: Utf8JsonWriter, value: AllowedMentionsParseType, options: JsonSerializerOptions) =
             let string =
@@ -560,7 +560,7 @@ type GatewayEncodingConverter () =
             match reader.GetString() with
             | "json" -> GatewayEncoding.JSON
             | "etf" -> GatewayEncoding.ETF
-            | _ -> failwith "Unexpected GatewayEncoding value"
+            | _ -> raise (JsonException "Unexpected GatewayEncoding value")
 
         override _.Write (writer: Utf8JsonWriter, value: GatewayEncoding, options: JsonSerializerOptions) =
             let string =
@@ -585,7 +585,7 @@ type GatewayCompressionConverter () =
             match reader.GetString() with
             | "zlib-stream" -> GatewayCompression.ZLIBSTREAM
             | "zstd-stream" -> GatewayCompression.ZSTDSTREAM
-            | _ -> failwith "Unexpected GatewayCompression value"
+            | _ -> raise (JsonException "Unexpected GatewayCompression value")
 
         override _.Write (writer: Utf8JsonWriter, value: GatewayCompression, options: JsonSerializerOptions) =
             let string =
@@ -692,7 +692,7 @@ and StatusTypeConverter () =
             | "idle" -> StatusType.IDLE
             | "invisible" -> StatusType.INVISIBLE
             | "offline" -> StatusType.OFFLINE
-            | _ -> failwith "Unexpected StatusType value"
+            | _ -> raise (JsonException "Unexpected StatusType value")
 
         override __.Write (writer: Utf8JsonWriter, value: StatusType, options: JsonSerializerOptions) =
             let string =
@@ -739,7 +739,7 @@ and SoundboardSoundIdConverter () =
             match reader.TokenType with // TODO: Test this, sounds wrong
             | JsonTokenType.String -> SoundboardSoundId.String (reader.GetString())
             | JsonTokenType.Number -> SoundboardSoundId.Int (reader.GetInt32())
-            | _ -> failwith "Unexpected SoundboardSoundId value"
+            | _ -> raise (JsonException "Unexpected SoundboardSoundId value")
 
         override _.Write (writer: Utf8JsonWriter, value: SoundboardSoundId, options: JsonSerializerOptions) =
             match value with
@@ -817,7 +817,7 @@ and ActivityLocationKindConverter () =
             match reader.GetString() with
             | "gc" -> ActivityLocationKind.GUILD_CHANNEL
             | "pc" -> ActivityLocationKind.PRIVATE_CHANNEL
-            | _ -> failwith "Unexpected ActivityLocationKind value"
+            | _ -> raise (JsonException "Unexpected ActivityLocationKind value")
 
         override _.Write (writer: Utf8JsonWriter, value: ActivityLocationKind, options: JsonSerializerOptions) =
             let string =
@@ -911,7 +911,7 @@ type GuildIntegrationTypeConverter () =
             | "youtube" -> GuildIntegrationType.YOUTUBE
             | "discord" -> GuildIntegrationType.DISCORD
             | "guild_subscription" -> GuildIntegrationType.GUILD_SUBSCRIPTION
-            | _ -> failwith "Unexpected GuildIntegrationType value"
+            | _ -> raise (JsonException "Unexpected GuildIntegrationType value")
 
         override _.Write (writer: Utf8JsonWriter, value: GuildIntegrationType, options: JsonSerializerOptions) =
             let string =
@@ -1025,7 +1025,7 @@ and OAuth2ScopeConverter () =
     inherit JsonConverter<OAuth2Scope> () with
         override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
             match reader.GetString() |> OAuth2Scope.FromString with
-            | None -> failwith "Unexpected OAuth2Scope type"
+            | None -> raise (JsonException "Unexpected OAuth2Scope type")
             | Some v -> v
 
         override _.Write (writer: Utf8JsonWriter, value: OAuth2Scope, options: JsonSerializerOptions) =
@@ -1037,7 +1037,7 @@ and OAuth2ScopeListConverter () =
             reader.GetString()
             |> _.Split(' ')
             |> Array.map OAuth2Scope.FromString
-            |> Array.map (function | Some v -> v | None -> failwith "Unexpected OAuth2Scope type")
+            |> Array.map (function | Some v -> v | None -> raise (JsonException "Unexpected OAuth2Scope type"))
             |> Array.toList
 
         override _.Write (writer: Utf8JsonWriter, value: OAuth2Scope list, options: JsonSerializerOptions) =
@@ -1057,7 +1057,7 @@ with
         match str with
         | "access_token" -> TokenTypeHint.ACCESS_TOKEN
         | "refresh_token" -> TokenTypeHint.REFRESH_TOKEN
-        | _ -> failwith "Unexpected TokenTypeHint type"
+        | _ -> raise (JsonException "Unexpected TokenTypeHint type")
 
 and TokenTypeHintConverter () =
     inherit JsonConverter<TokenTypeHint> () with
@@ -1103,7 +1103,7 @@ type GuildWidgetStyleConverter () =
             | "banner_2" -> GuildWidgetStyle.BANNER_2
             | "banner_3" -> GuildWidgetStyle.BANNER_3
             | "banner_4" -> GuildWidgetStyle.BANNER_4
-            | _ -> failwith "Unexpected GuildWidgetStyle type"
+            | _ -> raise (JsonException "Unexpected GuildWidgetStyle type")
 
         override _.Write (writer: Utf8JsonWriter, value: GuildWidgetStyle, options: JsonSerializerOptions) =
             let string =
@@ -1282,7 +1282,7 @@ and ConnectionServiceTypeConverter () =
     inherit JsonConverter<ConnectionServiceType> () with
         override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
             match reader.GetString() |> ConnectionServiceType.FromString with
-            | None -> failwith "Unexpected ConnectionServiceType type"
+            | None -> raise (JsonException "Unexpected ConnectionServiceType type")
             | Some v -> v
 
         override _.Write (writer: Utf8JsonWriter, value: ConnectionServiceType, options: JsonSerializerOptions) = 
@@ -1325,7 +1325,7 @@ and WebhookEventTypeConverter () =
     inherit JsonConverter<WebhookEventType> () with
         override _.Read (reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) = 
             match reader.GetString() |> WebhookEventType.FromString with
-            | None -> failwith "Unexpected WebhookEventType type"
+            | None -> raise (JsonException "Unexpected WebhookEventType type")
             | Some v -> v
 
         override _.Write (writer: Utf8JsonWriter, value: WebhookEventType, options: JsonSerializerOptions) = 

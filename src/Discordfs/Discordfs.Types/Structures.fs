@@ -964,7 +964,7 @@ and ComponentConverter () =
         | ComponentType.MENTIONABLE_SELECT
         | ComponentType.CHANNEL_SELECT -> Component.SELECT_MENU <| Json.deserializeF<SelectMenuComponent> json
         | ComponentType.TEXT_INPUT -> Component.TEXT_INPUT <| Json.deserializeF<TextInputComponent> json
-        | _ -> failwith "Unexpected ComponentType provided"
+        | _ -> raise (JsonException "Unexpected ComponentType provided")
 
     override _.Write (writer, value, options) =
         match value with
@@ -1077,7 +1077,7 @@ and MessageInteractionMetadataConverter () =
         | InteractionType.APPLICATION_COMMAND -> MessageInteractionMetadata.APPLICATION_COMMAND <| Json.deserializeF<ApplicationCommandInteractionMetadata> json
         | InteractionType.MESSAGE_COMPONENT -> MessageInteractionMetadata.MESSAGE_COMPONENT <| Json.deserializeF<MessageComponentInteractionMetadata> json
         | InteractionType.MODAL_SUBMIT -> MessageInteractionMetadata.MODAL_SUBMIT <| Json.deserializeF<ModalSubmitInteractionMetadata> json
-        | _ -> failwith "Unexpected InteractionType provided"
+        | _ -> raise (JsonException "Unexpected InteractionType provided")
 
     override _.Write (writer, value, options) =
         match value with
