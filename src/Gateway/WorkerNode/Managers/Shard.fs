@@ -13,7 +13,7 @@ type IShard =
 type Shard (
     gatewayUrl: string,
     identify: IdentifySendEvent,
-    handler: (GatewayReceiveEvent -> Task<unit>)
+    handler: (string -> Task<unit>)
 ) =
     let cts = new CancellationTokenSource()
 

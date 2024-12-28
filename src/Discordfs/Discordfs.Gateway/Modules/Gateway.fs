@@ -8,20 +8,6 @@ open System.Text.Json
 open System.Threading
 open System.Threading.Tasks
 
-type ConnectionCloseBehaviour =
-    | Resume of ResumeGatewayUrl: string option
-    | Reconnect
-    | Close
-
-type GatewayLoopState = {
-    SequenceId: int option
-    Interval: int option
-    Heartbeat: DateTime option
-    HeartbeatAcked: bool
-    ResumeGatewayUrl: string option
-    SessionId: string option
-}
-
 module Gateway =
     let identify (payload: IdentifySendEvent) ws =
         ws |> Websocket.write (
@@ -76,111 +62,129 @@ module Gateway =
         | Some GatewayCloseEventCode.DISALLOWED_INTENTS -> false
         | None -> true
         | _ -> false
+        
+    type LifecycleContinuation =
+        | Resume of ResumeGatewayUrl: string
+        | Reconnect
+        | Close
 
-    let rec loop (state: GatewayLoopState) resumed (id: IdentifySendEvent) handler ws = task {
-        let now = DateTime.UtcNow
-        let freshHeartbeat = state.Interval |> Option.map (fun i -> now.AddMilliseconds(i))
-
-        let timeout =
-            match state.Heartbeat with
-            | Some h -> Task.Delay (h.Subtract(now))
-            | None -> Task.Delay Timeout.InfiniteTimeSpan
-
-        let readNext =
-            Websocket.readNext ws
-            ?> fun res ->
-                match res with
-                | WebsocketReadResponse.Close code -> Error (Option.map enum<GatewayCloseEventCode> code)
-                | WebsocketReadResponse.Message message -> Ok (Json.deserializeF<GatewayReceiveEvent> message)
-
-        let! winner = Task.WhenAny(timeout, readNext)
-
-        if winner = timeout then
-            match state.HeartbeatAcked with
-            | false ->
-                return ConnectionCloseBehaviour.Resume state.ResumeGatewayUrl
-            | true ->
-                ws |> heartbeat state.SequenceId |> ignore
-                return! loop { state with HeartbeatAcked = false } resumed id handler ws
-        else
-            match readNext.Result with
-            | Error code ->
-                match shouldReconnect code with
-                | true -> return ConnectionCloseBehaviour.Resume state.ResumeGatewayUrl
-                | false -> return ConnectionCloseBehaviour.Close
-
-            | Ok (GatewayReceiveEvent.HELLO event) ->
-                match resumed, state.SessionId, state.SequenceId with
-                | true, Some ses, Some seq -> resume (ResumeSendEvent.build(id.Token, ses, seq))
-                | _ -> identify id
-                <| ws |> ignore
-
-                let newState = { state with Interval = Some event.Data.HeartbeatInterval }
-                return! loop newState resumed id handler ws
-
-            | Ok (GatewayReceiveEvent.HEARTBEAT _) ->
-                ws |> heartbeat state.SequenceId |> ignore
-
-                return! loop { state with Heartbeat = freshHeartbeat } resumed id handler ws
-
-            | Ok (GatewayReceiveEvent.HEARTBEAT_ACK _) ->
-                return! loop { state with HeartbeatAcked = true } resumed id handler ws
-
-            | Ok (GatewayReceiveEvent.READY event) ->
-                let resumeGatewayUrl = Some event.Data.ResumeGatewayUrl
-                let sessionId = Some event.Data.SessionId
-
-                let newState = { state with ResumeGatewayUrl = resumeGatewayUrl; SessionId = sessionId }
-                return! loop newState resumed id handler ws
-
-            | Ok (GatewayReceiveEvent.RESUMED _) ->
-                return! loop state resumed id handler ws
-
-            | Ok (GatewayReceiveEvent.RECONNECT _) ->
-                return ConnectionCloseBehaviour.Resume state.ResumeGatewayUrl
-
-            | Ok (GatewayReceiveEvent.INVALID_SESSION event) ->
-                match event.Data with
-                | true -> return! loop state resumed id handler ws
-                | false -> return ConnectionCloseBehaviour.Reconnect
-
-            | Ok event ->
-                handler event |> ignore
-
-                match GatewayReceiveEvent.getSequenceNumber event with
-                | None -> return! loop state resumed id handler ws
-                | Some s -> return! loop { state with SequenceId = Some s } resumed id handler ws
+    type LifecycleState = {
+        SequenceId: int option
+        Interval: int option
+        Heartbeat: DateTime option
+        HeartbeatAcked: bool
+        ResumeGatewayUrl: string option
+        SessionId: string option
     }
 
-    let rec reconnect (cachedUrl: string) (resumeGatewayUrl: string option) identify handler (ws: ClientWebSocket option ref) = task {
-        let gatewayUrl = Uri (Option.defaultValue cachedUrl resumeGatewayUrl)
-        let resumed = resumeGatewayUrl.IsSome
+    let rec loop (state: LifecycleState) (id: IdentifySendEvent) handler ws (ct: CancellationToken) = task {
+        match ct.IsCancellationRequested with
+        | true -> return LifecycleContinuation.Close
+        | false ->
+            let timeout =
+                match state.Heartbeat with
+                | Some h -> h.Subtract DateTime.UtcNow
+                | None -> Timeout.InfiniteTimeSpan
+                |> Task.Delay
 
+            let event =
+                ws |> Websocket.readNext ?> function
+                | WebsocketReadResponse.Close code -> Error (Option.map enum<GatewayCloseEventCode> code)
+                | WebsocketReadResponse.Message message -> Ok (Json.deserializeF<GatewayReceiveEvent> message, message)
+
+            let! winner = Task.WhenAny(timeout, event)
+
+            match winner, state.HeartbeatAcked with
+            | winner, false when winner = timeout ->
+                match state.ResumeGatewayUrl with
+                | Some resumeGatewayUrl -> return LifecycleContinuation.Resume resumeGatewayUrl
+                | None -> return LifecycleContinuation.Reconnect
+
+            | winner, true when winner = timeout ->
+                ws |> heartbeat state.SequenceId |> ignore
+
+                return! loop { state with HeartbeatAcked = false } id handler ws ct
+            
+            | _ ->
+                match event.Result with
+                | Error code ->
+                    match shouldReconnect code, state.ResumeGatewayUrl with
+                    | true, Some resumeGatewayUrl -> return LifecycleContinuation.Resume resumeGatewayUrl
+                    | true, None -> return LifecycleContinuation.Reconnect
+                    | false, _ -> return LifecycleContinuation.Close
+
+                | Ok (GatewayReceiveEvent.HELLO event, _) ->
+                    let interval = Some event.Data.HeartbeatInterval
+
+                    let sendEvent =
+                        match state.SessionId, state.SequenceId with
+                        | Some sessionId, Some sequenceId -> resume (ResumeSendEvent.build(id.Token, sessionId, sequenceId))
+                        | _ -> identify id
+
+                    ws |> sendEvent |> ignore
+
+                    return! loop { state with Interval = interval } id handler ws ct
+
+                | Ok (GatewayReceiveEvent.HEARTBEAT _, _) ->
+                    let freshHeartbeat = state.Interval |> Option.map (fun i -> DateTime.UtcNow.AddMilliseconds(i))
+
+                    ws |> heartbeat state.SequenceId |> ignore
+
+                    return! loop { state with Heartbeat = freshHeartbeat } id handler ws ct
+
+                | Ok (GatewayReceiveEvent.HEARTBEAT_ACK _, _) ->
+                    return! loop { state with HeartbeatAcked = true } id handler ws ct
+
+                | Ok (GatewayReceiveEvent.READY event, _) ->
+                    let resumeGatewayUrl = Some event.Data.ResumeGatewayUrl
+                    let sessionId = Some event.Data.SessionId
+
+                    return! loop { state with ResumeGatewayUrl = resumeGatewayUrl; SessionId = sessionId } id handler ws ct
+
+                | Ok (GatewayReceiveEvent.RESUMED _, _) ->
+                    return! loop state id handler ws ct
+
+                | Ok (GatewayReceiveEvent.RECONNECT _, _) ->
+                    match state.ResumeGatewayUrl with
+                    | Some resumeGatewayUrl -> return LifecycleContinuation.Resume resumeGatewayUrl
+                    | None -> return LifecycleContinuation.Reconnect
+
+                | Ok (GatewayReceiveEvent.INVALID_SESSION event, _) ->
+                    match event.Data, state.ResumeGatewayUrl with
+                    | true, Some resumeGatewayUrl -> return LifecycleContinuation.Resume resumeGatewayUrl
+                    | _ -> return LifecycleContinuation.Reconnect
+
+                | Ok (_, event) ->
+                    handler event |> ignore
+
+                    match JsonDocument.Parse(event).RootElement.TryGetProperty "s" with
+                    | true, t -> return! loop { state with SequenceId = t.GetInt32() |> Some } id handler ws ct
+                    | _ -> return! loop state id handler ws ct
+    }
+
+    let rec connect (cachedUrl: string) (resumeGatewayUrl: string option) identify handler (ws: ClientWebSocket option ref) (ct: CancellationToken) = task {
         let socket = new ClientWebSocket()
         ws.Value <- Some socket
-        do! socket.ConnectAsync(gatewayUrl, CancellationToken.None)
+        do! socket.ConnectAsync(Uri (resumeGatewayUrl >>? cachedUrl), CancellationToken.None)
 
         let initialState = {
-            SequenceId = None;
-            Interval = None;
-            Heartbeat = None;
-            HeartbeatAcked = true;
-            ResumeGatewayUrl = None;
-            SessionId = None;
+            SequenceId = None
+            Interval = None
+            Heartbeat = None
+            HeartbeatAcked = true
+            ResumeGatewayUrl = resumeGatewayUrl
+            SessionId = None
         }
 
-        let! close = loop initialState resumed identify handler socket
-
-        match close with
-        | ConnectionCloseBehaviour.Resume (Some resumeGatewayUrl) ->
+        match! loop initialState identify handler socket ct with
+        | LifecycleContinuation.Resume resumeGatewayUrl ->
             do! socket.CloseAsync(WebSocketCloseStatus.Empty, "Resuming", CancellationToken.None)
-            return! reconnect cachedUrl (Some resumeGatewayUrl) identify handler ws
+            return! connect cachedUrl (Some resumeGatewayUrl) identify handler ws ct
 
-        | ConnectionCloseBehaviour.Resume None
-        | ConnectionCloseBehaviour.Reconnect ->
+        | LifecycleContinuation.Reconnect ->
             do! socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Reconnecting", CancellationToken.None)
-            return! reconnect cachedUrl None identify handler ws
+            return! connect cachedUrl None identify handler ws ct
 
-        | ConnectionCloseBehaviour.Close ->
+        | LifecycleContinuation.Close ->
             do! socket.CloseAsync(WebSocketCloseStatus.InternalServerError, "Closing", CancellationToken.None)
     }

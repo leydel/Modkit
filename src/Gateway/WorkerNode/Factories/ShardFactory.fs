@@ -6,7 +6,6 @@ open Modkit.Gateway.WorkerNode.Managers
 open Modkit.Gateway.WorkerNode.Types
 open System.Net.Http
 open System.Net.Http.Headers
-open System.Text.Json
 open System.Threading.Tasks
 
 type IShardFactory =
@@ -27,9 +26,9 @@ type ShardFactory (
                 | GatewayEventHandler.Http endpoint ->
                     let client = httpClientFactory.CreateClient()
 
-                    fun (ev: GatewayReceiveEvent) -> task {
+                    fun (json: string) -> task {
                         let req = new HttpRequestMessage(HttpMethod.Post, endpoint)
-                        req.Content <- new StringContent(Json.serializeF ev, MediaTypeHeaderValue("application/json"))
+                        req.Content <- new StringContent(json, MediaTypeHeaderValue("application/json"))
                         
                         // TODO: Create ed25519 signature like Discord to ensure only valid events are accepted downstream
 
@@ -40,8 +39,7 @@ type ShardFactory (
                     let client = serviceBusClientFactory.CreateClient connectionString
                     let sender = client.CreateSender queueName
 
-                    fun (ev: GatewayReceiveEvent) -> task {
-                        let json = Json.serializeF ev
+                    fun (json: string) -> task {
                         do! sender.SendMessageAsync <| ServiceBusMessage json
                     }
 

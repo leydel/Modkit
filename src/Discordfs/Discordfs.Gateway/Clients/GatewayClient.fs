@@ -11,7 +11,7 @@ type IGatewayClient =
     abstract member Connect:
         gatewayUrl: string ->
         identify: IdentifySendEvent ->
-        handler: (GatewayReceiveEvent -> Task<unit>) ->
+        handler: (string -> Task<unit>) ->
         ct: CancellationToken ->
         Task<unit>
 
@@ -36,8 +36,7 @@ type GatewayClient () =
 
     interface IGatewayClient with
         member _.Connect gatewayUrl identify handler ct =
-            // TODO: Implement cancellation token
-            Gateway.reconnect gatewayUrl None identify handler _ws
+            Gateway.connect gatewayUrl None identify handler _ws ct
 
         member _.RequestGuildMembers payload = task {
             match _ws.Value with

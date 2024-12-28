@@ -259,14 +259,3 @@ and GatewayReceiveEventConverter () =
         | SUBSCRIPTION_DELETE s -> Json.serializeF s |> writer.WriteRawValue
         | MESSAGE_POLL_VOTE_ADD m -> Json.serializeF m |> writer.WriteRawValue
         | MESSAGE_POLL_VOTE_REMOVE m -> Json.serializeF m |> writer.WriteRawValue
-
-module GatewayReceiveEvent =
-    let getSequenceNumber (event: GatewayReceiveEvent) =
-        let json = Json.serializeF event
-        let document = JsonDocument.Parse json
-
-        match document.RootElement.TryGetProperty "s" with
-        | true, t -> Some (t.GetInt32())
-        | _ -> None
-
-        // TODO: Figure out way to calculate this without serializing and parsing (?)
