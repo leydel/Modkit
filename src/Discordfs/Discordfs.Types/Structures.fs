@@ -262,10 +262,10 @@ type StickerPack = {
 type RoleTags = {
     [<JsonPropertyName "bot_id">] BotId: string option
     [<JsonPropertyName "integration_id">] IntegrationId: string option
-    [<JsonPropertyName "premium_subscriber">] [<JsonConverter(typeof<Converters.NullUndefinedAsBool>)>] PremiumSubscriber: unit option
+    [<JsonPropertyName "premium_subscriber">] [<JsonConverter(typeof<Converters.NullUndefinedAsBool>)>] PremiumSubscriber: bool
     [<JsonPropertyName "subscription_listing_id">] SubscriptionListingId: string option
-    [<JsonPropertyName "available_for_purchase">] [<JsonConverter(typeof<Converters.NullUndefinedAsBool>)>] AvailableForPurchase: unit option
-    [<JsonPropertyName "guild_connections">] [<JsonConverter(typeof<Converters.NullUndefinedAsBool>)>] GuildConnections: unit option
+    [<JsonPropertyName "available_for_purchase">] [<JsonConverter(typeof<Converters.NullUndefinedAsBool>)>] AvailableForPurchase: bool
+    [<JsonPropertyName "guild_connections">] [<JsonConverter(typeof<Converters.NullUndefinedAsBool>)>] GuildConnections: bool
 }
 
 type Role = {
@@ -296,38 +296,37 @@ type RecurrenceRuleNWeekday = {
 
 // https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-recurrence-rule-object
 type RecurrenceRule = {
-    Start: string
-    End: string option
-    Frequency: RecurrenceRuleFrequencyType
-    Interval: int
-    ByWeekday: RecurrenceRuleWeekdayType list option
-    ByWeekend: RecurrenceRuleNWeekday list option
-    ByMonth: RecurrenceRuleMonthType list option
-    ByMonthDay: int list option
-    ByYearDay: int list option
-    Count: int option
-
+    [<JsonPropertyName "start">] Start: string
+    [<JsonPropertyName "end">] End: string option
+    [<JsonPropertyName "frequency">] Frequency: RecurrenceRuleFrequencyType
+    [<JsonPropertyName "interval">] Interval: int
+    [<JsonPropertyName "by_weekday">] ByWeekday: RecurrenceRuleWeekdayType list option
+    [<JsonPropertyName "by_weekend">] ByWeekend: RecurrenceRuleNWeekday list option
+    [<JsonPropertyName "by_month">] ByMonth: RecurrenceRuleMonthType list option
+    [<JsonPropertyName "by_month_day">] ByMonthDay: int list option
+    [<JsonPropertyName "by_year_day">] ByYearDay: int list option
+    [<JsonPropertyName "count">] Count: int option
 }
 
 // https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-structure
 type GuildScheduledEvent = {
     [<JsonPropertyName "id">] Id: string
-    [<JsonPropertyName "id">] GuildId: string
-    [<JsonPropertyName "id">] ChannelId: string option
-    [<JsonPropertyName "id">] CreatorId: string option
-    [<JsonPropertyName "id">] Name: string
-    [<JsonPropertyName "id">] Description: string option
-    [<JsonPropertyName "id">] ScheduledStartTime: DateTime option
-    [<JsonPropertyName "id">] ScheduledEndTime: DateTime option
-    [<JsonPropertyName "id">] PrivacyLevel: PrivacyLevelType
-    [<JsonPropertyName "id">] EventStatus: EventStatusType
-    [<JsonPropertyName "id">] EntityType: ScheduledEntityType
-    [<JsonPropertyName "id">] EntityId: string option
-    [<JsonPropertyName "id">] EntityMetadata: EntityMetadata option
-    [<JsonPropertyName "id">] Creator: User option
-    [<JsonPropertyName "id">] UserCount: int option
-    [<JsonPropertyName "id">] Image: string option
-    [<JsonPropertyName "id">] RecurrenceRule: RecurrenceRule option
+    [<JsonPropertyName "guild_id">] GuildId: string
+    [<JsonPropertyName "channel_id">] ChannelId: string option
+    [<JsonPropertyName "creator_id">] CreatorId: string option
+    [<JsonPropertyName "name">] Name: string
+    [<JsonPropertyName "description">] Description: string option
+    [<JsonPropertyName "scheduled_start_time">] ScheduledStartTime: DateTime option
+    [<JsonPropertyName "scheduled_end_time">] ScheduledEndTime: DateTime option
+    [<JsonPropertyName "privacy_level">] PrivacyLevel: PrivacyLevelType
+    [<JsonPropertyName "event_status">] EventStatus: EventStatusType
+    [<JsonPropertyName "entity_type">] EntityType: ScheduledEntityType
+    [<JsonPropertyName "entity_id">] EntityId: string option
+    [<JsonPropertyName "entity_metadata">] EntityMetadata: EntityMetadata option
+    [<JsonPropertyName "creator">] Creator: User option
+    [<JsonPropertyName "user_count">] UserCount: int option
+    [<JsonPropertyName "image">] Image: string option
+    [<JsonPropertyName "recurrence_rule">] RecurrenceRule: RecurrenceRule option
 }
 
 // https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-user-object-guild-scheduled-event-user-structure
