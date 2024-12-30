@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<AzureFunctionsVersion>v4</AzureFunctionsVersion>
+		<OutputType>Exe</OutputType>
+		<RootNamespace>Modkit.Gateway.Orchestrator.Presentation</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup />
+
+  <ItemGroup>
+		<Content Include="local.settings.json" CopyToOutputDirectory="PreserveNewest" />
+		<Content Include="host.json" CopyToOutputDirectory="PreserveNewest" />
+		<Compile Include="Program.fs" />
+		<None Include=".gitignore" />
+  </ItemGroup>
+  
+  <ItemGroup>
+	  <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.22.0" />
+	  <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="2.0.0" />
+	  <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.CosmosDB" Version="4.11.0" />
+	  <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.DurableTask" Version="1.2.2" />
+	  <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.2.0" />
+	  <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.ServiceBus" Version="5.22.0" />
+	  <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.0.0" />
+	  <PackageReference Include="Microsoft.Azure.Functions.Worker.ApplicationInsights" Version="2.0.0" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<Using Include="System.Threading.ExecutionContext" Alias="ExecutionContext" />
+	</ItemGroup>
+</Project>

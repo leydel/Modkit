@@ -69,7 +69,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gateway", "Gateway", "{73A5
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "WorkerNode", "Gateway\WorkerNode\WorkerNode.fsproj", "{6A931A0D-3D90-46CE-84E1-2D89F83C65CE}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Orchestrator", "Gateway\Orchestrator\Orchestrator.fsproj", "{B7B64FF1-7E61-4720-84E4-76AA34779662}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Orchestrator.Presentation", "Gateway\Orchestrator.Presentation\Orchestrator.Presentation.fsproj", "{B7B64FF1-7E61-4720-84E4-76AA34779662}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Roles", "Roles", "{2A33BC42-CE14-4569-979B-0FC842D99675}"
 EndProject
